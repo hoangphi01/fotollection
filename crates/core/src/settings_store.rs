@@ -41,8 +41,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v19 also (FR-123): `ui.language` may be `hu`, Magyar; (FR-073) `collage.postcard.postalUse`,
 /// the post's coding zone kept free, absent before (on).
 /// v20 (FR-128): `ui.language` may be `ja`, 日本語, or `ko`, 한국어; (FR-130, FR-132, FR-133)
-/// `collage.postcard.destination` (`europe`, `japan`, `korea`), `senderOn`, `sender` and
-/// `assisted`, absent before (Europe, no sender, assisted). A new value needs a new
+/// `collage.postcard.destination` (`europe`, `japan`, `korea`), `senderOn`, `senders` (one
+/// sender a country) and `assisted`, absent before (Europe, no sender, assisted). A new value needs a new
 /// version once a version shipped: v0.14.1 reads v19, and meets a v20 file as a newer one.
 pub const SCHEMA_VERSION: u32 = 20;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
@@ -1048,7 +1048,8 @@ mod tests {
         );
         assert!(card.sender_on && !card.assisted);
         assert_eq!(
-            card.sender.as_ref().map(|s| s.road.as_str()),
+            card.sender(crate::addassist::Country::Kr)
+                .map(|s| s.road.as_str()),
             Some("해운대해변로")
         );
         // In Japanese the card is a はがき whatever was chosen in English.
@@ -1076,7 +1077,7 @@ mod tests {
             card.destination,
             crate::settings::PostcardDestination::Europe
         );
-        assert!(!card.sender_on && card.sender.is_none() && card.assisted);
+        assert!(!card.sender_on && card.senders.is_empty() && card.assisted);
         Ok(())
     }
 

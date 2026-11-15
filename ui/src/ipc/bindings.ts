@@ -2141,11 +2141,15 @@ export type PostcardSettings = {
 	 */
 	destination?: PostcardDestination,
 	/**
-	 *  The sender printed on a Japanese or Korean card (owner, 2026-11-15: one sender for
-	 *  every card, an optional switch, off by default); a European card prints none.
+	 *  The sender printed on a Japanese or Korean card (owner, 2026-11-15: an optional switch,
+	 *  off by default); a European card prints none.
 	 */
 	senderOn?: boolean,
-	sender?: Address | null,
+	/**
+	 *  The sender of each country's card, one record a country (the QA review, 2026-11-15: a
+	 *  Korean sender printed on a はがき).
+	 */
+	senders?: Address[],
 	/**
 	 *  The address fields filled by `AddAssist` from a postal code (on) or typed by hand (off),
 	 *  FR-133. Absent before settings v20: on.

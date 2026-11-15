@@ -103,7 +103,7 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
         onChange={(postalUse) => setPostcard({ postalUse })}
         hint={t(`postcard.postalUseHintCard.${card}`)}
       />
-      {/* The one sender of Japanese and Korean cards, an optional switch (owner, 2026-11-15). */}
+      {/* The sender of Japanese and Korean cards, an optional switch (owner, 2026-11-15). */}
       {card !== 'europe' && (
         <SwitchField
           icon={<UserRound />}
@@ -112,10 +112,14 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
           onChange={(senderOn) => setPostcard({ senderOn })}
           hint={t('postcard.senderHint')}
         >
+          {/* Each country's own sender: switching cards never shows or prints another's. */}
           <AddAssist
+            key={country}
             country={country}
-            value={postcard.sender?.country === country ? postcard.sender : emptyAddress(country)}
-            onCommit={(sender) => setPostcard({ sender })}
+            value={postcard.senders?.find((s) => s.country === country) ?? emptyAddress(country)}
+            onCommit={(sender) =>
+              setPostcard({ senders: [...(postcard.senders ?? []).filter((s) => s.country !== country), sender] })
+            }
             assisted={postcard.assisted ?? true}
             onAssisted={(assisted) => setPostcard({ assisted })}
           />

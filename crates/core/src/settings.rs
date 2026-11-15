@@ -640,12 +640,14 @@ pub struct PostcardSettings {
     /// settings v20: Europe.
     #[serde(default)]
     pub destination: PostcardDestination,
-    /// The sender printed on a Japanese or Korean card (owner, 2026-11-15: one sender for
-    /// every card, an optional switch, off by default); a European card prints none.
+    /// The sender printed on a Japanese or Korean card (owner, 2026-11-15: an optional switch,
+    /// off by default); a European card prints none.
     #[serde(default)]
     pub sender_on: bool,
+    /// The sender of each country's card, one record a country (the QA review, 2026-11-15: a
+    /// Korean sender printed on a はがき).
     #[serde(default)]
-    pub sender: Option<crate::addassist::Address>,
+    pub senders: Vec<crate::addassist::Address>,
     /// The address fields filled by `AddAssist` from a postal code (on) or typed by hand (off),
     /// FR-133. Absent before settings v20: on.
     #[serde(default = "default_postal_use")]
@@ -671,6 +673,11 @@ pub enum PostcardDestination {
 }
 
 impl PostcardSettings {
+    /// The sender of `country`'s card, if one is typed.
+    pub fn sender(&self, country: crate::addassist::Country) -> Option<&crate::addassist::Address> {
+        self.senders.iter().find(|a| a.country == country)
+    }
+
     /// The card the interface's language makes (owner, 2026-11-15): Japanese is always a
     /// はがき, Korean always a 우편엽서; English and Vietnamese the one chosen; every other
     /// language Europe's.
@@ -735,7 +742,7 @@ impl Default for PostcardSettings {
             postal_use: true,
             destination: PostcardDestination::Europe,
             sender_on: false,
-            sender: None,
+            senders: Vec::new(),
             assisted: true,
             card: PostcardDestination::Europe,
         }
@@ -782,11 +789,17 @@ impl CollageSettings {
                     .lines
                     .clamp(*POSTCARD_LINES.start(), *POSTCARD_LINES.end()),
                 credit: sanitize_caption(&self.postcard.credit),
-                sender: self
-                    .postcard
-                    .sender
-                    .as_ref()
-                    .map(crate::addassist::Address::sanitized),
+                senders: {
+                    // One record a country, the last kept.
+                    let mut out: Vec<crate::addassist::Address> = Vec::new();
+                    for a in self.postcard.senders.iter().rev() {
+                        if !out.iter().any(|o| o.country == a.country) {
+                            out.push(a.sanitized());
+                        }
+                    }
+                    out.reverse();
+                    out
+                },
                 ..self.postcard.clone()
             },
             size: self.size.map(|s| {

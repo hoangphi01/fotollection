@@ -105,6 +105,7 @@ Read this table in full before any task; then read in full every entry whose Are
 ### print-post
 
 - What passes through a service (the post, a kiosk) follows that service's layout documents, and the real thing is tried once. Kept by: `fr_073_the_posts_coding_zone_stays_free`.
+- A board for such a layout is checked against the service's figures before it is chosen; a reviewer who knows only the rules reads the render. Kept by: `fr_130_nothing_but_the_stamp_in_the_postmark_zone`.
 - Every change is checked in Collage mode too: two photos a sheet, each with its own edits, no pick, postcards. Kept by: no machine check yet.
 - A fit check counts only what prints, tested on text as the field sends it; ink is measured from the outline. Kept by: no machine check yet.
 
@@ -116,6 +117,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### The chosen board broke Japan Post's rules (FR-130)
+
+- **Area:** print-post, spec-request
+- **Seen:** two independent reviewers playing Japan Post and Korea Post staff, given only the docs and the renders, found what the board itself got wrong: the sender inside Japan's 35 × 70 mm postmark zone, a typed code printed without its boxes, board B's message in the upper half (a letter's rate), the address 6 mm under the boxes (10 asked), text in Korea's blank machine band, the code boxes 5 mm from Korea's right edge (20 asked), a square card below Korea's minimum size.
+- **Why:** the board was drawn and chosen for its look, from the rules as remembered, and then copied faithfully; nobody checked the board itself against the posts' dimensioned figures (別記1's box positions were even written off as "illustrations").
+- **Fix:** the posts' figures win where they differ, the board's style kept; each rule has its test (`fr_130_nothing_but_the_stamp_in_the_postmark_zone` and its siblings, Korea's in FR-132).
+- **Rule:** before a layout that passes through a service is chosen, its board is checked against that service's dimensioned documents, part by part; a reviewer who knows only the rules reads the render before the owner does.
 
 ### A formatter the project does not use rewrote three files (FR-133)
 

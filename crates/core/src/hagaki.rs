@@ -17,7 +17,9 @@ use crate::vertical::{self, VerticalFace};
 
 // Every position below is the chosen style board's (PRD FR-130): artboards A and B (upright)
 // and Landscape, 4 px a millimetre, measured in Chromium (LESSONS 2026-11-15: a layout that has
-// a board takes the board's numbers). Ems scale with the text size; the board's is 17 px.
+// a board takes the board's numbers), except where Japan Post's 内国郵便約款 and 別記1 ask
+// otherwise, which win (the Japan Post review, 2026-11-15). Ems scale with the text size; the
+// board's is 17 px.
 
 /// The stamp box, 6 mm from the top and left edges (board A: 24 px), 20 × 25 mm (FAQ 597:
 /// within 7.0 × 3.5 cm).
@@ -25,28 +27,27 @@ pub const STAMP_MM: (f32, f32) = (20.0, 25.0);
 const STAMP_EDGE_MM: f32 = 6.0;
 /// 切手's em in its box (15 px).
 const STAMP_WORD_MM: f32 = 3.75;
-/// The code boxes' top and right offsets (Japan Post's figure, and the board: 12 and 8 mm).
+/// The code boxes' top and right offsets (別記1: 12 and 8 mm).
 pub const BOXES_TOP_MM: f32 = 12.0;
 pub const BOXES_RIGHT_MM: f32 = 8.0;
 /// 「郵便はがき」: em 3.25 mm (13 px), 1.5 mm between characters (6 px), centred at the top.
 const HEADING_MM: f32 = 3.25;
 const HEADING_TRACK: f32 = 1.5 / 3.25;
 const HEADING_TOP_MM: f32 = 4.2;
-/// A typed code: em 5 mm (20 px; 別記1: digits 2.4–6 mm tall), 0.25 mm between digits, its
-/// right where the boxes' is.
-const CODE_MM: f32 = 5.0;
-const CODE_TRACK: f32 = 0.05;
-const CODE_TOP_MM: f32 = 13.4;
-/// The digits' middle, from the em's top (board A: ink 14.1–17.9 mm).
+/// A typed code's digits in the boxes: their em 62 % of a box's long side, the digits'
+/// middle 0.52 em under the em's top (Klee One).
+const DIGIT_SCALE: f32 = 0.62;
 const CODE_MIDDLE: f32 = 0.52;
-/// The address: its first column's top under a typed code and under the boxes (A: 104 px;
-/// B: 122 px), its right 7.5 mm from the edge (30 px), columns 1.5 em apart (line-height 1.5),
-/// each after the first one character lower.
-const ADDRESS_TOP_TYPED_MM: f32 = 26.0;
-const ADDRESS_TOP_BOXES_MM: f32 = 30.5;
+/// Japan Post's postmark zone, the top left 35 mm wide and 70 mm tall upright (70 × 35 mm at
+/// the top right on a landscape card): nothing but the stamp box in it (別記1 備考3).
+pub const POSTMARK_MM: (f32, f32) = (35.0, 70.0);
+/// The address: its first column's top 30.5 mm, more than 10 mm under the boxes (別記1
+/// (1)(ｵ); board B: 122 px), its em 16/17 of the text's (B: 16 px), its right 7.5 mm from the
+/// edge (30 px), columns 1.5 em apart (line-height 1.5), each after the first one character
+/// lower.
+const ADDRESS_TOP_MM: f32 = 30.5;
+const ADDRESS_SCALE: f32 = 16.0 / 17.0;
 const ADDRESS_RIGHT_MM: f32 = 7.5;
-/// Under the boxes the address is a little smaller (B: 16 px against A's 17).
-const ADDRESS_BOXES_SCALE: f32 = 16.0 / 17.0;
 const COLUMN_STEP: f32 = 1.5;
 /// The name: its column centred 51.4 mm from the left, starting 1 mm above the address, at
 /// most 30/17 of the address's em (A: 30 px), smaller to end at the half's foot, 0.1 em
@@ -54,9 +55,10 @@ const COLUMN_STEP: f32 = 1.5;
 const NAME_CENTRE_MM: f32 = 51.4;
 const NAME_SCALE: f32 = 30.0 / 17.0;
 const NAME_TRACK: f32 = 0.1;
-/// The sender: its columns from 7.5 mm (30 px), top 34 mm (136 px), 11/17 of the address's
-/// em; its name a column of its own on the left, 13/17, 60/11 of the sender's em lower.
-const SENDER_LEFT_MM: f32 = 7.5;
+/// The sender: right of the postmark zone, top 34 mm (board A: 136 px), 11/17 of the
+/// address's em; its name a column of its own on the left, 13/17, 60/11 of the sender's em
+/// lower; in Latin letters lines 22 mm wide.
+const SENDER_LATIN_WIDTH_MM: f32 = 22.0;
 const SENDER_TOP_MM: f32 = 34.0;
 const SENDER_SCALE: f32 = 11.0 / 17.0;
 const SENDER_NAME_SCALE: f32 = 13.0 / 17.0;
@@ -72,11 +74,12 @@ const L_STAMP_MM: (f32, f32) = (20.0, 24.0);
 const L_BOXES_RIGHT_MM: f32 = 7.5;
 const L_BOXES_TOP_MM: f32 = 35.0;
 /// 「郵便はがき」 down the edge right of the boxes: em 2.75 mm (11 px), 1 mm between (4 px),
-/// its column centred 4 mm from the edge, from 36.5 mm.
+/// its column centred 4 mm from the edge and on the card's height (§22(6): 右側部 中央).
 const L_HEADING_MM: f32 = 2.75;
 const L_HEADING_PITCH_MM: f32 = 3.75;
 const L_HEADING_CENTRE_MM: f32 = 4.0;
-const L_HEADING_TOP_MM: f32 = 36.5;
+/// 50 mm less half the column (4 × 3.75 + 2.75 mm).
+const L_HEADING_TOP_MM: f32 = 41.125;
 /// The text from 4 mm into the half (312 px). The address 15/17 em, lines 1.6 em apart, its
 /// first em at 36.1 mm (35 mm and the line's half-leading), each line after the first one em
 /// in; the name 28/17 em at 51.6 mm; the sender's lines from 73.3 mm, 50 mm wide (200 px),
@@ -97,9 +100,6 @@ pub struct HagakiSpec<'a> {
     pub settings: &'a PostcardSettings,
     pub text: Option<&'a PostcardText>,
     pub paper: BorderColor,
-    /// The message to set on the writing half (a landscape card whose photo fills its half has
-    /// no band under it; Japan Post lets a message share the address side, §23).
-    pub message: Option<&'a str>,
 }
 
 /// The stamp box of a はがき whose writing half is `card`.
@@ -335,63 +335,115 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
     }
 
     let to = recipient(spec.text);
-    // The code: typed, printed where the boxes would be, with no boxes and no 〒; else the
-    // seven boxes, empty, for the hand.
+    // The seven boxes always (別記1's figure); a typed code's digits in them, black, one a box.
     let (bx, by) = boxes_origin(card);
-    let typed = to.as_ref().and_then(|a| printed_code(&a.code));
-    match &typed {
-        Some(code) => {
-            // The hyphen centred in a character's cell, as a full-width one stands (board A).
-            let (head, tail) = code.split_once('\u{2212}').unwrap_or((code.as_str(), ""));
-            let cell = mm(CODE_MM * (1.0 + CODE_TRACK));
-            let width_of = |t: &str| vertical::across(face, t, mm(CODE_MM), 0.0, 0.0, CODE_TRACK).1;
-            let (wh, wt) = (width_of(head), width_of(tail));
-            let track = mm(CODE_MM * CODE_TRACK);
-            let right = mm(card.x + card.width - BOXES_RIGHT_MM);
-            let left = right - wt - track - cell - wh - track;
-            let top = mm(card.y + CODE_TOP_MM);
-            for (text, x) in [(head, left), (tail, left + wh + track + cell)] {
-                let (set, _) = vertical::across(face, text, mm(CODE_MM), x, top, CODE_TRACK);
-                vertical::draw(canvas, face, &set, mm(CODE_MM), text_ink);
-            }
-            // The hyphen a bar 0.6 em long across the digits' middle, as the board's full-width
-            // one (the face's cut lacks U+FF0D, LESSONS).
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-            {
-                let bar = (mm(CODE_MM * 0.6), mm(CODE_MM * 0.09).max(1.0));
-                let x = left + wh + track + (cell - bar.0) / 2.0;
-                let y = mm(card.y + CODE_TOP_MM + CODE_MM * CODE_MIDDLE) - bar.1 / 2.0;
-                crate::sheet::fill_rect(
-                    canvas,
-                    x as u32,
-                    y as u32,
-                    bar.0 as u32,
-                    bar.1 as u32,
-                    text_ink,
-                );
-            }
-        }
-        None => crate::postcard::draw_code_boxes(canvas, density, bx, by, &JAPAN_BOXES),
+    crate::postcard::draw_code_boxes(canvas, density, bx, by, &JAPAN_BOXES);
+    if let Some(a) = to.as_ref().filter(|a| printed_code(&a.code).is_some()) {
+        draw_code_digits(
+            canvas,
+            face,
+            density,
+            &JAPAN_BOXES.boxes(bx, by),
+            &a.code,
+            text_ink,
+            false,
+        );
     }
 
-    // The address down the right, the name down the middle, both to the half's foot.
-    let top = card.y
-        + if typed.is_some() {
-            ADDRESS_TOP_TYPED_MM
-        } else {
-            ADDRESS_TOP_BOXES_MM
-        };
+    // The address 10 mm or more under the boxes (別記1 (1)(ｵ)), down the right; the name down
+    // the middle; both to the half's foot.
+    let top = card.y + ADDRESS_TOP_MM;
     let bottom = card.y + card.height;
     let right = card.x + card.width - ADDRESS_RIGHT_MM;
-    let em_address = if typed.is_some() {
-        em
-    } else {
-        em * ADDRESS_BOXES_SCALE
-    };
-    let mut name_left = card.x + NAME_CENTRE_MM - em * NAME_SCALE / 2.0;
+    let em_address = em * ADDRESS_SCALE;
+
+    // The sender right of the postmark's 35 × 70 mm (別記1 備考3; owner, 2026-11-15), when its
+    // switch is on: its name a column on the left, a little lower, its address in columns right
+    // of it, its code across above them. What it takes moves the recipient's name right.
+    let mut sender_right = card.x + POSTMARK_MM.0;
+    let small = em * SENDER_SCALE;
+    let left = card.x + POSTMARK_MM.0 + 1.0;
+    if let Some(from) = sender(settings, Country::Jp) {
+        let from_top = card.y + SENDER_TOP_MM;
+        if from.latin {
+            let mut lines = latin_lines(&from);
+            if !from.name.trim().is_empty() {
+                lines.push(from.name.trim().to_owned());
+            }
+            draw_lines_across(
+                canvas,
+                face,
+                &lines.join("\n"),
+                mm(small),
+                mm(left),
+                mm(from_top),
+                mm(SENDER_LATIN_WIDTH_MM),
+                mm(small * 1.35),
+                text_ink,
+            );
+            sender_right = left + SENDER_LATIN_WIDTH_MM;
+        } else {
+            let step = small * COLUMN_STEP;
+            let name = from.name.trim();
+            let name_em = em * SENDER_NAME_SCALE;
+            let name_step = if name.is_empty() {
+                0.0
+            } else {
+                name_em * COLUMN_STEP
+            };
+            let text = column_lines(&from);
+            let height = bottom - from_top;
+            let set_from = |right: f32| {
+                vertical::set(
+                    face,
+                    &text,
+                    mm(small),
+                    mm(right),
+                    mm(from_top),
+                    mm(height),
+                    mm(step),
+                    3,
+                    1,
+                )
+            };
+            #[allow(clippy::cast_precision_loss)]
+            let block_right = left + name_step + set_from(0.0).columns as f32 * step;
+            vertical::draw(canvas, face, &set_from(block_right), mm(small), text_ink);
+            if !name.is_empty() {
+                let drop = small * SENDER_NAME_DROP;
+                let set = vertical::set(
+                    face,
+                    &full_width(name),
+                    mm(name_em),
+                    mm(left + name_step),
+                    mm(from_top + drop),
+                    mm(bottom - from_top - drop),
+                    mm(name_step),
+                    1,
+                    0,
+                );
+                vertical::draw(canvas, face, &set, mm(name_em), text_ink);
+            }
+            sender_right = block_right;
+        }
+        if printed_code(&from.code).is_some() {
+            let code = format!("{}-{}", &from.code[..3], &from.code[3..]);
+            let (set, _) = vertical::across(
+                face,
+                &code,
+                mm(small),
+                mm(left),
+                mm(from_top - small * 1.5),
+                0.0,
+            );
+            vertical::draw(canvas, face, &set, mm(small), text_ink);
+        }
+    }
+
     if let Some(to) = &to {
         if to.latin {
-            draw_latin(canvas, face, density, spec, to, top, text_ink);
+            let left = (sender_right + 2.0).max(card.x + card.width * 0.38);
+            draw_latin(canvas, face, density, spec, to, left, top, text_ink);
         } else {
             let set = vertical::set(
                 face,
@@ -413,12 +465,13 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
                 let chars = label.chars().count().max(1) as f32;
                 let name_em =
                     (em * NAME_SCALE).min((bottom - name_top) / chars / (1.0 + NAME_TRACK));
-                name_left = card.x + NAME_CENTRE_MM - name_em / 2.0;
+                // The board's middle, or right of the sender when it reaches that far.
+                let centre = (card.x + NAME_CENTRE_MM).max(sender_right + 2.0 + name_em / 2.0);
                 let set = tracked_column(
                     face,
                     &label,
                     (mm(name_em), mm(name_em * (1.0 + NAME_TRACK))),
-                    mm(card.x + NAME_CENTRE_MM),
+                    mm(centre),
                     mm(name_top),
                     mm(bottom - name_top),
                 );
@@ -426,117 +479,92 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
             }
         }
     }
+}
 
-    // The message, when the photo has no band for it: top to bottom, small, between the stamp
-    // box and the name's column (owner, 2026-11-15: "the upright card still has room").
-    if let Some(message) = spec.message.filter(|m| !m.trim().is_empty()) {
-        let small = em * 0.8;
-        let col_right = name_left - 2.0;
-        let col_left = stamp.x + stamp.width + 1.0;
-        let step = small * 1.3;
-        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-        let columns = ((col_right - col_left) / step).floor().max(0.0) as usize;
-        if columns > 0 {
-            let set = vertical::set(
-                face,
-                message,
-                mm(small),
-                mm(col_right),
-                mm(top),
-                mm(bottom - 1.0 - top),
-                mm(step),
-                columns,
-                0,
-            );
-            vertical::draw(canvas, face, &set, mm(small), text_ink);
-        }
-    }
-
-    // The sender down the left under the stamp box, when its switch is on: its address in
-    // columns, its name a column of its own on their left, a little lower (board A).
-    if settings.sender_on
-        && let Some(from) = settings.sender.as_ref().filter(|a| !a.is_blank())
-    {
-        let small = em * SENDER_SCALE;
-        let from_top = card.y + SENDER_TOP_MM;
-        let code_room = if printed_code(&from.code).is_some() {
-            small + 1.0
-        } else {
-            0.0
+/// A typed code's digits, black, one centred in each box (別記1: the code written in the
+/// boxes), clear of the frames; `turned` on a landscape card, each digit a quarter turn with its
+/// top toward the right edge, as the boxes run.
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::cast_precision_loss
+)]
+fn draw_code_digits(
+    canvas: &mut RgbImage,
+    face: &VerticalFace,
+    density: f32,
+    boxes: &[(RectMm, f32)],
+    digits: &str,
+    ink: [u8; 3],
+    turned: bool,
+) {
+    for ((r, _), d) in boxes.iter().zip(digits.chars()) {
+        let short = r.width.min(r.height);
+        let long = r.width.max(r.height);
+        let em = (long * DIGIT_SCALE).min(short * 1.1) * density;
+        let text = d.to_string();
+        let (_, w) = vertical::across(face, &text, em, 0.0, 0.0, 0.0);
+        // The digit on its own small canvas, its ink centred, then set (or turned) in the box.
+        let side = em.ceil() as u32 + 2;
+        let Some(mut cell) = RgbImage::from_raw(side, side, vec![255; (side * side * 3) as usize])
+        else {
+            continue;
         };
-        // In Latin letters the sender reads across, under the stamp box.
-        if from.latin {
-            let mut lines = latin_lines(from);
-            if !from.name.trim().is_empty() {
-                lines.push(from.name.trim().to_owned());
+        let (set, _) = vertical::across(
+            face,
+            &text,
+            em,
+            (side as f32 - w) / 2.0,
+            side as f32 / 2.0 - em * CODE_MIDDLE,
+            0.0,
+        );
+        vertical::draw(&mut cell, face, &set, em, ink);
+        let (cx, cy) = (
+            (r.x + r.width / 2.0) * density,
+            (r.y + r.height / 2.0) * density,
+        );
+        let half = side as f32 / 2.0;
+        for y in 0..side {
+            for x in 0..side {
+                let i = ((y * side + x) * 3) as usize;
+                let Some(px) = cell.data.get(i..i + 3) else {
+                    continue;
+                };
+                if px.iter().all(|&c| c == 255) {
+                    continue;
+                }
+                // A quarter turn clockwise: the digit's top toward the right.
+                let (dx, dy) = if turned {
+                    (half - y as f32, x as f32 - half)
+                } else {
+                    (x as f32 - half, y as f32 - half)
+                };
+                let (tx, ty) = ((cx + dx) as i64, (cy + dy) as i64);
+                if tx < 0
+                    || ty < 0
+                    || tx >= i64::from(canvas.width)
+                    || ty >= i64::from(canvas.height)
+                {
+                    continue;
+                }
+                let j = ((ty as u32 * canvas.width + tx as u32) * 3) as usize;
+                if let Some(dst) = canvas.data.get_mut(j..j + 3) {
+                    for (d, s) in dst.iter_mut().zip(px) {
+                        *d = (*d).min(*s);
+                    }
+                }
             }
-            draw_lines_across(
-                canvas,
-                face,
-                &lines.join("\n"),
-                mm(small),
-                mm(stamp.x),
-                mm(from_top),
-                mm(card.width * 0.3),
-                mm(small * 1.35),
-                text_ink,
-            );
-            return;
-        }
-        let step = small * COLUMN_STEP;
-        let name = from.name.trim();
-        let name_em = em * SENDER_NAME_SCALE;
-        let name_step = if name.is_empty() {
-            0.0
-        } else {
-            name_em * COLUMN_STEP
-        };
-        let text = column_lines(from);
-        let height = bottom - from_top - code_room;
-        let set_from = |right: f32| {
-            vertical::set(
-                face,
-                &text,
-                mm(small),
-                mm(right),
-                mm(from_top),
-                mm(height),
-                mm(step),
-                4,
-                1,
-            )
-        };
-        // From the left: as many columns as the address takes, then the name's.
-        let left = card.x + SENDER_LEFT_MM;
-        #[allow(clippy::cast_precision_loss)]
-        let right = left + name_step + set_from(0.0).columns as f32 * step;
-        vertical::draw(canvas, face, &set_from(right), mm(small), text_ink);
-        if !name.is_empty() {
-            let set = vertical::set(
-                face,
-                &full_width(name),
-                mm(name_em),
-                mm(left + name_step),
-                mm(from_top + small * SENDER_NAME_DROP),
-                mm(bottom - from_top - small * SENDER_NAME_DROP - code_room),
-                mm(name_step),
-                1,
-                0,
-            );
-            vertical::draw(canvas, face, &set, mm(name_em), text_ink);
-        }
-        if let Some(code) = printed_code(&from.code) {
-            let (set, _) = vertical::across(
-                face,
-                &code,
-                mm(small),
-                mm(left),
-                mm(bottom - small - 0.5),
-                0.0,
-            );
-            vertical::draw(canvas, face, &set, mm(small), text_ink);
         }
     }
+}
+
+/// This card's sender: its own country's record, when its switch is on (each card its own
+/// record, LESSONS 2026-11-15).
+fn sender(settings: &PostcardSettings, country: Country) -> Option<Address> {
+    if !settings.sender_on {
+        return None;
+    }
+    settings.sender(country).filter(|a| !a.is_blank()).cloned()
 }
 
 /// The stamp box of a landscape はがき whose writing half is `card`: its top right.
@@ -634,25 +662,11 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
 
     let to = recipient(spec.text);
     let (bx, by) = boxes_down_origin(card);
-    let column = JAPAN_BOXES.box_mm.1;
-    // A typed code down the boxes' column, a figure under the next; else the boxes.
-    match to.as_ref().filter(|a| printed_code(&a.code).is_some()) {
-        Some(a) => {
-            let code = full_width(&format!("{}-{}", &a.code[..3], &a.code[3..]));
-            let set = vertical::set(
-                face,
-                &code,
-                mm(CODE_MM),
-                mm(bx + column / 2.0 + CODE_MM / 2.0),
-                mm(by),
-                mm(JAPAN_BOXES.width_mm() + CODE_MM),
-                mm(CODE_MM),
-                1,
-                0,
-            );
-            vertical::draw(canvas, face, &set, mm(CODE_MM), text_ink);
-        }
-        None => crate::postcard::draw_code_boxes_down(canvas, density, bx, by, &JAPAN_BOXES),
+    // The seven boxes turned down the right edge (別記1 例2), a typed code's digits in them.
+    crate::postcard::draw_code_boxes_down(canvas, density, bx, by, &JAPAN_BOXES);
+    if let Some(a) = to.as_ref().filter(|a| printed_code(&a.code).is_some()) {
+        let boxes = JAPAN_BOXES.boxes_down(bx, by);
+        draw_code_digits(canvas, face, density, &boxes, &a.code, text_ink, true);
     }
     if settings.postal_use {
         let set = tracked_column(
@@ -671,7 +685,6 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
     let width = bx - 2.0 - left;
     let bottom = card.y + card.height - 5.0;
     let a_em = em * L_ADDRESS_SCALE;
-    let mut message_top = card.y + L_ADDRESS_TOP_MM;
     if let Some(to) = &to {
         let draw_at = |canvas: &mut RgbImage, text: &str, indent: f32, top: f32| {
             draw_lines_across(
@@ -711,7 +724,6 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
                 y = draw_at(canvas, &after.join("\n"), indent, y);
             }
         }
-        message_top = y;
         let name = to.name.trim();
         if !name.is_empty() {
             let label = if to.latin {
@@ -734,7 +746,6 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
                 NAME_TRACK,
             );
             vertical::draw(canvas, face, &set, mm(name_em), text_ink);
-            message_top = name_top + name_em * 1.4;
         }
     }
 
@@ -742,9 +753,7 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
     // right: the code in Arabic figures, the address, the building two ems in, the name.
     let s_em = em * SENDER_SCALE;
     let mut lines: Vec<(String, f32, f32, bool)> = Vec::new();
-    if settings.sender_on
-        && let Some(from) = settings.sender.as_ref().filter(|a| !a.is_blank())
-    {
+    if let Some(from) = sender(settings, Country::Jp) {
         if printed_code(&from.code).is_some() {
             lines.push((
                 format!("{}-{}", &from.code[..3], &from.code[3..]),
@@ -754,7 +763,11 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
             ));
         }
         if from.latin {
-            lines.extend(latin_lines(from).into_iter().map(|l| (l, s_em, 0.0, false)));
+            lines.extend(
+                latin_lines(&from)
+                    .into_iter()
+                    .map(|l| (l, s_em, 0.0, false)),
+            );
         } else {
             let (number, rest) = split_line(&from.line);
             let places = format!("{}{}{}", from.region, from.city, from.town);
@@ -778,23 +791,6 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
     let lead = (L_LINE - 1.0) / 2.0;
     let height: f32 = lines.iter().map(|l| l.1 * L_LINE).sum();
     let mut line_top = (card.y + L_SENDER_TOP_MM - lead * s_em).min(bottom - height);
-    let sender_top = if lines.is_empty() { bottom } else { line_top };
-
-    // The message, when the photo has no band for it, between the name and the sender.
-    if let Some(message) = spec.message.filter(|m| !m.trim().is_empty()) {
-        let small = em * 0.85;
-        let mut y = message_top.max(stamp.y + stamp.height + 4.0);
-        'lines: for paragraph in message.lines() {
-            for line in vertical::wrap_across(face, paragraph, mm(small), mm(width), 0.0) {
-                if y + small > sender_top - 2.0 {
-                    break 'lines;
-                }
-                let (set, _) = vertical::across(face, &line, mm(small), mm(left), mm(y), 0.0);
-                vertical::draw(canvas, face, &set, mm(small), text_ink);
-                y += small * 1.35;
-            }
-        }
-    }
 
     let sender_width = L_SENDER_WIDTH_MM.min(width);
     for (text, size, indent, right) in &lines {
@@ -822,35 +818,40 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
     }
 }
 
-/// The recipient in Latin letters, across, right of the middle (romaji reads across).
+/// The recipient in Latin letters, across from `left` (romaji reads across): a long name set
+/// smaller to fit the width, the lines kept above the half's foot.
+#[allow(clippy::too_many_arguments)]
 fn draw_latin(
     canvas: &mut RgbImage,
     face: &VerticalFace,
     density: f32,
     spec: &HagakiSpec<'_>,
     to: &Address,
+    left: f32,
     top: f32,
     ink: [u8; 3],
 ) {
     let em = crate::settings::postcard_text_mm(spec.settings.text_size) * 0.8;
-    let left = spec.card.x + spec.card.width * 0.38;
+    let right = spec.card.x + spec.card.width - BOXES_RIGHT_MM;
+    let bottom = spec.card.y + spec.card.height - 1.0;
+    let width = (right - left) * density;
     let mut y = top;
     let name = to.name.trim();
     if !name.is_empty() {
-        let (set, _) = vertical::across(
-            face,
-            name,
-            em * NAME_SCALE * density,
-            left * density,
-            y * density,
-            0.0,
-        );
-        vertical::draw(canvas, face, &set, em * NAME_SCALE * density, ink);
-        y += em * NAME_SCALE * 1.4;
+        let mut size = em * NAME_SCALE * density;
+        let (_, w) = vertical::across(face, name, size, 0.0, 0.0, 0.0);
+        if w > width {
+            size *= width / w;
+        }
+        let (set, _) = vertical::across(face, name, size, left * density, y * density, 0.0);
+        vertical::draw(canvas, face, &set, size, ink);
+        y += size / density * 1.4;
     }
-    let width = (spec.card.x + spec.card.width - BOXES_RIGHT_MM - left) * density;
-    for line in latin_lines(to) {
+    'lines: for line in latin_lines(to) {
         for row in vertical::wrap_across(face, &line, em * density, width, 0.0) {
+            if y + em > bottom {
+                break 'lines;
+            }
             let (set, _) =
                 vertical::across(face, &row, em * density, left * density, y * density, 0.0);
             vertical::draw(canvas, face, &set, em * density, ink);
@@ -949,7 +950,6 @@ pub(crate) mod tests {
                 settings,
                 text,
                 paper: BorderColor::White,
-                message: None,
             },
         );
         canvas
@@ -997,34 +997,42 @@ pub(crate) mod tests {
     }
 
     #[test]
-    fn fr_130_the_code_is_boxes_for_the_hand_or_printed_without_them() {
+    fn fr_130_a_typed_code_is_written_in_the_boxes() {
+        // 別記1: the code is written in the seven vermilion boxes, one digit a box, clear of
+        // the frames (the owner, 2026-11-15: typed digits in the vermilion boxes).
         let settings = PostcardSettings::default();
-        let mut text = kamakura();
-        if let Some(r) = text.recipients.first_mut() {
-            r.code.clear();
-        }
-        let boxes = drawn(&settings, Some(&text));
         let (bx, by) = boxes_origin(HALF);
-        let area = RectMm {
-            x: bx - 1.0,
-            y: by - 1.0,
-            width: JAPAN_BOXES.width_mm() + 2.0,
-            height: JAPAN_BOXES.box_mm.1 + 2.0,
-        };
-        assert!(
-            inked(&boxes, area, vermilion) > 1000,
-            "seven vermilion boxes"
+        let boxes = JAPAN_BOXES.boxes(bx, by);
+        let area = zone(
+            bx - 1.0,
+            by - 1.0,
+            JAPAN_BOXES.width_mm() + 2.0,
+            JAPAN_BOXES.box_mm.1 + 2.0,
         );
         let typed = drawn(&settings, Some(&kamakura()));
+        let mut empty = kamakura();
+        if let Some(r) = empty.recipients.first_mut() {
+            r.code.clear();
+        }
+        for card in [&typed, &drawn(&settings, Some(&empty))] {
+            assert!(
+                inked(card, area, vermilion) > 1000,
+                "the seven boxes, typed or not"
+            );
+        }
+        let mut inside = 0;
+        for (r, _) in &boxes {
+            let inner = zone(r.x + 0.6, r.y + 0.6, r.width - 1.2, r.height - 1.2);
+            let digit = inked(&typed, inner, dark);
+            assert!(digit > 50, "a digit in each box");
+            inside += digit;
+        }
         assert_eq!(
-            inked(&typed, HALF, vermilion),
-            0,
-            "a typed code has no boxes"
+            inked(&typed, area, dark),
+            inside,
+            "no digit touches a frame"
         );
-        assert!(
-            inked(&typed, area, dark) > 100,
-            "the code is printed where they were"
-        );
+        assert_eq!(inked(&drawn(&settings, Some(&empty)), area, dark), 0);
     }
 
     #[test]
@@ -1061,12 +1069,8 @@ pub(crate) mod tests {
             inked(&card, middle, dark) > 2000,
             "the name, large, in the middle"
         );
-        let left = RectMm {
-            x: 2.0,
-            y: 32.0,
-            width: 26.0,
-            height: 38.0,
-        };
+        // Right of the postmark zone, left of the name.
+        let left = zone(POSTMARK_MM.0, 28.0, 12.0, 44.0);
         assert_eq!(
             inked(&card, left, dark),
             0,
@@ -1080,12 +1084,15 @@ pub(crate) mod tests {
         let with = drawn(
             &PostcardSettings {
                 sender_on: true,
-                sender: Some(from),
+                senders: vec![from],
                 ..PostcardSettings::default()
             },
             Some(&kamakura()),
         );
-        assert!(inked(&with, left, dark) > 500, "the sender down the left");
+        assert!(
+            inked(&with, left, dark) > 500,
+            "the sender right of the postmark zone"
+        );
     }
 
     #[test]
@@ -1169,7 +1176,6 @@ pub(crate) mod tests {
                 settings,
                 text,
                 paper: BorderColor::White,
-                message: None,
             },
         );
         (canvas, half)
@@ -1203,9 +1209,16 @@ pub(crate) mod tests {
         let (empty, _) = drawn_landscape(&settings, None);
         let s = stamp_box_landscape(half);
         assert_eq!(inked(&canvas, s, dark), inked(&empty, s, dark));
-        // A typed code: no boxes.
+        // A typed code: its digits in the turned boxes.
         let (typed, _) = drawn_landscape(&settings, Some(&kamakura()));
-        assert_eq!(inked(&typed, half, vermilion), 0);
+        assert_eq!(inked(&typed, half, vermilion), in_column);
+        for (r, _) in JAPAN_BOXES.boxes_down(bx, by) {
+            let inner = zone(r.x + 0.6, r.y + 0.6, r.width - 1.2, r.height - 1.2);
+            assert!(
+                inked(&typed, inner, dark) > 50,
+                "a digit in each turned box"
+            );
+        }
     }
 
     #[test]
@@ -1219,7 +1232,7 @@ pub(crate) mod tests {
         assert_eq!(latin_lines(&from), ["Matsudo, Matsudo-shi, Chiba-ken"]);
         let settings = PostcardSettings {
             sender_on: true,
-            sender: Some(from.clone()),
+            senders: vec![from.clone()],
             ..PostcardSettings::default()
         };
         let mut kanji = from;
@@ -1228,7 +1241,7 @@ pub(crate) mod tests {
         let kanji_card = drawn_landscape(
             &PostcardSettings {
                 sender_on: true,
-                sender: Some(kanji),
+                senders: vec![kanji],
                 ..PostcardSettings::default()
             },
             None,
@@ -1241,40 +1254,78 @@ pub(crate) mod tests {
     }
 
     #[test]
-    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    fn fr_130_a_full_bleed_landscape_card_sets_its_message_on_the_writing_half() {
-        let half = RectMm {
-            x: 0.0,
-            y: 0.0,
-            width: 74.0,
-            height: 100.0,
+    fn fr_130_nothing_but_the_stamp_in_the_postmark_zone() {
+        // 別記1 備考3: the top left 35 × 70 mm upright, the top right 70 × 35 mm landscape.
+        let mut latin = board_sender("1200024");
+        if let Some(s) = latin.senders.first_mut() {
+            s.latin = true;
+        }
+        let empty = PostcardSettings::default();
+        let upright_zone = zone(0.0, 0.0, POSTMARK_MM.0, POSTMARK_MM.1);
+        let landscape_zone = zone(74.0 - POSTMARK_MM.1, 0.0, POSTMARK_MM.1, POSTMARK_MM.0);
+        for settings in [board_sender("1200024"), latin] {
+            for code in ["2480024", ""] {
+                let text = board_text(code);
+                let card = drawn(&settings, Some(&text));
+                assert_eq!(
+                    inked(&card, upright_zone, |_| true),
+                    inked(&drawn(&empty, None), upright_zone, |_| true),
+                    "upright"
+                );
+                let (card, _) = drawn_landscape(&settings, Some(&text));
+                let (alone, _) = drawn_landscape(&empty, None);
+                // The boxes start where the zone ends (35 mm); their top frame is theirs.
+                let above = zone(landscape_zone.x, 0.0, landscape_zone.width, 34.5);
+                assert_eq!(
+                    inked(&card, above, |_| true),
+                    inked(&alone, above, |_| true),
+                    "landscape"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn fr_130_a_korean_sender_never_prints_on_a_hagaki() {
+        // Each country its own sender (the QA review, 2026-11-15).
+        let mut kr = Address::new(Country::Kr);
+        kr.region = "부산광역시".into();
+        kr.name = "김민지".into();
+        let korean_only = PostcardSettings {
+            sender_on: true,
+            senders: vec![kr.clone()],
+            ..PostcardSettings::default()
         };
-        let draw_with = |message: Option<&str>| {
-            let (w, h) = ((74.0 * DENSITY) as u32, (100.0 * DENSITY) as u32);
-            let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])
-                .unwrap_or_else(|| RgbImage::new(1, 1));
-            draw_landscape(
-                &mut canvas,
-                DENSITY,
-                &HagakiSpec {
-                    card: half,
-                    settings: &PostcardSettings::default(),
-                    text: Some(&kamakura()),
-                    paper: BorderColor::White,
-                    message,
-                },
-            );
-            canvas
+        let text = board_text("2480024");
+        let none = drawn(&PostcardSettings::default(), Some(&text));
+        assert_eq!(drawn(&korean_only, Some(&text)).data, none.data);
+        // A Japanese sender typed beside it is the one the はがき prints; the Korean one stays.
+        let mut both = board_sender("");
+        both.senders.push(kr);
+        assert_ne!(drawn(&both, Some(&text)).data, none.data);
+    }
+
+    #[test]
+    fn fr_130_the_address_keeps_10_mm_under_the_boxes() {
+        // 別記1 (1)(ｵ): 10 mm or more between the boxes and the address.
+        for code in ["2480024", ""] {
+            let card = drawn(&PostcardSettings::default(), Some(&board_text(code)));
+            let address = runs(&card, zone(70.0, 21.0, 29.0, 53.0), true, dark);
+            let top = address.iter().map(|b| b[1]).fold(f32::MAX, f32::min);
+            assert!(top >= BOXES_TOP_MM + JAPAN_BOXES.box_mm.1 + 10.0, "{top}");
+        }
+    }
+
+    #[test]
+    fn fr_130_the_landscape_heading_is_centred_on_the_right() {
+        // §22(6): on a landscape card, 「郵便はがき」 centred on the right side.
+        let (card, _) = drawn_landscape(&PostcardSettings::default(), None);
+        let heading = runs(&card, zone(67.5, 0.0, 6.5, 100.0), true, dark);
+        let [b] = heading.as_slice() else {
+            panic!("one column: {heading:?}");
         };
-        let without = draw_with(None);
-        let with = draw_with(Some("Xin chào はがき、鎌倉より"));
-        let lower = RectMm {
-            x: 3.0,
-            y: 40.0,
-            width: 50.0,
-            height: 55.0,
-        };
-        assert!(inked(&with, lower, dark) > inked(&without, lower, dark) + 200);
+        let centre = f32::midpoint(b[1], b[3]);
+        assert!((centre - 50.0).abs() <= 1.0, "{centre}");
     }
 
     #[test]
@@ -1410,7 +1461,7 @@ pub(crate) mod tests {
         from.name = "東 京子".into();
         PostcardSettings {
             sender_on: true,
-            sender: Some(from),
+            senders: vec![from],
             ..PostcardSettings::default()
         }
     }
@@ -1426,9 +1477,11 @@ pub(crate) mod tests {
 
     #[test]
     fn fr_130_the_upright_card_matches_board_a() {
-        // Board A: a typed code, the sender on (it shows no code of its own).
-        let card = drawn(&board_sender(""), Some(&board_text("2480024")));
-        let parts: [(&str, RectMm, bool, &[[f32; 4]]); 5] = [
+        // Board A, where Japan Post agrees: its heading, and the address and name as board B's
+        // now that a typed code is written in the boxes (別記1); the sender is checked against
+        // the postmark zone instead (`fr_130_nothing_but_the_stamp_in_the_postmark_zone`).
+        let card = drawn(&PostcardSettings::default(), Some(&board_text("2480024")));
+        let parts: [(&str, RectMm, bool, &[[f32; 4]]); 3] = [
             (
                 "heading",
                 zone(30.0, 0.0, 40.0, 9.0),
@@ -1436,33 +1489,16 @@ pub(crate) mod tests {
                 &[[38.25, 4.63, 59.63, 7.63]],
             ),
             (
-                "code",
-                zone(30.0, 10.0, 69.0, 11.0),
-                false,
-                &[[51.0, 14.13, 90.63, 17.88]],
-            ),
-            (
                 "address",
                 zone(70.0, 22.0, 29.0, 52.0),
                 true,
-                &[[87.38, 26.19, 91.44, 51.5], [81.0, 30.5, 85.06, 63.94]],
+                &[[87.63, 30.63, 91.44, 54.44], [81.63, 34.75, 85.44, 66.19]],
             ),
             (
                 "name",
                 zone(40.0, 22.0, 22.0, 52.0),
                 true,
-                &[[47.88, 25.38, 55.13, 73.63]],
-            ),
-            (
-                "sender",
-                zone(0.0, 32.0, 28.0, 42.0),
-                true,
-                &[
-                    [21.38, 34.13, 24.13, 50.44],
-                    [17.31, 36.94, 20.0, 61.31],
-                    [13.25, 37.56, 15.81, 66.88],
-                    [8.44, 49.13, 11.56, 61.94],
-                ],
+                &[[48.0, 29.81, 54.25, 72.13]],
             ),
         ];
         for (part, z, down, board) in parts {
@@ -1473,7 +1509,7 @@ pub(crate) mod tests {
     #[test]
     fn fr_130_the_upright_card_matches_board_b() {
         // Board B: the code boxes for the hand; the address and name start lower.
-        let card = drawn(&board_sender(""), Some(&board_text("")));
+        let card = drawn(&PostcardSettings::default(), Some(&board_text("")));
         let boxes = runs(&card, HALF, false, vermilion);
         let whole = [
             boxes.iter().map(|b| b[0]).fold(f32::MAX, f32::min),
@@ -1507,7 +1543,7 @@ pub(crate) mod tests {
                 "heading",
                 zone(67.5, 32.0, 6.5, 28.0),
                 true,
-                &[[142.69, 36.69, 145.38, 54.06]],
+                &[[142.69, 41.31, 145.38, 58.68]],
             ),
             (
                 "address",
@@ -1557,36 +1593,5 @@ pub(crate) mod tests {
         );
         let line = runs(&card, band, false, dark);
         assert_board("message", &line, &[[6.06, 139.06, 58.88, 142.38]], 0.0);
-    }
-
-    #[test]
-    fn fr_130_a_full_bleed_upright_card_sets_its_message_top_to_bottom() {
-        let draw_with = |message: Option<&str>| {
-            let mut canvas = blank();
-            draw_upright(
-                &mut canvas,
-                DENSITY,
-                &HagakiSpec {
-                    card: HALF,
-                    settings: &PostcardSettings::default(),
-                    text: Some(&kamakura()),
-                    paper: BorderColor::White,
-                    message,
-                },
-            );
-            canvas
-        };
-        let between = RectMm {
-            x: 28.0,
-            y: 22.0,
-            width: 18.0,
-            height: 48.0,
-        };
-        let without = draw_with(None);
-        let with = draw_with(Some("鎌倉の抹茶ソフト、美味しかった！また行こうね。"));
-        assert!(inked(&with, between, dark) > inked(&without, between, dark) + 300);
-        // The stamp box stays clear.
-        let s = stamp_box(HALF);
-        assert_eq!(inked(&with, s, dark), inked(&without, s, dark));
     }
 }

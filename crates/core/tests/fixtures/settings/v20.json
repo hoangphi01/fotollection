@@ -60,15 +60,17 @@
         "destination": "korea",
         "senderOn": true,
         "assisted": false,
-        "sender": {
-          "country": "kr",
-          "code": "48094",
-          "region": "부산광역시",
-          "city": "해운대구",
-          "road": "해운대해변로",
-          "line": "264",
-          "name": "김민지"
-        }
+        "senders": [
+          {
+            "country": "kr",
+            "code": "48094",
+            "region": "부산광역시",
+            "city": "해운대구",
+            "road": "해운대해변로",
+            "line": "264",
+            "name": "김민지"
+          }
+        ]
       }
     },
     "look": {

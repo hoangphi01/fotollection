@@ -346,8 +346,9 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
     let mut message_bottom = limit - 2.0;
     // The sender at the top left, left of the stamp box: the label, the name, the address,
     // each over a dotted rule, then its five boxes.
-    if settings.sender_on
-        && let Some(from) = settings.sender.as_ref().filter(|a| !a.is_blank())
+    if let Some(from) = settings
+        .sender(Country::Kr)
+        .filter(|a| settings.sender_on && !a.is_blank())
     {
         let left = card.x + SENDER_LEFT_MM;
         let right = left + SENDER_WIDTH_MM.min(stamp.x - 2.0 - left);
@@ -691,7 +692,7 @@ mod tests {
             Some(ZONE),
             &PostcardSettings {
                 sender_on: true,
-                sender: Some(from),
+                senders: vec![from],
                 ..PostcardSettings::default()
             },
             Some(&seoul()),
@@ -754,7 +755,7 @@ mod tests {
         let settings = PostcardSettings {
             face: PostcardFace::NanumPen,
             sender_on: true,
-            sender: Some(from),
+            senders: vec![from],
             ..PostcardSettings::default()
         };
         let text = PostcardText {

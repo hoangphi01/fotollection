@@ -659,10 +659,8 @@ pub struct CodeBoxes {
     pub groups: &'static [u8],
     /// One box's width and height.
     pub box_mm: (f32, f32),
-    /// From one box's left edge to the next one's.
-    pub pitch_mm: f32,
-    /// The extra room between groups, where Japan draws its hyphen.
-    pub group_gap_mm: f32,
+    /// Each box's left edge from the first one's, left to right (Japan's from 別記1's figure).
+    pub lefts_mm: &'static [f32],
     pub color: [u8; 3],
     /// Each group's line weight; the hyphen takes the first group's.
     pub lines_mm: &'static [f32],
@@ -670,17 +668,12 @@ pub struct CodeBoxes {
     pub hyphen: bool,
 }
 
-/// Japan's seven boxes, vermilion (金赤) with no black in them, the first three and the hyphen
-/// 0.5 mm, the last four 0.3 mm (内国郵便約款 別記1: 0.4–0.6 and 0.2–0.4 mm). Their size and
-/// pitch are the style board's, within Japan Post's figures: 5.75 × 8 mm, 1 mm apart, the
-/// hyphen 1.5 mm long in a 2.5 mm gap (board B: 23 × 32 px, 4 px, 6 px with 2 px each side).
 /// Korea's five boxes for the recipient's code, black, its digits printed one in each when
 /// typed (FR-132: exactly five boxes if boxes are drawn).
 pub const KOREA_BOXES: CodeBoxes = CodeBoxes {
     groups: &[5],
     box_mm: (4.75, 6.0),
-    pitch_mm: 5.5,
-    group_gap_mm: 0.0,
+    lefts_mm: &[0.0, 5.5, 11.0, 16.5, 22.0],
     color: [45, 45, 45],
     lines_mm: &[0.3],
     hyphen: false,
@@ -690,18 +683,21 @@ pub const KOREA_BOXES: CodeBoxes = CodeBoxes {
 pub const KOREA_SENDER_BOXES: CodeBoxes = CodeBoxes {
     groups: &[5],
     box_mm: (3.75, 4.75),
-    pitch_mm: 4.25,
-    group_gap_mm: 0.0,
+    lefts_mm: &[0.0, 4.25, 8.5, 12.75, 17.0],
     color: [45, 45, 45],
     lines_mm: &[0.25],
     hyphen: false,
 };
 
+/// Japan's seven boxes as 内国郵便約款 別記1's figure for a private card measures them: 5.7 × 8
+/// mm, their left edges at 0, 7.0, 14.0, 21.6, 28.4, 35.2 and 42.0 mm, 8 mm from the right
+/// edge and 12 mm from the top; vermilion (金赤) with no black in them, the first three and the
+/// hyphen 0.5 mm, the last four 0.3 mm (0.4–0.6 and 0.2–0.4 mm). Japan Post's figure, not the
+/// style board, sets them (the Japan Post review, 2026-11-15).
 pub const JAPAN_BOXES: CodeBoxes = CodeBoxes {
     groups: &[3, 4],
-    box_mm: (5.75, 8.0),
-    pitch_mm: 6.75,
-    group_gap_mm: 1.5,
+    box_mm: (5.7, 8.0),
+    lefts_mm: &[0.0, 7.0, 14.0, 21.6, 28.4, 35.2, 42.0],
     color: [232, 56, 32],
     lines_mm: &[0.5, 0.3],
     hyphen: true,
@@ -711,16 +707,14 @@ impl CodeBoxes {
     /// The boxes' whole width.
     #[allow(clippy::cast_precision_loss)]
     pub fn width_mm(&self) -> f32 {
-        let boxes: u32 = self.groups.iter().map(|g| u32::from(*g)).sum();
-        let gaps = self.groups.len().saturating_sub(1) as f32;
-        (boxes.saturating_sub(1)) as f32 * self.pitch_mm + self.box_mm.0 + gaps * self.group_gap_mm
+        self.lefts_mm.last().copied().unwrap_or(0.0) + self.box_mm.0
     }
 
     /// Each box's rectangle and its group's line weight, from `left`, `top`.
     #[allow(clippy::cast_precision_loss)]
     pub fn boxes(&self, left: f32, top: f32) -> Vec<(RectMm, f32)> {
         let mut out = Vec::new();
-        let mut x = left;
+        let mut lefts = self.lefts_mm.iter();
         for (g, count) in self.groups.iter().enumerate() {
             let line = self
                 .lines_mm
@@ -728,19 +722,17 @@ impl CodeBoxes {
                 .or(self.lines_mm.last())
                 .copied()
                 .unwrap_or(0.3);
-            for _ in 0..*count {
+            for x in lefts.by_ref().take(usize::from(*count)) {
                 out.push((
                     RectMm {
-                        x,
+                        x: left + x,
                         y: top,
                         width: self.box_mm.0,
                         height: self.box_mm.1,
                     },
                     line,
                 ));
-                x += self.pitch_mm;
             }
-            x += self.group_gap_mm;
         }
         out
     }
@@ -797,7 +789,9 @@ pub fn draw_code_boxes_down(
         && let Some((last_of_first, _)) = boxes.get(usize::from(group).saturating_sub(1))
     {
         let gap_top = last_of_first.y + last_of_first.height;
-        let gap = b.pitch_mm - b.box_mm.0 + b.group_gap_mm;
+        let gap = boxes
+            .get(usize::from(group))
+            .map_or(0.0, |(next, _)| next.y - gap_top);
         let t = (first.1 * density).round().max(1.0) as u32;
         let x = px(first.0.x + first.0.width / 2.0).saturating_sub(t / 2);
         crate::sheet::fill_rect(
@@ -826,7 +820,9 @@ pub fn draw_code_boxes(canvas: &mut RgbImage, density: f32, left: f32, top: f32,
         && let Some((last_of_first, _)) = boxes.get(usize::from(group).saturating_sub(1))
     {
         let gap_left = last_of_first.x + last_of_first.width;
-        let gap = b.pitch_mm - b.box_mm.0 + b.group_gap_mm;
+        let gap = boxes
+            .get(usize::from(group))
+            .map_or(0.0, |(next, _)| next.x - gap_left);
         let t = thick(first.1);
         let y = px(first.0.y + first.0.height / 2.0).saturating_sub(t / 2);
         crate::sheet::fill_rect(
@@ -1517,7 +1513,11 @@ mod tests {
         // The first three heavier than the last four.
         assert!(boxes[..3].iter().all(|(_, l)| (*l - 0.5).abs() < 1e-6));
         assert!(boxes[3..].iter().all(|(_, l)| (*l - 0.3).abs() < 1e-6));
-        assert!((b.width_mm() - 47.75).abs() < 1e-4, "board B: 191 px");
+        assert!((b.width_mm() - 47.7).abs() < 1e-4, "別記1: 42.0 + 5.7");
+        // Each box where 別記1's figure puts it.
+        for ((r, _), at) in boxes.iter().zip([0.0, 7.0, 14.0, 21.6, 28.4, 35.2, 42.0]) {
+            assert!((r.x - 10.0 - at).abs() < 1e-4 && (r.width - 5.7).abs() < 1e-4);
+        }
         let density = 300.0 / 25.4;
         let (w, h) = (700, 300);
         let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])

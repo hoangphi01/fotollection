@@ -71,6 +71,8 @@ pub struct SheetLayout {
 const HAGAKI_BAND_MM: f32 = 8.0;
 /// The message's margin from the half's edges (boards A and K1: 20 px).
 const HAGAKI_BAND_EDGE_MM: f32 = 5.0;
+/// The white band under a full-bleed はがき photo for its message.
+const HAGAKI_FILL_BAND_MM: f32 = 9.0;
 
 /// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
 /// size of its own until a photo gives it one; a Japanese postcard is always a はがき (FR-130).
@@ -305,6 +307,7 @@ pub fn photo_area(
 
 /// Lays out a sheet for one or two photos (upright pixel sizes): each photo centred in its
 /// half, so the white between them stays with or without the cut line.
+#[allow(clippy::too_many_lines)]
 pub fn layout(
     print: PrintSize,
     photos: [Option<(u32, u32)>; 2],
@@ -350,13 +353,20 @@ pub fn layout(
         } else {
             0.0
         };
-        let band = ((japan || korea) && !settings.fill).then(|| {
-            photo_half.height -= HAGAKI_BAND_MM + zone;
+        // A はがき always keeps it, a full-bleed photo stopping above it: Japan Post wants a
+        // message on the address side in its lower half (§23(4); owner, 2026-11-15).
+        let band = (japan || (korea && !settings.fill)).then(|| {
+            let band = if settings.fill {
+                HAGAKI_FILL_BAND_MM
+            } else {
+                HAGAKI_BAND_MM
+            };
+            photo_half.height -= band + zone;
             RectMm {
                 x: photo_half.x,
                 y: photo_half.y + photo_half.height,
                 width: photo_half.width,
-                height: HAGAKI_BAND_MM,
+                height: band,
             }
         });
         let (postal, foot) = postal_zone(settings, side, width, height, japan);
@@ -839,7 +849,7 @@ fn draw_card(
     card_font: Option<&ab_glyph::FontArc>,
 ) {
     let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
-    // No band under a full-bleed photo: the card sets its message on the writing half.
+    // No band under a full-bleed Korean photo: the card sets its message on the writing half.
     let message_here = sheet
         .band
         .is_none()
@@ -855,7 +865,6 @@ fn draw_card(
                     settings: &settings.collage.postcard,
                     text,
                     paper: settings.border_color,
-                    message: message_here,
                 },
             );
         } else if settings.collage.postcard.card == crate::settings::PostcardDestination::Korea {
@@ -881,7 +890,6 @@ fn draw_card(
                     settings: &settings.collage.postcard,
                     text,
                     paper: settings.border_color,
-                    message: message_here,
                 },
             );
         } else {
@@ -2133,6 +2141,30 @@ mod tests {
     }
 
     #[test]
+    fn fr_130_a_full_bleed_photo_keeps_to_the_lower_half() {
+        // §23(4): the address side's upper half is the address's; the photo starts at 74 mm.
+        use crate::settings::{PostcardDestination, PostcardOrientation, PostcardSettings};
+        let mut settings = RenderSettings::default();
+        settings.collage.fill = true;
+        settings.collage.postcard = PostcardSettings {
+            enabled: true,
+            orientation: PostcardOrientation::Portrait,
+            card: PostcardDestination::Japan,
+            ..PostcardSettings::default()
+        };
+        let sheet = layout(
+            sheet_print(&settings),
+            [Some((1800, 1200)), None],
+            false,
+            &settings.collage,
+        );
+        let Some(photo) = sheet.cells[0] else {
+            panic!("the photo is placed");
+        };
+        assert!(photo.y >= 74.0, "{}", photo.y);
+    }
+
+    #[test]
     fn fr_130_a_bordered_japanese_or_korean_card_keeps_a_message_band() {
         use crate::settings::{PostcardDestination, PostcardOrientation, PostcardSettings};
         let band = |card, orientation, fill| {
@@ -2187,11 +2219,13 @@ mod tests {
                     .0
                     .is_some()
             );
-            assert!(
-                band(PostcardDestination::Japan, orientation, true)
-                    .0
-                    .is_none()
-            );
+            // A full-bleed はがき keeps one too, in the card's lower half (§23(4)).
+            let Some(full) = band(PostcardDestination::Japan, orientation, true).0 else {
+                panic!("a full-bleed はがき keeps a message band");
+            };
+            if orientation == PostcardOrientation::Portrait {
+                assert!(full.y > 74.0 && full.y + full.height <= 148.01, "{full:?}");
+            }
         }
         for orientation in [PostcardOrientation::Landscape, PostcardOrientation::Square] {
             let (Some(b), Some(zone)) = band(PostcardDestination::Korea, orientation, false) else {
