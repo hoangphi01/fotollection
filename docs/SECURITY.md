@@ -149,6 +149,7 @@ Layer 4: SAFE RENDERING (UI)
 - **Bundled brand logos** ([ADR-0020](adr/0020-bundled-brand-logos.md)) are PNGs rendered from public-domain SVGs on Wikimedia Commons, pinned by SHA-256 and checked for scripts and external references before rendering. At run time they go through the same validating PNG decoder as user logos.
 - **Bundled place data** (FR-005, [ADR-0003](adr/0003-offline-geocoding-geonames.md)) is a static asset too: `places.bin`, packed from GeoNames (CC BY 4.0), checked against a pinned BLAKE3 sum and parsed with bounds checks on every length. Place names are third-party text, so they are shown as plain text only, never as HTML.
 - Dependencies are kept minimal. Adding a new dependency requires a short justification in the PR.
+- **One advisory ignored** (owner, 2026-11-15): RUSTSEC-2026-0192, `ttf-parser` unmaintained, no vulnerability known. It reads every font the app draws with, the bundled ones and a user's (FR-042), directly and through `ab_glyph`; it forbids `unsafe`. FR-134 replaces it with `skrifa` in v0.14.3 and removes the ignore.
 - `cargo deny` checks what ships (`exclude-dev = true`). Dev-only crates, such as `little_exif` for synthetic test fixtures, never touch user data. They are still updated when advisories appear.
 
 ### Licensing note

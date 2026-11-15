@@ -1351,6 +1351,15 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 On the website, once it ships, AddAssist is presented as a strength beside the other apps (no photo app fills a postcard's address from the post's own data), with a section listing the countries it covers, never before (the landing page shows what works).
 
+### FR-134 — Text drawn without an unmaintained font parser
+
+**P2 (v0.14.3; owner, 2026-11-15).** Every text the app draws (the date stamp, the info frame, the postcards, the vertical Japanese lines) reads its font through `ttf-parser`, directly in `vertical.rs` and through `ab_glyph` everywhere else; its author declared it unmaintained (RUSTSEC-2026-0192), so v0.14.2 ships with that advisory ignored in `deny.toml`. Fotollection moves to `skrifa` (Apache-2.0 or MIT, maintained by Google Fonts) with a permissive rasterizer:
+
+- the same pixels: every printed text compared before and after, bundled faces and a user font (FR-042), a difference only where it is measured and kept on purpose;
+- no `unsafe`, a bounded parse of a user font, fuzzed as FR-089 asks;
+- the time of a stamped export within NFR-003, measured before and after;
+- the ignore removed from `deny.toml` in the same commit.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
