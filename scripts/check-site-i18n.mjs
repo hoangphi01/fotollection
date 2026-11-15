@@ -98,6 +98,23 @@ for (const c of published) {
     if (!existsSync(path.join(site, 'assets/img', file))) problems.push(`${c}: no site/assets/img/${file}; run node site/screenshots/og.mjs`)
   }
 }
+// Every carousel picture fills the carousel's 16:10 frame, 1600 × 1000 (LESSONS 2026-11-15: a
+// zoomed crop 1600 × 3909 showed its middle, giant, in the AddAssist slide).
+const webpSize = (file) => {
+  const b = readFileSync(file)
+  const kind = b.toString('latin1', 12, 16)
+  if (kind === 'VP8X') return [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)]
+  if (kind === 'VP8 ') return [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff]
+  if (kind === 'VP8L') return [1 + (b[21] | ((b[22] & 0x3f) << 8)), 1 + ((b[22] >> 6) | (b[23] << 2) | ((b[24] & 0x0f) << 10))]
+  return [0, 0]
+}
+const carouselShots = new Set([...readFileSync(path.join(site, '_data/carousels.yml'), 'utf8').matchAll(/shot: ([\w-]+)/g)].map((m) => m[1]))
+for (const f of readdirSync(path.join(site, 'assets/img'))) {
+  const m = f.match(/^(.+)-[a-z]{2}-(dark|light)\.webp$/)
+  if (!m || !carouselShots.has(m[1])) continue
+  const [w, h] = webpSize(path.join(site, 'assets/img', f))
+  if (w !== 1600 || h !== 1000) problems.push(`site/assets/img/${f} is ${w} × ${h}: a carousel picture is 1600 × 1000, the whole window (site/screenshots/shoot.mjs)`)
+}
 const wordsDir = path.join(site, '_data/i18n')
 const files = existsSync(wordsDir) ? readdirSync(wordsDir).filter((f) => f.endsWith('.yml')).map((f) => f.slice(0, -4)) : []
 if (!files.includes('en')) problems.push('site/_data/i18n/en.yml, the source of every word, is missing')

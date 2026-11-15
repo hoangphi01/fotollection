@@ -1292,7 +1292,8 @@ for (const language of LANGUAGES) {
     const button = await page.getByRole('button', { name: say('export.buttonCount') }).boundingBox()
     if (note && button) {
       const top = note.y - 56
-      const height = button.y + button.height + 40 - top
+      // A multiple of 5 px, so 16:10 is exact and the picture comes out 1600 × 1000.
+      const height = Math.ceil((button.y + button.height + 40 - top) / 5) * 5
       const width = height * 1.6
       const x = Math.min(1440 - width, note.x + note.width / 2 - width / 2)
       await zoomed(page, `estimate-${suffix}`, { x, y: top, width, height })
@@ -1389,13 +1390,14 @@ for (const language of LANGUAGES) {
       // then the recent addresses, listed on every card (v0.13.2).
       const textCard = (pattern) =>
         page.locator('[role="dialog"] section', { has: page.getByText(pattern) }).first()
-      // AddAssist (FR-133) on a Japanese or Korean card, for those pages' landing section.
+      // AddAssist (FR-133) on a Japanese or Korean card, for those pages' carousel: the whole
+      // window, the card beside its filled address, at the carousel's 16:10 like every slide
+      // (a zoomed crop of the card was 1600 × 3909 in a 1600 × 1000 frame, LESSONS 2026-11-15).
       const assist = textCard(say('addassist.recipient'))
       if (await assist.count()) {
         await assist.scrollIntoViewIfNeeded()
         await settle(page)
-        const box = await assist.boundingBox()
-        if (box) await zoomed(page, `addassist-${suffix}`, { x: box.x - 16, y: box.y - 16, width: box.width + 32, height: Math.min(box.height + 32, 900) })
+        await save(page, `addassist-${suffix}`)
       }
       const apply = textCard(say('postcard.reuse.fill'))
       if (await apply.count()) {

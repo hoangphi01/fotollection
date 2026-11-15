@@ -23,6 +23,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Nothing jumps: a box that holds something that comes and goes has a fixed size, and what a first change reveals is there from the start, off. Kept by: UI-STABLE-001.
 - A card whose height depends on an answer from Rust shows the last answer (`.data`, kept across remounts), never `return null` per photo. Kept by: no machine check yet.
 - A box that clips is sized for everything it draws (rings, knobs, the scroll bar); a popup is placed after measuring it, the title bar a collision edge. Kept by: UI-LAYOUT-016, UI-LAYOUT-021.
+- A picture is checked in the frame that shows it, on the built page; a carousel picture is the whole window at 1600 × 1000. Kept by: `check-site-i18n` (carousel sizes).
 
 ### ui-blocks
 
@@ -118,6 +119,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### A zoomed crop in a carousel frame showed its middle, giant (website, FR-133)
+
+- **Area:** ui-layout, checks
+- **Seen:** the Korean page's AddAssist slide showed a few huge words of the address card; the owner asked whether a carousel was broken.
+- **Why:** the slide was shot as a zoomed crop of the card, 1600 × 3909, while every carousel frame is the whole window at 1600 × 1000; the frame cut the middle out. The images were only looked at alone, never in the page. The estimate crop was also 2 px off, rounded.
+- **Fix:** the slide is the whole window with the card beside the filled address; the estimate crop's height is a multiple of 5 px, so 16:10 is exact; `check-site-i18n` fails when a carousel picture is not 1600 × 1000.
+- **Rule:** a picture is checked in the frame that shows it, on the built page; a carousel picture is the whole window at the carousel's size.
 
 ### A new crate of ours failed CI's licence check after the push (FR-133)
 
