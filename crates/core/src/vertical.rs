@@ -60,14 +60,16 @@ impl VerticalFace {
         self.forms.get(&id.0).map_or(id, |v| GlyphId(*v))
     }
 
-    /// The glyph for `c` and whether it comes from the Latin face: what the face lacks (a
-    /// Vietnamese ư, a ơ in a name or a message) is set in Be Vietnam Pro, never left blank.
+    /// The glyph for `c` and whether it comes from the Latin face: every Latin letter (a
+    /// Vietnamese name, a message in English) is set in the handwriting face, Patrick Hand, so a
+    /// word never mixes two hands (owner, 2026-11-15); what the face lacks otherwise too.
     fn pick(&self, c: char) -> (GlyphId, bool) {
-        if self.font.glyph_id(c).0 != 0 || c.is_whitespace() {
+        if c.is_whitespace() {
             return (self.glyph(c), false);
         }
+        let own = self.font.glyph_id(c).0 != 0;
         match latin() {
-            Some(l) if l.glyph_id(c).0 != 0 => (l.glyph_id(c), true),
+            Some(l) if (is_latin(c) || !own) && l.glyph_id(c).0 != 0 => (l.glyph_id(c), true),
             _ => (self.glyph(c), false),
         }
     }
@@ -90,14 +92,17 @@ impl VerticalFace {
     }
 }
 
-const BE_VIETNAM_PRO: &[u8] = include_bytes!("../assets/fonts/BeVietnamPro-Regular.ttf");
-static LATIN: LazyLock<Option<FontArc>> =
-    LazyLock::new(|| FontArc::try_from_slice(BE_VIETNAM_PRO).ok());
-
-/// Be Vietnam Pro, the interface's face (owner, 2026-11-15), for the letters a Japanese or
-/// Korean face lacks: a Vietnamese name or message prints whole.
+/// Patrick Hand, the postcard's handwriting face (FR-076: every European letter and
+/// Vietnamese), for the Latin letters on a Japanese or Korean card (owner, 2026-11-15).
 fn latin() -> Option<&'static FontArc> {
-    LATIN.as_ref()
+    crate::postcard::handwriting()
+}
+
+/// A Latin letter, digit or mark as typed (ASCII and the Latin blocks, Vietnamese included);
+/// never a full-width form, which belongs to the Japanese text.
+fn is_latin(c: char) -> bool {
+    c.is_ascii_graphic()
+        || matches!(c, '\u{00C0}'..='\u{024F}' | '\u{0300}'..='\u{036F}' | '\u{1E00}'..='\u{1EFF}')
 }
 
 /// The scale that makes one em of `font` `em` pixels (`PxScale` is the line's height).
@@ -523,7 +528,7 @@ mod tests {
 
     #[test]
     fn fr_130_a_vietnamese_name_prints_whole() {
-        // Klee One has no ư or ơ: they come from Be Vietnam Pro, never blank.
+        // Every Latin letter comes from the handwriting face, so a word keeps one hand.
         let face = klee();
         for c in "Trương Minh Hồng, Đà Nẵng"
             .chars()
@@ -533,7 +538,8 @@ mod tests {
             let (id, _) = face.pick(c);
             assert_ne!(id.0, 0, "{c:?} has a glyph");
         }
-        assert!(face.pick('ư').1, "ư is Be Vietnam Pro's");
+        assert!(face.pick('ư').1, "ư is Patrick Hand's");
+        assert!(face.pick('c').1, "and so is c, beside it");
         assert!(!face.pick('鎌').1, "a kanji stays Klee One's");
     }
 
@@ -554,5 +560,19 @@ mod tests {
         // Japanese breaks between characters, a closing mark kept with the one before.
         let jp = wrap_across(face, "神奈川県鎌倉市稲村ガ崎。", em, em * 11.0, 0.0);
         assert!(jp.iter().all(|l| !l.starts_with('。')));
+    }
+
+    #[test]
+    fn fr_130_a_marked_latin_word_is_set_in_one_hand() {
+        // Klee One has plain ASCII but not ễ: per character, the word mixed two faces.
+        let text = "Nguyễn Hoa";
+        let (set, _) = across(klee(), text, 10.0, 0.0, 0.0, 0.0);
+        let letters: Vec<bool> = text
+            .chars()
+            .zip(&set.glyphs)
+            .filter(|(c, _)| !c.is_whitespace())
+            .map(|(_, g)| g.3)
+            .collect();
+        assert!(letters.iter().all(|&latin| latin), "{letters:?}");
     }
 }

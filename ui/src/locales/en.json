@@ -1001,7 +1001,6 @@
     },
     "sender": "Sender",
     "senderHint": "One sender for every card.",
-    "messageNeedsBorder": "The message prints under a photo with a border.",
     "fontJapan": "Printed in Klee One.",
     "nanumPenHint": "A narrow pen hand",
     "gaeguHint": "A rounder hand"

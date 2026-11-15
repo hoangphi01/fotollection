@@ -47,8 +47,6 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
   const fonts = useFonts()
   const postcard = settings?.collage?.postcard
   const card = cardFor(i18n.language, postcard?.destination)
-  // A full-bleed Japanese or Korean card has no band for the message (board B).
-  const noMessage = card !== 'europe' && settings?.collage?.fill
   const fit = usePostcardCuts(settings, revision).get(photo ?? -1)
   if (!postcard?.enabled) return null
   return (
@@ -63,7 +61,6 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
             cut={fit?.messageCut ?? false}
             onStyle={(messageStyle) => patchPostcard(onChange, { messageStyle })}
           />
-          {noMessage && <Hint>{t('postcard.messageNeedsBorder')}</Hint>}
           {card === 'europe' ? (
             <PostcardTextField
               photo={photo}

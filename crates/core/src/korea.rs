@@ -47,6 +47,9 @@ pub struct KoreaSpec<'a> {
     pub paper: BorderColor,
     /// The machine zone, when it crosses the writing half (a landscape card's foot).
     pub zone: Option<RectMm>,
+    /// The message to set on the writing half, between the sender and the recipient (a
+    /// landscape card whose photo fills its half has no band under it).
+    pub message: Option<&'a str>,
 }
 
 /// The two faces in use: the chosen one, and Nanum Pen for what it lacks.
@@ -85,7 +88,7 @@ fn line(
     let mut x = left;
     let mut glyphs: Vec<(&VerticalFace, char, f32)> = Vec::new();
     for c in text.chars() {
-        // The chosen face, else Nanum Pen, else (a Vietnamese letter) Be Vietnam Pro.
+        // The chosen face, else Nanum Pen; Latin letters in the handwriting face (`across`).
         let face = if faces.0.font.glyph_id(c).0 != 0 || faces.1.font.glyph_id(c).0 == 0 {
             faces.0
         } else {
@@ -255,6 +258,9 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
         );
     }
 
+    // Where the message may go: under the stamp box and the sender, above the recipient.
+    let mut message_top = stamp.y + stamp.height + 4.0;
+    let mut message_bottom = bottom;
     // The sender at the top left, left of the stamp box.
     if settings.sender_on
         && let Some(from) = settings.sender.as_ref().filter(|a| !a.is_blank())
@@ -303,7 +309,9 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
                 &from.code,
                 ink,
             );
+            y += KOREA_SENDER_BOXES.box_mm.1 + 1.0;
         }
+        message_top = message_top.max(y + 3.0);
     }
 
     // The recipient at the bottom right: the label, the name, the address, the boxes.
@@ -320,6 +328,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
         let name_em = em * 1.5;
         let block = LABEL_MM * 1.4 + name_em * 1.25 + em * 1.3 * address.len() as f32 + boxes_h;
         let mut y = (bottom - block).max(stamp.y + stamp.height + 3.0);
+        message_bottom = y - 2.0;
         line(
             Some(canvas),
             faces,
@@ -365,6 +374,21 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
                 &to.code,
                 ink,
             );
+        }
+    }
+    // The message, when the photo has no band for it, in the room between.
+    if let Some(message) = spec.message.filter(|m| !m.trim().is_empty()) {
+        let small = em * 0.85;
+        let left = card.x + EDGE_MM;
+        let mut y = message_top;
+        'lines: for paragraph in message.lines() {
+            for row in wrap(faces, paragraph, mm(small), mm(card.width - 2.0 * EDGE_MM)) {
+                if y + small > message_bottom {
+                    break 'lines;
+                }
+                line(Some(canvas), faces, &row, mm(small), mm(left), mm(y), ink);
+                y += small * 1.3;
+            }
         }
     }
 }
@@ -455,6 +479,7 @@ mod tests {
                 text,
                 paper: BorderColor::White,
                 zone,
+                message: None,
             },
         );
         canvas

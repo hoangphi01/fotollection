@@ -115,6 +115,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-15
 
+### A word on a はがき was set in two hands (FR-130)
+
+- **Area:** print-post, text-i18n
+- **Seen:** a name typed in Vietnamese printed its plain letters in Klee One and its marked ones (ạ, ư) in Be Vietnam Pro, a handwriting face and a sans in one word; the owner caught it on the dev card.
+- **Why:** the fallback was chosen per character: the first face that had the glyph won, and Klee One holds plain ASCII but not Vietnamese marks.
+- **Fix:** `vertical::pick` sends every Latin character to Patrick Hand, the postcard's handwriting face, which has all of Vietnamese; Be Vietnam Pro left the core (`fr_130_latin_lines_break_between_words` also keeps words whole).
+- **Rule:** a fallback face is chosen per script or per word, never per character, so a word keeps one hand; a test prints a marked word and checks one face drew it.
+
 ### A はがき printed the European card's address as its recipient (FR-130, FR-132)
 
 - **Area:** spec-request, state-cache, print-post

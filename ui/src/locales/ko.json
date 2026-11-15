@@ -1001,7 +1001,6 @@
     },
     "sender": "보내는 사람",
     "senderHint": "모든 엽서에 같은 보내는 사람.",
-    "messageNeedsBorder": "메시지는 테두리가 있는 사진 아래에 인쇄됩니다.",
     "fontJapan": "Klee One으로 인쇄합니다.",
     "nanumPenHint": "좁은 펜 글씨",
     "gaeguHint": "둥근 손글씨"

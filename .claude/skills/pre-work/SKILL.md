@@ -56,7 +56,7 @@ most often missed. The files win if they disagree.
   profile** such as `target/debug/incremental`; if that happened, `cargo clean -p` the
   crates of the workspace before the next debug build.
 - **The dev app:** while it runs, wait for its rebuild before `cargo test` or clippy.
-  Port 5174 is ours; 5173 belongs to another project, so never kill it.
+  Port 5173 is ours (`ui/vite.config.ts`); before killing what holds it, check with `lsof -i :5173` that it is our vite.
 - **Checks on their own:** never chain on a piped check (`| tail`). Chain with `&&`.
   Run `scripts/check-docs.sh` on its own, and `scripts/check-docs-with-code.sh
   origin/main..HEAD` before a push.

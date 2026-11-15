@@ -39,6 +39,9 @@ pub struct HagakiSpec<'a> {
     pub settings: &'a PostcardSettings,
     pub text: Option<&'a PostcardText>,
     pub paper: BorderColor,
+    /// The message to set on the writing half (a landscape card whose photo fills its half has
+    /// no band under it; Japan Post lets a message share the address side, §23).
+    pub message: Option<&'a str>,
 }
 
 /// The stamp box of a はがき whose writing half is `card`.
@@ -242,6 +245,34 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
         }
     }
 
+    // The message, when the photo has no band for it: top to bottom, small, between the stamp
+    // box and the name's column (owner, 2026-11-15: "the upright card still has room").
+    if let Some(message) = spec.message.filter(|m| !m.trim().is_empty()) {
+        let small = em * 0.8;
+        let has_name = to.as_ref().is_some_and(|a| !a.name.trim().is_empty());
+        let name_left = card.x + card.width / 2.0 + 4.0 - em * NAME_SCALE / 2.0;
+        let address_left = right - 3.0 * em * 1.3;
+        let col_right = if has_name { name_left } else { address_left } - 2.0;
+        let col_left = stamp.x + stamp.width + 3.0;
+        let step = small * 1.3;
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let columns = ((col_right - col_left) / step).floor().max(0.0) as usize;
+        if columns > 0 {
+            let set = vertical::set(
+                face,
+                message,
+                mm(small),
+                mm(col_right),
+                mm(top),
+                mm(bottom - top),
+                mm(step),
+                columns,
+                0,
+            );
+            vertical::draw(canvas, face, &set, mm(small), text_ink);
+        }
+    }
+
     // The sender down the left, under the stamp box, when its switch is on.
     if settings.sender_on
         && let Some(from) = settings.sender.as_ref().filter(|a| !a.is_blank())
@@ -336,14 +367,27 @@ fn draw_lines_across(
 ) -> f32 {
     let mut y = top;
     for paragraph in text.split('\n') {
-        // Each line measured: Latin breaks between words, Japanese between characters.
-        for (i, line) in vertical::wrap_across(face, paragraph, em, width, em)
-            .iter()
-            .enumerate()
-        {
+        // Each line measured: Latin breaks between words, Japanese between characters. A line
+        // that would leave a character or two alone below (千葉県松戸市松 / 戸) is set a little
+        // smaller to keep it whole, down to 80 %, else broken into even lines.
+        let total: f32 = paragraph.chars().map(|c| face.advance(c, em)).sum();
+        let mut lines = vertical::wrap_across(face, paragraph, em, width, em);
+        let mut size = em;
+        if lines.len() > 1 {
+            let shrunk = em * width / total.max(1.0);
+            if shrunk >= em * 0.8 {
+                size = shrunk;
+                lines = vec![paragraph.to_owned()];
+            } else {
+                #[allow(clippy::cast_precision_loss)]
+                let even = total / lines.len() as f32 + em;
+                lines = vertical::wrap_across(face, paragraph, em, even.min(width), em);
+            }
+        }
+        for (i, line) in lines.iter().enumerate() {
             let indent = if i == 0 { 0.0 } else { em };
-            let (set, _) = vertical::across(face, line, em, left + indent, y, 0.0);
-            vertical::draw(canvas, face, &set, em, ink);
+            let (set, _) = vertical::across(face, line, size, left + indent, y, 0.0);
+            vertical::draw(canvas, face, &set, size, ink);
             y += step;
         }
     }
@@ -406,6 +450,7 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
     let right = bx - HEADING_MM - 3.0;
     let width = right - left;
     let bottom = card.y + card.height - EDGE_MM;
+    let mut message_top = card.y + card.height * 0.45;
     if let Some(to) = &to {
         let mut y = card.y + EDGE_MM + 3.0;
         if let Some(code) = &typed {
@@ -436,6 +481,7 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
             mm(em * 1.4),
             text_ink,
         );
+        message_top = after / density + em;
         let name = to.name.trim();
         if !name.is_empty() {
             let label = if to.latin {
@@ -449,6 +495,31 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
             let x = (mm(left + width / 2.0) - w / 2.0).max(mm(left));
             let (set, _) = vertical::across(face, &label, mm(name_em), x, mm(centre_y), 0.0);
             vertical::draw(canvas, face, &set, mm(name_em), text_ink);
+            message_top = centre_y + name_em * 1.8;
+        }
+    }
+
+    // The message, when the photo has no band for it, in the room left above the sender.
+    let sender_on = settings.sender_on && settings.sender.as_ref().is_some_and(|a| !a.is_blank());
+    let sender_room = if sender_on {
+        3.0 * em * SENDER_SCALE * 1.35
+    } else {
+        0.0
+    };
+    let message_bottom = bottom - sender_room - 2.0;
+    if let Some(message) = spec.message.filter(|m| !m.trim().is_empty()) {
+        let small = em * 0.85;
+        // Under the stamp box: the message spans the text area's width.
+        let mut y = message_top.max(stamp.y + stamp.height + 4.0);
+        'lines: for paragraph in message.lines() {
+            for line in vertical::wrap_across(face, paragraph, mm(small), mm(width), 0.0) {
+                if y + small > message_bottom {
+                    break 'lines;
+                }
+                let (set, _) = vertical::across(face, &line, mm(small), mm(left), mm(y), 0.0);
+                vertical::draw(canvas, face, &set, mm(small), text_ink);
+                y += small * 1.35;
+            }
         }
     }
 
@@ -619,6 +690,7 @@ mod tests {
                 settings,
                 text,
                 paper: BorderColor::White,
+                message: None,
             },
         );
         canvas
@@ -838,6 +910,7 @@ mod tests {
                 settings,
                 text,
                 paper: BorderColor::White,
+                message: None,
             },
         );
         (canvas, half)
@@ -906,5 +979,91 @@ mod tests {
             latin_card.data, kanji_card.data,
             "the switch changes the print"
         );
+    }
+
+    #[test]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    fn fr_130_a_full_bleed_landscape_card_sets_its_message_on_the_writing_half() {
+        let half = RectMm {
+            x: 0.0,
+            y: 0.0,
+            width: 74.0,
+            height: 100.0,
+        };
+        let draw_with = |message: Option<&str>| {
+            let (w, h) = ((74.0 * DENSITY) as u32, (100.0 * DENSITY) as u32);
+            let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])
+                .unwrap_or_else(|| RgbImage::new(1, 1));
+            draw_landscape(
+                &mut canvas,
+                DENSITY,
+                &HagakiSpec {
+                    card: half,
+                    settings: &PostcardSettings::default(),
+                    text: Some(&kamakura()),
+                    paper: BorderColor::White,
+                    message,
+                },
+            );
+            canvas
+        };
+        let without = draw_with(None);
+        let with = draw_with(Some("Xin chào はがき、鎌倉より"));
+        let lower = RectMm {
+            x: 3.0,
+            y: 40.0,
+            width: 50.0,
+            height: 55.0,
+        };
+        assert!(inked(&with, lower, dark) > inked(&without, lower, dark) + 200);
+    }
+
+    #[test]
+    fn fr_130_an_address_line_never_leaves_a_character_alone() {
+        // 千葉県松戸市松戸 a little too wide for its line: set smaller on one line, not 戸 alone.
+        let Some(face) = vertical::KLEE.as_ref() else {
+            return;
+        };
+        let em = 50.0;
+        let text = "千葉県松戸市松戸";
+        let width = em * 7.6;
+        let lines = vertical::wrap_across(face, text, em, width, em);
+        assert_eq!(lines.len(), 2, "it would wrap at this size");
+        let total: f32 = text.chars().map(|c| face.advance(c, em)).sum();
+        assert!(
+            em * width / total >= em * 0.8,
+            "so draw_lines_across sets it on one line"
+        );
+    }
+
+    #[test]
+    fn fr_130_a_full_bleed_upright_card_sets_its_message_top_to_bottom() {
+        let draw_with = |message: Option<&str>| {
+            let mut canvas = blank();
+            draw_upright(
+                &mut canvas,
+                DENSITY,
+                &HagakiSpec {
+                    card: HALF,
+                    settings: &PostcardSettings::default(),
+                    text: Some(&kamakura()),
+                    paper: BorderColor::White,
+                    message,
+                },
+            );
+            canvas
+        };
+        let between = RectMm {
+            x: 28.0,
+            y: 22.0,
+            width: 18.0,
+            height: 48.0,
+        };
+        let without = draw_with(None);
+        let with = draw_with(Some("鎌倉の抹茶ソフト、美味しかった！また行こうね。"));
+        assert!(inked(&with, between, dark) > inked(&without, between, dark) + 300);
+        // The stamp box stays clear.
+        let s = stamp_box(HALF);
+        assert_eq!(inked(&with, s, dark), inked(&without, s, dark));
     }
 }

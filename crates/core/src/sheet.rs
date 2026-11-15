@@ -822,6 +822,12 @@ fn draw_card(
     card_font: Option<&ab_glyph::FontArc>,
 ) {
     let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
+    // No band under a full-bleed photo: the card sets its message on the writing half.
+    let message_here = sheet
+        .band
+        .is_none()
+        .then(|| text.map(|t| t.message.as_str()))
+        .flatten();
     if let Some(card) = sheet.card {
         if japan && !sheet.side_by_side {
             crate::hagaki::draw_upright(
@@ -832,6 +838,7 @@ fn draw_card(
                     settings: &settings.collage.postcard,
                     text,
                     paper: settings.border_color,
+                    message: message_here,
                 },
             );
         } else if settings.collage.postcard.card == crate::settings::PostcardDestination::Korea {
@@ -844,6 +851,8 @@ fn draw_card(
                     text,
                     paper: settings.border_color,
                     zone: sheet.postal,
+                    // A landscape card whose photo fills its half: the message on this one.
+                    message: message_here,
                 },
             );
         } else if japan {
@@ -855,6 +864,7 @@ fn draw_card(
                     settings: &settings.collage.postcard,
                     text,
                     paper: settings.border_color,
+                    message: message_here,
                 },
             );
         } else {

@@ -1001,7 +1001,6 @@
     },
     "sender": "差出人",
     "senderHint": "すべてのはがきに同じ差出人。",
-    "messageNeedsBorder": "メッセージは枠のある写真の下に印刷されます。",
     "fontJapan": "Klee One で印刷します。",
     "nanumPenHint": "細いペン字",
     "gaeguHint": "丸みのある手書き"
