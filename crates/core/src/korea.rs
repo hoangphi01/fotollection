@@ -76,11 +76,13 @@ const RULE: [u8; 3] = [154, 154, 154];
 // measured in Chromium in Nanum Pen (LESSONS 2026-11-15: a layout that has a board takes the
 // board's numbers). Ems scale with the text size; the board's is 17 px.
 
-/// 「우 편 엽 서」: em 2.25 mm (9 px), 1.25 mm between characters (5 px), centred between
-/// 2.5 mm into the half and the stamp box's left.
-const HEADING_MM: f32 = 2.25;
-const HEADING_TRACK_MM: f32 = 1.25;
-const HEADING_TOP_MM: f32 = 1.75;
+/// 「우 편 엽 서」, centred between 2.5 mm into the half and the stamp box's left: em 4.2 mm,
+/// 0.8 mm between characters, its letters about 3 mm tall as 「郵便はがき」's. The board's
+/// 2.25 mm was drawn in a sans; Nanum Pen's letters fill less of their em and read too small
+/// on the card (owner, 2026-11-15).
+const HEADING_MM: f32 = 4.2;
+const HEADING_TRACK_MM: f32 = 0.8;
+const HEADING_TOP_MM: f32 = 1.0;
 /// 보내는 사람, 받는 사람.
 const LABEL_MM: f32 = 2.2;
 /// The sender: from 4 mm into the half, top 7.5 mm, 42 mm wide (312, 30, 168 px); its name
