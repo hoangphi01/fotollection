@@ -146,6 +146,9 @@ fn build_bundle(state: &AppState, base: &Path) -> Result<Bundle, IpcError> {
         ui: fotollection_core::settings::UiSettings::default(),
         recent_addresses: Vec::new(),
         looks: Vec::new(),
+        // The address book is this machine's, never a project's (FR-133).
+        saved_addresses: Vec::new(),
+        recent_recipients: Vec::new(),
     };
     settings.fonts = bundle::used_fonts(&settings);
     let mut font_files = std::collections::BTreeMap::new();
@@ -358,6 +361,9 @@ fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
         ui,
         recent_addresses: Vec::new(),
         looks: Vec::new(),
+        // The address book is this machine's, never a project's (FR-133).
+        saved_addresses: Vec::new(),
+        recent_recipients: Vec::new(),
     };
     let font_path = |f: &UserFont| {
         state

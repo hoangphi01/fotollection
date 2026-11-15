@@ -516,6 +516,12 @@
     "postcard": {
       "no_text": "This postcard has no text to use"
     },
+    "address_book": {
+      "full": "The address book is full: remove a recipient you no longer need, then save again",
+      "label_invalid": "Give the recipient a name of up to 60 characters",
+      "address_invalid": "Fill in the address before saving it",
+      "unknown": "This recipient is no longer in the address book"
+    },
     "photo": {
       "invalid_rating": "Ratings are 0 to 5 stars",
       "invalid_selection": "Select between 1 and 10,000 photos",

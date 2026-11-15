@@ -421,6 +421,34 @@ export const commands = {
 	rememberPostcardAddress: (address: string) => typedError<null, IpcError>(__TAURI_INVOKE("remember_postcard_address", { address })),
 	/**  Forgets one remembered address (FR-077); returns the list left. */
 	forgetAddress: (address: string) => typedError<string[], IpcError>(__TAURI_INVOKE("forget_address", { address })),
+	/**
+	 *  How many other postcards have no recipient for `country`, and how many another one: the
+	 *  counts on "Use for N postcards" under a Japanese or Korean recipient (FR-133).
+	 */
+	postcardRecipientGaps: (filter: CullFilter, source: PhotoId, country: Country, ticked: PhotoId[]) => typedError<TextGaps, IpcError>(__TAURI_INVOKE("postcard_recipient_gaps", { filter, source, country, ticked })),
+	/**
+	 *  This card's Japanese or Korean recipient on the other postcards (FR-133, `AddAssist` 1.1):
+	 *  those without one, or with `overwrite` every other one too. One undoable step; returns
+	 *  how many changed. The recipient joins the recent ones.
+	 */
+	applyPostcardRecipient: (filter: CullFilter, source: PhotoId, country: Country, overwrite: boolean, ticked: PhotoId[]) => typedError<number, IpcError>(__TAURI_INVOKE("apply_postcard_recipient", { filter, source, country, overwrite, ticked })),
+	/**
+	 *  Remembers a Japanese or Korean recipient once its block is left (FR-133), as a European
+	 *  address is: the drafts saved while it was typed never join the list.
+	 */
+	rememberRecipient: (address: Address) => typedError<null, IpcError>(__TAURI_INVOKE("remember_recipient", { address })),
+	addressBook: () => typedError<AddressBook, IpcError>(__TAURI_INVOKE("address_book")),
+	/**
+	 *  Saves a recipient under a name (FR-133); the same recipient saved again takes the new
+	 *  name. Returns the book.
+	 */
+	saveAddress: (label: string, recipient: Recipient) => typedError<AddressBook, IpcError>(__TAURI_INVOKE("save_address", { label, recipient })),
+	/**  Gives a saved recipient a new name (FR-133). Returns the book. */
+	renameSavedAddress: (id: number, label: string) => typedError<AddressBook, IpcError>(__TAURI_INVOKE("rename_saved_address", { id, label })),
+	/**  Takes a recipient out of the book (FR-133). Returns the book. */
+	forgetSavedAddress: (id: number) => typedError<AddressBook, IpcError>(__TAURI_INVOKE("forget_saved_address", { id })),
+	/**  Forgets one recent Japanese or Korean recipient (FR-133). Returns the book. */
+	forgetRecentRecipient: (address: Address) => typedError<AddressBook, IpcError>(__TAURI_INVOKE("forget_recent_recipient", { address })),
 	/**  The countries `AddAssist` has data for, with the data's date. */
 	addassistCountries: () => typedError<CountryInfo[], IpcError>(__TAURI_INVOKE("addassist_countries")),
 	/**  Every place a full postal code covers: one, several to pick from, or none. */
@@ -857,6 +885,14 @@ export type Address = {
 	honorific?: boolean,
 	/**  Printed in Latin letters (romaji, Revised Romanization) instead of kanji or Hangul. */
 	latin?: boolean,
+};
+
+/**  The address book and the recent recipients, as the Recipient block offers them (FR-133). */
+export type AddressBook = {
+	/**  Saved under a name, oldest first. */
+	saved: SavedAddress[],
+	/**  The Japanese and Korean recipients last used, newest first. */
+	recent: Address[],
 };
 
 /**  The sliders, each 0 when unset (FR-079). Signed ones run −100…100, the others 0…100. */
@@ -2268,6 +2304,13 @@ export type Reason =
 /**  Fewer blown highlights, as shares of the image. */
 { kind: "fewerHighlights"; best: number | null; runnerUp: number | null } | { kind: "lessNoise" };
 
+/**  A card's recipient: the European address as typed, or a Japanese or Korean one. */
+export type Recipient = 
+/**  A European card's address, as typed (up to 5 lines). */
+{ kind: "free"; value: string } | 
+/**  A Japanese or Korean card's address, as `AddAssist` holds it. */
+{ kind: "assisted"; value: Address };
+
 export type RejectedSummary = {
 	fileName: string,
 	code: string,
@@ -2317,6 +2360,13 @@ export type RevisionChanged = {
 	revision: number,
 	canUndo: boolean,
 	canRedo: boolean,
+};
+
+/**  A recipient saved under a name. */
+export type SavedAddress = {
+	id: number,
+	label: string,
+	recipient: Recipient,
 };
 
 /**  The colour filter in front of a RAW's sensor. */

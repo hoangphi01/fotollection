@@ -44,7 +44,10 @@ pub const FORMAT: &str = "fotollection-settings";
 /// `collage.postcard.destination` (`europe`, `japan`, `korea`), `senderOn`, `senders` (one
 /// sender a country) and `assisted`, absent before (Europe, no sender, assisted). A new value needs a new
 /// version once a version shipped: v0.14.1 reads v19, and meets a v20 file as a newer one.
-pub const SCHEMA_VERSION: u32 = 20;
+/// v21 (FR-133, `AddAssist` 1.1): `saved_addresses`, the postcard address book, and
+/// `recent_recipients`, the Japanese and Korean recipients last used, each absent before (none);
+/// each entry read on its own, a bad one dropped alone.
+pub const SCHEMA_VERSION: u32 = 21;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -65,6 +68,25 @@ pub struct StoredSettings {
     /// The looks saved with *Save as look* (FR-079), oldest first. This machine's own: a
     /// project keeps each photo's values, never this list.
     pub looks: Vec<crate::look_library::SavedLook>,
+    /// The postcard address book (FR-133, `AddAssist` 1.1), oldest first. This machine's own:
+    /// never in a project; in a `.fotosettings` only when the user ticks it (FR-082).
+    pub saved_addresses: Vec<crate::addassist::book::SavedAddress>,
+    /// The Japanese and Korean recipients last used, newest first, a few per country (FR-133).
+    pub recent_recipients: Vec<crate::addassist::Address>,
+}
+
+/// A list read entry by entry: one that does not parse is dropped alone, never the list or the
+/// file (LESSONS, NFR-011).
+fn each_entry<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: serde::de::DeserializeOwned,
+{
+    let values = Vec::<serde_json::Value>::deserialize(deserializer)?;
+    Ok(values
+        .into_iter()
+        .filter_map(|v| serde_json::from_value(v).ok())
+        .collect())
 }
 
 #[derive(Serialize, Deserialize)]
@@ -88,6 +110,12 @@ struct FileV4 {
     /// Absent before v18: none (FR-079).
     #[serde(default)]
     looks: Vec<crate::look_library::SavedLook>,
+    /// Absent before v21: none (FR-133).
+    #[serde(default, deserialize_with = "each_entry")]
+    saved_addresses: Vec<crate::addassist::book::SavedAddress>,
+    /// Absent before v21: none (FR-133).
+    #[serde(default, deserialize_with = "each_entry")]
+    recent_recipients: Vec<crate::addassist::Address>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -117,7 +145,7 @@ pub struct Recovered {
 }
 
 /// The parts of the file, each read and checked on its own when the whole fails.
-const PARTS: [&str; 7] = [
+const PARTS: [&str; 9] = [
     "render",
     "frame",
     "cameras",
@@ -125,6 +153,8 @@ const PARTS: [&str; 7] = [
     "ui",
     "recent_addresses",
     "looks",
+    "saved_addresses",
+    "recent_recipients",
 ];
 
 /// Just enough of the file to check its format and version.
@@ -224,6 +254,8 @@ fn empty_file() -> FileV4 {
         ui: d.ui,
         recent_addresses: d.recent_addresses,
         looks: d.looks,
+        saved_addresses: d.saved_addresses,
+        recent_recipients: d.recent_recipients,
     }
 }
 
@@ -312,6 +344,8 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
         ui: file.ui.sanitized(),
         recent_addresses: crate::settings::sanitized_addresses(&file.recent_addresses),
         looks: crate::look_library::sanitized_saved(&file.looks),
+        saved_addresses: crate::addassist::book::sanitized_book(&file.saved_addresses),
+        recent_recipients: crate::addassist::book::sanitized_recent(&file.recent_recipients),
     })
 }
 
@@ -349,6 +383,8 @@ pub fn to_bytes(settings: &StoredSettings) -> std::io::Result<Vec<u8>> {
         ui: settings.ui.clone(),
         recent_addresses: settings.recent_addresses.clone(),
         looks: settings.looks.clone(),
+        saved_addresses: settings.saved_addresses.clone(),
+        recent_recipients: settings.recent_recipients.clone(),
     };
     serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)
 }
@@ -1032,6 +1068,35 @@ mod tests {
 
     /// FR-128: 日本語 is kept as `"ja"` and 한국어 as `"ko"`, in a v20 file, and read back; a v19
     /// file still loads.
+    /// FR-133, `AddAssist` 1.1: a v21 file keeps its address book and its recent Japanese and
+    /// Korean recipients; an entry that does not parse or breaks a limit is dropped alone, and
+    /// a v20 file loads with an empty book.
+    #[test]
+    fn fr_133_v21_files_keep_the_book_and_drop_bad_entries_alone() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v21.json"))?;
+        let Loaded::Ok(read) = load(&path) else {
+            panic!("v21 should load");
+        };
+        let labels: Vec<&str> = read
+            .saved_addresses
+            .iter()
+            .map(|s| s.label.as_str())
+            .collect();
+        assert_eq!(labels, ["Tokyo Tower", "Museum"]);
+        assert_eq!(read.recent_recipients.len(), 2);
+        assert_eq!(read.recent_recipients[0].name, "김민준");
+        save(&path, &read)?;
+        assert_eq!(load(&path), Loaded::Ok(read));
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v20.json"))?;
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("a v20 file still loads");
+        };
+        assert!(old.saved_addresses.is_empty() && old.recent_recipients.is_empty());
+        Ok(())
+    }
+
     #[test]
     fn fr_128_japanese_survives_a_round_trip() -> std::io::Result<()> {
         let dir = tempfile::tempdir()?;
@@ -1059,7 +1124,10 @@ mod tests {
         );
         save(&path, &read)?;
         let text = std::fs::read_to_string(&path)?;
-        assert!(text.contains(r#""language": "ja""#) && text.contains(r#""schema_version": 20"#));
+        assert!(
+            text.contains(r#""language": "ja""#)
+                && text.contains(&format!(r#""schema_version": {SCHEMA_VERSION}"#))
+        );
         assert_eq!(load(&path), Loaded::Ok(read));
         let korean = include_str!("../tests/fixtures/settings/v20.json")
             .replace(r#""language": "ja""#, r#""language": "ko""#);

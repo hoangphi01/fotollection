@@ -110,6 +110,14 @@ pub struct Analyses {
     pub running: Option<u32>,
 }
 
+/// The postcard address book and the recent Japanese and Korean recipients (FR-133), kept
+/// under one lock: a save reads both at once.
+#[derive(Debug, Clone, Default)]
+pub struct Recipients {
+    pub saved: Vec<fotollection_core::addassist::book::SavedAddress>,
+    pub recent: Vec<fotollection_core::addassist::Address>,
+}
+
 pub struct AppState {
     pub library: RwLock<Library>,
     /// Current settings and a revision that bumps on every change (for preview URLs): the
@@ -124,6 +132,9 @@ pub struct AppState {
     pub ui: RwLock<UiSettings>,
     /// Addresses last typed on postcards, newest first (FR-077); this machine's only.
     pub recent_addresses: Mutex<Vec<String>>,
+    /// The postcard address book and the Japanese and Korean recipients last used (FR-133,
+    /// `AddAssist` 1.1); this machine's only.
+    pub recipients: Mutex<Recipients>,
     /// The looks saved with *Save as look* (FR-079), oldest first; this machine's only.
     pub saved_looks: Mutex<Vec<fotollection_core::look_library::SavedLook>>,
     /// Chosen through the Rust-side dialog only, never sent by the webview (SECURITY.md §2).
@@ -328,6 +339,10 @@ impl AppState {
             }),
             ui: RwLock::new(stored.ui.clone()),
             recent_addresses: Mutex::new(stored.recent_addresses),
+            recipients: Mutex::new(Recipients {
+                saved: stored.saved_addresses,
+                recent: stored.recent_recipients,
+            }),
             saved_looks: Mutex::new(stored.looks),
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
@@ -511,6 +526,9 @@ impl AppState {
         let Ok(looks) = self.saved_looks.lock().map(|l| l.clone()) else {
             return None;
         };
+        let Ok(recipients) = self.recipients.lock().map(|r| r.clone()) else {
+            return None;
+        };
         // The machine's defaults, never the open document's; its custom sizes join them, so
         // a size made in a project is offered in the next one too.
         let Ok((mut default_render, default_frame)) = self.defaults.read().map(|d| d.clone())
@@ -531,6 +549,8 @@ impl AppState {
             ui: ui.clone(),
             recent_addresses,
             looks,
+            saved_addresses: recipients.saved,
+            recent_recipients: recipients.recent,
         };
         drop((render, frame, ui));
         Some(stored)

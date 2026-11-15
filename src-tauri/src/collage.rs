@@ -310,6 +310,242 @@ pub fn forget_address(
     Ok(left)
 }
 
+/// The recipient of a photo's card for `country` (FR-130, FR-132), if it has one.
+fn recipient_of(
+    library: &Library,
+    id: PhotoId,
+    country: fotollection_core::addassist::Country,
+) -> Option<fotollection_core::addassist::Address> {
+    library
+        .record(id)
+        .and_then(|r| r.edits.postcard)
+        .and_then(|t| t.recipient(country).cloned())
+}
+
+/// The source card's recipient for `country`, and the other cards it goes to: those without
+/// one, or with `overwrite` every other one with another (FR-133).
+fn recipient_targets(
+    library: &Library,
+    filter: &CullFilter,
+    source: PhotoId,
+    country: fotollection_core::addassist::Country,
+    overwrite: bool,
+    ticked: &[PhotoId],
+) -> (Option<fotollection_core::addassist::Address>, Vec<PhotoId>) {
+    let recipient = recipient_of(library, source, country);
+    let ids = other_cards(library, filter, source, ticked)
+        .into_iter()
+        .filter(|id| {
+            let other = recipient_of(library, *id, country);
+            other != recipient && (overwrite || other.is_none())
+        })
+        .collect();
+    (recipient, ids)
+}
+
+/// How many other postcards have no recipient for `country`, and how many another one: the
+/// counts on "Use for N postcards" under a Japanese or Korean recipient (FR-133).
+#[tauri::command]
+#[specta::specta]
+pub fn postcard_recipient_gaps(
+    state: State<'_, AppState>,
+    filter: CullFilter,
+    source: PhotoId,
+    country: fotollection_core::addassist::Country,
+    ticked: Vec<PhotoId>,
+) -> Result<TextGaps, IpcError> {
+    crate::commands::check_ticked(&ticked)?;
+    if !postcards(&state) {
+        return Ok(TextGaps::default());
+    }
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    let Some(recipient) = recipient_of(&library, source, country) else {
+        return Ok(TextGaps::default());
+    };
+    let mut gaps = TextGaps::default();
+    for id in other_cards(&library, &filter, source, &ticked) {
+        match recipient_of(&library, id, country) {
+            None => gaps.blank += 1,
+            Some(other) if other != recipient => gaps.differ += 1,
+            Some(_) => {}
+        }
+    }
+    Ok(gaps)
+}
+
+/// This card's Japanese or Korean recipient on the other postcards (FR-133, `AddAssist` 1.1):
+/// those without one, or with `overwrite` every other one too. One undoable step; returns
+/// how many changed. The recipient joins the recent ones.
+#[tauri::command]
+#[specta::specta]
+pub fn apply_postcard_recipient(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    filter: CullFilter,
+    source: PhotoId,
+    country: fotollection_core::addassist::Country,
+    overwrite: bool,
+    ticked: Vec<PhotoId>,
+) -> Result<u32, IpcError> {
+    crate::commands::check_ticked(&ticked)?;
+    let (recipient, ids) = {
+        let library = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        recipient_targets(&library, &filter, source, country, overwrite, &ticked)
+    };
+    let Some(recipient) = recipient else {
+        return Err(IpcError::new(
+            "postcard.no_text",
+            "This postcard has no recipient to use",
+        ));
+    };
+    if !ids.is_empty() {
+        edit_photos(&app, &state, &ids, |_, e| {
+            let mut text = e.postcard.clone().unwrap_or_default();
+            text.set_recipient(country, Some(recipient.clone()));
+            e.postcard = text.sanitized();
+        })?;
+    }
+    remember_one_recipient(&state, &recipient);
+    Ok(u32::try_from(ids.len()).unwrap_or(u32::MAX))
+}
+
+/// Puts a Japanese or Korean recipient first among those its country offers on the next
+/// cards, and saves it (FR-133). The lock is let go before the settings are written.
+fn remember_one_recipient(state: &AppState, address: &fotollection_core::addassist::Address) {
+    let changed = state.recipients.lock().is_ok_and(|mut r| {
+        let before = r.recent.clone();
+        fotollection_core::addassist::book::remember(&mut r.recent, address);
+        r.recent != before
+    });
+    if changed {
+        state.save_settings();
+    }
+}
+
+fn address_error(e: fotollection_core::addassist::book::BookError) -> IpcError {
+    IpcError::new(e.key(), e.to_string())
+}
+
+/// Remembers a Japanese or Korean recipient once its block is left (FR-133), as a European
+/// address is: the drafts saved while it was typed never join the list.
+#[tauri::command]
+#[specta::specta]
+pub fn remember_recipient(
+    state: State<'_, AppState>,
+    address: fotollection_core::addassist::Address,
+) -> Result<(), IpcError> {
+    if !address.is_valid() {
+        return Err(address_error(
+            fotollection_core::addassist::book::BookError::Address,
+        ));
+    }
+    remember_one_recipient(&state, &address);
+    Ok(())
+}
+
+/// The address book and the recent recipients, as the Recipient block offers them (FR-133).
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct AddressBook {
+    /// Saved under a name, oldest first.
+    pub saved: Vec<fotollection_core::addassist::book::SavedAddress>,
+    /// The Japanese and Korean recipients last used, newest first.
+    pub recent: Vec<fotollection_core::addassist::Address>,
+}
+
+fn address_book_of(state: &AppState) -> Result<AddressBook, IpcError> {
+    state
+        .recipients
+        .lock()
+        .map(|r| AddressBook {
+            saved: r.saved.clone(),
+            recent: r.recent.clone(),
+        })
+        .map_err(|e| IpcError::internal(e.to_string()))
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn address_book(state: State<'_, AppState>) -> Result<AddressBook, IpcError> {
+    address_book_of(&state)
+}
+
+/// Saves a recipient under a name (FR-133); the same recipient saved again takes the new
+/// name. Returns the book.
+#[tauri::command]
+#[specta::specta]
+pub fn save_address(
+    state: State<'_, AppState>,
+    label: String,
+    recipient: fotollection_core::addassist::book::Recipient,
+) -> Result<AddressBook, IpcError> {
+    {
+        let mut r = state
+            .recipients
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        fotollection_core::addassist::book::save(&mut r.saved, &label, &recipient)
+            .map_err(address_error)?;
+    }
+    state.save_settings();
+    address_book_of(&state)
+}
+
+/// Gives a saved recipient a new name (FR-133). Returns the book.
+#[tauri::command]
+#[specta::specta]
+pub fn rename_saved_address(
+    state: State<'_, AppState>,
+    id: u32,
+    label: String,
+) -> Result<AddressBook, IpcError> {
+    {
+        let mut r = state
+            .recipients
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        fotollection_core::addassist::book::rename(&mut r.saved, id, &label)
+            .map_err(address_error)?;
+    }
+    state.save_settings();
+    address_book_of(&state)
+}
+
+/// Takes a recipient out of the book (FR-133). Returns the book.
+#[tauri::command]
+#[specta::specta]
+pub fn forget_saved_address(state: State<'_, AppState>, id: u32) -> Result<AddressBook, IpcError> {
+    {
+        let mut r = state
+            .recipients
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        fotollection_core::addassist::book::forget(&mut r.saved, id).map_err(address_error)?;
+    }
+    state.save_settings();
+    address_book_of(&state)
+}
+
+/// Forgets one recent Japanese or Korean recipient (FR-133). Returns the book.
+#[tauri::command]
+#[specta::specta]
+pub fn forget_recent_recipient(
+    state: State<'_, AppState>,
+    address: fotollection_core::addassist::Address,
+) -> Result<AddressBook, IpcError> {
+    if let Ok(mut r) = state.recipients.lock() {
+        r.recent.retain(|a| *a != address);
+    }
+    state.save_settings();
+    address_book_of(&state)
+}
+
 /// Whether collage sheets are postcards (FR-073): one photo each. Read it before taking the
 /// library lock, so no lock is ever taken while another is held.
 pub fn postcards(state: &AppState) -> bool {
@@ -850,5 +1086,56 @@ mod tests {
         set_part(&mut edits, PostcardPart::Message, "");
         set_part(&mut edits, PostcardPart::Address, "  ");
         assert_eq!(edits.postcard, None);
+    }
+
+    /// FR-133 (`AddAssist` 1.1): a card's Japanese recipient goes to the ticked cards only,
+    /// to those without one unless asked to overwrite, never to the card itself.
+    #[test]
+    fn fr_133_apply_recipient_to_ticked_fills_gaps_only() {
+        use fotollection_core::addassist::{Address, Country};
+        use fotollection_core::import::ImportedFile;
+        use fotollection_core::library::{PhotoEdits, PostcardText};
+        use fotollection_core::metadata::PhotoMeta;
+        let mut lib = Library::new();
+        let folder = lib.add_folder(std::path::Path::new("/trip"));
+        let ids: Vec<PhotoId> = (0..4)
+            .filter_map(|n| {
+                let file = ImportedFile {
+                    path: format!("/trip/{n}.jpg").into(),
+                    size: 10,
+                    mtime: n,
+                };
+                lib.push(folder, &file, &PhotoMeta::default())
+            })
+            .collect();
+        assert_eq!(ids.len(), 4);
+        let mut tower = Address::new(Country::Jp);
+        tower.code = "1050011".into();
+        tower.name = "山田太郎".into();
+        let mut other = tower.clone();
+        other.name = "鈴木花子".into();
+        let with = |a: &Address| PhotoEdits {
+            postcard: Some(PostcardText {
+                recipients: vec![a.clone()],
+                ..PostcardText::default()
+            }),
+            ..PhotoEdits::default()
+        };
+        lib.set_edits(ids[0], with(&tower));
+        lib.set_edits(ids[2], with(&other));
+        let filter = CullFilter::default();
+        // Nothing ticked: every other card shown; card 2 keeps its own recipient.
+        let (found, targets) = recipient_targets(&lib, &filter, ids[0], Country::Jp, false, &[]);
+        assert_eq!(found, Some(tower.clone()));
+        assert_eq!(targets, vec![ids[1], ids[3]]);
+        // Overwrite takes card 2 too.
+        let (_, targets) = recipient_targets(&lib, &filter, ids[0], Country::Jp, true, &[]);
+        assert_eq!(targets, vec![ids[1], ids[2], ids[3]]);
+        // Ticked: only those.
+        let (_, targets) = recipient_targets(&lib, &filter, ids[0], Country::Jp, true, &[ids[2]]);
+        assert_eq!(targets, vec![ids[2]]);
+        // No Korean recipient on the source: nothing to give.
+        let (found, _) = recipient_targets(&lib, &filter, ids[0], Country::Kr, false, &[]);
+        assert_eq!(found, None);
     }
 }

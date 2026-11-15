@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 mod address;
+pub mod book;
 mod jp;
 mod kr;
 pub mod romaji;
@@ -16,8 +17,9 @@ pub mod romaji;
 pub use address::{Address, MAX_FIELD_CHARS, MAX_LINE_CHARS};
 
 /// `AddAssist`'s version, shown with its countries' data dates and kept with an address it
-/// filled.
-pub const VERSION: &str = "1.0";
+/// filled. 1.1 (owner, 2026-11-15) adds the address book and the recipients a machine
+/// remembers ([`book`]); the post's data and the interface are 1.0's.
+pub const VERSION: &str = "1.1";
 
 /// The longest query or code accepted from the interface.
 pub const MAX_QUERY_CHARS: usize = 64;

@@ -516,6 +516,12 @@
     "postcard": {
       "no_text": "Diese Postkarte hat keinen Text zum Übernehmen"
     },
+    "address_book": {
+      "full": "Das Adressbuch ist voll: Entferne einen Empfänger, den du nicht mehr brauchst, und speichere erneut",
+      "label_invalid": "Gib dem Empfänger einen Namen mit bis zu 60 Zeichen",
+      "address_invalid": "Fülle die Adresse aus, bevor du sie speicherst",
+      "unknown": "Dieser Empfänger ist nicht mehr im Adressbuch"
+    },
     "photo": {
       "invalid_rating": "Bewertungen gehen von 0 bis 5 Sternen",
       "invalid_selection": "Wähl zwischen 1 und 10.000 Fotos aus",

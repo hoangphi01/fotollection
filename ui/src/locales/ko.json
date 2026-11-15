@@ -516,6 +516,12 @@
     "postcard": {
       "no_text": "이 엽서에는 쓸 텍스트가 없습니다"
     },
+    "address_book": {
+      "full": "주소록이 가득 찼어요. 쓰지 않는 받는 사람을 지운 뒤 다시 저장해 주세요",
+      "label_invalid": "받는 사람 이름은 60자 이내로 입력해 주세요",
+      "address_invalid": "저장하기 전에 주소를 입력해 주세요",
+      "unknown": "이 받는 사람은 주소록에 없어요"
+    },
     "photo": {
       "invalid_rating": "별점은 0–5개입니다",
       "invalid_selection": "사진을 1–10,000장 고르세요",

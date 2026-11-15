@@ -89,7 +89,9 @@ impl SettingsBundle {
             logos: count(self.logos.len()),
             cameras: count(s.cameras.len()),
             sizes: count(s.render.custom_sizes.len()),
-            addresses: count(s.recent_addresses.len()),
+            addresses: count(
+                s.recent_addresses.len() + s.saved_addresses.len() + s.recent_recipients.len(),
+            ),
         }
     }
 }
@@ -105,13 +107,24 @@ pub fn used_luts(settings: &StoredSettings) -> std::collections::BTreeSet<String
         .collect()
 }
 
-/// The file's bytes; the recent addresses stay out unless `include_addresses` (owner: a
-/// box ticked at export, off by default, since they are other people's).
+/// The file's bytes; the recent addresses, the address book and the recent recipients
+/// (FR-133) stay out unless `include_addresses` (owner: a box ticked at export, off by
+/// default, since they are other people's).
 pub fn to_bytes(bundle: &SettingsBundle, include_addresses: bool) -> Result<Vec<u8>, BundleError> {
     let write_err = |e: &dyn std::fmt::Display| BundleError::Write(e.to_string());
     let settings = StoredSettings {
         recent_addresses: if include_addresses {
             bundle.settings.recent_addresses.clone()
+        } else {
+            Vec::new()
+        },
+        saved_addresses: if include_addresses {
+            bundle.settings.saved_addresses.clone()
+        } else {
+            Vec::new()
+        },
+        recent_recipients: if include_addresses {
+            bundle.settings.recent_recipients.clone()
         } else {
             Vec::new()
         },
@@ -217,6 +230,24 @@ pub fn apply(
             let mut addresses = local.recent_addresses.clone();
             addresses.extend(theirs.recent_addresses.iter().cloned());
             local.recent_addresses = crate::settings::sanitized_addresses(&addresses);
+            // Their book joins this one: a recipient both have keeps this machine's name, and
+            // each joins with an id of this book (FR-133); a full book takes no more.
+            for saved in &theirs.saved_addresses {
+                if !local
+                    .saved_addresses
+                    .iter()
+                    .any(|s| s.recipient == saved.recipient)
+                {
+                    let _ = crate::addassist::book::save(
+                        &mut local.saved_addresses,
+                        &saved.label,
+                        &saved.recipient,
+                    );
+                }
+            }
+            let mut recipients = local.recent_recipients.clone();
+            recipients.extend(theirs.recent_recipients.iter().cloned());
+            local.recent_recipients = crate::addassist::book::sanitized_recent(&recipients);
         }
         ImportMode::Replace => {
             // The folder to export into is a path of the other computer: this one's stays.
@@ -231,6 +262,14 @@ pub fn apply(
             local.looks.clone_from(&theirs.looks);
             if !theirs.recent_addresses.is_empty() {
                 local.recent_addresses.clone_from(&theirs.recent_addresses);
+            }
+            if !theirs.saved_addresses.is_empty() {
+                local.saved_addresses.clone_from(&theirs.saved_addresses);
+            }
+            if !theirs.recent_recipients.is_empty() {
+                local
+                    .recent_recipients
+                    .clone_from(&theirs.recent_recipients);
             }
             // A camera both know takes the file's profile; its logo stays this machine's.
             for camera in &theirs.cameras {
@@ -357,6 +396,42 @@ mod tests {
         };
         assert_eq!(fresh.ui.language, crate::settings::Language::Vi);
         assert_eq!(fresh.looks, incoming.settings.looks);
+    }
+
+    /// FR-133 (`AddAssist` 1.1): the address book and the recent recipients travel only when
+    /// the box is ticked, and a merge adds a recipient once, keeping this machine's name.
+    #[test]
+    fn fr_133_bundle_carries_book_only_when_ticked() {
+        use crate::addassist::book::{Recipient, save};
+        let mut bundle = sample();
+        let museum = Recipient::Free("Národní muzeum\n110 00 Praha 1".into());
+        assert!(save(&mut bundle.settings.saved_addresses, "Museum", &museum).is_ok());
+        let mut seoul = crate::addassist::Address::new(crate::addassist::Country::Kr);
+        seoul.code = "03172".into();
+        seoul.name = "김민준".into();
+        bundle.settings.recent_recipients.push(seoul);
+        let Ok(Ok(without)) = to_bytes(&bundle, false).map(|b| from_bytes(&b)) else {
+            panic!("reads back without addresses");
+        };
+        assert!(
+            without.settings.saved_addresses.is_empty()
+                && without.settings.recent_recipients.is_empty()
+        );
+        let Ok(Ok(with)) = to_bytes(&bundle, true).map(|b| from_bytes(&b)) else {
+            panic!("reads back with addresses");
+        };
+        assert_eq!(with.settings.saved_addresses.len(), 1);
+        assert_eq!(with.settings.recent_recipients.len(), 1);
+        let mut local = StoredSettings::default();
+        assert!(save(&mut local.saved_addresses, "My museum", &museum).is_ok());
+        for _ in 0..2 {
+            let Ok(_) = apply(&mut local, &with, ImportMode::Merge, &|_| None) else {
+                panic!("merges");
+            };
+        }
+        assert_eq!(local.saved_addresses.len(), 1);
+        assert_eq!(local.saved_addresses[0].label, "My museum");
+        assert_eq!(local.recent_recipients.len(), 1);
     }
 
     /// The LUTs a machine's settings use: its saved looks' and its default look's.

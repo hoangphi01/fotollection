@@ -179,7 +179,12 @@ pub async fn data_usage(app: AppHandle) -> Result<Vec<StoreUsage>, IpcError> {
             row(DataKind::Logos, folder_usage(&state.logo_dir), 0),
             row(
                 DataKind::Addresses,
-                (0, n(stored.recent_addresses.len())),
+                (
+                    0,
+                    n(stored.recent_addresses.len()
+                        + stored.saved_addresses.len()
+                        + stored.recent_recipients.len()),
+                ),
                 0,
             ),
             row(
@@ -439,6 +444,10 @@ fn install(
     if let Ok(mut addresses) = state.recent_addresses.lock() {
         *addresses = local.recent_addresses;
     }
+    if let Ok(mut recipients) = state.recipients.lock() {
+        recipients.saved = local.saved_addresses;
+        recipients.recent = local.recent_recipients;
+    }
     // The imported language may make another card (FR-130).
     state.resolve_card();
     state.save_settings();
@@ -471,6 +480,10 @@ pub fn forget_all_addresses(state: State<'_, AppState>) {
 fn forget_all_addresses_on(state: &AppState) {
     if let Ok(mut addresses) = state.recent_addresses.lock() {
         addresses.clear();
+    }
+    // The recent recipients go too; the address book is the user's own list (FR-133).
+    if let Ok(mut recipients) = state.recipients.lock() {
+        recipients.recent.clear();
     }
     state.save_settings();
 }
@@ -538,6 +551,8 @@ fn erase_data_on(state: &AppState) -> Result<(), IpcError> {
     local.looks.clear();
     local.fonts.clear();
     local.recent_addresses.clear();
+    local.saved_addresses.clear();
+    local.recent_recipients.clear();
     local.frame.font = None;
     local.render.collage.postcard.font = None;
     if let Ok(mut frame) = state.frame.write() {

@@ -10,6 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: **AddAssist 1.1**, an address book for postcards, and one recipient for many cards.
+- UI update: a **shorter website** that opens on a finished postcard, with a Features page.
+
+### Added
+
+- **AddAssist 1.1:** an address book for postcards. Save a recipient under a name and pick it again on any card; the Japanese and Korean recipients last used are offered too. A card's recipient can go to the ticked postcards, or to every one shown, in one step that one undo takes back.
+
 ### Fixed
 
 - The example in **Line under the date** is the app's language's own (KYOTO 2026, SEOUL 2026, SOMMER IN BERLIN…), no longer Vietnamese words with an English "e.g." in Korean.
@@ -29,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **日本語 and 한국어**, the whole app in Japanese and Korean (FR-128): the interface, the macOS menu in Apple's words, every error message and the short manual, with Adobe's names for the sliders; a Japanese and a Korean face (Noto Sans JP and KR, 212 and 101 KB) come with the app, so the words fit the same on every computer. Settings → General → Language.
+- **日本語 and 한국어**, the whole app in Japanese and Korean (FR-128): the interface, the macOS menu in Apple's words, every error message and the short manual, with Adobe's names for the sliders; a Japanese and a Korean face (Noto Sans JP and KR, 212 and 102 KB) come with the app, so the words fit the same on every computer. Settings → General → Language.
 - **Japanese and Korean postcards** (FR-130, FR-132): in 日本語 every postcard is a はがき (100 × 148 mm), written top to bottom upright or across in landscape, with the stamp box, the seven red postal-code boxes (a typed code written in them), 様 and 「郵便はがき」; in 한국어 a 우편엽서 on a 4 × 6 print, landscape or upright, with 「우편엽서」, the 우표 box, five code boxes and Korea Post's 17 mm left blank under a line and 「우편물 처리 영역」, in Nanum Pen or Gaegu; both laid out to the posts' own rules, checked by reviewers who knew only those rules. In English and Vietnamese, *Card for* chooses Europe, Japan or Korea. An optional *Sender*, one for each country; the message prints on every card, under the photo or, when longer, in a ruled message box on the address side; Latin letters (a name, a message in English) print in Patrick Hand.
 - **AddAssist** (FR-133): a Japanese or Korean address filled from the post's own data, offline: a postal code, or a search (*kamakura*, かまくら, 鎌倉; *세종대로 175*, which also gives the building's code), every field still editable, and the address printed in Latin letters if you want. Japan Post's postal-code data and Korea's road-name addresses come with the app.
 - **Print sizes of Japan and Korea** (FR-129, FR-132): L判, 2L判, the squares and はがき of Japan's convenience-store kiosks; Korea's 4 × 6, 6 × 8, 8 × 10, 4 × 4 and 2 × 6 in; the size list grouped by market, the interface's first.

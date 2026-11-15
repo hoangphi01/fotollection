@@ -496,6 +496,12 @@
     "postcard": {
       "no_text": "Bưu thiếp này chưa có chữ để dùng"
     },
+    "address_book": {
+      "full": "Sổ địa chỉ đã đầy: hãy xoá một người nhận không còn dùng rồi lưu lại",
+      "label_invalid": "Đặt tên cho người nhận, tối đa 60 ký tự",
+      "address_invalid": "Hãy điền địa chỉ trước khi lưu",
+      "unknown": "Người nhận này không còn trong sổ địa chỉ"
+    },
     "photo": {
       "invalid_rating": "Đánh giá từ 0 đến 5 sao",
       "invalid_selection": "Hãy chọn từ 1 đến 10.000 ảnh",

@@ -516,6 +516,12 @@
     "postcard": {
       "no_text": "Ezen a képeslapon nincs felhasználható szöveg"
     },
+    "address_book": {
+      "full": "A címjegyzék megtelt: törölj egy címzettet, akire már nincs szükség, majd mentsd újra",
+      "label_invalid": "Adj a címzettnek legfeljebb 60 karakteres nevet",
+      "address_invalid": "Mentés előtt töltsd ki a címet",
+      "unknown": "Ez a címzett már nincs a címjegyzékben"
+    },
     "photo": {
       "invalid_rating": "Az értékelés 0–5 csillag",
       "invalid_selection": "1 és 10 000 közötti számú fotót jelölj ki",
