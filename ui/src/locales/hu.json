@@ -929,6 +929,19 @@
     "readBy": "olvasta: {{name}}"
   },
   "postcard": {
+    "recipient": "Címzett",
+    "senderPrint": "Feladó nyomtatása",
+    "book": {
+          "open": "Címjegyzék ({{count}})",
+          "empty": "A mentett és legutóbbi címzettek itt jelennek meg.",
+          "saved": "Mentett",
+          "recent": "Legutóbbi",
+          "forget": "Törlés a címjegyzékből",
+          "save": "Mentés",
+          "saveHint": "A lap címzettjét névvel menti a címjegyzékbe",
+          "name": "Név a címjegyzékben",
+          "namePlaceholder": "pl. Nagymama"
+    },
     "reuse": {
       "blankAll_one": "{{count}} képeslapon még nincs cím.",
       "blankAll_other": "{{count}} képeslapon még nincs cím.",
@@ -1483,7 +1496,7 @@
     "move": {
       "title": "Költözés másik gépre",
       "how": "Ezen a gépen exportáld a beállításaidat, és másold át a .fotollection projektjeidet. A másikon importáld a beállításokat, nyisd meg az egyes projekteket, és kapcsold újra a fotómappáikat.",
-      "addresses": "Legutóbbi címekkel együtt",
+      "addresses": "Mentett és legutóbbi címekkel együtt",
       "addressesHint": "A beírt képeslapcímek mások adatai: maradjon ki, hacsak nincs ott szükséged rájuk.",
       "export": "Beállítások exportálása…",
       "exportHint": "A beállításaid, mentett lookjaid, LUT-jaid, betűtípusaid és logóid egyetlen .fotosettings fájlban; fotók és projektek soha.",
@@ -1498,7 +1511,7 @@
       "luts": "LUT-ok",
       "fonts": "Betűtípusok",
       "logos": "Gyártói logók",
-      "addresses": "Legutóbbi címek",
+      "addresses": "Mentett és legutóbbi címek",
       "cameraSessions": "Gépenkénti munkamenetek",
       "cache": "Bélyegképek és előnézetek",
       "logs": "Hibanapló",

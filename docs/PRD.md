@@ -1376,7 +1376,11 @@ On the website, once it ships, AddAssist is presented as a strength beside the o
 2. **Recipient:** the address, typed or with AddAssist (FR-133);
 3. **Message:** the text and its style.
 
-Each block is built from the shared blocks (STYLE_RULE §4) and checked by `check-lego` and `MEASURE=1`, in both themes and in the longest language.
+Each block is built from the shared blocks (STYLE_RULE §4) and checked by `check-lego` and `MEASURE=1`, in both themes and in the longest language. **Built (2026-11-15):** `PostcardCards` gives the Collage panel and the preview the same order (`PostcardCard`, `PostcardSenderCard`, `PostcardRecipientCard` with the address book of FR-133, `PostcardTextCard` for the message and its style); the note that puts a part on the other cards is one block for the message, a European address and a Japanese or Korean recipient (`PostcardReuseNote`); the sheet preview's tabs are one joined group, as the Pro panel's (owner, 2026-11-15). Checked by UI-MODE-012.
+
+### FR-137 — Looks, LUTs and presets in Collage mode
+
+**P2 (v0.14.3; owner, 2026-11-15: "the photos in Collage mode take Looks, LUTs and presets as in Pro; reuse the code").** The Collage panel gets the Pro panel's tabs, one joined group: **Colour**, the same `ApplyLookCard` as Pro (a built-in look, a saved one, a Lightroom preset or a LUMIX Lab LUT, with its strength), on the chosen sheet's photo or on every ticked photo, in one undo step; and **Print**, the sheet, postcard, cells and stamp cards it shows today. No new colour code: the card, its IPC and its batch are Pro's (FR-079, FR-114).
 
 ## 7. Non-functional requirements
 

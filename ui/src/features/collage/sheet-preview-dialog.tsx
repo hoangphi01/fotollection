@@ -40,9 +40,8 @@ import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { CHOSEN_ROW, ListRow } from '@/components/forms/list-row'
 import { CollageCellsCard } from './collage-cells-card'
-import { PostcardCard } from './postcard-card'
 import { PostcardCutBadge } from './postcard-cut-badge'
-import { PostcardTextCard } from './postcard-text-card'
+import { PostcardCards } from './postcard-cards'
 import { sheetCells } from './sheet-cells'
 import { SheetCellsOverlay } from './sheet-cells-overlay'
 import { SheetSizeCard } from './sheet-size-card'
@@ -244,10 +243,14 @@ export function SheetPreviewDialog({
           ariaLabel={t('inspector.tabs')}
           value={shownTab}
           onChange={setTab}
+          // One joined group, as the Pro panel's colour and print (owner, 2026-11-15): a sheet has
+          // no stage tool (no crop), so there is no second group to set apart.
           groups={[
-            [{ value: 'edit', icon: <SlidersHorizontal aria-hidden />, label: t('inspector.edit') }],
-            ...(postcard ? [[{ value: 'postcard' as const, icon: <Mail aria-hidden />, label: t('postcard.title') }]] : []),
-            [{ value: 'print', icon: <Printer aria-hidden />, label: t('inspector.print') }],
+            [
+              { value: 'edit', icon: <SlidersHorizontal aria-hidden />, label: t('inspector.edit') },
+              ...(postcard ? [{ value: 'postcard' as const, icon: <Mail aria-hidden />, label: t('postcard.title') }] : []),
+              { value: 'print', icon: <Printer aria-hidden />, label: t('inspector.print') },
+            ],
           ]}
         />
       }
@@ -497,8 +500,7 @@ export function SheetPreviewDialog({
       )}
       {shownTab === 'postcard' && (
         <>
-          <PostcardCard settings={settings} onChange={onSettingsChange} />
-          <PostcardTextCard
+          <PostcardCards
             settings={settings}
             onChange={onSettingsChange}
             photo={sheet?.first}

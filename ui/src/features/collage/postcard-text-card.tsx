@@ -12,7 +12,6 @@ import { FontSelect } from '@/features/fonts/font-select'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { SizeField } from '@/features/stamp/size-field'
 import { cardFor } from '@/lib/postcard-card'
-import { PostcardAddressField } from './postcard-address-field'
 import { patchPostcard } from './postcard-defaults'
 import { PostcardTextField } from './postcard-text-field'
 import { usePostcardCuts } from './use-postcard-cuts'
@@ -38,9 +37,10 @@ type PostcardTextCardProps = {
 }
 
 /**
- * Everything typed on a postcard (FR-073), in one card: the chosen card's own text, then how
- * every card sets it (font, size, ink) and the credit line under all of them. The same card
- * in the Collage panel and in a postcard's preview; shown while postcards are on.
+ * The message on a postcard (FR-136's third block, FR-073): the chosen card's own message and
+ * the note that puts it on the other cards, then how every card sets its text (font, size,
+ * ink) and the credit line under all of them. The same card in the Collage panel and in a
+ * postcard's preview; shown while postcards are on.
  */
 export function PostcardTextCard({ settings, onChange, photo, revision, filter, ticked }: PostcardTextCardProps) {
   const { t, i18n } = useTranslation()
@@ -50,7 +50,7 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
   const fit = usePostcardCuts(settings, revision).get(photo ?? -1)
   if (!postcard?.enabled) return null
   return (
-    <SectionCard icon={<Type />} title={t('postcard.text')}>
+    <SectionCard icon={<Type />} title={t('postcard.message')}>
       {photo != null ? (
         <>
           <PostcardTextField
@@ -60,27 +60,9 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
             style={postcard.messageStyle}
             cut={fit?.messageCut ?? false}
             onStyle={(messageStyle) => patchPostcard(onChange, { messageStyle })}
+            filter={filter}
+            ticked={ticked}
           />
-          {card === 'europe' ? (
-            <PostcardTextField
-              photo={photo}
-              part="address"
-              revision={revision}
-              style={postcard.addressStyle}
-              cut={fit?.addressCut ?? false}
-              onStyle={(addressStyle) => patchPostcard(onChange, { addressStyle })}
-              filter={filter}
-              ticked={ticked}
-            />
-          ) : (
-            <PostcardAddressField
-              photo={photo}
-              country={card === 'japan' ? 'jp' : 'kr'}
-              revision={revision}
-              assisted={postcard.assisted ?? true}
-              onAssisted={(assisted) => patchPostcard(onChange, { assisted })}
-            />
-          )}
         </>
       ) : (
         <Hint>{t('postcard.pickToType')}</Hint>

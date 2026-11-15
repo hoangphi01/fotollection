@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { Mail, Mailbox, PenLine, RectangleHorizontal, RectangleVertical, UserRound } from 'lucide-react'
+import { Mail, Mailbox, PenLine, RectangleHorizontal, RectangleVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
-import { AddAssist } from '@/components/forms/addassist'
-import { emptyAddress } from '@/lib/address'
 import { SwitchField } from '@/components/forms/switch-field'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
@@ -34,7 +32,8 @@ type PostcardCardProps = {
 /**
  * The postcard's shape in Collage mode (FR-073), shown while the Postcard switch above the
  * sheets is on: the way it is held and its writing lines, with the pen note for writing on
- * them by hand. What is typed on it has its own card (`PostcardTextCard`).
+ * them by hand. Its sender, its recipient and its message each have their own card (FR-136,
+ * `PostcardCards`).
  */
 export function PostcardCard({ settings, onChange }: PostcardCardProps) {
   const { t, i18n } = useTranslation()
@@ -46,7 +45,6 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
   const setPostcard = (patch: Partial<PostcardSettings>) => patchPostcard(onChange, patch)
   const shapes = SHAPES[card]
   const orientation = shapes.find((s) => s.value === postcard.orientation)?.value ?? shapes[0]?.value ?? 'landscape'
-  const country = card === 'japan' ? 'jp' : 'kr'
   return (
     <SectionCard icon={<Mail />} title={t('postcard.title')}>
       <Hint>{t(`postcard.hintCard.${card}`)}</Hint>
@@ -105,28 +103,6 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
         onChange={(postalUse) => setPostcard({ postalUse })}
         hint={t(`postcard.postalUseHintCard.${card}`)}
       />
-      {/* The sender of Japanese and Korean cards, an optional switch (owner, 2026-11-15). */}
-      {card !== 'europe' && (
-        <SwitchField
-          icon={<UserRound />}
-          label={t('postcard.sender')}
-          checked={postcard.senderOn ?? false}
-          onChange={(senderOn) => setPostcard({ senderOn })}
-          hint={t('postcard.senderHint')}
-        >
-          {/* Each country's own sender: switching cards never shows or prints another's. */}
-          <AddAssist
-            key={country}
-            country={country}
-            value={postcard.senders?.find((s) => s.country === country) ?? emptyAddress(country)}
-            onCommit={(sender) =>
-              setPostcard({ senders: [...(postcard.senders ?? []).filter((s) => s.country !== country), sender] })
-            }
-            assisted={postcard.assisted ?? true}
-            onAssisted={(assisted) => setPostcard({ assisted })}
-          />
-        </SwitchField>
-      )}
       <PanelNote icon={<PenLine />}>{t('postcard.pens')}</PanelNote>
     </SectionCard>
   )

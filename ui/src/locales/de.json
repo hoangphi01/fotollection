@@ -929,6 +929,19 @@
     "readBy": "gelesen von {{name}}"
   },
   "postcard": {
+    "recipient": "Empfänger",
+    "senderPrint": "Absender drucken",
+    "book": {
+          "open": "Adressbuch ({{count}})",
+          "empty": "Gespeicherte und letzte Empfänger erscheinen hier.",
+          "saved": "Gespeichert",
+          "recent": "Zuletzt",
+          "forget": "Aus dem Adressbuch entfernen",
+          "save": "Speichern",
+          "saveHint": "Speichert den Empfänger dieser Karte unter einem Namen im Adressbuch",
+          "name": "Name im Adressbuch",
+          "namePlaceholder": "z. B. Oma"
+    },
     "reuse": {
       "blankAll_one": "{{count}} Postkarte hat noch keine Adresse.",
       "blankAll_other": "{{count}} Postkarten haben noch keine Adresse.",
@@ -1483,7 +1496,7 @@
     "move": {
       "title": "Auf einen anderen Computer umziehen",
       "how": "Exportiere auf diesem Computer deine Einstellungen und kopiere deine .fotollection-Projekte. Importiere auf dem anderen die Einstellungen, öffne jedes Projekt und verknüpfe seine Fotoordner neu.",
-      "addresses": "Letzte Adressen einschließen",
+      "addresses": "Gespeicherte und letzte Adressen einschließen",
       "addressesHint": "Die Postkartenadressen, die du getippt hast, gehören anderen Menschen: aus, außer du brauchst sie dort.",
       "export": "Einstellungen exportieren…",
       "exportHint": "Deine Einstellungen, gespeicherten Looks, LUTs, Schriften und Logos in einer .fotosettings-Datei; nie Fotos oder Projekte.",
@@ -1498,7 +1511,7 @@
       "luts": "LUTs",
       "fonts": "Schriften",
       "logos": "Kameralogos",
-      "addresses": "Letzte Adressen",
+      "addresses": "Gespeicherte und letzte Adressen",
       "cameraSessions": "Kamerasitzungen",
       "cache": "Miniaturen und Vorschauen",
       "logs": "Fehlerprotokoll",

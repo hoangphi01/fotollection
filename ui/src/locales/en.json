@@ -929,6 +929,19 @@
     "readBy": "read by {{name}}"
   },
   "postcard": {
+    "recipient": "Recipient",
+    "senderPrint": "Print a sender",
+    "book": {
+          "open": "Address book ({{count}})",
+          "empty": "Saved and recent recipients appear here.",
+          "saved": "Saved",
+          "recent": "Recent",
+          "forget": "Remove from the address book",
+          "save": "Save",
+          "saveHint": "Keeps this card's recipient in the address book under a name",
+          "name": "Name in the address book",
+          "namePlaceholder": "e.g. Grandma"
+    },
     "reuse": {
       "blankAll_one": "{{count}} postcard has no address yet.",
       "blankAll_other": "{{count}} postcards have no address yet.",
@@ -1483,7 +1496,7 @@
     "move": {
       "title": "Move to another computer",
       "how": "On this computer, export your settings and copy your .fotollection projects. On the other, import the settings, open each project and relink its photo folders.",
-      "addresses": "Include recent addresses",
+      "addresses": "Include saved and recent addresses",
       "addressesHint": "The postcard addresses you typed are other people's: off unless you need them there.",
       "export": "Export settings…",
       "exportHint": "Your settings, saved looks, LUTs, fonts and logos in one .fotosettings file; never photos or projects.",
@@ -1498,7 +1511,7 @@
       "luts": "LUTs",
       "fonts": "Fonts",
       "logos": "Camera logos",
-      "addresses": "Recent addresses",
+      "addresses": "Saved and recent addresses",
       "cameraSessions": "Camera sessions",
       "cache": "Thumbnails and previews",
       "logs": "Error log",

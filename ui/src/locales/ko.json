@@ -929,6 +929,19 @@
     "readBy": "{{name}}(으)로 읽음"
   },
   "postcard": {
+    "recipient": "받는 사람",
+    "senderPrint": "보내는 사람 인쇄",
+    "book": {
+          "open": "주소록 ({{count}})",
+          "empty": "저장한 받는 사람과 최근 받는 사람이 여기에 표시돼요.",
+          "saved": "저장됨",
+          "recent": "최근",
+          "forget": "주소록에서 지우기",
+          "save": "저장",
+          "saveHint": "이 엽서의 받는 사람을 이름을 붙여 주소록에 저장해요",
+          "name": "주소록 이름",
+          "namePlaceholder": "예: 할머니"
+    },
     "reuse": {
       "blankAll_one": "엽서 {{count}}장에 아직 주소가 없습니다.",
       "blankAll_other": "엽서 {{count}}장에 아직 주소가 없습니다.",
@@ -1483,7 +1496,7 @@
     "move": {
       "title": "다른 컴퓨터로 옮기기",
       "how": "이 컴퓨터에서 설정을 내보내고 .fotollection 프로젝트를 복사하세요. 다른 컴퓨터에서 설정을 가져오고, 프로젝트마다 열어 사진 폴더를 다시 연결하세요.",
-      "addresses": "최근 주소 포함",
+      "addresses": "저장한 주소와 최근 주소 포함",
       "addressesHint": "입력한 엽서 주소는 다른 사람의 정보입니다. 그곳에서 필요하지 않으면 끄세요.",
       "export": "설정 내보내기…",
       "exportHint": "설정, 저장한 룩, LUT, 글꼴, 로고를 .fotosettings 파일 하나에. 사진이나 프로젝트는 넣지 않습니다.",
@@ -1498,7 +1511,7 @@
       "luts": "LUT",
       "fonts": "글꼴",
       "logos": "카메라 로고",
-      "addresses": "최근 주소",
+      "addresses": "저장한 주소와 최근 주소",
       "cameraSessions": "카메라 세션",
       "cache": "썸네일과 미리 보기",
       "logs": "오류 기록",

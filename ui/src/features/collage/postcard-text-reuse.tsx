@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CopyCheck, History, MapPin } from 'lucide-react'
+import { History, MapPin } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Field, Hint } from '@/components/forms/field'
+import { Field } from '@/components/forms/field'
 import { ListRow, ListRows } from '@/components/forms/list-row'
-import { PanelNote } from '@/components/layout/panel-note'
-import { Button } from '@/components/ui/button'
 import { commands, type CullFilter, type PhotoId, type PostcardPart } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { RemoveButton } from '@/components/forms/danger-button'
+import { PostcardReuseNote } from './postcard-reuse-note'
 
 type Subject = { filter: CullFilter; photo: PhotoId; part: PostcardPart; ticked: readonly PhotoId[] }
 
@@ -53,47 +52,17 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
   // once, then went"): the one on this card is marked, another is one click away.
   const remembered = useLiveQuery(part === 'address' ? 'recent' : null, revision, loadRecent).data ?? []
   const [forgotten, setForgotten] = useState<readonly string[]>([])
-  const [done, setDone] = useState<{ photo: PhotoId; count: number } | null>(null)
-  const [error, setError] = useState<string | null>(null)
   const recent = remembered.filter((a) => !forgotten.includes(a))
-  const scope = ticked.length > 0 ? 'Ticked' : 'All'
 
   const apply = async (overwrite: boolean) => {
-    setError(null)
     const result = await commands.applyPostcardText(filter, photo, part, overwrite, [...ticked])
-    if (result.status === 'ok') setDone({ photo, count: result.data })
-    else setError(errorText(result.error))
+    return result.status === 'ok' ? result.data : errorText(result.error)
   }
   const forget = async (address: string) => {
     setForgotten((f) => [...f, address])
     await commands.forgetAddress(address)
   }
 
-  const blank = text ? (gaps?.blank ?? 0) : 0
-  const differ = text ? (gaps?.differ ?? 0) : 0
-  // The other cards, as a note with its two choices as buttons (STYLE_RULE §4: a note that
-  // offers an action), so the words wrap in an 18.75 rem panel instead of being cut.
-  const reuse = (blank > 0 || differ > 0) && (
-    <PanelNote
-      icon={<CopyCheck />}
-      action={
-        <>
-          {blank > 0 && (
-            <Button size="sm" onClick={() => void apply(false)}>
-              {t('postcard.reuse.fill')}
-            </Button>
-          )}
-          {differ > 0 && (
-            <Button variant="outline" size="sm" onClick={() => void apply(true)}>
-              {t('postcard.reuse.replace', { count: blank + differ })}
-            </Button>
-          )}
-        </>
-      }
-    >
-      {blank > 0 ? t(`postcard.reuse.blank${scope}`, { count: blank }) : t(`postcard.reuse.differ${scope}`, { count: differ })}
-    </PanelNote>
-  )
   const list = part === 'address' && recent.length > 0 && (
     <Field
       label={
@@ -120,9 +89,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
   )
   return (
     <>
-      {reuse}
-      {done?.photo === photo && done.count > 0 && <Hint>{t('postcard.reuse.done', { count: done.count })}</Hint>}
-      {error && <Hint className="text-destructive">{error}</Hint>}
+      <PostcardReuseNote photo={photo} gaps={text ? gaps : null} ticked={ticked} apply={apply} />
       {list}
     </>
   )

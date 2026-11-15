@@ -51,6 +51,27 @@ impl Recipient {
     }
 }
 
+/// Whether `draft` is `full` while it was being typed: the same country, and every field it has
+/// filled the same in `full` (`AddAssist` saves each field as it is left).
+fn draft_of(draft: &Address, full: &Address) -> bool {
+    let fields = |a: &Address| {
+        [
+            a.code.clone(),
+            a.region.clone(),
+            a.city.clone(),
+            a.town.clone(),
+            a.road.clone(),
+            a.line.clone(),
+            a.name.clone(),
+        ]
+    };
+    draft.country == full.country
+        && fields(draft)
+            .iter()
+            .zip(fields(full).iter())
+            .all(|(d, f)| d.is_empty() || d == f)
+}
+
 fn same_address(a: &Address, b: &Address) -> bool {
     let mut a = a.clone();
     a.filled_by.clone_from(&b.filled_by);
@@ -185,13 +206,14 @@ pub fn sanitized_book(book: &[SavedAddress]) -> Vec<SavedAddress> {
 }
 
 /// Puts a Japanese or Korean recipient first among those its country offers on the next
-/// cards, once, and keeps the newest few of each country. Blank or invalid ones are not kept.
+/// cards, once, and keeps the newest few of each country. Blank or invalid ones are not kept,
+/// nor a draft of it already kept (LESSONS: a field saved while typed hands its drafts on).
 pub fn remember(recent: &mut Vec<Address>, address: &Address) {
     if !address.is_valid() || address.is_blank() {
         return;
     }
     let address = address.sanitized();
-    recent.retain(|a| !same_address(a, &address));
+    recent.retain(|a| !same_address(a, &address) && !draft_of(a, &address));
     recent.insert(0, address);
     let mut seen = [0usize; 2];
     recent.retain(|a| {
@@ -356,5 +378,15 @@ mod tests {
         assert_eq!(recent[0].line, "4-2-5");
         assert_eq!(recent.iter().filter(|a| a.line == "4-2-5").count(), 1);
         assert_eq!(sanitized_recent(&recent), recent);
+        // Typed field by field, only the whole one stays.
+        let mut typed = Vec::new();
+        let mut draft = Address::new(Country::Jp);
+        draft.code = "1500001".into();
+        remember(&mut typed, &draft);
+        draft.name = "佐藤".into();
+        remember(&mut typed, &draft);
+        draft.line = "1-2-3".into();
+        remember(&mut typed, &draft);
+        assert_eq!(typed, vec![draft]);
     }
 }

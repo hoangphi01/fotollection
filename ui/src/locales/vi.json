@@ -898,6 +898,19 @@
     "readBy": "đọc bằng {{name}}"
   },
   "postcard": {
+    "recipient": "Người nhận",
+    "senderPrint": "In người gửi",
+    "book": {
+          "open": "Sổ địa chỉ ({{count}})",
+          "empty": "Người nhận đã lưu và gần đây sẽ hiện ở đây.",
+          "saved": "Đã lưu",
+          "recent": "Gần đây",
+          "forget": "Xoá khỏi sổ địa chỉ",
+          "save": "Lưu",
+          "saveHint": "Lưu người nhận của thiệp này vào sổ địa chỉ kèm một tên gọi",
+          "name": "Tên trong sổ địa chỉ",
+          "namePlaceholder": "VD: Bà nội"
+    },
     "reuse": {
       "blankAll_other": "{{count}} bưu thiếp chưa có địa chỉ.",
       "blankTicked_other": "{{count}} bưu thiếp đang chọn chưa có địa chỉ.",
@@ -1432,7 +1445,7 @@
     "move": {
       "title": "Chuyển sang máy khác",
       "how": "Trên máy này, xuất thiết lập và chép các dự án .fotollection. Trên máy kia, nhập thiết lập, mở từng dự án và chỉ lại thư mục ảnh.",
-      "addresses": "Kèm địa chỉ gần đây",
+      "addresses": "Kèm địa chỉ đã lưu và gần đây",
       "addressesHint": "Địa chỉ bưu thiếp bạn đã gõ là của người khác: chỉ bật khi cần dùng ở máy kia.",
       "export": "Xuất thiết lập…",
       "exportHint": "Thiết lập, look đã lưu, LUT, font và logo trong một tệp .fotosettings; không bao giờ có ảnh hay dự án.",
@@ -1447,7 +1460,7 @@
       "luts": "LUT",
       "fonts": "Font",
       "logos": "Logo máy ảnh",
-      "addresses": "Địa chỉ gần đây",
+      "addresses": "Địa chỉ đã lưu và gần đây",
       "cameraSessions": "Phiên chụp máy ảnh",
       "cache": "Ảnh nhỏ và bản xem trước",
       "logs": "Nhật ký lỗi",

@@ -110,7 +110,8 @@ export function PostcardTextField({
           {t('postcard.cutHint')}
         </PanelNote>
       )}
-      {part === 'address' && filter && (
+      {/* The message and the European address each go to the other cards in one step (FR-077, FR-133). */}
+      {filter && (
         <PostcardTextReuse
           filter={filter}
           photo={photo}

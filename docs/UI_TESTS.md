@@ -149,6 +149,7 @@ Every view below runs the A cases of §3 at each width (`overflowViews`, `measur
 | UI-MODE-009 | Pro mode's gallery, Colour tab (FR-114) | a look picked, its tile, amount and button; measured as *Pro panel: Colour*; by hand: ticked photos, all photos shown, the question for photos with their own colour, ⌘Z |
 | UI-MODE-010 | The grid shows each photo's colour (FR-114, ADR-0047) | by hand: a look given to the ticked photos, the bar *Applying colour* over the grid, their tiles in the new colour; ⌘Z brings the old colour back; the filmstrip and the quick preview alike |
 | UI-MODE-011 | The Color mixer (FR-079) | by hand: a dot picked, its three sliders move only that colour, greys stay; ↺ resets; a preset with a mixer shows its values; in a collage sheet's preview, not in Simple mode |
+| UI-MODE-012 | Postcard text in three cards (FR-136, FR-133) | by hand: in the Collage panel and in a postcard's preview, the same order (shape, Sender folded on a Japanese or Korean card, Recipient, Message); the sheet preview's tabs one joined group as the Pro panel's; ☆ saves the recipient under a name, the address book lists it (and the Japanese or Korean recipients used last) and puts it on another card, × removes it; *Use for them* under the message and under a Japanese recipient fills the cards without one, the ticked ones only when some are ticked, and one Cmd/Ctrl+Z takes it back; the book's button keeps its words at 18.75 rem in Hungarian |
 
 ### Pictures
 

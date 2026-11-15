@@ -217,9 +217,13 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     // AddAssist (FR-133): its countries; a lookup or search answers nothing in the demo, and an
     // address set on a card changes nothing (writes do nothing here).
     addassist_countries: () => [
-      { country: 'jp', codeDigits: 7, dataDate: '2026-10-23', version: '1.0' },
-      { country: 'kr', codeDigits: 5, dataDate: '2025-11-30', version: '1.0' },
+      { country: 'jp', codeDigits: 7, dataDate: '2026-10-23', version: '1.1' },
+      { country: 'kr', codeDigits: 5, dataDate: '2025-11-30', version: '1.1' },
     ],
+    // The address book (FR-133): the profile's saved recipients; nothing recent in the demo,
+    // and no other card without the recipient (writes do nothing here).
+    address_book: () => ({ saved: profile.book ?? [], recent: [] }),
+    postcard_recipient_gaps: () => ({ blank: 0, differ: 0 }),
     addassist_lookup: () => [],
     addassist_search: () => [],
     recent_addresses: () => profile.recent,
@@ -328,6 +332,8 @@ const PROFILES = {
     tabs: ['Wilhelma Zoo', 'Praha', 'Travels'],
     exportName: 'P1067823.jpg',
     recent: ['Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia', 'Magyar Nemzeti Múzeum\nMúzeum krt. 14–16\n1088 Budapest, Hungary'],
+    // The address book (FR-133, AddAssist 1.1): famous places' public addresses, demo names.
+    book: [{ id: 1, label: 'Magyar Nemzeti Múzeum', recipient: { kind: 'free', value: 'Magyar Nemzeti Múzeum\nMúzeum krt. 14–16\n1088 Budapest, Hungary' } }],
   },
   // The owner's photos of Japan (JAPAN DEMO by hoangphi01), their city read from the GPS.
   ja: {
@@ -345,6 +351,7 @@ const PROFILES = {
     exportName: 'IMG_5773.heic',
     queues: { print: ['IMG_4329'], aside: ['IMG_5710'] },
     recent: ['東京都港区芝公園4-2-8 東京タワー', '京都府京都市東山区清水1-294 清水寺'],
+    book: [{ id: 1, label: '清水寺', recipient: { kind: 'assisted', value: { country: 'jp', filledBy: '1.1', code: '6050862', region: '京都府', city: '京都市東山区', town: '清水', road: '', line: '1-294', name: '鈴木花子', honorific: true, latin: false } } }],
   },
   // Seoul by @9adox (Fujifilm XF10) and @imyourctus (Sony ZV-1).
   ko: {
@@ -363,6 +370,7 @@ const PROFILES = {
     exportName: 'DSCF1990.JPG',
     queues: { print: ['DSCF1986', 'DSCF2022', 'DSCF1915'], aside: ['DSCF2068'] },
     recent: ['서울특별시 종로구 세종대로 175 세종문화회관', '서울특별시 종로구 사직로 161 경복궁'],
+    book: [{ id: 1, label: '경복궁', recipient: { kind: 'assisted', value: { country: 'kr', filledBy: '1.1', code: '03045', region: '서울특별시', city: '종로구', town: '', road: '사직로', line: '161', name: '이서연', honorific: true, latin: false } } }],
   },
 }
 const PROFILE = PROFILES[process.env.SHOT_SET ?? LANGUAGES[0]] ?? PROFILES.prague
@@ -427,7 +435,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
   await context.addInitScript((words) => {
     globalThis.__englishWords = words
   }, ENGLISH_WORDS)
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict, profile: { tabRules: PROFILE.tabRules, tabElse: PROFILE.tabElse, exportName: PROFILE.exportName, recent: PROFILE.recent } })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict, profile: { tabRules: PROFILE.tabRules, tabElse: PROFILE.tabElse, exportName: PROFILE.exportName, recent: PROFILE.recent, book: PROFILE.book } })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
