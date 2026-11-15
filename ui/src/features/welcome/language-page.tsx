@@ -26,20 +26,37 @@ export function LanguagePage() {
   const chosen = LANGUAGES.findIndex((l) => l.value === language)
   const shown = LANGUAGES[reduced ? Math.max(chosen, 0) : turn % LANGUAGES.length] ?? LANGUAGES[0]
 
+  const backdrop = (LANGUAGES[Math.max(chosen, 0)] ?? LANGUAGES[0])?.backdrop ?? 'en'
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-lg border chrome-lit lifted">
+    <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-3 overflow-hidden rounded-lg border lifted">
+      {/* A photo of the chosen language's country behind the greeting, softened so the words
+          stay first (owner, 2026-11-15), as the other pages' pictures under frosted glass. */}
+      <img
+        key={backdrop}
+        src={`/welcome/language-${backdrop}.webp`}
+        alt=""
+        aria-hidden
+        className="motion-in-slow animate-in fade-in absolute inset-0 size-full scale-105 object-cover blur-sm brightness-75"
+      />
       <p
         key={reduced ? 'still' : turn}
         lang={shown?.value}
         aria-hidden
-        className="motion-in-slow animate-in fade-in text-6xl leading-[1.6] font-semibold tracking-tight"
+        className="motion-in-slow animate-in fade-in relative text-6xl leading-[1.6] font-semibold tracking-tight text-stage-ink drop-shadow-lg"
       >
         {shown?.hello}
       </p>
-      <div className="w-72 rounded-2xl border bg-background/60 p-2 backdrop-blur-xl lifted">
+      {/* Liquid glass (owner, 2026-11-15: "the blur a little lighter"): the photo shows through, its colours kept. */}
+      <div className="relative w-72 rounded-2xl border bg-background/40 p-2 backdrop-blur-lg backdrop-saturate-150 lifted">
         <ListRows>
           {LANGUAGES.map((l) => (
-            <ListRow key={l.value} chosen={l.value === language} onClick={() => void change(l.value)}>
+            <ListRow
+              key={l.value}
+              icon={<img src={l.flag} alt="" width={18} height={18} className="rounded-full" />}
+              chosen={l.value === language}
+              onClick={() => void change(l.value)}
+            >
               <span lang={l.value}>{l.label}</span>
             </ListRow>
           ))}

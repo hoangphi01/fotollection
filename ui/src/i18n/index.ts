@@ -10,6 +10,12 @@ import ja from '@/locales/ja.json'
 import ko from '@/locales/ko.json'
 import vi from '@/locales/vi.json'
 import { pseudo } from './pseudo'
+import flagDe from '@/assets/flags/de.svg'
+import flagGb from '@/assets/flags/gb.svg'
+import flagHu from '@/assets/flags/hu.svg'
+import flagJp from '@/assets/flags/jp.svg'
+import flagKr from '@/assets/flags/kr.svg'
+import flagVn from '@/assets/flags/vn.svg'
 
 /**
  * Each language described once (docs/LOCALIZATION.md §2): its own name, its manual (the full
@@ -23,16 +29,22 @@ export type LanguageInfo = {
   hello: string
   guide: 'full' | 'short'
   assets: 'en' | 'vi'
+  /** Its country's round flag beside its name on the welcome (circle-flags, MIT;
+   * `assets/flags/README.md`), English the British one as on the website. */
+  flag: string
+  /** The photo behind the welcome's first page in this language (owner, 2026-11-15): Japan's
+   * and Korea's own, else the Prague tram (`public/welcome/language-*.webp`). */
+  backdrop: 'en' | 'ja' | 'ko'
 }
 
 /** English first, then by each language's own name, as the website (LOCALIZATION §2). */
 export const LANGUAGES: LanguageInfo[] = [
-  { value: 'en', label: 'English', hello: 'Hello', guide: 'full', assets: 'en' },
-  { value: 'de', label: 'Deutsch', hello: 'Hallo', guide: 'short', assets: 'en' },
-  { value: 'hu', label: 'Magyar', hello: 'Szia', guide: 'short', assets: 'en' },
-  { value: 'vi', label: 'Tiếng Việt', hello: 'Xin chào', guide: 'full', assets: 'vi' },
-  { value: 'ko', label: '한국어', hello: '안녕하세요', guide: 'short', assets: 'en' },
-  { value: 'ja', label: '日本語', hello: 'こんにちは', guide: 'short', assets: 'en' },
+  { value: 'en', label: 'English', hello: 'Hello', guide: 'full', assets: 'en', flag: flagGb, backdrop: 'en' },
+  { value: 'de', label: 'Deutsch', hello: 'Hallo', guide: 'short', assets: 'en', flag: flagDe, backdrop: 'en' },
+  { value: 'hu', label: 'Magyar', hello: 'Szia', guide: 'short', assets: 'en', flag: flagHu, backdrop: 'en' },
+  { value: 'vi', label: 'Tiếng Việt', hello: 'Xin chào', guide: 'full', assets: 'vi', flag: flagVn, backdrop: 'en' },
+  { value: 'ko', label: '한국어', hello: '안녕하세요', guide: 'short', assets: 'en', flag: flagKr, backdrop: 'ko' },
+  { value: 'ja', label: '日本語', hello: 'こんにちは', guide: 'short', assets: 'en', flag: flagJp, backdrop: 'ja' },
 ]
 
 /** The entry of an i18next language (`vi`, `hu-HU`…), English when it is none of ours. */

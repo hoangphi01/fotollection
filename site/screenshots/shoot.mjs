@@ -986,6 +986,8 @@ async function stressViews({ language, theme }) {
   ;({ context, page } = await open({ scenario: 'stamp', language, theme, ui: { welcomeSeen: false } }))
   await page.waitForSelector('[role="dialog"]')
   await settle(page)
+  // The first page by eye: its photo behind the greeting and the flags (FR-124, 2026-11-15).
+  await page.screenshot({ path: path.join(outDir, 'measure-welcome.png') })
   out.push(...(await allChecks(page, 'welcome')))
   await context.close()
   return out
