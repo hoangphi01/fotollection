@@ -25,6 +25,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A box that clips is sized for everything it draws (rings, knobs, the scroll bar); a popup is placed after measuring it, the title bar a collision edge. Kept by: UI-LAYOUT-016, UI-LAYOUT-021.
 - A picture is checked in the frame that shows it, on the built page; a carousel picture is the whole window at 1600 × 1000. Kept by: `check-site-i18n` (carousel sizes).
 - A picture inside a popover or anything closed is inlined or loaded with the page, never lazy. Kept by: `check-site-i18n` (lazy in a popover).
+- A crop of a picture shows what its caption says: read the caption, place the crop, then check its letters. Kept by: no machine check yet (UI-VISUAL-003 by eye).
 
 ### ui-blocks
 
@@ -122,6 +123,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### A phone crop showed a card its caption never mentions (website, FR-135)
+
+- **Area:** ui-layout, spec-request
+- **Seen:** on a phone, Simple mode's picture showed the print size card, under a caption about the photo as it prints with Keep and Drop; the Collage, sheet preview, Settings and develop view crops missed their captions the same way.
+- **Why:** each crop's place was picked where the window had the most legible text, a panel, and checked only for the size of its letters, never against the words beside it.
+- **Fix:** every crop read against its caption (the carousel's title and text, the Features page's `show_*` line) and placed on what they name: the photo with its looks strip and Drop and Keep, the left column of the develop view, the Settings sections, the chosen sheet, the sheet itself.
+- **Rule:** a crop of a picture shows what its caption says; read the caption first, then place the crop, then check its letters.
 
 ### A released version's CHANGELOG section was edited twice in one day (docs)
 

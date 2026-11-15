@@ -504,21 +504,27 @@ async function save(page, name) {
 const PHONE_SHOWN = 328 // site.css .carousel-track, min(84vw, 760px) on a 390 px phone: the narrowest frame
 const PHONE_MIN = 11
 const PHONE_W = 320
-// Top-left corner of each crop in the 1440 × 900 window, on the part the picture is about.
+// Top-left corner of each crop in the 1440 × 900 window, on the part the picture's caption is
+// about (owner, 2026-11-15: a crop that misses its caption means nothing), or a function giving
+// the box to centre it on.
 const PHONE = {
   grid: [310, 190], // starred tiles, their badges
   compare: [560, 140], // After, beside Before
-  window: [1120, 210], // the Looks and Faves cards
+  window: [0, 340], // Navigator, Presets & LUTs on the left
   'export-dialog': [170, 60], // the export's presets
   groups: [40, 270], // the best shot and its bars
   select: [650, 100], // ticked photos
   swipe: [310, 60], // In the basket, on the preview
   estimate: 'zoom', // the size estimate on its button: the middle of the zoomed part
   tabs: [0, 320], // the folders as tabs, a tab's hint
-  simple: [1120, 60], // the print size card
-  settings: [556, 110], // RAM & cache
-  collage: [1120, 80], // the sheet size card
-  'collage-preview': [1100, 60], // the photos on this sheet
+  simple: [560, 480], // the photo as it prints, its looks strip, Drop and Keep
+  settings: [180, 90], // one window for every setting: its sections, Data among them
+  collage: (page) => page.evaluate(sheetBox, SHOW.pair), // the chosen sheet, two photos on one print
+  // The sheet's first photo whole (a crop on the cut line showed two halves): its left half.
+  'collage-preview': async (page) => {
+    const b = await page.locator('[role="dialog"] img[src*="/sheet/"]').first().boundingBox()
+    return b && { x: b.x, y: b.y, width: b.width / 2, height: b.height }
+  },
   postcard: [290, 300], // a postcard sheet
   'postcard-night': [566, 150], // the card's typed words
   addassist: [1100, 120], // the address AddAssist filled
@@ -527,6 +533,15 @@ const PHONE = {
   crop: [400, 160], // the crop's size and sharpness
 }
 const phoneFacts = {}
+// The sheet holding a photo in Collage mode (its cell's sheet image), else the third cell's.
+const sheetBox = (id) => {
+  const cell = (id !== null && document.querySelector(`[data-cell][data-photo="${id}"]`)) || document.querySelectorAll('[data-cell]')[2]
+  // Up from the cell (itself `relative`) to the tile that holds the sheet's image.
+  let tile = cell?.parentElement ?? null
+  while (tile && !tile.querySelector('img')) tile = tile.parentElement
+  const r = tile?.querySelector('img')?.getBoundingClientRect()
+  return r ? { x: r.x, y: r.y, width: r.width, height: r.height } : null
+}
 const smallestText = (clip) => {
   let min = null
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
@@ -556,6 +571,11 @@ async function phone(page, name, zoom) {
   if (!at) return
   const height = PHONE_W * 1.25
   let [x, y] = Array.isArray(at) ? at : [0, 0]
+  if (typeof at === 'function') {
+    const b = await at(page)
+    if (!b) throw new Error(`${name}: nothing to centre its phone crop on`)
+    ;[x, y] = [b.x + b.width / 2 - PHONE_W / 2, b.y + b.height / 2 - height / 2]
+  }
   if (at === 'zoom') [x, y] = [zoom.x + zoom.width / 2 - PHONE_W / 2, zoom.y + zoom.height / 2 - height / 2]
   if (at === 'photo-corner' || at === 'photo-foot') {
     // The photo in the preview, wherever its shape puts it in each language's set.

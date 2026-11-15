@@ -50,98 +50,98 @@
   "collage-phone-en-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.27,
-    "text": "600 DPI · Excellent"
+    "minPx": null,
+    "text": null
   },
   "collage-phone-en-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.27,
-    "text": "600 DPI · Excellent"
+    "minPx": null,
+    "text": null
   },
   "collage-phone-ja-dark": {
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "各シートには写真が2枚、左右または上下に入ります。シートは最初の写真に合わせて向"
+    "text": "自動回転"
   },
   "collage-phone-ja-light": {
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "各シートには写真が2枚、左右または上下に入ります。シートは最初の写真に合わせて向"
+    "text": "自動回転"
   },
   "collage-phone-ko-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.26,
-    "text": "3,543 × 2,362 px(8 MP)"
+    "minPx": null,
+    "text": null
   },
   "collage-phone-ko-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.26,
-    "text": "3,543 × 2,362 px(8 MP)"
+    "minPx": null,
+    "text": null
   },
   "collage-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.12,
-    "text": "Đen"
+    "minPx": null,
+    "text": null
   },
   "collage-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.12,
-    "text": "Đen"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-en-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "P1068256.JPG + P1068261.JPG"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-en-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "P1068256.JPG + P1068261.JPG"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-ja-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "IMG_4453.HEIC + Gokurakuji.JPG"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-ja-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "IMG_4453.HEIC + Gokurakuji.JPG"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-ko-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "DSCF2068.JPG + IMG_1471.JPG"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-ko-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "DSCF2068.JPG + IMG_1471.JPG"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "P1068256.JPG + P1068261.JPG"
+    "minPx": null,
+    "text": null
   },
   "collage-preview-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "P1068256.JPG + P1068261.JPG"
+    "minPx": null,
+    "text": null
   },
   "compare-phone-en-dark": {
     "width": 320,
@@ -410,14 +410,14 @@
   "grid-phone-ko-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 11.26,
-    "text": "2026-11-07 07:52"
+    "minPx": 11.24,
+    "text": "2026-11-07 08:44"
   },
   "grid-phone-ko-light": {
     "width": 320,
     "height": 400,
-    "minPx": 11.26,
-    "text": "2026-11-07 07:52"
+    "minPx": 11.24,
+    "text": "2026-11-07 08:44"
   },
   "grid-phone-vi-dark": {
     "width": 320,
@@ -603,13 +603,13 @@
     "width": 320,
     "height": 400,
     "minPx": 11.24,
-    "text": "2026-11-07 08:44"
+    "text": "2026-11-07 10:08"
   },
   "select-phone-ko-light": {
     "width": 320,
     "height": 400,
     "minPx": 11.24,
-    "text": "2026-11-07 08:44"
+    "text": "2026-11-07 10:08"
   },
   "select-phone-vi-dark": {
     "width": 320,
@@ -626,98 +626,98 @@
   "settings-phone-en-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.23,
-    "text": "15 %"
+    "minPx": 12.3,
+    "text": "How much RAM and disk Fotollection uses "
   },
   "settings-phone-en-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.23,
-    "text": "15 %"
+    "minPx": 12.3,
+    "text": "How much RAM and disk Fotollection uses "
   },
   "settings-phone-ja-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.23,
-    "text": "15 %"
+    "minPx": 12.3,
+    "text": "写真をすぐに開くためにFotollectionが使うRAMとディスクの量"
   },
   "settings-phone-ja-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.23,
-    "text": "15 %"
+    "minPx": 12.3,
+    "text": "写真をすぐに開くためにFotollectionが使うRAMとディスクの量"
   },
   "settings-phone-ko-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.23,
-    "text": "15 %"
+    "minPx": 12.3,
+    "text": "사진을 바로 열기 위해 Fotollection이 쓰는 RAM과 디스크의 "
   },
   "settings-phone-ko-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.23,
-    "text": "15 %"
+    "minPx": 12.3,
+    "text": "사진을 바로 열기 위해 Fotollection이 쓰는 RAM과 디스크의 "
   },
   "settings-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "Đang giữ"
+    "minPx": 12.3,
+    "text": "Fotollection dùng bao nhiêu bộ nhớ RAM v"
   },
   "settings-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "Đang giữ"
+    "minPx": 12.3,
+    "text": "Fotollection dùng bao nhiêu bộ nhớ RAM v"
   },
   "simple-phone-en-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "Orientation"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "simple-phone-en-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.3,
-    "text": "Orientation"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "simple-phone-ja-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.29,
-    "text": "IMG_4329.HEIC"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "simple-phone-ja-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.29,
-    "text": "IMG_4329.HEIC"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "simple-phone-ko-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.29,
-    "text": "DSC06264.JPG"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "simple-phone-ko-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.29,
-    "text": "DSC06264.JPG"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "simple-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.27,
-    "text": "In ảnh"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "simple-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.27,
-    "text": "In ảnh"
+    "minPx": 11.19,
+    "text": "0–9"
   },
   "stamp-phone-en-dark": {
     "width": 320,
@@ -866,49 +866,49 @@
   "window-phone-en-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "·"
+    "minPx": 12.3,
+    "text": "Your looks, LUTs and presets show here: "
   },
   "window-phone-en-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "·"
+    "minPx": 12.3,
+    "text": "Your looks, LUTs and presets show here: "
   },
   "window-phone-ja-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.19,
-    "text": "8ビット"
+    "minPx": 12.3,
+    "text": "自分のルック、LUT、プリセットがここに表示されます。写真のルックを保存するか、"
   },
   "window-phone-ja-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.19,
-    "text": "8ビット"
+    "minPx": 12.3,
+    "text": "自分のルック、LUT、プリセットがここに表示されます。写真のルックを保存するか、"
   },
   "window-phone-ko-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "8비트"
+    "minPx": 12.3,
+    "text": "내 룩, LUT, 프리셋이 여기에 나타납니다. 사진의 룩을 저장하거나 L"
   },
   "window-phone-ko-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "8비트"
+    "minPx": 12.3,
+    "text": "내 룩, LUT, 프리셋이 여기에 나타납니다. 사진의 룩을 저장하거나 L"
   },
   "window-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "·"
+    "minPx": 12.3,
+    "text": "Look, LUT và preset của bạn hiện ở đây: "
   },
   "window-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.18,
-    "text": "·"
+    "minPx": 12.3,
+    "text": "Look, LUT và preset của bạn hiện ở đây: "
   }
 }
