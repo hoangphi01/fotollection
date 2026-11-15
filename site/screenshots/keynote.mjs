@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // The landing page's keynote video, from keynote.html and the real app's screenshots.
 //
-//   node site/screenshots/keynote.mjs <out-dir> [desktop|mobile ...] [--text] [--frame <seconds>]
+//   node site/screenshots/keynote.mjs <out-dir> [desktop|mobile ...] [--lang ja|ko] [--text] [--frame <seconds>]
 //
 // Steps keynote.html through every frame (no real-time recording, so each run gives the same
 // video), pipes the frames to ffmpeg as a lossless master, then encodes AV1 and H.264 MP4s
 // with no audio. --text bakes the headlines in (for review; the page lays them over the video).
-// --frame writes one PNG instead. No network: every request outside keynote.localhost is refused.
+// --frame writes one PNG instead. --lang renders the Japanese or Korean page's cut, from that
+// language's screenshots (keynote-<cut>-<lang>-*.mp4); without it, English's, for every other page. No network: every request outside keynote.localhost is refused.
 
 import { readFile, mkdir, stat } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
@@ -25,6 +26,8 @@ if (!args[0]) {
 }
 const text = args.includes('--text')
 const frameAt = args.includes('--frame') ? Number(args[args.indexOf('--frame') + 1]) : null
+const lang = args.includes('--lang') ? args[args.indexOf('--lang') + 1] : null
+if (lang !== null && !['ja', 'ko'].includes(lang)) throw new Error('--lang takes ja or ko')
 const CUTS = { desktop: { w: 1280, h: 720 }, mobile: { w: 720, h: 900 } }
 const cuts = args.filter((a) => a in CUTS)
 const FPS = 30
@@ -76,19 +79,19 @@ for (const name of cuts.length ? cuts : ['desktop', 'mobile']) {
     return route.fulfill({ body, contentType: TYPES[path.extname(file)] ?? 'application/octet-stream' })
   })
   await page.addInitScript((lines) => { window.KEYNOTE = lines }, LINES)
-  await page.goto(`http://keynote.localhost/keynote.html?cut=${name}&text=${text ? 1 : 0}`)
+  await page.goto(`http://keynote.localhost/keynote.html?cut=${name}&text=${text ? 1 : 0}${lang ? `&lang=${lang}` : ''}`)
   await page.evaluate(() => window.ready)
 
   if (frameAt !== null) {
     await page.evaluate((t) => window.seek(t), frameAt)
-    const file = path.join(outDir, `frame-${name}-${frameAt}.png`)
+    const file = path.join(outDir, `frame-${name}${lang ? `-${lang}` : ''}-${frameAt}.png`)
     await page.screenshot({ path: file })
     console.log(file)
     continue
   }
 
   // The master: lossless, so each encode below starts from the same pixels.
-  const tag = `keynote-${name}${text ? '-text' : ''}`
+  const tag = `keynote-${name}${lang ? `-${lang}` : ''}${text ? '-text' : ''}`
   const master = path.join(outDir, `${tag}-master.mkv`)
   const started = Date.now()
   await run('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-', '-c:v', 'ffv1', '-pix_fmt', 'yuv444p', master], async (stdin) => {

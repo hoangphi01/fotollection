@@ -54,7 +54,8 @@ for (const figure of document.querySelectorAll('[data-keynote]')) {
       ['h264', 'video/mp4; codecs="avc1.640032"'],
     ]
     const [kind] = kinds.find(([, type]) => video.canPlayType(type) !== '') ?? kinds[1]
-    video.src = `${figure.dataset.src}keynote-${cut}-${kind}.mp4`
+    // The Japanese and Korean pages have their own cut, on their country's photos (data-set).
+    video.src = `${figure.dataset.src}keynote-${cut}${figure.dataset.set ? `-${figure.dataset.set}` : ''}-${kind}.mp4`
   }
 
   let wanted = !reduce

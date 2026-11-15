@@ -27,6 +27,8 @@ export default {
       addassist: data.language.addassist === true,
       // The Looks section's photo: the Prague tram, or its own (languages.yml `looks`).
       looks: data.language.looks,
+      // The keynote video's cut: English's, or its own (languages.yml `keynote`).
+      keynote: data.language.keynote,
       prefix: data.language.prefix,
       date_format: data.language.date_format,
       guide: data.language.guide,

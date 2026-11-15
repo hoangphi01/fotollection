@@ -1,10 +1,12 @@
 {%- comment %} The keynote video (owner, 2026-11-11, under the hero): 20 s of the real app, rendered frame by frame by site/screenshots/keynote.mjs, a desktop and a phone cut, no sound. The headlines are this page's own words laid over it (`kn_*`, times in _data/keynote.yml), so the video serves every language. assets/js/keynote.js loads one file (the cut for the screen, AV1 or else H.264) only once the video comes into view, plays it while it is seen, and keeps the words in time; with reduced motion it waits for the play button; without script the poster and the first line stand. {% endcomment -%}
 {%- assign video = '/assets/video/' | relative_url -%}
+{%- comment %} The Japanese and Korean pages show their own cut, made from their country's photos (languages.yml `keynote`, owner 2026-11-15). {% endcomment -%}
+{%- assign cut_set = '' -%}{%- if pg.keynote %}{%- assign cut_set = '-' | append: pg.keynote -%}{%- endif %}
 <section class="section keynote-section" id="keynote">
   <div class="wrap">
-    <figure class="keynote" data-keynote data-src="{{ video }}">
+    <figure class="keynote" data-keynote data-src="{{ video }}"{% if pg.keynote %} data-set="{{ pg.keynote }}"{% endif %}>
       <div class="keynote-stage">
-        <video class="keynote-video" muted playsinline loop preload="none" aria-hidden="true" poster="{{ video }}keynote-desktop-poster.webp" data-poster-mobile="{{ video }}keynote-mobile-poster.webp"></video>
+        <video class="keynote-video" muted playsinline loop preload="none" aria-hidden="true" poster="{{ video }}keynote-desktop{{ cut_set }}-poster.webp" data-poster-mobile="{{ video }}keynote-mobile{{ cut_set }}-poster.webp"></video>
         <div class="keynote-lines">
           {%- for line in site.data.keynote %}
           <p class="keynote-line" data-from="{{ line.from }}" data-to="{{ line.to }}"><span class="keynote-h">{{ t[line.key] | keynote_line }}</span>{% if line.sub %}<span class="keynote-sub">{{ t[line.sub] }}</span>{% endif %}</p>

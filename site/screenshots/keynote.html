@@ -40,6 +40,36 @@
       const params = new URLSearchParams(location.search)
       const CUT = params.get('cut') === 'mobile' ? 'mobile' : 'desktop'
       const TEXT = params.get('text') !== '0'
+      // The language whose screenshots it shows (site/_data/languages.yml `keynote`): English's
+      // serve every page but Japanese and Korean, which show their own country's photos and cards
+      // (owner, 2026-11-15). Each set has its own places, measured on its own screenshots.
+      const LANG = ['ja', 'ko'].includes(params.get('lang')) ? params.get('lang') : 'en'
+      const shot = (name) => `${name}-${LANG}-dark`
+      // Message rows, then address rows: each typed from `start` to `end`, the paper up to `right`.
+      const GEO = {
+        en: {
+          stamp: { from: { x: 274, y: 230, w: 718, h: 335 }, to: { x: 281, y: 308, w: 704, h: 329 }, fromM: { x: 394, y: 158, w: 478, h: 478 }, toM: { x: 587, y: 231, w: 405, h: 405 } },
+          left: { x: 232, y: 237, w: 339, h: 459 }, right: { x: 696, y: 237, w: 339, h: 459 },
+          rows: [[377, 402, 666, 922, 23], [416, 441, 666, 889, 20], [546, 569, 666, 785, 12], [575, 599, 666, 1007, 36], [605, 628, 666, 801, 14], [638, 657, 666, 738, 7]].map(([top, bottom, start, end, letters]) => ({ top, bottom, start, end, right: 1070, letters })),
+          list: { x: 1262, y: 292, w: 330, h: 530 }, sizes: [437, 472, 543, 579, 614, 650, 792], ring: { x: 1266, w: 320 },
+        },
+        ja: {
+          // The upright photo spans x 473–793, y 158–636: seen whole, then its corner with the stamp.
+          stamp: { from: { x: 473, y: 158, w: 320, h: 478 }, to: { x: 590, y: 470, w: 203, h: 166 }, fromM: { x: 473, y: 238, w: 320, h: 320 }, toM: { x: 593, y: 436, w: 200, h: 200 } },
+          left: { x: 232, y: 237, w: 340, h: 460 }, right: { x: 709, y: 224, w: 312, h: 484 },
+          // The 通信欄's three lines inside its frame, then the address and the name; the code boxes stay.
+          rows: [[593, 621, 668, 908, 11, 922], [627, 656, 672, 908, 11, 922], [662, 690, 672, 895, 11, 922], [378, 408, 656, 774, 5, 960], [415, 444, 678, 817, 8, 960], [453, 481, 679, 796, 5, 960], [496, 543, 659, 929, 6, 960]].map(([top, bottom, start, end, letters, right]) => ({ top, bottom, start, end, right, letters })),
+          list: { x: 1218, y: 292, w: 375, h: 530 }, sizes: [436, 471, 507, 542, 578], ring: { x: 1220, w: 370 },
+        },
+        ko: {
+          stamp: null,
+          left: { x: 245, y: 224, w: 313, h: 485 }, right: { x: 699, y: 363, w: 332, h: 207 },
+          // The 통신란's two lines inside its frame, then the name (set to the right) and the address.
+          rows: [[216, 242, 665, 889, 24, 905], [246, 267, 665, 734, 6, 905], [390, 431, 916, 1067, 6, 1075], [441, 473, 681, 894, 17, 1075], [479, 510, 681, 777, 6, 1075]].map(([top, bottom, start, end, letters, right]) => ({ top, bottom, start, end, right, letters })),
+          list: { x: 1290, y: 292, w: 300, h: 530 }, sizes: [436, 471, 507, 543, 578, 614, 650], ring: { x: 1296, w: 290 },
+        },
+      }[LANG]
+      GEO.stamp ??= { from: { x: 274, y: 230, w: 718, h: 335 }, to: { x: 281, y: 308, w: 704, h: 329 }, fromM: { x: 394, y: 158, w: 478, h: 478 }, toM: { x: 587, y: 231, w: 405, h: 405 } }
       const W = innerWidth
       const H = innerHeight
       const DURATION = 20
@@ -114,7 +144,7 @@
       // 1. Every photo of the trip: the gallery, pulled back.
       const L1 = clipped()
       const W1 = world(L1)
-      plate(W1, 'grid-en-dark')
+      plate(W1, shot('grid'))
       const GRID_IN = { x: 340, y: 100, w: 800, h: 560 }
       const FULL = { x: 0, y: 0, w: 1600, h: 1000 }
 
@@ -122,76 +152,80 @@
       const L2 = clipped()
       const L2a = el('div', 'layer', {}, L2)
       const W2a = world(L2a)
-      plate(W2a, 'groups-en-dark')
+      plate(W2a, shot('groups'))
       const L2b = el('div', 'layer', {}, L2)
       const W2b = world(L2b)
-      plate(W2b, 'stamp-en-dark')
+      plate(W2b, shot('stamp'))
       // The photo spans x 274–992, y 158–636 of the screenshot: both views stay inside it, at the
       // area's shape, so no dark preview background shows beside it.
-      const STAMP_FROM = CUT === 'mobile' ? { x: 394, y: 158, w: 478, h: 478 } : { x: 274, y: 230, w: 718, h: 335 }
+      const STAMP_FROM = CUT === 'mobile' ? GEO.stamp.fromM : GEO.stamp.from
       // The camera stops at 1.6×, so the last view is the photo's corner that holds the stamp at
       // that scale: 704 × 329 on the desktop, 405 × 405 on a phone.
-      const STAMP_TO = CUT === 'mobile' ? { x: 587, y: 231, w: 405, h: 405 } : { x: 281, y: 308, w: 704, h: 329 }
+      const STAMP_TO = CUT === 'mobile' ? GEO.stamp.toM : GEO.stamp.to
       const L2c = el('div', 'layer', {}, L2)
       const W2c = world(L2c, 1200, 1600)
       const LOOKS = ['original', 'warm-film', 'cool', 'mono-soft']
       const lookImgs = LOOKS.map((name) => {
         const i = el('img', 'plate', { width: '1200px', height: '1600px', borderRadius: '10px' }, W2c)
-        i.src = `/img/looks/${name}.webp`
+        i.src = `/img/looks/${name}${LANG === 'en' ? '' : `-${LANG}`}.webp`
         return i
       })
 
       // 3–4. One sheet: two photos come together, then it turns into a postcard.
       const SHEET = { x: 170, y: 157, w: 927, h: 618 }
-      const LEFT = { x: 232, y: 237, w: 339, h: 459 }
-      const RIGHT = { x: 696, y: 237, w: 339, h: 459 }
+      const LEFT = GEO.left
+      const RIGHT = GEO.right
       const CUT_LINE = { x: 632, y: 157, w: 3, h: 606 }
       const L3 = layer()
       const W3 = world(L3)
       const flip = el('div', '', { position: 'absolute', inset: 0, transformOrigin: `${SHEET.x + SHEET.w / 2}px ${SHEET.y + SHEET.h / 2}px` }, W3)
       const collage = el('div', '', { position: 'absolute', inset: 0 }, flip)
       const paper = el('div', 'paper', { left: px(SHEET.x), top: px(SHEET.y), width: px(SHEET.w), height: px(SHEET.h) }, collage)
-      const cut = crop(collage, 'collage-preview-en-dark', CUT_LINE)
+      const cut = crop(collage, shot('collage-preview'), CUT_LINE)
       cut.style.transformOrigin = 'center top'
-      const left = crop(collage, 'collage-preview-en-dark', LEFT)
-      const right = crop(collage, 'collage-preview-en-dark', RIGHT)
+      const left = crop(collage, shot('collage-preview'), LEFT)
+      const right = crop(collage, shot('collage-preview'), RIGHT)
       const postcard = el('div', '', { position: 'absolute', inset: 0 }, flip)
-      const card = crop(postcard, 'postcard-night-en-dark', SHEET)
+      const card = crop(postcard, shot('postcard-night'), SHEET)
       Object.assign(card.style, { borderRadius: '4px', boxShadow: '0 30px 80px rgba(0, 0, 0, 0.55)' })
       // The preview's "22 / 35" sits on the sheet's foot: the photo's pixels just above it and the
       // paper cover it, so only the sheet shows.
-      const patch = crop(postcard, 'postcard-night-en-dark', { x: 585, y: 752, w: 48, h: 12 })
+      const patch = crop(postcard, shot('postcard-night'), { x: 585, y: 752, w: 48, h: 12 })
       place(patch, 585, 764)
       Object.assign(patch.style, { height: '11px', borderBottomLeftRadius: '0' })
       el('div', 'mask', { left: '633px', top: '764px', width: '50px', height: '11px' }, postcard)
       // The message and the address, typed: each row is covered by paper that steps right, one letter at a time.
-      const ROWS = [
-        { top: 378, bottom: 405, end: 792, letters: 11, at: 0.9, dur: 0.6 },
-        { top: 426, bottom: 453, end: 878, letters: 19, at: 1.55, dur: 0.85 },
-        { top: 592, bottom: 618, end: 826, letters: 13, at: 2.5, dur: 0.35 },
-        { top: 639, bottom: 665, end: 892, letters: 21, at: 2.85, dur: 0.4 },
-        { top: 686, bottom: 713, end: 924, letters: 25, at: 3.25, dur: 0.4 },
-      ].map((r) => ({ ...r, mask: el('div', 'mask', { top: px(r.top), height: px(r.bottom - r.top) }, postcard) }))
+      // Typed one letter at a time from 0.8 s after the turn: about 40 letters a second, a beat between rows.
+      let typedAt = 0.8
+      const ROWS = GEO.rows.map((r) => {
+        const dur = Math.max(0.25, r.letters / 40)
+        const row = { ...r, at: typedAt, dur, mask: el('div', 'mask', { top: px(r.top), height: px(r.bottom - r.top) }, postcard) }
+        typedAt += dur + 0.06
+        return row
+      })
 
       // 5. Every size of dm and Rossmann's price list, then Export.
       const L5 = clipped()
       const W5 = world(L5)
-      plate(W5, 'manual-size-en-dark')
-      const LIST = { x: 1262, y: 292, w: 330, h: 530 }
+      plate(W5, shot('manual-size'))
+      const LIST = GEO.list
       const EXPORT_AREA = { x: 1250, y: 760, w: 345, h: 230 }
       const BUTTON = { x: 1282, y: 912, w: 304, h: 34 }
-      const SIZE_ROWS = [437, 472, 543, 579, 614, 650, 792]
+      const SIZE_ROWS = GEO.sizes
+      // The list, open, covers the panel's foot: the gallery's own screenshot, with the same panel,
+      // takes over as the camera goes down to Export.
+      const exportPlate = plate(W5, shot('grid'))
       // The size line above Export ("363.0 MB → ≈ 363.0 MB") reads as noise in a glance: the
       // panel's own colour covers it, so the button and "Offline · GPS stripped" stand alone.
       el('div', '', { position: 'absolute', left: '1276px', top: '864px', width: '206px', height: '40px', background: 'rgb(24, 20, 16)', borderRadius: '10px' }, W5)
-      const ring = el('div', 'ring', { left: px(1266), width: px(320), height: px(36) }, W5)
-      const press = crop(W5, 'manual-size-en-dark', BUTTON)
+      const ring = el('div', 'ring', { left: px(GEO.ring.x), width: px(GEO.ring.w), height: px(36) }, W5)
+      const press = crop(W5, shot('grid'), BUTTON)
       press.style.borderRadius = '8px'
       press.style.transformOrigin = 'center'
 
       // 6. The end: the name, over the gallery blurred.
       const L6 = layer()
-      el('div', 'blur', { backgroundImage: `url(${img('grid-en-dark')})` }, L6)
+      el('div', 'blur', { backgroundImage: `url(${img(shot('grid'))})` }, L6)
       const end = el('div', 'end', {}, L6)
       const mark = el('img', '', { width: px(H * 0.2), height: px(H * 0.2) }, end)
       mark.src = '/brand/icon-256.png'
@@ -264,8 +298,8 @@
         postcard.style.display = turned ? '' : 'none'
         for (const r of ROWS) {
           const shown = Math.floor(ramp(f, r.at, r.at + r.dur) * r.letters) / r.letters
-          const x = lerp(666, r.end, shown)
-          Object.assign(r.mask.style, { left: px(x), width: px(Math.max(0, 1070 - x)) })
+          const x = lerp(r.start, r.end, shown)
+          Object.assign(r.mask.style, { left: px(x), width: px(Math.max(0, r.right - x)) })
         }
 
         L5.style.opacity = seen(t, 13.5, 17.5)
@@ -275,6 +309,7 @@
         const y = lerp(SIZE_ROWS[Math.max(0, step - 1)], SIZE_ROWS[step], t < 13.8 ? 1 : glide)
         ring.style.top = px(y - 18)
         ring.style.opacity = ramp(t, 13.7, 13.9) * (1 - ramp(t, 15.3, 15.5))
+        exportPlate.style.opacity = ramp(t, 15.3, 15.6)
         const p = ramp(t, 16.35, 16.5) - ramp(t, 16.5, 16.75, enter)
         press.style.transform = `scale(${1 - 0.04 * p})`
         press.style.boxShadow = `0 0 0 ${lerp(0, 10, ramp(t, 16.4, 17.2))}px rgba(242, 174, 107, ${0.35 * (1 - ramp(t, 16.4, 17.2))})`

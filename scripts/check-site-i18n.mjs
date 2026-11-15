@@ -54,6 +54,7 @@ const pagesOf = {}
 const names = {}
 const guideOf = {}
 const kioskOf = {}
+const keynoteOf = {}
 if (!existsSync(registry)) problems.push('site/_data/languages.yml is missing')
 else {
   let code = null
@@ -64,6 +65,8 @@ else {
     if (n && code) names[code] = n[1].trim()
     const g = line.match(/^ {2}guide: (.+)$/)
     if (g && code) guideOf[code] = g[1].trim()
+    const kn = line.match(/^ {2}keynote: (\w+)/)
+    if (kn && code) keynoteOf[code] = kn[1]
     const k = line.match(/^ {2}kiosk: (\w+)/)
     if (k && code) kioskOf[code] = k[1]
     const p = line.match(/^ {2}pages: \[(.*)\]/)
@@ -114,6 +117,15 @@ for (const f of readdirSync(path.join(site, 'assets/img'))) {
   if (!m || !carouselShots.has(m[1])) continue
   const [w, h] = webpSize(path.join(site, 'assets/img', f))
   if (w !== 1600 || h !== 1000) problems.push(`site/assets/img/${f} is ${w} × ${h}: a carousel picture is 1600 × 1000, the whole window (site/screenshots/shoot.mjs)`)
+}
+// A language with its own keynote cut (languages.yml `keynote`) has both cuts, both codecs and
+// both posters (site/screenshots/keynote.mjs --lang).
+for (const [c, k] of Object.entries(keynoteOf)) {
+  for (const cut of ['desktop', 'mobile']) {
+    for (const f of [`keynote-${cut}-${k}-av1.mp4`, `keynote-${cut}-${k}-h264.mp4`, `keynote-${cut}-${k}-poster.webp`]) {
+      if (!existsSync(path.join(site, 'assets/video', f))) problems.push(`${c}: no site/assets/video/${f}; run node site/screenshots/keynote.mjs <dir> desktop mobile --lang ${k}`)
+    }
+  }
 }
 const wordsDir = path.join(site, '_data/i18n')
 const files = existsSync(wordsDir) ? readdirSync(wordsDir).filter((f) => f.endsWith('.yml')).map((f) => f.slice(0, -4)) : []
