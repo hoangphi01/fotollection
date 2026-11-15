@@ -231,7 +231,7 @@ A date in the corner of the print, like a film camera's, taken from when the pho
    - the **colour**: **White** or **Retro orange**;
    - the **size**: **Small**, **Medium** or **Large**, the same three in every mode. The size follows the print: larger on a larger print, and on a collage sheet each photo's stamp is half the sheet's, as two share it.
 3. **Place on the date line** adds the town where the photo was taken, from its GPS, offline: as **City**, **+ code** (with the country code, *Prague, CZ*) or **+ country** (*Prague, Czechia*). A photo without GPS can get a place by hand (chapter 10).
-4. **Line under the date**: a short text across the photo, up to 80 characters, printed in capitals without accents (for example *KY NIEM BUDAPEST*).
+4. **Line under the date**: a short text across the photo, up to 80 characters, printed in capitals without accents (for example *HELLO FROM LONDON*).
 
 <!-- shot: stamp | Date stamp with the town from the photo's GPS -->
 

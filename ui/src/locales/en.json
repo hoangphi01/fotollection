@@ -176,7 +176,7 @@
       "cityCountry": "+ country"
     },
     "caption": "Line under the date",
-    "captionPlaceholder": "e.g. KY NIEM BUDAPEST",
+    "captionPlaceholder": "e.g. HELLO FROM LONDON",
     "captionHint": "Printed in capitals without accents, across the photo.",
     "captionSame": "Same on both photos",
     "captionFor": "Line under the date for {{name}}",

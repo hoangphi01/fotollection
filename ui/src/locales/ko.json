@@ -176,7 +176,7 @@
       "cityCountry": "+ 국가"
     },
     "caption": "날짜 아래 줄",
-    "captionPlaceholder": "e.g. KY NIEM BUDAPEST",
+    "captionPlaceholder": "예: SEOUL 2026",
     "captionHint": "악센트 없는 대문자로, 사진 가로로 프린트됩니다.",
     "captionSame": "두 사진에 같게",
     "captionFor": "{{name}}의 날짜 아래 줄",

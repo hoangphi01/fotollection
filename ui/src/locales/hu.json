@@ -176,7 +176,7 @@
       "cityCountry": "+ ország"
     },
     "caption": "Sor a dátum alatt",
-    "captionPlaceholder": "pl. KY NIEM BUDAPEST",
+    "captionPlaceholder": "pl. NYAR A BALATONON",
     "captionHint": "Nagybetűkkel, ékezetek nélkül nyomtatva, a fotón keresztül.",
     "captionSame": "Mindkét fotón ugyanaz",
     "captionFor": "Sor a dátum alatt ehhez: {{name}}",

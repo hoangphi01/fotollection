@@ -176,7 +176,7 @@
       "cityCountry": "+ Land"
     },
     "caption": "Zeile unter dem Datum",
-    "captionPlaceholder": "z. B. KY NIEM BUDAPEST",
+    "captionPlaceholder": "z. B. SOMMER IN BERLIN",
     "captionHint": "In Großbuchstaben ohne Akzente gedruckt, quer übers Foto.",
     "captionSame": "Gleich auf beiden Fotos",
     "captionFor": "Zeile unter dem Datum für {{name}}",

@@ -176,7 +176,7 @@
       "cityCountry": "+ 国"
     },
     "caption": "日付の下の行",
-    "captionPlaceholder": "例：KY NIEM BUDAPEST",
+    "captionPlaceholder": "例：KYOTO 2026",
     "captionHint": "アクセント記号なしの大文字で、写真の横幅いっぱいにプリントされます。",
     "captionSame": "両方の写真で同じ",
     "captionFor": "{{name}}の日付の下の行",

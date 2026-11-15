@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- The example in **Line under the date** is the app's language's own (KYOTO 2026, SEOUL 2026, SOMMER IN BERLIN…), no longer Vietnamese words with an English "e.g." in Korean.
+
 ### Changed
 
 - **A shorter website:** the home page keeps six sections and opens on a finished postcard at full size, the app's own render; the prints themselves (a postcard, a date stamp, an info frame) come large, where the old page showed a whole window too small to read. Everything else moved to a new Features page, with a bar that follows you to each section; the v0.12 makeover moved to the Wiki. Korean speaks in 해요체, Japanese names its sizes as Japan does (はがきサイズ), and the trademarks fold under one line. The Japanese and Korean pages have their own keynote video: their country's photos, the はがき to Tokyo Tower or the 우편엽서 to the Sejong Center typed line by line, and their kiosks' sizes.
