@@ -496,9 +496,11 @@ fn korea_demos() -> (PostcardDemo, PostcardDemo) {
             "sheet-postcard",
             true,
             false,
-            "DSCF1990",
+            // @imyourctus's autumn pond (Gwanghwamun is on the page three times already, owner
+            // 2026-11-15).
+            "DSC06311",
             [
-                "광화문에서 안부 전해요.",
+                "가을 호수에서 안부 전해요.",
                 "서울의 가을을 보냅니다.",
                 "건강하세요!",
             ],
@@ -510,7 +512,8 @@ fn korea_demos() -> (PostcardDemo, PostcardDemo) {
             true,
             "DSCF2041",
             [
-                "서울의 밤을 보냅니다. 다음에는 같이 걸어요. 건강하세요!",
+                // The photo is a coffee by a window: the message asks for the next one together.
+                "서울의 가을 커피 한 잔을 보냅니다. 다음에는 같이 마셔요. 건강하세요!",
                 "경복궁에서 인사드려요.",
                 "곧 만나요!",
             ],
