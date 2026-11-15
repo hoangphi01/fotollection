@@ -929,6 +929,11 @@
     "readBy": "gelesen von {{name}}"
   },
   "postcard": {
+    "senderHintCard": "Der eigene Absender dieser Karte; ohne ihn druckt die Karte den Absender dieses Geräts.",
+    "senderResetTicked": "Absender von den markierten Postkarten entfernen",
+    "senderResetAll": "Absender von allen Postkarten entfernen",
+    "senderResetBody": "Die Postkarten drucken keinen Absender, bis wieder einer eingegeben wird. Cmd/Ctrl+Z holt ihn zurück.",
+    "senderResetOk": "Entfernen",
     "recipient": "Empfänger",
     "senderPrint": "Absender drucken",
     "book": {

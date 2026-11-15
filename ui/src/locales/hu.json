@@ -929,6 +929,11 @@
     "readBy": "olvasta: {{name}}"
   },
   "postcard": {
+    "senderHintCard": "A lap saját feladója; amíg nincs, a gép feladója kerül rá.",
+    "senderResetTicked": "Feladó törlése a kijelölt lapokról",
+    "senderResetAll": "Feladó törlése minden lapról",
+    "senderResetBody": "A lapokra nem kerül feladó, amíg újra be nem írod. A Cmd/Ctrl+Z visszahozza.",
+    "senderResetOk": "Törlés",
     "recipient": "Címzett",
     "senderPrint": "Feladó nyomtatása",
     "book": {

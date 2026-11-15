@@ -929,6 +929,11 @@
     "readBy": "{{name}}で読み込み"
   },
   "postcard": {
+    "senderHintCard": "このはがき専用の差出人です。未入力のはがきには、このパソコンの差出人が印刷されます。",
+    "senderResetTicked": "選択したはがきから差出人を削除",
+    "senderResetAll": "すべてのはがきから差出人を削除",
+    "senderResetBody": "差出人をもう一度入力するまで、はがきには差出人が印刷されません。Cmd/Ctrl+Zで元に戻せます。",
+    "senderResetOk": "削除",
     "recipient": "宛先",
     "senderPrint": "差出人を印刷",
     "book": {

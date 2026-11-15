@@ -439,10 +439,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> crate:
     let mut sender_end = card.y;
     // The sender at the top left, left of the stamp box: the label, the name, the address,
     // each over a dotted rule, then its five boxes.
-    if let Some(from) = settings
-        .sender(Country::Kr)
-        .filter(|a| settings.sender_on && !a.is_blank())
-    {
+    if let Some(from) = crate::hagaki::sender(settings, spec.text, Country::Kr) {
         let left = card.x + SENDER_LEFT_MM;
         let right = left + SENDER_WIDTH_MM.min(stamp.x - 2.0 - left);
         let width = mm(right - left);
@@ -475,7 +472,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> crate:
             y += 0.25 + SENDER_GAP_MM;
         }
         let size = em * SENDER_ADDRESS;
-        let rows = fit_rows(faces, &address_text(from), mm(size), width);
+        let rows = fit_rows(faces, &address_text(&from), mm(size), width);
         cut |= rows.len() > 2;
         for (row, row_em) in rows.iter().take(2) {
             line(
@@ -736,6 +733,7 @@ mod tests {
             message: String::new(),
             address: String::new(),
             recipients: vec![to],
+            senders: Vec::new(),
         }
     }
 
@@ -930,6 +928,7 @@ mod tests {
             message: String::new(),
             address: String::new(),
             recipients: vec![to],
+            senders: Vec::new(),
         };
         (settings, text)
     }

@@ -24,7 +24,7 @@ export function PostcardCards({ settings, onChange, photo, revision, filter, tic
   return (
     <>
       <PostcardCard settings={settings} onChange={onChange} />
-      <PostcardSenderCard settings={settings} onChange={onChange} />
+      <PostcardSenderCard settings={settings} onChange={onChange} photo={photo} revision={revision} filter={filter} ticked={ticked} />
       <PostcardRecipientCard settings={settings} onChange={onChange} photo={photo} revision={revision} filter={filter} ticked={ticked} />
       <PostcardTextCard settings={settings} onChange={onChange} photo={photo} revision={revision} filter={filter} ticked={ticked} />
     </>

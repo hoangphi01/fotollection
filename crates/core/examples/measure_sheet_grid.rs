@@ -44,6 +44,7 @@ fn main() {
                     message: "Liebe Grüße aus Budapest! Bis bald.".into(),
                     address: "Anna Schmidt\nHauptstraße 1\n10115 Berlin".into(),
                     recipients: Vec::new(),
+                    senders: Vec::new(),
                 });
             }
             Some(record)

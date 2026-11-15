@@ -929,6 +929,11 @@
     "readBy": "{{name}}(으)로 읽음"
   },
   "postcard": {
+    "senderHintCard": "이 엽서만의 보내는 사람이에요. 입력하지 않은 엽서에는 이 컴퓨터의 보내는 사람이 인쇄돼요.",
+    "senderResetTicked": "선택한 엽서에서 보내는 사람 지우기",
+    "senderResetAll": "모든 엽서에서 보내는 사람 지우기",
+    "senderResetBody": "다시 입력할 때까지 엽서에 보내는 사람이 인쇄되지 않아요. Cmd/Ctrl+Z로 되돌릴 수 있어요.",
+    "senderResetOk": "지우기",
     "recipient": "받는 사람",
     "senderPrint": "보내는 사람 인쇄",
     "book": {

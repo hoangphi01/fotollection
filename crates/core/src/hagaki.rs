@@ -376,7 +376,7 @@ pub fn draw_upright(
     let small = em * SENDER_SCALE;
     // 3 mm clear of the zone, for a kiosk's shift (the Japan Post review).
     let left = card.x + POSTMARK_MM.0 + 3.0;
-    if let Some(from) = sender(settings, Country::Jp) {
+    if let Some(from) = sender(settings, spec.text, Country::Jp) {
         let from_top = card.y + SENDER_TOP_MM;
         if from.latin {
             let mut lines = latin_lines(&from);
@@ -692,13 +692,21 @@ fn draw_code_digits(
     }
 }
 
-/// This card's sender: its own country's record, when its switch is on (each card its own
-/// record, LESSONS 2026-11-15).
-fn sender(settings: &PostcardSettings, country: Country) -> Option<Address> {
+/// This card's sender, when the switch is on: the card's own (owner, 2026-11-15: a sender per
+/// card), else the machine's for its country (each country its own record, LESSONS
+/// 2026-11-15).
+pub fn sender(
+    settings: &PostcardSettings,
+    text: Option<&PostcardText>,
+    country: Country,
+) -> Option<Address> {
     if !settings.sender_on {
         return None;
     }
-    settings.sender(country).filter(|a| !a.is_blank()).cloned()
+    text.and_then(|t| t.sender(country))
+        .or_else(|| settings.sender(country))
+        .filter(|a| !a.is_blank())
+        .cloned()
 }
 
 /// The stamp box of a landscape はがき whose writing half is `card`: its top right.
@@ -897,7 +905,7 @@ pub fn draw_landscape(
     // right: the code in Arabic figures, the address, the building two ems in, the name.
     let s_em = em * SENDER_SCALE;
     let mut lines: Vec<(String, f32, f32, bool)> = Vec::new();
-    if let Some(from) = sender(settings, Country::Jp) {
+    if let Some(from) = sender(settings, spec.text, Country::Jp) {
         if printed_code(&from.code).is_some() {
             lines.push((
                 format!("{}-{}", &from.code[..3], &from.code[3..]),
@@ -1105,6 +1113,7 @@ pub(crate) mod tests {
             message: String::new(),
             address: String::new(),
             recipients: vec![to],
+            senders: Vec::new(),
         }
     }
 
@@ -1225,6 +1234,35 @@ pub(crate) mod tests {
         assert_eq!(inked(&off, band, dark), 0);
     }
 
+    /// A sender per card (owner, 2026-11-15): a card's own sender prints before the machine's,
+    /// the machine's when the card has none, and none while the switch is off.
+    #[test]
+    fn fr_133_a_cards_own_sender_prints_before_the_machines() {
+        let mut settings = PostcardSettings::default();
+        let mut machine = Address::new(Country::Jp);
+        machine.name = "機械太郎".into();
+        settings.senders = vec![machine];
+        let mut own = Address::new(Country::Jp);
+        own.name = "佐藤一郎".into();
+        let mut text = PostcardText::default();
+        text.set_sender(Country::Jp, Some(own));
+        assert_eq!(
+            sender(&settings, Some(&text), Country::Jp),
+            None,
+            "off: no sender"
+        );
+        settings.sender_on = true;
+        assert_eq!(
+            sender(&settings, Some(&text), Country::Jp).map(|a| a.name),
+            Some("佐藤一郎".into())
+        );
+        assert_eq!(
+            sender(&settings, None, Country::Jp).map(|a| a.name),
+            Some("機械太郎".into())
+        );
+        assert_eq!(sender(&settings, Some(&text), Country::Kr), None);
+    }
+
     #[test]
     fn fr_130_the_name_runs_down_the_middle_and_the_sender_only_when_on() {
         let settings = PostcardSettings::default();
@@ -1271,6 +1309,7 @@ pub(crate) mod tests {
             message: String::new(),
             address: "HOANG PHI PHAM\nKodály Zoltán u. 9\n4028 DEBRECEN".into(),
             recipients: Vec::new(),
+            senders: Vec::new(),
         };
         assert_eq!(recipient(Some(&text)), None);
         // A Korean recipient is not a Japanese card's either, and setting one keeps the other.
@@ -1656,6 +1695,7 @@ pub(crate) mod tests {
             message: String::new(),
             address: String::new(),
             recipients: vec![to],
+            senders: Vec::new(),
         }
     }
 

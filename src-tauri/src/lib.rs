@@ -122,6 +122,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             collage::forget_address,
             collage::postcard_recipient_gaps,
             collage::apply_postcard_recipient,
+            collage::clear_postcard_party,
+            collage::set_postcard_sender,
             collage::remember_recipient,
             collage::address_book,
             collage::save_address,

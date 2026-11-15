@@ -1,0 +1,75 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 15,
+  "app_version": "0.14.2",
+  "modified_at": "2026-11-15T20:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Japan",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "IMG_5745.HEIC",
+      "fp_size": 3000000,
+      "fp_mtime": 1730000000,
+      "postcard": {
+        "message": "鎌倉の抹茶ソフト、美味しかった！",
+        "address": "",
+        "recipients": [
+          {
+            "country": "jp",
+            "filledBy": "1.0",
+            "code": "248-0024",
+            "region": "神奈川県",
+            "city": "鎌倉市",
+            "town": "稲村ガ崎",
+            "line": "一丁目二番三号",
+            "name": "鎌倉花子"
+          }
+        ],
+        "senders": [
+          {
+            "country": "jp",
+            "filledBy": "1.1",
+            "code": "1500001",
+            "region": "東京都",
+            "city": "渋谷区",
+            "town": "神宮前",
+            "line": "1-2-3",
+            "name": "佐藤一郎"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "folder": 1,
+      "path": "DSCF1990.JPG",
+      "fp_size": 9000000,
+      "fp_mtime": 1730000100,
+      "postcard": {
+        "message": "",
+        "address": "",
+        "recipients": [
+          {
+            "country": "kr",
+            "filledBy": "1.0",
+            "code": "03172",
+            "region": "서울특별시",
+            "city": "종로구",
+            "road": "세종대로",
+            "line": "175, 3층",
+            "name": "홍길동",
+            "honorific": false,
+            "latin": true
+          }
+        ]
+      }
+    }
+  ]
+}

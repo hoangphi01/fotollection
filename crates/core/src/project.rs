@@ -35,7 +35,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// v14: `photos[].postcard.recipients`, the recipients of its Japanese and Korean cards, one
 /// per country, each its code, places, line and name (FR-130, FR-132, FR-133), kept apart
 /// from the European card's free `address`; absent before.
-pub const SCHEMA_VERSION: u32 = 14;
+/// v15: `photos[].postcard.senders`, the card's own senders of its Japanese and Korean cards,
+/// one per country (owner, 2026-11-15); absent before (the machine's sender prints).
+pub const SCHEMA_VERSION: u32 = 15;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -1002,6 +1004,38 @@ mod tests {
             panic!("a written v13 file should load");
         };
         assert!(again.photos[0].print_turned);
+    }
+
+    /// A sender per card (owner, 2026-11-15): a v15 file keeps a card's own sender, a v14 file
+    /// has none, and a written one is read again.
+    #[test]
+    fn fr_133_v15_keeps_a_cards_own_sender() {
+        let Loaded::Ok(v14) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v14.fotollection"))
+        else {
+            panic!("v14 project should load");
+        };
+        assert!(
+            v14.photos
+                .iter()
+                .all(|p| p.postcard.as_ref().is_none_or(|c| c.senders.is_empty()))
+        );
+        let Loaded::Ok(v15) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v15.fotollection"))
+        else {
+            panic!("v15 project should load");
+        };
+        let sender = v15.photos[0]
+            .postcard
+            .as_ref()
+            .and_then(crate::library::PostcardText::sanitized)
+            .and_then(|c| c.sender(crate::addassist::Country::Jp).cloned());
+        assert_eq!(sender.as_ref().map(|s| s.name.as_str()), Some("佐藤一郎"));
+        let json = serde_json::to_string(&v15).unwrap_or_default();
+        let Loaded::Ok(again) = from_bytes(json.as_bytes()) else {
+            panic!("a written v15 project reads again");
+        };
+        assert_eq!(again.photos[0].postcard, v15.photos[0].postcard);
     }
 
     /// FR-133: a v14 file keeps each card's recipient, its code brought to its digits; a v13

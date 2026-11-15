@@ -898,6 +898,11 @@
     "readBy": "đọc bằng {{name}}"
   },
   "postcard": {
+    "senderHintCard": "Người gửi riêng của tấm này; tấm chưa có thì in người gửi chung của máy.",
+    "senderResetTicked": "Xoá người gửi khỏi các tấm đã chọn",
+    "senderResetAll": "Xoá người gửi khỏi mọi tấm",
+    "senderResetBody": "Các tấm sẽ không in người gửi cho tới khi bạn nhập lại. Cmd/Ctrl+Z để hoàn tác.",
+    "senderResetOk": "Xoá",
     "recipient": "Người nhận",
     "senderPrint": "In người gửi",
     "book": {

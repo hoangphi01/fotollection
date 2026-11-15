@@ -316,6 +316,7 @@ fn fr_073_postcards_export_one_file_per_photo() {
         message: "Liebe Grüße!".into(),
         address: "Anna Schmidt, Berlin".into(),
         recipients: Vec::new(),
+        senders: Vec::new(),
     });
     let sheets: Vec<fotollection_core::export::SheetRecords> =
         all.iter().map(|r| (r.clone(), None)).collect();

@@ -1193,6 +1193,7 @@ mod tests {
             message: message.into(),
             address: address.into(),
             recipients: Vec::new(),
+            senders: Vec::new(),
         }
     }
 

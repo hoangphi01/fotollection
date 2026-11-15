@@ -422,16 +422,54 @@ export const commands = {
 	/**  Forgets one remembered address (FR-077); returns the list left. */
 	forgetAddress: (address: string) => typedError<string[], IpcError>(__TAURI_INVOKE("forget_address", { address })),
 	/**
-	 *  How many other postcards have no recipient for `country`, and how many another one: the
-	 *  counts on "Use for N postcards" under a Japanese or Korean recipient (FR-133).
+	 *  How many other postcards have no recipient (or sender) for `country`, and how many another
+	 *  one: the counts on "Use for N postcards" under a Japanese or Korean recipient or sender (FR-133).
 	 */
-	postcardRecipientGaps: (filter: CullFilter, source: PhotoId, country: Country, ticked: PhotoId[]) => typedError<TextGaps, IpcError>(__TAURI_INVOKE("postcard_recipient_gaps", { filter, source, country, ticked })),
+	postcardRecipientGaps: (filter: CullFilter, source: PhotoId, country: Country, party: CardParty, ticked: PhotoId[]) => typedError<TextGaps, IpcError>(__TAURI_INVOKE("postcard_recipient_gaps", { filter, source, country, party, ticked })),
 	/**
-	 *  This card's Japanese or Korean recipient on the other postcards (FR-133, `AddAssist` 1.1):
+	 *  This card's Japanese or Korean recipient (or its own sender) on the other postcards (FR-133):
 	 *  those without one, or with `overwrite` every other one too. One undoable step; returns
 	 *  how many changed. The recipient joins the recent ones.
 	 */
-	applyPostcardRecipient: (filter: CullFilter, source: PhotoId, country: Country, overwrite: boolean, ticked: PhotoId[]) => typedError<number, IpcError>(__TAURI_INVOKE("apply_postcard_recipient", { filter, source, country, overwrite, ticked })),
+	applyPostcardRecipient: (filter: CullFilter, source: PhotoId, country: Country, party: CardParty, overwrite: boolean, ticked: PhotoId[]) => typedError<number, IpcError>(__TAURI_INVOKE("apply_postcard_recipient", { filter, source, country, party, overwrite, ticked })),
+	/**
+	 *  Takes the card's own recipient or sender for `country` off the ticked postcards, else every
+	 *  one shown (the red ↺ of the Sender card, owner 2026-11-15): one undoable step; a card left
+	 *  without its own sender prints the machine's. Returns how many changed.
+	 */
+	clearPostcardParty: (filter: CullFilter, country: Country, party: CardParty, ticked: PhotoId[]) => typedError<number, IpcError>(__TAURI_INVOKE("clear_postcard_party", { filter, country, party, ticked })),
+	/**
+	 *  Sets (or with `None` clears) one card's own sender for `country` (owner, 2026-11-15),
+	 *  checked as a recipient is; one undoable step.
+	 */
+	setPostcardSender: (id: PhotoId, country: Country, address: {
+	country: Country,
+	/**
+	 *  The `AddAssist` version that filled its places ("1.0"), "" when typed by hand, so a card
+	 *  made under 1.0 is read the same way later (PRD FR-133).
+	 */
+	filledBy?: string,
+	/**  The postal code's digits, 7 in Japan and 5 in Korea; "" when not known. */
+	code?: string,
+	/**  Prefecture (Japan), 시·도 (Korea). */
+	region?: string,
+	/**  Municipality, 시·군·구. */
+	city?: string,
+	/**  Town (Japan), 읍·면 (Korea). */
+	town?: string,
+	/**  The road (Korea). */
+	road?: string,
+	/**
+	 *  What the user types after the places: 1-2-3 and the building in Japan, 175 and the
+	 *  unit in Korea.
+	 */
+	line?: string,
+	name?: string,
+	/**  様 (Japan) or 귀하 (Korea) after the name; Japan always prints it. */
+	honorific?: boolean,
+	/**  Printed in Latin letters (romaji, Revised Romanization) instead of kanji or Hangul. */
+	latin?: boolean,
+} | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_sender", { id, country, address })),
 	/**
 	 *  Remembers a Japanese or Korean recipient once its block is left (FR-133), as a European
 	 *  address is: the drafts saved while it was typed never join the list.
@@ -1101,6 +1139,12 @@ export type CameraStatus = {
 export type CaptureFormat = "jpeg" | "raw" | 
 /**  A value we have not named (RAW+JPEG, another quality); shown as is. */
 "other";
+
+/**
+ *  Who on a Japanese or Korean card an address is: the recipient (FR-133) or the card's own
+ *  sender (owner, 2026-11-15: a sender per card, applied to many).
+ */
+export type CardParty = "recipient" | "sender";
 
 /**  What the panel says about one photo of a sheet (FR-035, FR-026). */
 export type CellInfo = {
@@ -2202,6 +2246,12 @@ export type PostcardText = {
 	 *  2026-11-15).
 	 */
 	recipients?: Address[],
+	/**
+	 *  The senders of its Japanese and Korean cards (owner, 2026-11-15: "a sender per card,
+	 *  applied to many"), one per country; a card without one prints the machine's sender
+	 *  (`PostcardSettings::sender`).
+	 */
+	senders?: Address[],
 };
 
 /**

@@ -25,7 +25,7 @@ type Subject = { filter: CullFilter; photo: PhotoId; country: Country; ticked: r
 
 const loadGaps = async (subject: string) => {
   const { filter, photo, country, ticked } = JSON.parse(subject) as Subject
-  const result = await commands.postcardRecipientGaps(filter, photo, country, [...ticked])
+  const result = await commands.postcardRecipientGaps(filter, photo, country, 'recipient', [...ticked])
   return result.status === 'ok' ? result.data : null
 }
 
@@ -97,7 +97,7 @@ export function PostcardRecipientCard({ settings, onChange, photo, revision, fil
                   gaps={recipientNow ? gaps : null}
                   ticked={ticked}
                   apply={async (overwrite) => {
-                    const result = await commands.applyPostcardRecipient(filter, photo, country, overwrite, [...ticked])
+                    const result = await commands.applyPostcardRecipient(filter, photo, country, 'recipient', overwrite, [...ticked])
                     return result.status === 'ok' ? result.data : errorText(result.error)
                   }}
                 />

@@ -1546,6 +1546,7 @@ mod tests {
             message: "Hello".into(),
             address: "Anna".into(),
             recipients: Vec::new(),
+            senders: Vec::new(),
         };
         let source = |postcard| CellSource {
             image: &image,
@@ -2034,6 +2035,7 @@ mod tests {
             message: "Liebe Grüße aus Budapest!".into(),
             address: "Anna Schmidt".into(),
             recipients: Vec::new(),
+            senders: Vec::new(),
         };
         let source = CellSource {
             image: &image,
@@ -2442,6 +2444,7 @@ mod tests {
                 message: long.into(),
                 address: String::new(),
                 recipients: vec![to],
+                senders: Vec::new(),
             };
             let print = sheet_print(&settings);
             let sheet = layout(print, [Some((1000, 1000)), None], false, &settings.collage);
@@ -2551,6 +2554,7 @@ mod tests {
                 message: "One line.".into(),
                 address: long_eu.into(),
                 recipients: vec![to],
+                senders: Vec::new(),
             };
             let print = sheet_print(&settings);
             let fit = postcard_fit(print, &settings, &text, None);

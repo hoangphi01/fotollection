@@ -310,16 +310,42 @@ pub fn forget_address(
     Ok(left)
 }
 
-/// The recipient of a photo's card for `country` (FR-130, FR-132), if it has one.
-fn recipient_of(
+/// Who on a Japanese or Korean card an address is: the recipient (FR-133) or the card's own
+/// sender (owner, 2026-11-15: a sender per card, applied to many).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum CardParty {
+    Recipient,
+    Sender,
+}
+
+/// A photo card's recipient or sender for `country`, if it has its own.
+fn party_of(
     library: &Library,
     id: PhotoId,
     country: fotollection_core::addassist::Country,
+    party: CardParty,
 ) -> Option<fotollection_core::addassist::Address> {
-    library
-        .record(id)
-        .and_then(|r| r.edits.postcard)
-        .and_then(|t| t.recipient(country).cloned())
+    let text = library.record(id).and_then(|r| r.edits.postcard)?;
+    match party {
+        CardParty::Recipient => text.recipient(country).cloned(),
+        CardParty::Sender => text.sender(country).cloned(),
+    }
+}
+
+/// Sets (or with `None` clears) a card's recipient or sender for `country`.
+fn set_party(
+    edits: &mut fotollection_core::library::PhotoEdits,
+    country: fotollection_core::addassist::Country,
+    party: CardParty,
+    address: Option<fotollection_core::addassist::Address>,
+) {
+    let mut text = edits.postcard.take().unwrap_or_default();
+    match party {
+        CardParty::Recipient => text.set_recipient(country, address),
+        CardParty::Sender => text.set_sender(country, address),
+    }
+    edits.postcard = text.sanitized();
 }
 
 /// The source card's recipient for `country`, and the other cards it goes to: those without
@@ -329,22 +355,23 @@ fn recipient_targets(
     filter: &CullFilter,
     source: PhotoId,
     country: fotollection_core::addassist::Country,
+    party: CardParty,
     overwrite: bool,
     ticked: &[PhotoId],
 ) -> (Option<fotollection_core::addassist::Address>, Vec<PhotoId>) {
-    let recipient = recipient_of(library, source, country);
+    let recipient = party_of(library, source, country, party);
     let ids = other_cards(library, filter, source, ticked)
         .into_iter()
         .filter(|id| {
-            let other = recipient_of(library, *id, country);
+            let other = party_of(library, *id, country, party);
             other != recipient && (overwrite || other.is_none())
         })
         .collect();
     (recipient, ids)
 }
 
-/// How many other postcards have no recipient for `country`, and how many another one: the
-/// counts on "Use for N postcards" under a Japanese or Korean recipient (FR-133).
+/// How many other postcards have no recipient (or sender) for `country`, and how many another
+/// one: the counts on "Use for N postcards" under a Japanese or Korean recipient or sender (FR-133).
 #[tauri::command]
 #[specta::specta]
 pub fn postcard_recipient_gaps(
@@ -352,6 +379,7 @@ pub fn postcard_recipient_gaps(
     filter: CullFilter,
     source: PhotoId,
     country: fotollection_core::addassist::Country,
+    party: CardParty,
     ticked: Vec<PhotoId>,
 ) -> Result<TextGaps, IpcError> {
     crate::commands::check_ticked(&ticked)?;
@@ -362,12 +390,12 @@ pub fn postcard_recipient_gaps(
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
-    let Some(recipient) = recipient_of(&library, source, country) else {
+    let Some(recipient) = party_of(&library, source, country, party) else {
         return Ok(TextGaps::default());
     };
     let mut gaps = TextGaps::default();
     for id in other_cards(&library, &filter, source, &ticked) {
-        match recipient_of(&library, id, country) {
+        match party_of(&library, id, country, party) {
             None => gaps.blank += 1,
             Some(other) if other != recipient => gaps.differ += 1,
             Some(_) => {}
@@ -376,17 +404,19 @@ pub fn postcard_recipient_gaps(
     Ok(gaps)
 }
 
-/// This card's Japanese or Korean recipient on the other postcards (FR-133, `AddAssist` 1.1):
+/// This card's Japanese or Korean recipient (or its own sender) on the other postcards (FR-133):
 /// those without one, or with `overwrite` every other one too. One undoable step; returns
 /// how many changed. The recipient joins the recent ones.
 #[tauri::command]
 #[specta::specta]
+#[allow(clippy::too_many_arguments)] // a Tauri command takes its arguments one by one
 pub fn apply_postcard_recipient(
     app: AppHandle,
     state: State<'_, AppState>,
     filter: CullFilter,
     source: PhotoId,
     country: fotollection_core::addassist::Country,
+    party: CardParty,
     overwrite: bool,
     ticked: Vec<PhotoId>,
 ) -> Result<u32, IpcError> {
@@ -396,7 +426,9 @@ pub fn apply_postcard_recipient(
             .library
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?;
-        recipient_targets(&library, &filter, source, country, overwrite, &ticked)
+        recipient_targets(
+            &library, &filter, source, country, party, overwrite, &ticked,
+        )
     };
     let Some(recipient) = recipient else {
         return Err(IpcError::new(
@@ -406,13 +438,75 @@ pub fn apply_postcard_recipient(
     };
     if !ids.is_empty() {
         edit_photos(&app, &state, &ids, |_, e| {
-            let mut text = e.postcard.clone().unwrap_or_default();
-            text.set_recipient(country, Some(recipient.clone()));
-            e.postcard = text.sanitized();
+            set_party(e, country, party, Some(recipient.clone()));
         })?;
     }
-    remember_one_recipient(&state, &recipient);
+    if party == CardParty::Recipient {
+        remember_one_recipient(&state, &recipient);
+    }
     Ok(u32::try_from(ids.len()).unwrap_or(u32::MAX))
+}
+
+/// Takes the card's own recipient or sender for `country` off the ticked postcards, else every
+/// one shown (the red ↺ of the Sender card, owner 2026-11-15): one undoable step; a card left
+/// without its own sender prints the machine's. Returns how many changed.
+#[tauri::command]
+#[specta::specta]
+pub fn clear_postcard_party(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    filter: CullFilter,
+    country: fotollection_core::addassist::Country,
+    party: CardParty,
+    ticked: Vec<PhotoId>,
+) -> Result<u32, IpcError> {
+    crate::commands::check_ticked(&ticked)?;
+    let ids: Vec<PhotoId> = {
+        let library = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let chosen: std::collections::HashSet<PhotoId> = ticked.iter().copied().collect();
+        library
+            .filtered_ids(&filter)
+            .into_iter()
+            .filter(|id| {
+                (chosen.is_empty() || chosen.contains(id))
+                    && party_of(&library, *id, country, party).is_some()
+            })
+            .collect()
+    };
+    if !ids.is_empty() {
+        edit_photos(&app, &state, &ids, |_, e| {
+            set_party(e, country, party, None);
+        })?;
+    }
+    Ok(u32::try_from(ids.len()).unwrap_or(u32::MAX))
+}
+
+/// Sets (or with `None` clears) one card's own sender for `country` (owner, 2026-11-15),
+/// checked as a recipient is; one undoable step.
+#[tauri::command]
+#[specta::specta]
+pub fn set_postcard_sender(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    country: fotollection_core::addassist::Country,
+    address: Option<fotollection_core::addassist::Address>,
+) -> Result<crate::commands::HistoryState, IpcError> {
+    if address
+        .as_ref()
+        .is_some_and(|a| !a.is_valid() || a.country != country)
+    {
+        return Err(IpcError::new(
+            "postcard.text_invalid",
+            "the address has a field that is too long, a control character, a code of the wrong length or another country",
+        ));
+    }
+    edit_photos(&app, &state, &[id], |_, e| {
+        set_party(e, country, CardParty::Sender, address.clone());
+    })
 }
 
 /// Puts a Japanese or Korean recipient first among those its country offers on the next
@@ -1070,6 +1164,7 @@ mod tests {
                 message: "Ahoj Praha!".into(),
                 address: String::new(),
                 recipients: Vec::new(),
+                senders: Vec::new(),
             }),
             ..PhotoEdits::default()
         };
@@ -1125,17 +1220,49 @@ mod tests {
         lib.set_edits(ids[2], with(&other));
         let filter = CullFilter::default();
         // Nothing ticked: every other card shown; card 2 keeps its own recipient.
-        let (found, targets) = recipient_targets(&lib, &filter, ids[0], Country::Jp, false, &[]);
+        let (found, targets) = recipient_targets(
+            &lib,
+            &filter,
+            ids[0],
+            Country::Jp,
+            CardParty::Recipient,
+            false,
+            &[],
+        );
         assert_eq!(found, Some(tower.clone()));
         assert_eq!(targets, vec![ids[1], ids[3]]);
         // Overwrite takes card 2 too.
-        let (_, targets) = recipient_targets(&lib, &filter, ids[0], Country::Jp, true, &[]);
+        let (_, targets) = recipient_targets(
+            &lib,
+            &filter,
+            ids[0],
+            Country::Jp,
+            CardParty::Recipient,
+            true,
+            &[],
+        );
         assert_eq!(targets, vec![ids[1], ids[2], ids[3]]);
         // Ticked: only those.
-        let (_, targets) = recipient_targets(&lib, &filter, ids[0], Country::Jp, true, &[ids[2]]);
+        let (_, targets) = recipient_targets(
+            &lib,
+            &filter,
+            ids[0],
+            Country::Jp,
+            CardParty::Recipient,
+            true,
+            &[ids[2]],
+        );
         assert_eq!(targets, vec![ids[2]]);
         // No Korean recipient on the source: nothing to give.
-        let (found, _) = recipient_targets(&lib, &filter, ids[0], Country::Kr, false, &[]);
+        let (found, _) = recipient_targets(
+            &lib,
+            &filter,
+            ids[0],
+            Country::Kr,
+            CardParty::Recipient,
+            false,
+            &[],
+        );
         assert_eq!(found, None);
     }
 }

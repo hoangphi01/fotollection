@@ -929,6 +929,11 @@
     "readBy": "read by {{name}}"
   },
   "postcard": {
+    "senderHintCard": "This card's own sender; the machine's one prints while a card has none.",
+    "senderResetTicked": "Remove the sender from the ticked postcards",
+    "senderResetAll": "Remove the sender from every postcard",
+    "senderResetBody": "The postcards print no sender until one is typed again. Cmd/Ctrl+Z brings them back.",
+    "senderResetOk": "Remove",
     "recipient": "Recipient",
     "senderPrint": "Print a sender",
     "book": {

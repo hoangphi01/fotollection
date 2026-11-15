@@ -228,6 +228,23 @@ pub struct PostcardText {
     /// 2026-11-15).
     #[serde(default)]
     pub recipients: Vec<crate::addassist::Address>,
+    /// The senders of its Japanese and Korean cards (owner, 2026-11-15: "a sender per card,
+    /// applied to many"), one per country; a card without one prints the machine's sender
+    /// (`PostcardSettings::sender`).
+    #[serde(default)]
+    pub senders: Vec<crate::addassist::Address>,
+}
+
+/// One address per country, the last one kept, blanks dropped.
+fn one_per_country(list: &[crate::addassist::Address]) -> Vec<crate::addassist::Address> {
+    let mut kept: Vec<crate::addassist::Address> = Vec::new();
+    for a in list.iter().map(crate::addassist::Address::sanitized) {
+        kept.retain(|k| k.country != a.country);
+        if !a.is_blank() {
+            kept.push(a);
+        }
+    }
+    kept
 }
 
 impl PostcardText {
@@ -237,25 +254,13 @@ impl PostcardText {
         let text = Self {
             message: sanitize_postcard(PostcardPart::Message, &self.message),
             address: sanitize_postcard(PostcardPart::Address, &self.address),
-            recipients: {
-                // One per country, the last one kept, blanks dropped.
-                let mut kept: Vec<crate::addassist::Address> = Vec::new();
-                for a in self
-                    .recipients
-                    .iter()
-                    .map(crate::addassist::Address::sanitized)
-                {
-                    kept.retain(|k| k.country != a.country);
-                    if !a.is_blank() {
-                        kept.push(a);
-                    }
-                }
-                kept
-            },
+            recipients: one_per_country(&self.recipients),
+            senders: one_per_country(&self.senders),
         };
         (!text.message.trim().is_empty()
             || !text.address.trim().is_empty()
-            || !text.recipients.is_empty())
+            || !text.recipients.is_empty()
+            || !text.senders.is_empty())
         .then_some(text)
     }
 
@@ -265,6 +270,23 @@ impl PostcardText {
         country: crate::addassist::Country,
     ) -> Option<&crate::addassist::Address> {
         self.recipients.iter().find(|a| a.country == country)
+    }
+
+    /// The sender of the card for `country`, if this card has its own.
+    pub fn sender(&self, country: crate::addassist::Country) -> Option<&crate::addassist::Address> {
+        self.senders.iter().find(|a| a.country == country)
+    }
+
+    /// Sets (or with `None` clears) this card's sender for `country`, the others kept.
+    pub fn set_sender(
+        &mut self,
+        country: crate::addassist::Country,
+        address: Option<crate::addassist::Address>,
+    ) {
+        self.senders.retain(|a| a.country != country);
+        if let Some(a) = address.filter(|a| a.country == country && !a.is_blank()) {
+            self.senders.push(a);
+        }
     }
 
     /// Sets (or with `None` clears) the recipient for `country`, the others kept.

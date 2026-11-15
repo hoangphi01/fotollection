@@ -1,51 +1,144 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { UserRound } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AddAssist } from '@/components/forms/addassist'
+import { ResetButton } from '@/components/forms/danger-button'
+import { Hint } from '@/components/forms/field'
 import { SwitchField } from '@/components/forms/switch-field'
 import { SectionCard } from '@/components/layout/section-card'
-import type { RenderSettings } from '@/ipc/bindings'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { commands, type Address, type CullFilter, type PhotoId, type RenderSettings } from '@/ipc/bindings'
 import { emptyAddress } from '@/lib/address'
+import { errorText } from '@/lib/errors'
 import { cardFor } from '@/lib/postcard-card'
+import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { patchPostcard } from './postcard-defaults'
+import { PostcardReuseNote } from './postcard-reuse-note'
+
+const loadText = async (subject: string) => {
+  const result = await commands.getPostcardText(Number(subject))
+  return result.status === 'ok' ? result.data : null
+}
+
+type Subject = { filter: CullFilter; photo: PhotoId; country: 'jp' | 'kr'; ticked: readonly PhotoId[] }
+
+const loadGaps = async (subject: string) => {
+  const { filter, photo, country, ticked } = JSON.parse(subject) as Subject
+  const result = await commands.postcardRecipientGaps(filter, photo, country, 'sender', [...ticked])
+  return result.status === 'ok' ? result.data : null
+}
 
 type PostcardSenderCardProps = {
   settings: RenderSettings | null
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
+  photo: PhotoId | null | undefined
+  revision: number
+  filter?: CullFilter
+  ticked?: readonly PhotoId[]
 }
 
 /**
- * The sender of Japanese and Korean cards (FR-136's first block, owner 2026-11-15): optional,
- * folded until its switch is on, one sender per country so switching cards never prints
- * another's. A European card has no sender line, so the card is not shown there.
+ * The sender of Japanese and Korean cards (FR-136's first block; owner, 2026-11-15: a sender
+ * per card, applied to many as a look is): optional, folded until its switch is on. The field
+ * is the chosen card's own sender, the machine's one shown while the card has none; the note
+ * under it puts it on the other cards, and the red ↺ takes the senders off them after a
+ * question. A European card has no sender line, so the card is not shown there.
  */
-export function PostcardSenderCard({ settings, onChange }: PostcardSenderCardProps) {
+export function PostcardSenderCard({ settings, onChange, photo, revision, filter, ticked = [] }: PostcardSenderCardProps) {
   const { t, i18n } = useTranslation()
   const postcard = settings?.collage?.postcard
   const card = cardFor(i18n.language, postcard?.destination)
-  if (!postcard?.enabled || card === 'europe') return null
   const country = card === 'japan' ? 'jp' : 'kr'
+  const [changed, setChanged] = useState(0)
+  const [asking, setAsking] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const seen = revision + changed
+  const text = useLiveQuery(photo != null ? String(photo) : null, seen, loadText).data
+  const own = text?.senders?.find((s) => s.country === country) ?? null
+  const machine = postcard?.senders?.find((s) => s.country === country) ?? null
+  const subject = photo != null && filter && own ? JSON.stringify({ filter, photo, country, ticked } satisfies Subject) : null
+  const gaps = useLiveQuery(subject, seen, loadGaps).data
+  if (!postcard?.enabled || card === 'europe') return null
+  const scope = ticked.length > 0 ? 'Ticked' : 'All'
+  const save = (sender: Address) => {
+    if (photo == null) return
+    void commands.setPostcardSender(photo, country, sender).then(() => setChanged((c) => c + 1))
+  }
+  const reset = async () => {
+    setAsking(false)
+    if (!filter) return
+    const result = await commands.clearPostcardParty(filter, country, 'sender', [...ticked])
+    if (result.status !== 'ok') return setError(errorText(result.error))
+    setError(null)
+    // Every card cleared: the machine's sender goes too, so none prints by itself.
+    if (ticked.length === 0) patchPostcard(onChange, { senders: (postcard.senders ?? []).filter((s) => s.country !== country) })
+    setChanged((c) => c + 1)
+  }
   return (
-    <SectionCard icon={<UserRound />} title={t('postcard.sender')}>
+    <SectionCard
+      icon={<UserRound />}
+      title={t('postcard.sender')}
+      action={
+        filter && (own || machine) ? <ResetButton iconOnly label={t(`postcard.senderReset${scope}`)} onClick={() => setAsking(true)} /> : undefined
+      }
+    >
       <SwitchField
         icon={<UserRound />}
         label={t('postcard.senderPrint')}
         checked={postcard.senderOn ?? false}
         onChange={(senderOn) => patchPostcard(onChange, { senderOn })}
-        hint={t('postcard.senderHint')}
+        hint={t('postcard.senderHintCard')}
       >
-        <AddAssist
-          key={country}
-          country={country}
-          value={postcard.senders?.find((s) => s.country === country) ?? emptyAddress(country)}
-          onCommit={(sender) =>
-            patchPostcard(onChange, { senders: [...(postcard.senders ?? []).filter((s) => s.country !== country), sender] })
-          }
-          assisted={postcard.assisted ?? true}
-          onAssisted={(assisted) => patchPostcard(onChange, { assisted })}
-        />
+        {photo != null ? (
+          <>
+            <AddAssist
+              key={`${country}-${photo}`}
+              country={country}
+              value={own ?? machine ?? emptyAddress(country)}
+              onCommit={save}
+              assisted={postcard.assisted ?? true}
+              onAssisted={(assisted) => patchPostcard(onChange, { assisted })}
+            />
+            {filter && (
+              <PostcardReuseNote
+                photo={photo}
+                gaps={own ? gaps : null}
+                ticked={ticked}
+                apply={async (overwrite) => {
+                  const result = await commands.applyPostcardRecipient(filter, photo, country, 'sender', overwrite, [...ticked])
+                  return result.status === 'ok' ? result.data : errorText(result.error)
+                }}
+              />
+            )}
+          </>
+        ) : (
+          <Hint>{t('postcard.pickToType')}</Hint>
+        )}
+        {error && <Hint className="text-destructive">{error}</Hint>}
       </SwitchField>
+      <AlertDialog open={asking} onOpenChange={setAsking}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t(`postcard.senderReset${scope}`)}</AlertDialogTitle>
+            <AlertDialogDescription>{t('postcard.senderResetBody')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            {/* Its action is the red one, so Cancel stays neutral: one red, the danger. */}
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <ResetButton label={t('postcard.senderResetOk')} onClick={() => void reset()} />
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </SectionCard>
   )
 }
