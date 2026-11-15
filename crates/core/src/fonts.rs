@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! User fonts (FR-042): OTF/TTF files imported for the date stamp and the info frame.
 //! Font files are untrusted input: magic bytes and a size cap are checked, and the file is
-//! parsed by the pure-Rust `ab_glyph`/`ttf-parser` before use (SECURITY.md §3).
+//! read whole by the pure-Rust `skrifa` before use, every glyph once (SECURITY.md §3, FR-134).
 
 use crate::glyph::{Font, FontArc};
 use serde::{Deserialize, Serialize};
@@ -95,6 +95,11 @@ pub fn load(bytes: Vec<u8>) -> Result<(FontFormat, FontArc), FontError> {
         return Err(FontError::TooLarge);
     }
     let font = FontArc::try_from_vec(bytes).map_err(|_| FontError::Invalid)?;
+    // skrifa reads a table when it is asked for: every glyph read once now, so a damaged
+    // file is refused here, not halfway through a print (SECURITY.md §3).
+    if !font.read_whole() {
+        return Err(FontError::Invalid);
+    }
     if ('0'..='9').any(|c| font.glyph_id(c).0 == 0) {
         return Err(FontError::MissingDigits);
     }

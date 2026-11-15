@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New: **AddAssist 1.1**, an address book for postcards, and one recipient for many cards.
 - UI update: a **shorter website** that opens on a finished postcard, with a Features page.
+- Security: every font is now read by **a maintained, memory-safe font reader**; the text on your prints is unchanged.
 
 ### Added
 
@@ -32,6 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Website, on a phone:** each screenshot of the home and Features pages shows the part worth reading, large enough to read, instead of a whole window too small to make out; the download buttons come with the Download page's link to copy, or to share where the phone offers it, to open the page on a computer.
 - **Website:** the keynote video shows the app as it is today in English, and the Vietnamese page has its own cut with the app in Vietnamese.
 - **Website:** the language menu's flags are there as it opens, no longer a moment later; on a wide screen the language button shows the current language's flag instead of its name.
+
+### Security
+
+- **Fonts:** every text Fotollection draws (the date stamp, the info frame, the postcards, the Japanese and Korean cards) now reads its font through a maintained, memory-safe reader, in place of one its author no longer maintains; the letters print exactly as before. A font you add in Settings is read in full when you add it, so a damaged file is refused there, and a damaged font can no longer claim the memory of a glyph larger than any print.
 
 ## [0.14.2] - 2026-11-15 — 日本語 and 한국어
 

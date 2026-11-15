@@ -69,7 +69,7 @@ crates/
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
-      glyph.rs             # the font layer every text is drawn through: faces, metrics, glyph coverage (FR-134)
+      glyph.rs             # the font layer every text is drawn through: skrifa reads the faces, ab_glyph_rasterizer draws the glyphs (FR-134)
       settings_store.rs  † # settings.json v18 (machine part by part, ADR-0048): load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 sources in memory (a quarter of the RAM, by bytes) and on disk as standard previews, prefetch, preview rendering (FR-007, FR-091)
       cancel.rs          † # CancellationToken
@@ -77,7 +77,7 @@ crates/
       hagaki.rs            # the はがき's address side (FR-130): upright, top to bottom: stamp box 切手 at the top left, 「郵便はがき」 with Postal use, the seven vermilion boxes or the code typed where they would be, the address down the right, the name and 様 down the middle, the sender on its switch, fotollection.org/ja under the stamp; one line of message under a bordered photo, across the half within its 5 mm border however narrow the photo; landscape: the stamp at the top right, the boxes turned down the right edge (`draw_code_boxes_down`), the text across
       korea.rs             # the 우편엽서's address side (FR-132): 「우편엽서」, the sender and its five boxes on its switch, the 우표 box and fotollection.org/ko, the recipient (받는 사람, the name with 귀하, the road-name order, five boxes 4 mm clear), the 17 mm machine zone at the foot; landscape 4 × 6 in or square 4 × 4 in; Nanum Pen Script or Gaegu
       text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
-      vertical.rs          # Japanese text set top to bottom for the はがき (FR-130, ADR-0052): Klee One's GSUB vert/vrt2 forms read with ttf-parser, columns right to left, 禁則, an em-true scale
+      vertical.rs          # Japanese text set top to bottom for the はがき (FR-130, ADR-0052): Klee One's GSUB vert/vrt2 forms read with read-fonts (skrifa's tables), columns right to left, 禁則, an em-true scale
       credit.rs          † # the small "fotollection.org" on prints: where it fits (paper first, then a photo corner clear of the stamp and faces), drawn last (FR-121)
       print_advice.rs    † # how large a photo prints well; sharp / acceptable / pixelated per print size (FR-026)
       straighten.rs      † # ±15° levelling: largest inscribed crop, bicubic resampling of the crop only (FR-006)
@@ -194,7 +194,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | Face models (FR-041) | `tract-onnx` (MIT/Apache), pure Rust; YuNet + FaceMesh V2 ONNX compiled in | One code path on macOS and Windows, no native runtime; BLAKE3-checked at load ([ADR-0018](adr/0018-face-models-and-runtime.md)) |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |
 | Colour management | `qcms` | Preserve or convert the ICC profile (`colour.rs`) |
-| Text rendering | `ab_glyph` `FontArc`: bundled Inter (OFL, variable weights) or a user OTF/TTF (FR-042) | `cosmic-text` if complex shaping is ever needed |
+| Text rendering | `glyph.rs` (FR-134): faces read by `skrifa` (no `unsafe`), glyphs drawn by `ab_glyph_rasterizer`, the metrics and coverage `ab_glyph` gave; bundled Inter (OFL, variable weights) or a user OTF/TTF (FR-042) | `cosmic-text` if complex shaping is ever needed |
 | EXIF read | `kamadak-exif` | Allowlisted fields only. Also extracts the IFD1 thumbnail for T0 |
 | EXIF write | our own `exif_out.rs` (`little_exif` only in tests) | Writes the privacy-filtered metadata |
 | Reverse geocoding | GeoNames `cities1000`, packed by `crates/geodata`, indexed in a 1° grid at first use | Offline, 5.4 MB packed, no extra dependency ([ADR-0003](adr/0003-offline-geocoding-geonames.md)) |

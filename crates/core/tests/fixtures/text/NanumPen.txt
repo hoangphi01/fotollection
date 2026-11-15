@@ -1,0 +1,1195 @@
+face upem=Some(1000.0) ascent=800.0 descent=-200.0 height=1000.0
+U+0020 id=13478 advance=280.0 kern=0.0
+U+0020 px=24 ascent=19.2 descent=-4.8 advance=6.7200003 none
+U+0021 id=1 advance=274.0 kern=0.0
+U+0021 px=24 ascent=19.2 descent=-4.8 advance=6.576 [2.0,83.0,5.0,100.0]
+U+0022 id=2 advance=260.0 kern=0.0
+U+0022 px=24 ascent=19.2 descent=-4.8 advance=6.2400002 [1.0,81.0,6.0,87.0]
+U+0023 id=3 advance=630.0 kern=0.0
+U+0023 px=24 ascent=19.2 descent=-4.8 advance=15.12 [0.0,83.0,15.0,98.0]
+U+0024 id=4 advance=420.0 kern=0.0
+U+0024 px=24 ascent=19.2 descent=-4.8 advance=10.08 [0.0,83.0,10.0,99.0]
+U+0025 id=5 advance=620.0 kern=0.0
+U+0025 px=24 ascent=19.2 descent=-4.8 advance=14.88 [0.0,85.0,15.0,97.0]
+U+0026 id=6 advance=449.0 kern=0.0
+U+0026 px=24 ascent=19.2 descent=-4.8 advance=10.776 [0.0,84.0,11.0,99.0]
+U+0027 id=7 advance=247.0 kern=0.0
+U+0027 px=24 ascent=19.2 descent=-4.8 advance=5.928 [2.0,81.0,4.0,87.0]
+U+0028 id=8 advance=310.0 kern=0.0
+U+0028 px=24 ascent=19.2 descent=-4.8 advance=7.44 [1.0,84.0,7.0,100.0]
+U+0029 id=9 advance=280.0 kern=0.0
+U+0029 px=24 ascent=19.2 descent=-4.8 advance=6.7200003 [1.0,84.0,6.0,101.0]
+U+002A id=10 advance=406.0 kern=0.0
+U+002A px=24 ascent=19.2 descent=-4.8 advance=9.744 [0.0,85.0,10.0,94.0]
+U+002B id=11 advance=430.0 kern=0.0
+U+002B px=24 ascent=19.2 descent=-4.8 advance=10.32 [0.0,87.0,10.0,97.0]
+U+002C id=12 advance=235.0 kern=0.0
+U+002C px=24 ascent=19.2 descent=-4.8 advance=5.64 [1.0,97.0,4.0,103.0]
+U+002D id=13 advance=370.0 kern=0.0
+U+002D px=24 ascent=19.2 descent=-4.8 advance=8.88 [0.0,90.0,9.0,93.0]
+U+002E id=14 advance=199.0 kern=0.0
+U+002E px=24 ascent=19.2 descent=-4.8 advance=4.776 [1.0,95.0,3.0,98.0]
+U+002F id=15 advance=316.0 kern=0.0
+U+002F px=24 ascent=19.2 descent=-4.8 advance=7.584 [0.0,86.0,7.0,100.0]
+U+0030 id=16 advance=358.0 kern=0.0
+U+0030 px=24 ascent=19.2 descent=-4.8 advance=8.592 [0.0,87.0,8.0,96.0]
+U+0031 id=17 advance=190.0 kern=0.0
+U+0031 px=24 ascent=19.2 descent=-4.8 advance=4.56 [1.0,86.0,4.0,97.0]
+U+0032 id=18 advance=390.0 kern=0.0
+U+0032 px=24 ascent=19.2 descent=-4.8 advance=9.36 [0.0,86.0,10.0,96.0]
+U+0033 id=19 advance=300.0 kern=0.0
+U+0033 px=24 ascent=19.2 descent=-4.8 advance=7.2000003 [0.0,85.0,7.0,98.0]
+U+0034 id=20 advance=464.0 kern=0.0
+U+0034 px=24 ascent=19.2 descent=-4.8 advance=11.136 [0.0,85.0,11.0,99.0]
+U+0035 id=21 advance=383.0 kern=0.0
+U+0035 px=24 ascent=19.2 descent=-4.8 advance=9.192 [0.0,84.0,10.0,98.0]
+U+0036 id=22 advance=295.0 kern=0.0
+U+0036 px=24 ascent=19.2 descent=-4.8 advance=7.08 [1.0,83.0,7.0,98.0]
+U+0037 id=23 advance=340.0 kern=0.0
+U+0037 px=24 ascent=19.2 descent=-4.8 advance=8.16 [0.0,87.0,8.0,99.0]
+U+0038 id=24 advance=324.0 kern=0.0
+U+0038 px=24 ascent=19.2 descent=-4.8 advance=7.776 [0.0,85.0,8.0,99.0]
+U+0039 id=25 advance=360.0 kern=0.0
+U+0039 px=24 ascent=19.2 descent=-4.8 advance=8.64 [0.0,85.0,8.0,100.0]
+U+003A id=26 advance=303.0 kern=0.0
+U+003A px=24 ascent=19.2 descent=-4.8 advance=7.272 [2.0,87.0,6.0,97.0]
+U+003B id=27 advance=303.0 kern=0.0
+U+003B px=24 ascent=19.2 descent=-4.8 advance=7.272 [1.0,87.0,6.0,100.0]
+U+003C id=28 advance=450.0 kern=0.0
+U+003C px=24 ascent=19.2 descent=-4.8 advance=10.8 [1.0,85.0,10.0,100.0]
+U+003D id=29 advance=400.0 kern=0.0
+U+003D px=24 ascent=19.2 descent=-4.8 advance=9.6 [0.0,89.0,10.0,96.0]
+U+003E id=30 advance=450.0 kern=0.0
+U+003E px=24 ascent=19.2 descent=-4.8 advance=10.8 [1.0,85.0,10.0,100.0]
+U+003F id=31 advance=350.0 kern=0.0
+U+003F px=24 ascent=19.2 descent=-4.8 advance=8.4 [1.0,85.0,8.0,100.0]
+U+0040 id=32 advance=490.0 kern=0.0
+U+0040 px=24 ascent=19.2 descent=-4.8 advance=11.76 [0.0,86.0,11.0,98.0]
+U+0041 id=33 advance=460.0 kern=0.0
+U+0041 px=24 ascent=19.2 descent=-4.8 advance=11.04 [0.0,84.0,11.0,99.0]
+U+0042 id=34 advance=415.0 kern=0.0
+U+0042 px=24 ascent=19.2 descent=-4.8 advance=9.96 [-1.0,85.0,10.0,98.0]
+U+0043 id=35 advance=344.0 kern=0.0
+U+0043 px=24 ascent=19.2 descent=-4.8 advance=8.2560005 [0.0,87.0,8.0,97.0]
+U+0044 id=36 advance=362.0 kern=0.0
+U+0044 px=24 ascent=19.2 descent=-4.8 advance=8.688 [-1.0,85.0,8.0,97.0]
+U+0045 id=37 advance=410.0 kern=0.0
+U+0045 px=24 ascent=19.2 descent=-4.8 advance=9.84 [0.0,86.0,10.0,97.0]
+U+0046 id=38 advance=390.0 kern=0.0
+U+0046 px=24 ascent=19.2 descent=-4.8 advance=9.36 [0.0,85.0,10.0,97.0]
+U+0047 id=39 advance=499.0 kern=0.0
+U+0047 px=24 ascent=19.2 descent=-4.8 advance=11.976 [0.0,84.0,12.0,98.0]
+U+0048 id=40 advance=452.0 kern=0.0
+U+0048 px=24 ascent=19.2 descent=-4.8 advance=10.848001 [0.0,86.0,11.0,97.0]
+U+0049 id=41 advance=210.0 kern=0.0
+U+0049 px=24 ascent=19.2 descent=-4.8 advance=5.04 [1.0,85.0,4.0,97.0]
+U+004A id=42 advance=300.0 kern=0.0
+U+004A px=24 ascent=19.2 descent=-4.8 advance=7.2000003 [0.0,85.0,7.0,97.0]
+U+004B id=43 advance=444.0 kern=0.0
+U+004B px=24 ascent=19.2 descent=-4.8 advance=10.656 [0.0,86.0,11.0,98.0]
+U+004C id=44 advance=438.0 kern=0.0
+U+004C px=24 ascent=19.2 descent=-4.8 advance=10.512 [0.0,86.0,11.0,98.0]
+U+004D id=45 advance=610.0 kern=0.0
+U+004D px=24 ascent=19.2 descent=-4.8 advance=14.64 [1.0,86.0,14.0,98.0]
+U+004E id=46 advance=461.0 kern=0.0
+U+004E px=24 ascent=19.2 descent=-4.8 advance=11.064 [1.0,86.0,11.0,97.0]
+U+004F id=47 advance=439.0 kern=0.0
+U+004F px=24 ascent=19.2 descent=-4.8 advance=10.536 [0.0,86.0,10.0,97.0]
+U+0050 id=48 advance=406.0 kern=0.0
+U+0050 px=24 ascent=19.2 descent=-4.8 advance=9.744 [-1.0,84.0,10.0,98.0]
+U+0051 id=49 advance=464.0 kern=0.0
+U+0051 px=24 ascent=19.2 descent=-4.8 advance=11.136 [0.0,86.0,12.0,97.0]
+U+0052 id=50 advance=448.0 kern=0.0
+U+0052 px=24 ascent=19.2 descent=-4.8 advance=10.752 [0.0,84.0,11.0,98.0]
+U+0053 id=51 advance=399.0 kern=0.0
+U+0053 px=24 ascent=19.2 descent=-4.8 advance=9.576 [0.0,84.0,9.0,98.0]
+U+0054 id=52 advance=493.0 kern=0.0
+U+0054 px=24 ascent=19.2 descent=-4.8 advance=11.832 [0.0,85.0,12.0,97.0]
+U+0055 id=53 advance=433.0 kern=0.0
+U+0055 px=24 ascent=19.2 descent=-4.8 advance=10.392 [0.0,87.0,10.0,97.0]
+U+0056 id=54 advance=415.0 kern=0.0
+U+0056 px=24 ascent=19.2 descent=-4.8 advance=9.96 [0.0,86.0,10.0,97.0]
+U+0057 id=55 advance=646.0 kern=0.0
+U+0057 px=24 ascent=19.2 descent=-4.8 advance=15.504 [0.0,86.0,15.0,97.0]
+U+0058 id=56 advance=459.0 kern=0.0
+U+0058 px=24 ascent=19.2 descent=-4.8 advance=11.016 [0.0,86.0,11.0,97.0]
+U+0059 id=57 advance=424.0 kern=0.0
+U+0059 px=24 ascent=19.2 descent=-4.8 advance=10.176 [0.0,83.0,10.0,98.0]
+U+005A id=58 advance=524.0 kern=0.0
+U+005A px=24 ascent=19.2 descent=-4.8 advance=12.576 [0.0,85.0,13.0,97.0]
+U+005B id=59 advance=340.0 kern=0.0
+U+005B px=24 ascent=19.2 descent=-4.8 advance=8.16 [1.0,84.0,8.0,100.0]
+U+005C id=60 advance=316.0 kern=0.0
+U+005C px=24 ascent=19.2 descent=-4.8 advance=7.584 [0.0,86.0,7.0,100.0]
+U+005D id=61 advance=350.0 kern=0.0
+U+005D px=24 ascent=19.2 descent=-4.8 advance=8.4 [0.0,84.0,7.0,100.0]
+U+005E id=62 advance=370.0 kern=0.0
+U+005E px=24 ascent=19.2 descent=-4.8 advance=8.88 [0.0,81.0,9.0,89.0]
+U+005F id=63 advance=480.0 kern=0.0
+U+005F px=24 ascent=19.2 descent=-4.8 advance=11.52 [0.0,102.0,12.0,105.0]
+U+0060 id=13477 advance=152.0 kern=0.0
+U+0060 px=24 ascent=19.2 descent=-4.8 advance=3.648 [-2.0,81.0,4.0,87.0]
+U+0061 id=64 advance=359.0 kern=0.0
+U+0061 px=24 ascent=19.2 descent=-4.8 advance=8.616 [0.0,86.0,9.0,98.0]
+U+0062 id=65 advance=337.0 kern=0.0
+U+0062 px=24 ascent=19.2 descent=-4.8 advance=8.088 [0.0,83.0,8.0,98.0]
+U+0063 id=66 advance=362.0 kern=0.0
+U+0063 px=24 ascent=19.2 descent=-4.8 advance=8.688 [0.0,88.0,9.0,97.0]
+U+0064 id=67 advance=357.0 kern=0.0
+U+0064 px=24 ascent=19.2 descent=-4.8 advance=8.568 [0.0,83.0,9.0,97.0]
+U+0065 id=68 advance=351.0 kern=0.0
+U+0065 px=24 ascent=19.2 descent=-4.8 advance=8.424 [0.0,88.0,8.0,97.0]
+U+0066 id=69 advance=371.0 kern=0.0
+U+0066 px=24 ascent=19.2 descent=-4.8 advance=8.904 [0.0,83.0,9.0,99.0]
+U+0067 id=70 advance=339.0 kern=0.0
+U+0067 px=24 ascent=19.2 descent=-4.8 advance=8.136 [0.0,89.0,8.0,104.0]
+U+0068 id=71 advance=413.0 kern=0.0
+U+0068 px=24 ascent=19.2 descent=-4.8 advance=9.912 [1.0,85.0,10.0,99.0]
+U+0069 id=72 advance=242.0 kern=0.0
+U+0069 px=24 ascent=19.2 descent=-4.8 advance=5.808 [0.0,86.0,6.0,97.0]
+U+006A id=73 advance=286.0 kern=0.0
+U+006A px=24 ascent=19.2 descent=-4.8 advance=6.864 [0.0,86.0,6.0,100.0]
+U+006B id=74 advance=406.0 kern=0.0
+U+006B px=24 ascent=19.2 descent=-4.8 advance=9.744 [0.0,85.0,10.0,98.0]
+U+006C id=75 advance=209.0 kern=0.0
+U+006C px=24 ascent=19.2 descent=-4.8 advance=5.0160003 [1.0,84.0,5.0,98.0]
+U+006D id=76 advance=621.0 kern=0.0
+U+006D px=24 ascent=19.2 descent=-4.8 advance=14.904 [0.0,88.0,14.0,97.0]
+U+006E id=77 advance=424.0 kern=0.0
+U+006E px=24 ascent=19.2 descent=-4.8 advance=10.176 [0.0,87.0,10.0,97.0]
+U+006F id=78 advance=404.0 kern=0.0
+U+006F px=24 ascent=19.2 descent=-4.8 advance=9.696 [1.0,88.0,9.0,97.0]
+U+0070 id=79 advance=382.0 kern=0.0
+U+0070 px=24 ascent=19.2 descent=-4.8 advance=9.168 [-1.0,87.0,9.0,101.0]
+U+0071 id=80 advance=404.0 kern=0.0
+U+0071 px=24 ascent=19.2 descent=-4.8 advance=9.696 [0.0,87.0,9.0,102.0]
+U+0072 id=81 advance=359.0 kern=0.0
+U+0072 px=24 ascent=19.2 descent=-4.8 advance=8.616 [0.0,87.0,9.0,97.0]
+U+0073 id=82 advance=339.0 kern=0.0
+U+0073 px=24 ascent=19.2 descent=-4.8 advance=8.136 [0.0,87.0,8.0,99.0]
+U+0074 id=83 advance=408.0 kern=0.0
+U+0074 px=24 ascent=19.2 descent=-4.8 advance=9.792 [0.0,85.0,10.0,99.0]
+U+0075 id=84 advance=410.0 kern=0.0
+U+0075 px=24 ascent=19.2 descent=-4.8 advance=9.84 [0.0,88.0,10.0,98.0]
+U+0076 id=85 advance=404.0 kern=0.0
+U+0076 px=24 ascent=19.2 descent=-4.8 advance=9.696 [0.0,87.0,10.0,97.0]
+U+0077 id=86 advance=568.0 kern=0.0
+U+0077 px=24 ascent=19.2 descent=-4.8 advance=13.632 [0.0,88.0,13.0,97.0]
+U+0078 id=87 advance=382.0 kern=0.0
+U+0078 px=24 ascent=19.2 descent=-4.8 advance=9.168 [0.0,88.0,9.0,97.0]
+U+0079 id=88 advance=406.0 kern=0.0
+U+0079 px=24 ascent=19.2 descent=-4.8 advance=9.744 [0.0,88.0,9.0,104.0]
+U+007A id=89 advance=466.0 kern=0.0
+U+007A px=24 ascent=19.2 descent=-4.8 advance=11.184 [0.0,87.0,11.0,98.0]
+U+007B id=90 advance=360.0 kern=0.0
+U+007B px=24 ascent=19.2 descent=-4.8 advance=8.64 [1.0,84.0,9.0,101.0]
+U+007C id=91 advance=242.0 kern=0.0
+U+007C px=24 ascent=19.2 descent=-4.8 advance=5.808 [1.0,84.0,5.0,101.0]
+U+007D id=92 advance=360.0 kern=0.0
+U+007D px=24 ascent=19.2 descent=-4.8 advance=8.64 [0.0,83.0,8.0,100.0]
+U+007E id=93 advance=550.0 kern=0.0
+U+007E px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,89.0,13.0,95.0]
+U+0103 id=0 advance=940.0 kern=0.0
+U+0103 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00E2 id=0 advance=940.0 kern=0.0
+U+00E2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0111 id=0 advance=940.0 kern=0.0
+U+0111 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00EA id=0 advance=940.0 kern=0.0
+U+00EA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00F4 id=0 advance=940.0 kern=0.0
+U+00F4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+01A1 id=0 advance=940.0 kern=0.0
+U+01A1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+01B0 id=0 advance=940.0 kern=0.0
+U+01B0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0102 id=0 advance=940.0 kern=0.0
+U+0102 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00C2 id=0 advance=940.0 kern=0.0
+U+00C2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0110 id=0 advance=940.0 kern=0.0
+U+0110 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00CA id=0 advance=940.0 kern=0.0
+U+00CA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00D4 id=0 advance=940.0 kern=0.0
+U+00D4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+01A0 id=0 advance=940.0 kern=0.0
+U+01A0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+01AF id=0 advance=940.0 kern=0.0
+U+01AF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00E0 id=0 advance=940.0 kern=0.0
+U+00E0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00E1 id=0 advance=940.0 kern=0.0
+U+00E1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EA3 id=0 advance=940.0 kern=0.0
+U+1EA3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00E3 id=0 advance=940.0 kern=0.0
+U+00E3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EA1 id=0 advance=940.0 kern=0.0
+U+1EA1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EB1 id=0 advance=940.0 kern=0.0
+U+1EB1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EAF id=0 advance=940.0 kern=0.0
+U+1EAF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EB3 id=0 advance=940.0 kern=0.0
+U+1EB3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EB5 id=0 advance=940.0 kern=0.0
+U+1EB5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EB7 id=0 advance=940.0 kern=0.0
+U+1EB7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EA7 id=0 advance=940.0 kern=0.0
+U+1EA7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EA5 id=0 advance=940.0 kern=0.0
+U+1EA5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EA9 id=0 advance=940.0 kern=0.0
+U+1EA9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EAB id=0 advance=940.0 kern=0.0
+U+1EAB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EAD id=0 advance=940.0 kern=0.0
+U+1EAD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00E8 id=0 advance=940.0 kern=0.0
+U+00E8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00E9 id=0 advance=940.0 kern=0.0
+U+00E9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EBB id=0 advance=940.0 kern=0.0
+U+1EBB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EBD id=0 advance=940.0 kern=0.0
+U+1EBD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EB9 id=0 advance=940.0 kern=0.0
+U+1EB9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EC1 id=0 advance=940.0 kern=0.0
+U+1EC1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EBF id=0 advance=940.0 kern=0.0
+U+1EBF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EC3 id=0 advance=940.0 kern=0.0
+U+1EC3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EC5 id=0 advance=940.0 kern=0.0
+U+1EC5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EC7 id=0 advance=940.0 kern=0.0
+U+1EC7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00EC id=0 advance=940.0 kern=0.0
+U+00EC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00ED id=0 advance=940.0 kern=0.0
+U+00ED px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EC9 id=0 advance=940.0 kern=0.0
+U+1EC9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0129 id=0 advance=940.0 kern=0.0
+U+0129 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ECB id=0 advance=940.0 kern=0.0
+U+1ECB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00F2 id=0 advance=940.0 kern=0.0
+U+00F2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00F3 id=0 advance=940.0 kern=0.0
+U+00F3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ECF id=0 advance=940.0 kern=0.0
+U+1ECF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00F5 id=0 advance=940.0 kern=0.0
+U+00F5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ECD id=0 advance=940.0 kern=0.0
+U+1ECD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ED3 id=0 advance=940.0 kern=0.0
+U+1ED3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ED1 id=0 advance=940.0 kern=0.0
+U+1ED1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ED5 id=0 advance=940.0 kern=0.0
+U+1ED5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ED7 id=0 advance=940.0 kern=0.0
+U+1ED7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1ED9 id=0 advance=940.0 kern=0.0
+U+1ED9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EDD id=0 advance=940.0 kern=0.0
+U+1EDD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EDB id=0 advance=940.0 kern=0.0
+U+1EDB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EDF id=0 advance=940.0 kern=0.0
+U+1EDF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EE1 id=0 advance=940.0 kern=0.0
+U+1EE1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EE3 id=0 advance=940.0 kern=0.0
+U+1EE3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00F9 id=0 advance=940.0 kern=0.0
+U+00F9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00FA id=0 advance=940.0 kern=0.0
+U+00FA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EE7 id=0 advance=940.0 kern=0.0
+U+1EE7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0169 id=0 advance=940.0 kern=0.0
+U+0169 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EE5 id=0 advance=940.0 kern=0.0
+U+1EE5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EEB id=0 advance=940.0 kern=0.0
+U+1EEB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EE9 id=0 advance=940.0 kern=0.0
+U+1EE9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EED id=0 advance=940.0 kern=0.0
+U+1EED px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EEF id=0 advance=940.0 kern=0.0
+U+1EEF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EF1 id=0 advance=940.0 kern=0.0
+U+1EF1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EF3 id=0 advance=940.0 kern=0.0
+U+1EF3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00FD id=0 advance=940.0 kern=0.0
+U+00FD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EF7 id=0 advance=940.0 kern=0.0
+U+1EF7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EF9 id=0 advance=940.0 kern=0.0
+U+1EF9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+1EF5 id=0 advance=940.0 kern=0.0
+U+1EF5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0391 id=0 advance=940.0 kern=0.0
+U+0391 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0392 id=0 advance=940.0 kern=0.0
+U+0392 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0393 id=0 advance=940.0 kern=0.0
+U+0393 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0394 id=0 advance=940.0 kern=0.0
+U+0394 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03A9 id=0 advance=940.0 kern=0.0
+U+03A9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03B1 id=0 advance=940.0 kern=0.0
+U+03B1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03B2 id=0 advance=940.0 kern=0.0
+U+03B2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03B3 id=0 advance=940.0 kern=0.0
+U+03B3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03B4 id=0 advance=940.0 kern=0.0
+U+03B4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03BB id=0 advance=940.0 kern=0.0
+U+03BB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03C0 id=0 advance=940.0 kern=0.0
+U+03C0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+03C9 id=0 advance=940.0 kern=0.0
+U+03C9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+041A id=0 advance=940.0 kern=0.0
+U+041A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0410 id=0 advance=940.0 kern=0.0
+U+0410 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0411 id=0 advance=940.0 kern=0.0
+U+0411 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0412 id=0 advance=940.0 kern=0.0
+U+0412 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0413 id=0 advance=940.0 kern=0.0
+U+0413 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0414 id=0 advance=940.0 kern=0.0
+U+0414 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0416 id=0 advance=940.0 kern=0.0
+U+0416 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0417 id=0 advance=940.0 kern=0.0
+U+0417 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0418 id=0 advance=940.0 kern=0.0
+U+0418 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+041B id=0 advance=940.0 kern=0.0
+U+041B px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+041F id=0 advance=940.0 kern=0.0
+U+041F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0424 id=0 advance=940.0 kern=0.0
+U+0424 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0426 id=0 advance=940.0 kern=0.0
+U+0426 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0427 id=0 advance=940.0 kern=0.0
+U+0427 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0428 id=0 advance=940.0 kern=0.0
+U+0428 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0429 id=0 advance=940.0 kern=0.0
+U+0429 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+042D id=0 advance=940.0 kern=0.0
+U+042D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+042E id=0 advance=940.0 kern=0.0
+U+042E px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+042F id=0 advance=940.0 kern=0.0
+U+042F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0430 id=0 advance=940.0 kern=0.0
+U+0430 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0431 id=0 advance=940.0 kern=0.0
+U+0431 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0432 id=0 advance=940.0 kern=0.0
+U+0432 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0433 id=0 advance=940.0 kern=0.0
+U+0433 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0434 id=0 advance=940.0 kern=0.0
+U+0434 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0436 id=0 advance=940.0 kern=0.0
+U+0436 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0437 id=0 advance=940.0 kern=0.0
+U+0437 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0438 id=0 advance=940.0 kern=0.0
+U+0438 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+043B id=0 advance=940.0 kern=0.0
+U+043B px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+043F id=0 advance=940.0 kern=0.0
+U+043F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0444 id=0 advance=940.0 kern=0.0
+U+0444 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0446 id=0 advance=940.0 kern=0.0
+U+0446 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0447 id=0 advance=940.0 kern=0.0
+U+0447 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0448 id=0 advance=940.0 kern=0.0
+U+0448 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0449 id=0 advance=940.0 kern=0.0
+U+0449 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+044D id=0 advance=940.0 kern=0.0
+U+044D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+044E id=0 advance=940.0 kern=0.0
+U+044E px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+044F id=0 advance=940.0 kern=0.0
+U+044F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0451 id=0 advance=940.0 kern=0.0
+U+0451 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0401 id=0 advance=940.0 kern=0.0
+U+0401 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00B0 id=96 advance=446.0 kern=0.0
+U+00B0 px=24 ascent=19.2 descent=-4.8 advance=10.704 [2.0,82.0,8.0,88.0]
+U+00B7 id=0 advance=940.0 kern=0.0
+U+00B7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+2013 id=0 advance=940.0 kern=0.0
+U+2013 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+2014 id=0 advance=940.0 kern=0.0
+U+2014 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+2026 id=0 advance=940.0 kern=0.0
+U+2026 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+201C id=103 advance=371.0 kern=0.0
+U+201C px=24 ascent=19.2 descent=-4.8 advance=8.904 [1.0,81.0,9.0,89.0]
+U+201D id=104 advance=350.0 kern=0.0
+U+201D px=24 ascent=19.2 descent=-4.8 advance=8.4 [0.0,81.0,7.0,89.0]
+U+2018 id=101 advance=249.0 kern=0.0
+U+2018 px=24 ascent=19.2 descent=-4.8 advance=5.976 [1.0,81.0,6.0,90.0]
+U+2019 id=102 advance=250.0 kern=0.0
+U+2019 px=24 ascent=19.2 descent=-4.8 advance=6.0 [1.0,81.0,4.0,89.0]
+U+00D7 id=99 advance=375.0 kern=0.0
+U+00D7 px=24 ascent=19.2 descent=-4.8 advance=9.0 [0.0,87.0,9.0,97.0]
+U+20AC id=0 advance=940.0 kern=0.0
+U+20AC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+00A3 id=13475 advance=509.0 kern=0.0
+U+00A3 px=24 ascent=19.2 descent=-4.8 advance=12.216001 [0.0,85.0,12.0,100.0]
+U+00A5 id=13476 advance=483.0 kern=0.0
+U+00A5 px=24 ascent=19.2 descent=-4.8 advance=11.592 [0.0,84.0,12.0,100.0]
+U+2116 id=0 advance=940.0 kern=0.0
+U+2116 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+0192 id=0 advance=940.0 kern=0.0
+U+0192 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3041 id=0 advance=940.0 kern=0.0
+U+3041 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3042 id=0 advance=940.0 kern=0.0
+U+3042 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3043 id=0 advance=940.0 kern=0.0
+U+3043 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3044 id=0 advance=940.0 kern=0.0
+U+3044 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3045 id=0 advance=940.0 kern=0.0
+U+3045 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3046 id=0 advance=940.0 kern=0.0
+U+3046 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3047 id=0 advance=940.0 kern=0.0
+U+3047 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3048 id=0 advance=940.0 kern=0.0
+U+3048 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3049 id=0 advance=940.0 kern=0.0
+U+3049 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+304A id=0 advance=940.0 kern=0.0
+U+304A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+304B id=0 advance=940.0 kern=0.0
+U+304B px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+304C id=0 advance=940.0 kern=0.0
+U+304C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+304D id=0 advance=940.0 kern=0.0
+U+304D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+304E id=0 advance=940.0 kern=0.0
+U+304E px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+304F id=0 advance=940.0 kern=0.0
+U+304F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3050 id=0 advance=940.0 kern=0.0
+U+3050 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3051 id=0 advance=940.0 kern=0.0
+U+3051 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3052 id=0 advance=940.0 kern=0.0
+U+3052 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3053 id=0 advance=940.0 kern=0.0
+U+3053 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3054 id=0 advance=940.0 kern=0.0
+U+3054 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3055 id=0 advance=940.0 kern=0.0
+U+3055 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3056 id=0 advance=940.0 kern=0.0
+U+3056 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3057 id=0 advance=940.0 kern=0.0
+U+3057 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3058 id=0 advance=940.0 kern=0.0
+U+3058 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3059 id=0 advance=940.0 kern=0.0
+U+3059 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+305A id=0 advance=940.0 kern=0.0
+U+305A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+305B id=0 advance=940.0 kern=0.0
+U+305B px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+305C id=0 advance=940.0 kern=0.0
+U+305C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+305D id=0 advance=940.0 kern=0.0
+U+305D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+305E id=0 advance=940.0 kern=0.0
+U+305E px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+305F id=0 advance=940.0 kern=0.0
+U+305F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3060 id=0 advance=940.0 kern=0.0
+U+3060 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3061 id=0 advance=940.0 kern=0.0
+U+3061 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3062 id=0 advance=940.0 kern=0.0
+U+3062 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3063 id=0 advance=940.0 kern=0.0
+U+3063 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3064 id=0 advance=940.0 kern=0.0
+U+3064 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3065 id=0 advance=940.0 kern=0.0
+U+3065 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3066 id=0 advance=940.0 kern=0.0
+U+3066 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3067 id=0 advance=940.0 kern=0.0
+U+3067 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3068 id=0 advance=940.0 kern=0.0
+U+3068 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3069 id=0 advance=940.0 kern=0.0
+U+3069 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+306A id=0 advance=940.0 kern=0.0
+U+306A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+306B id=0 advance=940.0 kern=0.0
+U+306B px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+306C id=0 advance=940.0 kern=0.0
+U+306C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+306D id=0 advance=940.0 kern=0.0
+U+306D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+306E id=0 advance=940.0 kern=0.0
+U+306E px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+306F id=0 advance=940.0 kern=0.0
+U+306F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3070 id=0 advance=940.0 kern=0.0
+U+3070 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3071 id=0 advance=940.0 kern=0.0
+U+3071 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3072 id=0 advance=940.0 kern=0.0
+U+3072 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3073 id=0 advance=940.0 kern=0.0
+U+3073 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3074 id=0 advance=940.0 kern=0.0
+U+3074 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3075 id=0 advance=940.0 kern=0.0
+U+3075 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3076 id=0 advance=940.0 kern=0.0
+U+3076 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3077 id=0 advance=940.0 kern=0.0
+U+3077 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3078 id=0 advance=940.0 kern=0.0
+U+3078 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3079 id=0 advance=940.0 kern=0.0
+U+3079 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+307A id=0 advance=940.0 kern=0.0
+U+307A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+307B id=0 advance=940.0 kern=0.0
+U+307B px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+307C id=0 advance=940.0 kern=0.0
+U+307C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+307D id=0 advance=940.0 kern=0.0
+U+307D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+307E id=0 advance=940.0 kern=0.0
+U+307E px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+307F id=0 advance=940.0 kern=0.0
+U+307F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3080 id=0 advance=940.0 kern=0.0
+U+3080 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3081 id=0 advance=940.0 kern=0.0
+U+3081 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3082 id=0 advance=940.0 kern=0.0
+U+3082 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3083 id=0 advance=940.0 kern=0.0
+U+3083 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3084 id=0 advance=940.0 kern=0.0
+U+3084 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3085 id=0 advance=940.0 kern=0.0
+U+3085 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3086 id=0 advance=940.0 kern=0.0
+U+3086 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3087 id=0 advance=940.0 kern=0.0
+U+3087 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3088 id=0 advance=940.0 kern=0.0
+U+3088 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3089 id=0 advance=940.0 kern=0.0
+U+3089 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+308A id=0 advance=940.0 kern=0.0
+U+308A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+308B id=0 advance=940.0 kern=0.0
+U+308B px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+308C id=0 advance=940.0 kern=0.0
+U+308C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+308D id=0 advance=940.0 kern=0.0
+U+308D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+308E id=0 advance=940.0 kern=0.0
+U+308E px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+308F id=0 advance=940.0 kern=0.0
+U+308F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3090 id=0 advance=940.0 kern=0.0
+U+3090 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3091 id=0 advance=940.0 kern=0.0
+U+3091 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3092 id=0 advance=940.0 kern=0.0
+U+3092 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3093 id=0 advance=940.0 kern=0.0
+U+3093 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3094 id=0 advance=940.0 kern=0.0
+U+3094 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3095 id=0 advance=940.0 kern=0.0
+U+3095 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3096 id=0 advance=940.0 kern=0.0
+U+3096 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A1 id=0 advance=940.0 kern=0.0
+U+30A1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A2 id=0 advance=940.0 kern=0.0
+U+30A2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A3 id=0 advance=940.0 kern=0.0
+U+30A3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A4 id=0 advance=940.0 kern=0.0
+U+30A4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A5 id=0 advance=940.0 kern=0.0
+U+30A5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A6 id=0 advance=940.0 kern=0.0
+U+30A6 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A7 id=0 advance=940.0 kern=0.0
+U+30A7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A8 id=0 advance=940.0 kern=0.0
+U+30A8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30A9 id=0 advance=940.0 kern=0.0
+U+30A9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30AA id=0 advance=940.0 kern=0.0
+U+30AA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30AB id=0 advance=940.0 kern=0.0
+U+30AB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30AC id=0 advance=940.0 kern=0.0
+U+30AC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30AD id=0 advance=940.0 kern=0.0
+U+30AD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30AE id=0 advance=940.0 kern=0.0
+U+30AE px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30AF id=0 advance=940.0 kern=0.0
+U+30AF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B0 id=0 advance=940.0 kern=0.0
+U+30B0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B1 id=0 advance=940.0 kern=0.0
+U+30B1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B2 id=0 advance=940.0 kern=0.0
+U+30B2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B3 id=0 advance=940.0 kern=0.0
+U+30B3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B4 id=0 advance=940.0 kern=0.0
+U+30B4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B5 id=0 advance=940.0 kern=0.0
+U+30B5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B6 id=0 advance=940.0 kern=0.0
+U+30B6 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B7 id=0 advance=940.0 kern=0.0
+U+30B7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B8 id=0 advance=940.0 kern=0.0
+U+30B8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30B9 id=0 advance=940.0 kern=0.0
+U+30B9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30BA id=0 advance=940.0 kern=0.0
+U+30BA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30BB id=0 advance=940.0 kern=0.0
+U+30BB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30BC id=0 advance=940.0 kern=0.0
+U+30BC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30BD id=0 advance=940.0 kern=0.0
+U+30BD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30BE id=0 advance=940.0 kern=0.0
+U+30BE px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30BF id=0 advance=940.0 kern=0.0
+U+30BF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C0 id=0 advance=940.0 kern=0.0
+U+30C0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C1 id=0 advance=940.0 kern=0.0
+U+30C1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C2 id=0 advance=940.0 kern=0.0
+U+30C2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C3 id=0 advance=940.0 kern=0.0
+U+30C3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C4 id=0 advance=940.0 kern=0.0
+U+30C4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C5 id=0 advance=940.0 kern=0.0
+U+30C5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C6 id=0 advance=940.0 kern=0.0
+U+30C6 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C7 id=0 advance=940.0 kern=0.0
+U+30C7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C8 id=0 advance=940.0 kern=0.0
+U+30C8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30C9 id=0 advance=940.0 kern=0.0
+U+30C9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30CA id=0 advance=940.0 kern=0.0
+U+30CA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30CB id=0 advance=940.0 kern=0.0
+U+30CB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30CC id=0 advance=940.0 kern=0.0
+U+30CC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30CD id=0 advance=940.0 kern=0.0
+U+30CD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30CE id=0 advance=940.0 kern=0.0
+U+30CE px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30CF id=0 advance=940.0 kern=0.0
+U+30CF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D0 id=0 advance=940.0 kern=0.0
+U+30D0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D1 id=0 advance=940.0 kern=0.0
+U+30D1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D2 id=0 advance=940.0 kern=0.0
+U+30D2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D3 id=0 advance=940.0 kern=0.0
+U+30D3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D4 id=0 advance=940.0 kern=0.0
+U+30D4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D5 id=0 advance=940.0 kern=0.0
+U+30D5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D6 id=0 advance=940.0 kern=0.0
+U+30D6 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D7 id=0 advance=940.0 kern=0.0
+U+30D7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D8 id=0 advance=940.0 kern=0.0
+U+30D8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30D9 id=0 advance=940.0 kern=0.0
+U+30D9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30DA id=0 advance=940.0 kern=0.0
+U+30DA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30DB id=0 advance=940.0 kern=0.0
+U+30DB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30DC id=0 advance=940.0 kern=0.0
+U+30DC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30DD id=0 advance=940.0 kern=0.0
+U+30DD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30DE id=0 advance=940.0 kern=0.0
+U+30DE px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30DF id=0 advance=940.0 kern=0.0
+U+30DF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E0 id=0 advance=940.0 kern=0.0
+U+30E0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E1 id=0 advance=940.0 kern=0.0
+U+30E1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E2 id=0 advance=940.0 kern=0.0
+U+30E2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E3 id=0 advance=940.0 kern=0.0
+U+30E3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E4 id=0 advance=940.0 kern=0.0
+U+30E4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E5 id=0 advance=940.0 kern=0.0
+U+30E5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E6 id=0 advance=940.0 kern=0.0
+U+30E6 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E7 id=0 advance=940.0 kern=0.0
+U+30E7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E8 id=0 advance=940.0 kern=0.0
+U+30E8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30E9 id=0 advance=940.0 kern=0.0
+U+30E9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30EA id=0 advance=940.0 kern=0.0
+U+30EA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30EB id=0 advance=940.0 kern=0.0
+U+30EB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30EC id=0 advance=940.0 kern=0.0
+U+30EC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30ED id=0 advance=940.0 kern=0.0
+U+30ED px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30EE id=0 advance=940.0 kern=0.0
+U+30EE px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30EF id=0 advance=940.0 kern=0.0
+U+30EF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F0 id=0 advance=940.0 kern=0.0
+U+30F0 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F1 id=0 advance=940.0 kern=0.0
+U+30F1 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F2 id=0 advance=940.0 kern=0.0
+U+30F2 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F3 id=0 advance=940.0 kern=0.0
+U+30F3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F4 id=0 advance=940.0 kern=0.0
+U+30F4 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F5 id=0 advance=940.0 kern=0.0
+U+30F5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F6 id=0 advance=940.0 kern=0.0
+U+30F6 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F7 id=0 advance=940.0 kern=0.0
+U+30F7 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F8 id=0 advance=940.0 kern=0.0
+U+30F8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30F9 id=0 advance=940.0 kern=0.0
+U+30F9 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30FA id=0 advance=940.0 kern=0.0
+U+30FA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+30FC id=0 advance=940.0 kern=0.0
+U+30FC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3012 id=0 advance=940.0 kern=0.0
+U+3012 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3001 id=0 advance=940.0 kern=0.0
+U+3001 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+3002 id=0 advance=940.0 kern=0.0
+U+3002 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+300C id=0 advance=940.0 kern=0.0
+U+300C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+300D id=0 advance=940.0 kern=0.0
+U+300D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+6771 id=0 advance=940.0 kern=0.0
+U+6771 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+4EAC id=0 advance=940.0 kern=0.0
+U+4EAC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+90FD id=0 advance=940.0 kern=0.0
+U+90FD px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+6E2F id=0 advance=940.0 kern=0.0
+U+6E2F px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+533A id=0 advance=940.0 kern=0.0
+U+533A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+829D id=0 advance=940.0 kern=0.0
+U+829D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+516C id=0 advance=940.0 kern=0.0
+U+516C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+5712 id=0 advance=940.0 kern=0.0
+U+5712 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+4E01 id=0 advance=940.0 kern=0.0
+U+4E01 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+76EE id=0 advance=940.0 kern=0.0
+U+76EE px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+756A id=0 advance=940.0 kern=0.0
+U+756A px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+5730 id=0 advance=940.0 kern=0.0
+U+5730 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+69D8 id=0 advance=940.0 kern=0.0
+U+69D8 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+90F5 id=0 advance=940.0 kern=0.0
+U+90F5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+4FBF id=0 advance=940.0 kern=0.0
+U+4FBF px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+5E74 id=0 advance=940.0 kern=0.0
+U+5E74 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+6708 id=0 advance=940.0 kern=0.0
+U+6708 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+65E5 id=0 advance=940.0 kern=0.0
+U+65E5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+938C id=0 advance=940.0 kern=0.0
+U+938C px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+5009 id=0 advance=940.0 kern=0.0
+U+5009 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+6975 id=0 advance=940.0 kern=0.0
+U+6975 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+697D id=0 advance=940.0 kern=0.0
+U+697D px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+5BFA id=0 advance=940.0 kern=0.0
+U+5BFA px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+99C5 id=0 advance=940.0 kern=0.0
+U+99C5 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+5BCC id=0 advance=940.0 kern=0.0
+U+5BCC px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+58EB id=0 advance=940.0 kern=0.0
+U+58EB px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+6CB3 id=0 advance=940.0 kern=0.0
+U+6CB3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+53E3 id=0 advance=940.0 kern=0.0
+U+53E3 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+6E56 id=0 advance=940.0 kern=0.0
+U+6E56 px=24 ascent=19.2 descent=-4.8 advance=22.56 none
+U+C11C id=5605 advance=616.0 kern=0.0
+U+C11C px=24 ascent=19.2 descent=-4.8 advance=14.784 [0.0,85.0,14.0,98.0]
+U+C6B8 id=7041 advance=428.0 kern=0.0
+U+C6B8 px=24 ascent=19.2 descent=-4.8 advance=10.272 [0.0,81.0,12.0,104.0]
+U+D2B9 id=10114 advance=430.0 kern=0.0
+U+D2B9 px=24 ascent=19.2 descent=-4.8 advance=10.32 [0.0,82.0,11.0,102.0]
+U+BCC4 id=4493 advance=700.0 kern=0.0
+U+BCC4 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,18.0,102.0]
+U+C2DC id=6053 advance=530.0 kern=0.0
+U+C2DC px=24 ascent=19.2 descent=-4.8 advance=12.72 [0.0,84.0,12.0,97.0]
+U+C885 id=7502 advance=474.0 kern=0.0
+U+C885 px=24 ascent=19.2 descent=-4.8 advance=11.376 [0.0,81.0,12.0,103.0]
+U+B85C id=3365 advance=430.0 kern=0.0
+U+B85C px=24 ascent=19.2 descent=-4.8 advance=10.32 [0.0,84.0,11.0,99.0]
+U+AD6C id=565 advance=410.0 kern=0.0
+U+AD6C px=24 ascent=19.2 descent=-4.8 advance=9.84 [0.0,83.0,10.0,100.0]
+U+C138 id=5633 advance=701.0 kern=0.0
+U+C138 px=24 ascent=19.2 descent=-4.8 advance=16.824 [0.0,85.0,16.0,98.0]
+U+B300 id=1993 advance=753.0 kern=0.0
+U+B300 px=24 ascent=19.2 descent=-4.8 advance=18.072 [0.0,85.0,17.0,97.0]
+U+BB38 id=4097 advance=439.0 kern=0.0
+U+BB38 px=24 ascent=19.2 descent=-4.8 advance=10.536 [0.0,83.0,11.0,101.0]
+U+D654 id=11037 advance=629.0 kern=0.0
+U+D654 px=24 ascent=19.2 descent=-4.8 advance=15.096 [0.0,81.0,16.0,99.0]
+U+D68C id=11093 advance=550.0 kern=0.0
+U+D68C px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,81.0,12.0,99.0]
+U+AD00 id=457 advance=687.0 kern=0.0
+U+AD00 px=24 ascent=19.2 descent=-4.8 advance=16.488 [0.0,83.0,17.0,100.0]
+U+AE40 id=777 advance=550.0 kern=0.0
+U+AE40 px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,84.0,15.0,100.0]
+U+BBFC id=4293 advance=612.0 kern=0.0
+U+BBFC px=24 ascent=19.2 descent=-4.8 advance=14.688 [0.0,84.0,15.0,99.0]
+U+C900 id=7625 advance=499.0 kern=0.0
+U+C900 px=24 ascent=19.2 descent=-4.8 advance=11.976 [0.0,83.0,13.0,101.0]
+U+ADC0 id=649 advance=600.0 kern=0.0
+U+ADC0 px=24 ascent=19.2 descent=-4.8 advance=14.400001 [0.0,84.0,14.0,100.0]
+U+D558 id=10785 advance=650.0 kern=0.0
+U+D558 px=24 ascent=19.2 descent=-4.8 advance=15.6 [0.0,82.0,16.0,98.0]
+U+BC1B id=4324 advance=710.0 kern=0.0
+U+BC1B px=24 ascent=19.2 descent=-4.8 advance=17.04 [0.0,83.0,17.0,100.0]
+U+B294 id=1885 advance=420.0 kern=0.0
+U+B294 px=24 ascent=19.2 descent=-4.8 advance=10.08 [0.0,84.0,11.0,100.0]
+U+C0AC id=5493 advance=689.0 kern=0.0
+U+C0AC px=24 ascent=19.2 descent=-4.8 advance=16.536 [0.0,84.0,17.0,98.0]
+U+B78C id=3157 advance=710.0 kern=0.0
+U+B78C px=24 ascent=19.2 descent=-4.8 advance=17.04 [0.0,83.0,17.0,100.0]
+U+C6B0 id=7033 advance=449.0 kern=0.0
+U+C6B0 px=24 ascent=19.2 descent=-4.8 advance=10.776 [0.0,84.0,11.0,100.0]
+U+D3B8 id=10369 advance=813.0 kern=0.0
+U+D3B8 px=24 ascent=19.2 descent=-4.8 advance=19.512001 [0.0,85.0,19.0,99.0]
+U+C5FD id=6854 advance=700.0 kern=0.0
+U+C5FD px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,83.0,16.0,101.0]
+U+B2E8 id=1969 advance=604.0 kern=0.0
+U+B2E8 px=24 ascent=19.2 descent=-4.8 advance=14.496 [0.0,85.0,15.0,99.0]
+U+D48D id=10582 advance=450.0 kern=0.0
+U+D48D px=24 ascent=19.2 descent=-4.8 advance=10.8 [0.0,81.0,11.0,104.0]
+U+C544 id=6669 advance=618.0 kern=0.0
+U+C544 px=24 ascent=19.2 descent=-4.8 advance=14.832 [0.0,86.0,15.0,97.0]
+U+B798 id=3169 advance=670.0 kern=0.0
+U+B798 px=24 ascent=19.2 descent=-4.8 advance=16.08 [0.0,85.0,15.0,97.0]
+U+C5D0 id=6809 advance=670.0 kern=0.0
+U+C5D0 px=24 ascent=19.2 descent=-4.8 advance=16.08 [0.0,85.0,15.0,95.0]
+U+C548 id=6673 advance=670.0 kern=0.0
+U+C548 px=24 ascent=19.2 descent=-4.8 advance=16.08 [0.0,83.0,17.0,101.0]
+U+BD80 id=4681 advance=431.0 kern=0.0
+U+BD80 px=24 ascent=19.2 descent=-4.8 advance=10.344 [0.0,82.0,11.0,102.0]
+U+C804 id=7373 advance=650.0 kern=0.0
+U+C804 px=24 ascent=19.2 descent=-4.8 advance=15.6 [0.0,85.0,17.0,100.0]
+U+D574 id=10813 advance=670.0 kern=0.0
+U+D574 px=24 ascent=19.2 descent=-4.8 advance=16.08 [0.0,83.0,15.0,97.0]
+U+C694 id=7005 advance=479.0 kern=0.0
+U+C694 px=24 ascent=19.2 descent=-4.8 advance=11.496 [1.0,84.0,12.0,98.0]
+U+AC00 id=201 advance=665.0 kern=0.0
+U+AC00 px=24 ascent=19.2 descent=-4.8 advance=15.96 [0.0,84.0,16.0,98.0]
+U+AC61 id=298 advance=730.0 kern=0.0
+U+AC61 px=24 ascent=19.2 descent=-4.8 advance=17.52 [0.0,81.0,19.0,103.0]
+U+ACC2 id=395 advance=730.0 kern=0.0
+U+ACC2 px=24 ascent=19.2 descent=-4.8 advance=17.52 [0.0,84.0,19.0,103.0]
+U+AD23 id=492 advance=750.0 kern=0.0
+U+AD23 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,17.0,104.0]
+U+AD84 id=589 advance=500.0 kern=0.0
+U+AD84 px=24 ascent=19.2 descent=-4.8 advance=12.0 [0.0,82.0,11.0,104.0]
+U+ADE5 id=686 advance=550.0 kern=0.0
+U+ADE5 px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,82.0,13.0,105.0]
+U+AE46 id=783 advance=540.0 kern=0.0
+U+AE46 px=24 ascent=19.2 descent=-4.8 advance=12.96 [0.0,83.0,15.0,102.0]
+U+AEA7 id=880 advance=750.0 kern=0.0
+U+AEA7 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,19.0,103.0]
+U+AF08 id=977 advance=790.0 kern=0.0
+U+AF08 px=24 ascent=19.2 descent=-4.8 advance=18.960001 [0.0,83.0,20.0,101.0]
+U+AF69 id=1074 advance=800.0 kern=0.0
+U+AF69 px=24 ascent=19.2 descent=-4.8 advance=19.2 [0.0,82.0,20.0,102.0]
+U+AFCA id=1171 advance=600.0 kern=0.0
+U+AFCA px=24 ascent=19.2 descent=-4.8 advance=14.400001 [0.0,82.0,15.0,105.0]
+U+B02B id=1268 advance=600.0 kern=0.0
+U+B02B px=24 ascent=19.2 descent=-4.8 advance=14.400001 [0.0,83.0,14.0,104.0]
+U+B08C id=1365 advance=670.0 kern=0.0
+U+B08C px=24 ascent=19.2 descent=-4.8 advance=16.08 [0.0,84.0,18.0,100.0]
+U+B0ED id=1462 advance=750.0 kern=0.0
+U+B0ED px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,17.0,102.0]
+U+B14E id=1559 advance=750.0 kern=0.0
+U+B14E px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,22.0,104.0]
+U+B1AF id=1656 advance=750.0 kern=0.0
+U+B1AF px=24 ascent=19.2 descent=-4.8 advance=18.0 [1.0,82.0,18.0,102.0]
+U+B210 id=1753 advance=550.0 kern=0.0
+U+B210 px=24 ascent=19.2 descent=-4.8 advance=13.2 [1.0,81.0,15.0,104.0]
+U+B271 id=1850 advance=700.0 kern=0.0
+U+B271 px=24 ascent=19.2 descent=-4.8 advance=16.8 [1.0,82.0,18.0,104.0]
+U+B2D2 id=1947 advance=560.0 kern=0.0
+U+B2D2 px=24 ascent=19.2 descent=-4.8 advance=13.440001 [0.0,83.0,15.0,101.0]
+U+B333 id=2044 advance=800.0 kern=0.0
+U+B333 px=24 ascent=19.2 descent=-4.8 advance=19.2 [0.0,83.0,19.0,104.0]
+U+B394 id=2141 advance=700.0 kern=0.0
+U+B394 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,18.0,103.0]
+U+B3F5 id=2238 advance=750.0 kern=0.0
+U+B3F5 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,18.0,101.0]
+U+B456 id=2335 advance=550.0 kern=0.0
+U+B456 px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,81.0,13.0,104.0]
+U+B4B7 id=2432 advance=650.0 kern=0.0
+U+B4B7 px=24 ascent=19.2 descent=-4.8 advance=15.6 [0.0,82.0,16.0,103.0]
+U+B518 id=2529 advance=590.0 kern=0.0
+U+B518 px=24 ascent=19.2 descent=-4.8 advance=14.16 [0.0,85.0,16.0,99.0]
+U+B579 id=2626 advance=850.0 kern=0.0
+U+B579 px=24 ascent=19.2 descent=-4.8 advance=20.4 [0.0,83.0,21.0,105.0]
+U+B5DA id=2723 advance=850.0 kern=0.0
+U+B5DA px=24 ascent=19.2 descent=-4.8 advance=20.4 [0.0,83.0,22.0,103.0]
+U+B63B id=2820 advance=850.0 kern=0.0
+U+B63B px=24 ascent=19.2 descent=-4.8 advance=20.4 [0.0,82.0,20.0,105.0]
+U+B69C id=2917 advance=610.0 kern=0.0
+U+B69C px=24 ascent=19.2 descent=-4.8 advance=14.64 [0.0,84.0,15.0,100.0]
+U+B6FD id=3014 advance=700.0 kern=0.0
+U+B6FD px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,19.0,104.0]
+U+B75E id=3111 advance=700.0 kern=0.0
+U+B75E px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,83.0,17.0,104.0]
+U+B7BF id=3208 advance=800.0 kern=0.0
+U+B7BF px=24 ascent=19.2 descent=-4.8 advance=19.2 [0.0,83.0,20.0,105.0]
+U+B820 id=3305 advance=800.0 kern=0.0
+U+B820 px=24 ascent=19.2 descent=-4.8 advance=19.2 [0.0,84.0,17.0,103.0]
+U+B881 id=3402 advance=750.0 kern=0.0
+U+B881 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,18.0,105.0]
+U+B8E2 id=3499 advance=500.0 kern=0.0
+U+B8E2 px=24 ascent=19.2 descent=-4.8 advance=12.0 [1.0,82.0,11.0,105.0]
+U+B943 id=3596 advance=700.0 kern=0.0
+U+B943 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,17.0,103.0]
+U+B9A4 id=3693 advance=700.0 kern=0.0
+U+B9A4 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,19.0,104.0]
+U+BA05 id=3790 advance=750.0 kern=0.0
+U+BA05 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,19.0,103.0]
+U+BA66 id=3887 advance=800.0 kern=0.0
+U+BA66 px=24 ascent=19.2 descent=-4.8 advance=19.2 [0.0,83.0,21.0,103.0]
+U+BAC7 id=3984 advance=750.0 kern=0.0
+U+BAC7 px=24 ascent=19.2 descent=-4.8 advance=18.0 [1.0,83.0,19.0,103.0]
+U+BB28 id=4081 advance=500.0 kern=0.0
+U+BB28 px=24 ascent=19.2 descent=-4.8 advance=12.0 [0.0,81.0,12.0,103.0]
+U+BB89 id=4178 advance=650.0 kern=0.0
+U+BB89 px=24 ascent=19.2 descent=-4.8 advance=15.6 [1.0,82.0,16.0,103.0]
+U+BBEA id=4275 advance=700.0 kern=0.0
+U+BBEA px=24 ascent=19.2 descent=-4.8 advance=16.8 [1.0,81.0,20.0,104.0]
+U+BC4B id=4372 advance=750.0 kern=0.0
+U+BC4B px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,18.0,103.0]
+U+BCAC id=4469 advance=800.0 kern=0.0
+U+BCAC px=24 ascent=19.2 descent=-4.8 advance=19.2 [0.0,83.0,19.0,104.0]
+U+BD0D id=4566 advance=500.0 kern=0.0
+U+BD0D px=24 ascent=19.2 descent=-4.8 advance=12.0 [1.0,81.0,13.0,105.0]
+U+BD6E id=4663 advance=550.0 kern=0.0
+U+BD6E px=24 ascent=19.2 descent=-4.8 advance=13.2 [1.0,81.0,16.0,105.0]
+U+BDCF id=4760 advance=750.0 kern=0.0
+U+BDCF px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,81.0,18.0,105.0]
+U+BE30 id=4857 advance=700.0 kern=0.0
+U+BE30 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,81.0,18.0,105.0]
+U+BE91 id=4954 advance=946.0 kern=0.0
+U+BE91 px=24 ascent=19.2 descent=-4.8 advance=22.704 [0.0,83.0,22.0,100.0]
+U+BEF2 id=5051 advance=950.0 kern=0.0
+U+BEF2 px=24 ascent=19.2 descent=-4.8 advance=22.800001 [0.0,82.0,21.0,104.0]
+U+BF53 id=5148 advance=650.0 kern=0.0
+U+BF53 px=24 ascent=19.2 descent=-4.8 advance=15.6 [0.0,80.0,14.0,105.0]
+U+BFB4 id=5245 advance=650.0 kern=0.0
+U+BFB4 px=24 ascent=19.2 descent=-4.8 advance=15.6 [0.0,80.0,14.0,104.0]
+U+C015 id=5342 advance=900.0 kern=0.0
+U+C015 px=24 ascent=19.2 descent=-4.8 advance=21.6 [0.0,81.0,19.0,104.0]
+U+C076 id=5439 advance=700.0 kern=0.0
+U+C076 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,81.0,17.0,103.0]
+U+C0D7 id=5536 advance=750.0 kern=0.0
+U+C0D7 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,19.0,104.0]
+U+C199 id=5730 advance=550.0 kern=0.0
+U+C199 px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,81.0,14.0,105.0]
+U+C1FA id=5827 advance=700.0 kern=0.0
+U+C1FA px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,17.0,104.0]
+U+C25B id=5924 advance=750.0 kern=0.0
+U+C25B px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,19.0,105.0]
+U+C2BC id=6021 advance=550.0 kern=0.0
+U+C2BC px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,82.0,12.0,104.0]
+U+C31D id=6118 advance=800.0 kern=0.0
+U+C31D px=24 ascent=19.2 descent=-4.8 advance=19.2 [0.0,84.0,18.0,104.0]
+U+C37E id=6215 advance=850.0 kern=0.0
+U+C37E px=24 ascent=19.2 descent=-4.8 advance=20.4 [0.0,85.0,20.0,104.0]
+U+C3DF id=6312 advance=530.0 kern=0.0
+U+C3DF px=24 ascent=19.2 descent=-4.8 advance=12.72 [0.0,81.0,13.0,103.0]
+U+C440 id=6409 advance=700.0 kern=0.0
+U+C440 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,81.0,19.0,104.0]
+U+C4A1 id=6506 advance=850.0 kern=0.0
+U+C4A1 px=24 ascent=19.2 descent=-4.8 advance=20.4 [0.0,81.0,19.0,105.0]
+U+C502 id=6603 advance=650.0 kern=0.0
+U+C502 px=24 ascent=19.2 descent=-4.8 advance=15.6 [0.0,82.0,15.0,105.0]
+U+C563 id=6700 advance=720.0 kern=0.0
+U+C563 px=24 ascent=19.2 descent=-4.8 advance=17.28 [1.0,83.0,20.0,102.0]
+U+C5C4 id=6797 advance=547.0 kern=0.0
+U+C5C4 px=24 ascent=19.2 descent=-4.8 advance=13.128 [0.0,84.0,15.0,100.0]
+U+C625 id=6894 advance=390.0 kern=0.0
+U+C625 px=24 ascent=19.2 descent=-4.8 advance=9.36 [0.0,82.0,10.0,101.0]
+U+C686 id=6991 advance=700.0 kern=0.0
+U+C686 px=24 ascent=19.2 descent=-4.8 advance=16.8 [1.0,84.0,20.0,104.0]
+U+C6E7 id=7088 advance=750.0 kern=0.0
+U+C6E7 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,17.0,105.0]
+U+C748 id=7185 advance=550.0 kern=0.0
+U+C748 px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,82.0,15.0,104.0]
+U+C7A9 id=7282 advance=700.0 kern=0.0
+U+C7A9 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,84.0,17.0,102.0]
+U+C80A id=7379 advance=691.0 kern=0.0
+U+C80A px=24 ascent=19.2 descent=-4.8 advance=16.584 [0.0,81.0,18.0,103.0]
+U+C86B id=7476 advance=750.0 kern=0.0
+U+C86B px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,84.0,19.0,104.0]
+U+C8CC id=7573 advance=630.0 kern=0.0
+U+C8CC px=24 ascent=19.2 descent=-4.8 advance=15.12 [0.0,81.0,17.0,104.0]
+U+C92D id=7670 advance=750.0 kern=0.0
+U+C92D px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,81.0,15.0,102.0]
+U+C98E id=7767 advance=550.0 kern=0.0
+U+C98E px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,82.0,13.0,104.0]
+U+C9EF id=7864 advance=791.0 kern=0.0
+U+C9EF px=24 ascent=19.2 descent=-4.8 advance=18.984 [0.0,83.0,19.0,101.0]
+U+CA50 id=7961 advance=850.0 kern=0.0
+U+CA50 px=24 ascent=19.2 descent=-4.8 advance=20.4 [0.0,84.0,21.0,99.0]
+U+CAB1 id=8058 advance=900.0 kern=0.0
+U+CAB1 px=24 ascent=19.2 descent=-4.8 advance=21.6 [0.0,83.0,21.0,104.0]
+U+CB12 id=8155 advance=700.0 kern=0.0
+U+CB12 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,81.0,18.0,103.0]
+U+CB73 id=8252 advance=750.0 kern=0.0
+U+CB73 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,81.0,18.0,105.0]
+U+CBD4 id=8349 advance=620.0 kern=0.0
+U+CBD4 px=24 ascent=19.2 descent=-4.8 advance=14.88 [0.0,84.0,15.0,98.0]
+U+CC35 id=8446 advance=750.0 kern=0.0
+U+CC35 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,18.0,105.0]
+U+CC96 id=8543 advance=750.0 kern=0.0
+U+CC96 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,19.0,104.0]
+U+CCF7 id=8640 advance=780.0 kern=0.0
+U+CCF7 px=24 ascent=19.2 descent=-4.8 advance=18.72 [0.0,83.0,19.0,103.0]
+U+CD58 id=8737 advance=750.0 kern=0.0
+U+CD58 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,81.0,18.0,103.0]
+U+CDB9 id=8834 advance=750.0 kern=0.0
+U+CDB9 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,80.0,18.0,105.0]
+U+CE1A id=8931 advance=500.0 kern=0.0
+U+CE1A px=24 ascent=19.2 descent=-4.8 advance=12.0 [0.0,81.0,11.0,105.0]
+U+CE7B id=9028 advance=720.0 kern=0.0
+U+CE7B px=24 ascent=19.2 descent=-4.8 advance=17.28 [0.0,84.0,17.0,101.0]
+U+CEDC id=9125 advance=750.0 kern=0.0
+U+CEDC px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,19.0,104.0]
+U+CF3D id=9222 advance=780.0 kern=0.0
+U+CF3D px=24 ascent=19.2 descent=-4.8 advance=18.72 [0.0,84.0,18.0,103.0]
+U+CF9E id=9319 advance=750.0 kern=0.0
+U+CF9E px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,81.0,22.0,105.0]
+U+CFFF id=9416 advance=750.0 kern=0.0
+U+CFFF px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,81.0,20.0,104.0]
+U+D060 id=9513 advance=480.0 kern=0.0
+U+D060 px=24 ascent=19.2 descent=-4.8 advance=11.52 [0.0,81.0,13.0,103.0]
+U+D0C1 id=9610 advance=710.0 kern=0.0
+U+D0C1 px=24 ascent=19.2 descent=-4.8 advance=17.04 [0.0,82.0,18.0,100.0]
+U+D122 id=9707 advance=750.0 kern=0.0
+U+D122 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,21.0,104.0]
+U+D183 id=9804 advance=750.0 kern=0.0
+U+D183 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,18.0,103.0]
+U+D1E4 id=9901 advance=750.0 kern=0.0
+U+D1E4 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,21.0,105.0]
+U+D245 id=9998 advance=500.0 kern=0.0
+U+D245 px=24 ascent=19.2 descent=-4.8 advance=12.0 [0.0,81.0,12.0,105.0]
+U+D2A6 id=10095 advance=550.0 kern=0.0
+U+D2A6 px=24 ascent=19.2 descent=-4.8 advance=13.2 [0.0,81.0,16.0,105.0]
+U+D307 id=10192 advance=700.0 kern=0.0
+U+D307 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,17.0,104.0]
+U+D368 id=10289 advance=750.0 kern=0.0
+U+D368 px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,83.0,18.0,104.0]
+U+D3C9 id=10386 advance=770.0 kern=0.0
+U+D3C9 px=24 ascent=19.2 descent=-4.8 advance=18.48 [0.0,84.0,18.0,100.0]
+U+D42A id=10483 advance=750.0 kern=0.0
+U+D42A px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,19.0,104.0]
+U+D48B id=10580 advance=466.0 kern=0.0
+U+D48B px=24 ascent=19.2 descent=-4.8 advance=11.184 [0.0,81.0,12.0,104.0]
+U+D4EC id=10677 advance=476.0 kern=0.0
+U+D4EC px=24 ascent=19.2 descent=-4.8 advance=11.424 [0.0,82.0,13.0,103.0]
+U+D54D id=10774 advance=676.0 kern=0.0
+U+D54D px=24 ascent=19.2 descent=-4.8 advance=16.224 [0.0,84.0,16.0,102.0]
+U+D5AE id=10871 advance=750.0 kern=0.0
+U+D5AE px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,17.0,103.0]
+U+D60F id=10968 advance=750.0 kern=0.0
+U+D60F px=24 ascent=19.2 descent=-4.8 advance=18.0 [0.0,82.0,20.0,104.0]
+U+D670 id=11065 advance=726.0 kern=0.0
+U+D670 px=24 ascent=19.2 descent=-4.8 advance=17.424 [0.0,81.0,17.0,101.0]
+U+D6D1 id=11162 advance=535.0 kern=0.0
+U+D6D1 px=24 ascent=19.2 descent=-4.8 advance=12.84 [0.0,81.0,14.0,105.0]
+U+D732 id=11259 advance=700.0 kern=0.0
+U+D732 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,81.0,17.0,105.0]
+U+D793 id=11356 advance=700.0 kern=0.0
+U+D793 px=24 ascent=19.2 descent=-4.8 advance=16.8 [0.0,82.0,17.0,104.0]

@@ -13,11 +13,9 @@ yanked = "deny"
 # Flag unmaintained crates we depend on directly; transitive ones (e.g. via GTK on Linux) are
 # tracked upstream by Tauri. Real vulnerabilities are always denied.
 unmaintained = "workspace"
-ignore = [
-  # Owner, 2026-11-15: unmaintained, no vulnerability; it reads the fonts the app draws with,
-  # directly (vertical.rs) and through ab_glyph. FR-134 moves to skrifa in v0.14.3 (SECURITY.md §6).
-  { id = "RUSTSEC-2026-0192", reason = "ttf-parser unmaintained, no known vulnerability; replaced by skrifa in FR-134" },
-]
+# Nothing ignored: RUSTSEC-2026-0192 (ttf-parser unmaintained) was, for v0.14.2, until FR-134
+# moved every font to skrifa (SECURITY.md §6).
+ignore = []
 
 [licenses]
 version = 2

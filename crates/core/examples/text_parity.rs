@@ -10,6 +10,13 @@
 //!
 //! `cargo run --release -p fotollection-core --example text_parity -- write <dir> [--font <ttf|otf>]…`
 //! `cargo run --release -p fotollection-core --example text_parity -- compare <dir> [--font <ttf|otf>]…`
+#![allow(
+    clippy::expect_used,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::similar_names
+)]
+
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};

@@ -31,13 +31,13 @@ pub static KLEE: LazyLock<Option<VerticalFace>> = LazyLock::new(|| VerticalFace:
 impl VerticalFace {
     /// A face from its bytes, `None` if they are not a font.
     pub fn new(bytes: &'static [u8]) -> Option<Self> {
-        let em_ascent = ttf_parser::Face::parse(bytes, 0)
+        use skrifa::raw::TableProvider as _;
+        let em_ascent = skrifa::raw::FontRef::new(bytes)
             .ok()
             .and_then(|f| {
-                let per_em = f32::from(f.units_per_em());
-                f.typographic_ascender()
-                    .map(|a| f32::from(a) / per_em)
-                    .filter(|a| (0.5..=1.0).contains(a))
+                let per_em = f32::from(f.head().ok()?.units_per_em());
+                let ascender = f.os2().ok()?.s_typo_ascender();
+                Some(f32::from(ascender) / per_em).filter(|a| (0.5..=1.0).contains(a))
             })
             .unwrap_or(0.88);
         Some(Self {
@@ -119,46 +119,62 @@ fn em_scale(font: &FontArc, em: f32) -> PxScale {
 /// A face's vertical forms from its GSUB `vert` and `vrt2` features (single substitutions
 /// only, the kind a Japanese face uses for them); empty when it has none.
 fn vertical_forms(bytes: &[u8]) -> HashMap<u16, u16> {
-    use ttf_parser::Tag;
-    use ttf_parser::gsub::{SingleSubstitution, SubstitutionSubtable};
+    use skrifa::raw::TableProvider as _;
+    use skrifa::raw::tables::gsub::{SingleSubst, SubstitutionSubtables};
+    let small = |g: skrifa::GlyphId| u16::try_from(g.to_u32()).unwrap_or(0);
     let mut forms = HashMap::new();
-    let Ok(face) = ttf_parser::Face::parse(bytes, 0) else {
+    let Some(gsub) = skrifa::raw::FontRef::new(bytes)
+        .ok()
+        .and_then(|f| f.gsub().ok())
+    else {
         return forms;
     };
-    let Some(gsub) = face.tables().gsub else {
+    let (Ok(features), Ok(lookups)) = (gsub.feature_list(), gsub.lookup_list()) else {
         return forms;
     };
-    let glyphs = face.number_of_glyphs();
     for tag in [b"vert", b"vrt2"] {
-        let Some(feature) = gsub.features.find(Tag::from_bytes(tag)) else {
+        // The first feature of that tag, as the face's other readers take it.
+        let Some(feature) = features
+            .feature_records()
+            .iter()
+            .find(|r| r.feature_tag() == skrifa::Tag::new(tag))
+            .and_then(|r| r.feature(features.offset_data()).ok())
+        else {
             continue;
         };
-        for index in feature.lookup_indices {
-            let Some(lookup) = gsub.lookups.get(index) else {
+        for index in feature.lookup_list_indices() {
+            let Ok(lookup) = lookups.lookups().get(usize::from(index.get())) else {
                 continue;
             };
-            for i in 0..lookup.subtables.len() {
-                let Some(SubstitutionSubtable::Single(single)) =
-                    lookup.subtables.get::<SubstitutionSubtable>(i)
-                else {
-                    continue;
+            let Ok(SubstitutionSubtables::Single(subtables)) = lookup.subtables() else {
+                continue;
+            };
+            for single in subtables.iter().filter_map(Result::ok) {
+                let pairs: Vec<(u16, u16)> = match &single {
+                    SingleSubst::Format1(t) => t.coverage().map_or_else(
+                        |_| Vec::new(),
+                        |c| {
+                            c.iter()
+                                .map(|g| {
+                                    (small(g), small(g).wrapping_add_signed(t.delta_glyph_id()))
+                                })
+                                .collect()
+                        },
+                    ),
+                    SingleSubst::Format2(t) => t.coverage().map_or_else(
+                        |_| Vec::new(),
+                        |c| {
+                            c.iter()
+                                .zip(t.substitute_glyph_ids())
+                                .map(|(g, to)| (small(g), to.get().to_u16()))
+                                .collect()
+                        },
+                    ),
+                    // The 24-bit formats of the next spec; ttf-parser read neither.
+                    _ => Vec::new(),
                 };
-                for g in 0..glyphs {
-                    let glyph = ttf_parser::GlyphId(g);
-                    let Some(at) = single.coverage().get(glyph) else {
-                        continue;
-                    };
-                    let to = match single {
-                        SingleSubstitution::Format1 { delta, .. } => {
-                            Some(g.wrapping_add_signed(delta))
-                        }
-                        SingleSubstitution::Format2 { substitutes, .. } => {
-                            substitutes.get(at).map(|s| s.0)
-                        }
-                    };
-                    if let Some(to) = to {
-                        forms.entry(g).or_insert(to);
-                    }
+                for (from, to) in pairs {
+                    forms.entry(from).or_insert(to);
                 }
             }
         }

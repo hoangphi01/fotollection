@@ -9,8 +9,8 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
-ab_glyph.workspace = true
-ttf-parser.workspace = true
+skrifa.workspace = true
+ab_glyph_rasterizer.workspace = true
 blake3.workspace = true
 chrono.workspace = true
 fast_image_resize.workspace = true
