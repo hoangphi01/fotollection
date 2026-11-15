@@ -38,6 +38,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A text check runs in a language longer than the source (Vietnamese, Hungarian, `en-XA`), where a cut or stale answer shows. Kept by: `MEASURE=1` in hu and `en-XA`.
 - A measure of text is redone when the fonts load; a change of face is checked on Vietnamese at its smallest size, two lines deep. Kept by: `FitText` refit on `document.fonts`.
 - Every site text is checked in every published language from the built pages, with every optional data file present. Kept by: `scripts/check-site-i18n.mjs --build`.
+- Website words are polite and neutral: a headline names Fotollection, never "the app"; each lead and caption one complete sentence, never a clipped phrase before a colon. Kept by: `check-site-i18n` (`scripts/site-register.json`).
 
 ### rust-concurrency
 
@@ -119,6 +120,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### The landing page said "Straight from the app" and opened on a clipped phrase, after being asked many times for a polite tone (website, FR-135)
+
+- **Area:** text-i18n, checks
+- **Seen:** the new results section read "Xuất thẳng từ app." and "Không phải ảnh dựng: …" (in every language: "Straight from the app.", "Not mock-ups: …"), its captions phrases without a verb; the owner had asked for polite, neutral wording several times.
+- **Why:** the words were written fast in nine languages and checked only for keys and placeholders, never for register; the rule lived in conversation and memory, not in a check.
+- **Fix:** every headline names Fotollection ("Bản in hoàn chỉnh từ Fotollection."), every lead and caption is a full, calm sentence; `scripts/check-site-i18n.mjs` now fails on an informal word in a headline (`scripts/site-register.json`, per language: app, App, アプリ, 앱…, names such as VNLF App Explorer and AppImage aside) and on a lead or caption that opens with a short phrase before a colon.
+- **Rule:** website words are polite and neutral: the product by its name, never "the app", in a headline; each line one complete sentence, short but never clipped.
 
 ### A zoomed crop in a carousel frame showed its middle, giant (website, FR-133)
 

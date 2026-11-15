@@ -1,0 +1,12 @@
+{
+  "_comment": "The website's register (LESSONS 2026-11-15, owner: polite and neutral, full sentences). Per language, words a headline never uses: the product is named Fotollection, never 'the app'. Read by scripts/check-site-i18n.mjs on every *_title, hero_title_*, hero_accent and kn_* key; body text may describe the app plainly. Matched as written (case kept), so names such as VNLF App Explorer and AppImage pass.",
+  "en": "\\bapps?\\b",
+  "vi": "\\bapp\\b",
+  "de": "\\bApps?\\b(?! Explorer)",
+  "fr": "\\bapps?\\b",
+  "hu": "\\bapp(?!Image)\\w*",
+  "cs": "\\baplikac\\w*",
+  "pl": "\\baplikac\\w*",
+  "ja": "アプリ",
+  "ko": "앱"
+}

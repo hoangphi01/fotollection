@@ -127,6 +127,27 @@ for (const [c, k] of Object.entries(keynoteOf)) {
     }
   }
 }
+// The register (LESSONS 2026-11-15, owner: polite and neutral, full sentences): a headline names
+// Fotollection, never "the app" (scripts/site-register.json), and a lead or a caption never opens
+// on a clipped phrase before a colon ("Not mock-ups: …").
+{
+  const register = JSON.parse(readFileSync(path.join(root, 'scripts/site-register.json'), 'utf8'))
+  const headline = /^(\w+_title|hero_title_\d|hero_accent|kn_\d+):\s*"?(.*?)"?\s*$/
+  const lead = /^(\w*_lead\w*|\w*_sub|res_\w+_text):\s*"?(.*?)"?\s*$/
+  const clipped = /^\s*[^\s:：][^:：.。!?！？]{0,27}[:：]\s?/
+  for (const [code, words] of Object.entries(register)) {
+    if (code.startsWith('_')) continue
+    const file = path.join(site, '_data/i18n', `${code}.yml`)
+    if (!existsSync(file)) continue
+    const informal = new RegExp(words, 'u')
+    for (const line of readFileSync(file, 'utf8').split('\n')) {
+      const h = line.match(headline)
+      if (h && informal.test(h[2])) problems.push(`site/_data/i18n/${code}.yml ${h[1]}: a headline names Fotollection, not "${h[2].match(informal)[0]}" (polite and neutral, LESSONS 2026-11-15)`)
+      const l = line.match(lead)
+      if (l && clipped.test(l[2])) problems.push(`site/_data/i18n/${code}.yml ${l[1]}: a full sentence, not a clipped phrase before a colon ("${l[2].slice(0, 30)}…", LESSONS 2026-11-15)`)
+    }
+  }
+}
 const wordsDir = path.join(site, '_data/i18n')
 const files = existsSync(wordsDir) ? readdirSync(wordsDir).filter((f) => f.endsWith('.yml')).map((f) => f.slice(0, -4)) : []
 if (!files.includes('en')) problems.push('site/_data/i18n/en.yml, the source of every word, is missing')
