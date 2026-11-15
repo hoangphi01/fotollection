@@ -1360,6 +1360,24 @@ On the website, once it ships, AddAssist is presented as a strength beside the o
 - the time of a stamped export within NFR-003, measured before and after;
 - the ignore removed from `deny.toml` in the same commit.
 
+### FR-135 — A short landing page with results at full size, and a Features page
+
+**P2 (v0.14.3; owner, 2026-11-15, after a Japanese, a Korean and an Apple-designer reading).** The home page shrinks from 17 sections to six: the hero with a finished card at full size, the keynote video, Looks, the print finished, the kiosk sizes, and private and fast with the download. Everything else moves to a new `/features/` page with a sticky local nav; the v0.12 makeover slider moves to the Wiki.
+
+- **Each picture for its job** (owner): a beautiful result (a finished postcard, a stamped print, a look) shown large, the exported file itself; where the experience is the point, the whole window, legible; never a window shrunk until its text is gone.
+- **Legible on a phone:** text in a picture at least 11 CSS px on a 390 px screen, with crops served below 600 px; checked by the screenshot run.
+- **Words:** one claim and one short line per caption; Korean in 해요체; Japanese with its own size names (はがきサイズ, L判); no duplicate headings.
+
+### FR-136 — The Postcard tab in three blocks
+
+**P2 (v0.14.3; owner, 2026-11-15: "the layout runs into itself").** The preview's Postcard tab becomes three separate lego blocks (`SectionCard`), in this order:
+
+1. **Sender:** optional, folded by default;
+2. **Recipient:** the address, typed or with AddAssist (FR-133);
+3. **Message:** the text and its style.
+
+Each block is built from the shared blocks (STYLE_RULE §4) and checked by `check-lego` and `MEASURE=1`, in both themes and in the longest language.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
