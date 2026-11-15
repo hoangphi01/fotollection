@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Website in Japanese and Korean:** every screenshot on those pages shows the app in its language, on Japan's photos (Tokyo Tower, Kamakura, Kyoto, Fuji) or Seoul's, with a はがき or a 우편엽서 sent to a famous place; AddAssist has its own card in the print carousel. The postcards on every page go to a famous place with a demo name in the page's language.
+- **Website in Japanese and Korean:** every screenshot on those pages shows the app in its language, on Japan's photos (Tokyo Tower, Kamakura, Kyoto, Fuji) or Seoul's, with a はがき or a 우편엽서 sent to a famous place; AddAssist has its own card in the print carousel, Looks shows its colours on a Kamakura street or Gwanghwamun, and the link previews break Korean only between words. The postcards on every page go to a famous place with a demo name in the page's language.
 - **Website in French** at `/fr/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with France's photo kiosks (CEWE at E.Leclerc, Intermarché and Fnac, Kodak at Carrefour) in place of dm and Rossmann, and the postcard within La Poste's formats.
 - **Light theme, in the app and on the website:** the edge under buttons, choices and cards is a dark teal instead of grey, as the dark theme's is a dark brown; in the dark theme, the chosen row of a list (a Settings section, a folder) shows its deep edge again.
 - **Website in Korean** at `/ko/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Korea's convenience stores (CU, GS25) and their 10 × 15 Printing Box prints in place of dm and Rossmann, set as Korean sites are: words never broken inside, bold Gothic headings.

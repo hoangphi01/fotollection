@@ -25,6 +25,8 @@ export default {
       legacy: data.language.legacy ?? data.language.assets,
       // AddAssist on its home page (languages.yml `addassist`, the Japanese and Korean pages).
       addassist: data.language.addassist === true,
+      // The Looks section's photo: the Prague tram, or its own (languages.yml `looks`).
+      looks: data.language.looks,
       prefix: data.language.prefix,
       date_format: data.language.date_format,
       guide: data.language.guide,

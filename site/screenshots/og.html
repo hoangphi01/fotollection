@@ -25,6 +25,9 @@
       .vnlf { margin-left: 6px; padding: 4px 10px; border-radius: 8px; border: 1px solid #fffaee66; font: 600 15px 'Be Vietnam Pro', sans-serif; color: #fffaee; }
       h1 { margin-top: 30px; font: 800 44px/1.12 'Bitter', 'Hiragino Sans', 'Yu Gothic', 'Noto Sans CJK JP', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans CJK KR', sans-serif; letter-spacing: -0.01em; }
       h1 em { font-style: normal; color: #f6c98b; }
+      /* As the site (site.css): Korean breaks only between its spaced words, Japanese between phrases. */
+      :lang(ko) body { word-break: keep-all; overflow-wrap: anywhere; }
+      :lang(ja) body { word-break: auto-phrase; }
       p { margin-top: 22px; font-size: 21px; line-height: 1.45; color: #e3f1ea; }
       .shield { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding: 7px 14px; border-radius: 10px; background: #fffaee; color: #3f7d1a; font-weight: 600; font-size: 18px; }
       .shield svg { width: 22px; height: 22px; }
@@ -55,9 +58,10 @@
       // home page), the headline with its accent, a line, the shield and a screenshot from
       // site/assets/img in the language whose screenshots the page shows.
       const params = new URLSearchParams(location.search)
+      document.documentElement.lang = params.get('lang') ?? 'en'
       const a = params.get('assets') ?? 'en'
       const shots = {
-        // The owner's tram by night on a postcard filled to the edge, "Ahoj Praha!" (shoot.mjs).
+        // The full-bleed demo postcard, to a landmark in the page's language (demo.rs, shoot.mjs).
         home: `postcard-night-${a}-dark.webp`,
         download: `grid-${a}-dark.webp`,
         performance: `charts/bench-budgets-${a}.svg`,

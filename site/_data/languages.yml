@@ -13,6 +13,8 @@
 #   legacy       the v0.12 gallery its makeover shows, when it has none of its own (en)
 #   addassist    true: its home page shows AddAssist, the postal-code lookup of its country's
 #                cards (FR-133; owner, 2026-11-15: the Japanese and Korean pages only)
+#   looks        whose photo its Looks section shows (assets/img/looks/<slug>-<looks>.webp), when
+#                not the Prague tram (ja: Kamakura, ko: Gwanghwamun; owner, 2026-11-15)
 #   date_format  how it writes a date (strftime)
 #   support      how its readers buy the author a coffee: vietqr (a bank app's code, Vietnam's
 #                way) or card (Ko-fi first, then GitHub Sponsors), owner 2026-11-11
@@ -131,6 +133,7 @@
   assets: ko
   legacy: en
   addassist: true
+  looks: ko
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-ko.md
   support: card
@@ -147,6 +150,7 @@
   assets: ja
   legacy: en
   addassist: true
+  looks: ja
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-ja.md
   support: card

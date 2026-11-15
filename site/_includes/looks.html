@@ -1,6 +1,7 @@
 {%- comment %} The interactive Looks section of the landing page (owner, 2026-11-09, after Apple's aperture picker): "Meet Looks", what a look is (Lightroom's preset, LUMIX's LUT and Fotollection's own colours, one thing here), then one photo through each built-in look (site/_data/looks.yml, rendered by the app's engine), a row of looks to pick and a sentence for the one picked; press and hold the photo for its original, as in the app. The pictures are stacked and cross-fade, so a pick never flashes; every sentence sits in one cell, so a pick never moves the row. Without script: the original and the list. assets/js/looks.js. {% endcomment -%}
 {%- assign t = site.data.i18n[pg.lang] -%}
 {%- assign lang = pg.lang -%}
+{%- assign photo = '' -%}{%- if pg.looks %}{%- assign photo = '-' | append: pg.looks -%}{%- endif %}
 <section class="section looks-section" id="looks">
   <div class="wrap">
     <p class="kicker">{{ t.looks_kicker }}</p>
@@ -11,7 +12,7 @@
       <figure class="looks-photo">
         <div class="looks-stack" data-looks-stack>
           {%- for l in site.data.looks %}
-          <img src="{{ '/assets/img/looks/' | append: l.slug | append: '.webp' | relative_url }}" width="1200" height="1600" alt="{% if forloop.first %}{{ t.looks_alt }}{% endif %}"{% unless forloop.first %} aria-hidden="true"{% endunless %} loading="lazy" decoding="async" draggable="false" data-slug="{{ l.slug }}"{% if forloop.first %} class="on"{% endif %} />
+          <img src="{{ '/assets/img/looks/' | append: l.slug | append: photo | append: '.webp' | relative_url }}" width="1200" height="1600" alt="{% if forloop.first %}{{ t.looks_alt }}{% endif %}"{% unless forloop.first %} aria-hidden="true"{% endunless %} loading="lazy" decoding="async" draggable="false" data-slug="{{ l.slug }}"{% if forloop.first %} class="on"{% endif %} />
           {%- endfor %}
         </div>
         <figcaption class="small muted">{{ t.looks_hold }}{% include fn.html keys="fn_photo" %}</figcaption>
