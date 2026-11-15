@@ -76,10 +76,12 @@
           <tr>{% for col in t.compare_cols %}<th scope="col">{{ col }}</th>{% endfor %}</tr>
         </thead>
         <tbody>
+          {%- comment %} A row may end with a footnote's key (a sixth item), marked on Fotollection's cell (AddAssist, owner 2026-11-15). {% endcomment %}
           {%- for row in t.compare_rows %}
+          {%- assign row_note = '' -%}{%- if row.size == 6 -%}{%- assign row_note = row[5] -%}{%- endif %}
           <tr>
-            {%- for cell in row %}
-            {%- if forloop.first %}<th scope="row">{{ cell }}</th>{% elsif forloop.index == 2 %}<td class="ours">{{ cell }}</td>{% else %}<td>{{ cell }}</td>{% endif %}
+            {%- for cell in row limit: 5 %}
+            {%- if forloop.first %}<th scope="row">{{ cell }}</th>{% elsif forloop.index == 2 %}<td class="ours">{{ cell }}{% if row_note != '' %}{% include fn.html keys=row_note %}{% endif %}</td>{% else %}<td>{{ cell }}</td>{% endif %}
             {%- endfor %}
           </tr>
           {%- endfor %}

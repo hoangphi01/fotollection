@@ -9,8 +9,8 @@ home:
   ko: [fn_open, fn_photo, fn_cu, fn_gs25, fn_printingbox, fn_privacy_site]
   fr: [fn_open, fn_photo, fn_leclerc, fn_intermarche, fn_fnac, fn_kiosk_fr, fn_privacy_site]
 feat_page_title:
-  en: [fn_charts, fn_pf_raw, fn_lightroom, fn_lut, fn_compare, fn_privacy_site]
-  vi: [fn_charts, fn_pf_raw, fn_lightroom, fn_lut, fn_compare, fn_privacy_site]
+  en: [fn_charts, fn_pf_raw, fn_lightroom, fn_lut, fn_addassist, fn_compare, fn_privacy_site]
+  vi: [fn_charts, fn_pf_raw, fn_lightroom, fn_lut, fn_addassist, fn_compare, fn_privacy_site]
 perf_title:
   en: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]
   vi: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]

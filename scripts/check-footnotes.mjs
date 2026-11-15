@@ -55,6 +55,8 @@ const walk = (dir) => {
       for (const m of text.matchAll(/keys="([^"]+)"/g)) m[1].split(',').forEach((k) => cited.add(k.trim()))
       // YAML lets a list's names be quoted (`fn: ["fn_raw"]`); the name is the same.
       for (const m of text.matchAll(/\b\w*fn: \[([^\]]+)\]/g)) m[1].split(',').forEach((k) => cited.add(k.trim().replace(/^["']|["']$/g, '')))
+      // A table row's own note, its last item (`compare_rows`: ["AddAssist", …, "fn_addassist"]).
+      for (const m of text.matchAll(/"(fn_[a-z0-9_]+)"\]/g)) cited.add(m[1])
     }
   }
 }
