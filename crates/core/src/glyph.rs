@@ -8,7 +8,10 @@
 //! `HVAR`; the first Unicode `cmap` subtable that maps a character; the first horizontal `kern`
 //! subtable that has a pair); a glyph's bounds span every point of its outline, control points
 //! included. The drawing follows `ab_glyph`'s `OutlinedGlyph::draw` (MIT OR Apache-2.0).
+use std::collections::HashMap;
 use std::sync::Arc;
+
+use crate::lock::RwLock;
 
 use ab_glyph_rasterizer::{Point as RPoint, Rasterizer};
 use skrifa::instance::{Location, LocationRef, Size};
@@ -139,6 +142,9 @@ struct Metrics {
     descent: f32,
 }
 
+/// A glyph's outline in font units and its box, kept by its face.
+type Kept = Option<Arc<(Vec<Curve>, Point, Point)>>;
+
 #[derive(Debug)]
 struct Face {
     bytes: Bytes,
@@ -146,6 +152,16 @@ struct Face {
     settings: Vec<(Tag, f32)>,
     location: Location,
     metrics: Metrics,
+    /// What was read for each character and glyph drawn, so a line reads each glyph's
+    /// tables once, as `ab_glyph`'s pre-parsed face did (`measure_text`: 20 % slower without).
+    /// Owned by the face, emptied with it (the bundled faces live with the app, a user's
+    /// font for one export or one preview); bounded by the face's glyphs actually drawn, at
+    /// most 65,536 each: a few KB a Latin face, about 2 MB for every kana and kanji a card
+    /// prints. Any caller fills them; nothing evicts. `set_variation` empties what depends on
+    /// the axes.
+    glyph_ids: RwLock<HashMap<char, u16>>,
+    advances: RwLock<HashMap<u16, f32>>,
+    outlines: RwLock<HashMap<u16, Kept>>,
 }
 
 impl Face {
@@ -159,6 +175,9 @@ impl Face {
             settings: Vec::new(),
             location,
             metrics,
+            glyph_ids: RwLock::default(),
+            advances: RwLock::default(),
+            outlines: RwLock::default(),
         })
     }
 
@@ -299,6 +318,78 @@ impl FontArc {
     }
 }
 
+impl FontArc {
+    fn read_glyph_id(&self, c: char) -> GlyphId {
+        let Some(cmap) = self.0.font().and_then(|f| f.cmap().ok()) else {
+            return GlyphId(0);
+        };
+        let data = cmap.offset_data();
+        cmap.encoding_records()
+            .iter()
+            .filter(|r| match r.platform_id() {
+                PlatformId::Unicode => true,
+                PlatformId::Windows => matches!(r.encoding_id(), 1 | 10),
+                _ => false,
+            })
+            .filter_map(|r| r.subtable(data).ok())
+            .find_map(|s| s.map_codepoint(c))
+            .and_then(|g| u16::try_from(g.to_u32()).ok())
+            .map_or(GlyphId(0), GlyphId)
+    }
+
+    #[allow(clippy::cast_possible_truncation)] // a 16.16 delta, well within f32
+    fn read_advance(&self, id: GlyphId) -> f32 {
+        let Some(font) = self.0.font() else {
+            return 0.0;
+        };
+        let Ok(hmtx) = font.hmtx() else { return 0.0 };
+        let long = hmtx.h_metrics();
+        let Some(advance) = long
+            .get(usize::from(id.0))
+            .or_else(|| long.last())
+            .map(|m| f32::from(m.advance()))
+        else {
+            return 0.0;
+        };
+        let coords = self.0.location.coords();
+        if coords.is_empty() {
+            return advance;
+        }
+        let delta = font
+            .hvar()
+            .ok()
+            .and_then(|h| h.advance_delta(skrifa::GlyphId::new(u32::from(id.0)), coords))
+            .map(|d| d.to_f64() as f32);
+        delta.map_or(advance, |d| {
+            (advance + d + 0.5).trunc().clamp(0.0, f32::from(u16::MAX))
+        })
+    }
+
+    /// A glyph's outline in font units, in f32 with its deltas whole (the `HarfBuzz` path
+    /// style; `FreeType`'s rounds them to units), as `ttf-parser` read it, and its box.
+    fn read_outline(&self, id: GlyphId) -> Kept {
+        let font = self.0.font()?;
+        let outline = font
+            .outline_glyphs()
+            .get(skrifa::GlyphId::new(u32::from(id.0)))?;
+        let mut pen = Curves::default();
+        let settings = DrawSettings::unhinted(Size::unscaled(), &self.0.location)
+            .with_path_style(PathStyle::HarfBuzz);
+        let adjusted = outline.draw(settings, &mut pen).ok()?;
+        // The scaler moves every point left by the origin phantom point, so the outline starts
+        // at the face's left side bearing; ttf-parser kept the glyph's own coordinates.
+        let shift = adjusted.lsb.unwrap_or(0.0);
+        let curves = pen.finish();
+        let curves: Vec<Curve> = if shift == 0.0 {
+            curves
+        } else {
+            curves.into_iter().map(|c| c.shifted(shift)).collect()
+        };
+        let (min, max) = bounds(&curves)?;
+        Some(Arc::new((curves, min, max)))
+    }
+}
+
 /// A face being set up, before it is shared: its variation can still change.
 #[derive(Debug)]
 pub struct FontRef(Face);
@@ -335,6 +426,8 @@ impl VariableFont for FontRef {
         self.0.settings = settings;
         self.0.location = location;
         self.0.metrics = metrics;
+        self.0.advances = RwLock::default();
+        self.0.outlines = RwLock::default();
         true
     }
 }
@@ -378,50 +471,38 @@ impl Font for FontArc {
     /// The first Unicode `cmap` subtable (Unicode platform, or Windows BMP or full) that maps
     /// the character, as `ttf-parser`; 0 when none does.
     fn glyph_id(&self, c: char) -> GlyphId {
-        let Some(cmap) = self.0.font().and_then(|f| f.cmap().ok()) else {
-            return GlyphId(0);
-        };
-        let data = cmap.offset_data();
-        cmap.encoding_records()
-            .iter()
-            .filter(|r| match r.platform_id() {
-                PlatformId::Unicode => true,
-                PlatformId::Windows => matches!(r.encoding_id(), 1 | 10),
-                _ => false,
-            })
-            .filter_map(|r| r.subtable(data).ok())
-            .find_map(|s| s.map_codepoint(c))
-            .and_then(|g| u16::try_from(g.to_u32()).ok())
-            .map_or(GlyphId(0), GlyphId)
+        if let Some(g) = self
+            .0
+            .glyph_ids
+            .read()
+            .ok()
+            .and_then(|m| m.get(&c).copied())
+        {
+            return GlyphId(g);
+        }
+        let id = self.read_glyph_id(c);
+        if let Ok(mut m) = self.0.glyph_ids.write() {
+            m.insert(c, id.0);
+        }
+        id
     }
 
     /// `hmtx`'s advance, plus `HVAR`'s delta on a varied face, rounded as `ttf-parser` does.
-    #[allow(clippy::cast_possible_truncation)] // a 16.16 delta, well within f32
     fn h_advance_unscaled(&self, id: GlyphId) -> f32 {
-        let Some(font) = self.0.font() else {
-            return 0.0;
-        };
-        let Ok(hmtx) = font.hmtx() else { return 0.0 };
-        let long = hmtx.h_metrics();
-        let Some(advance) = long
-            .get(usize::from(id.0))
-            .or_else(|| long.last())
-            .map(|m| f32::from(m.advance()))
-        else {
-            return 0.0;
-        };
-        let coords = self.0.location.coords();
-        if coords.is_empty() {
-            return advance;
-        }
-        let delta = font
-            .hvar()
+        if let Some(a) = self
+            .0
+            .advances
+            .read()
             .ok()
-            .and_then(|h| h.advance_delta(skrifa::GlyphId::new(u32::from(id.0)), coords))
-            .map(|d| d.to_f64() as f32);
-        delta.map_or(advance, |d| {
-            (advance + d + 0.5).trunc().clamp(0.0, f32::from(u16::MAX))
-        })
+            .and_then(|m| m.get(&id.0).copied())
+        {
+            return a;
+        }
+        let advance = self.read_advance(id);
+        if let Ok(mut m) = self.0.advances.write() {
+            m.insert(id.0, advance);
+        }
+        advance
     }
 
     /// The first horizontal, fixed `kern` subtable (formats 0, 2 and 3) holding the pair.
@@ -447,26 +528,20 @@ impl Font for FontArc {
     }
 
     fn outline_glyph(&self, glyph: Glyph) -> Option<OutlinedGlyph> {
-        let font = self.0.font()?;
-        let outline = font
-            .outline_glyphs()
-            .get(skrifa::GlyphId::new(u32::from(glyph.id.0)))?;
-        let mut pen = Curves::default();
-        // In font units, deltas kept whole in f32 (the FreeType style rounds them to units),
-        // as ttf-parser read them.
-        let settings = DrawSettings::unhinted(Size::unscaled(), &self.0.location)
-            .with_path_style(PathStyle::HarfBuzz);
-        let adjusted = outline.draw(settings, &mut pen).ok()?;
-        // The scaler moves every point left by the origin phantom point, so the outline starts
-        // at the face's left side bearing; ttf-parser kept the glyph's own coordinates.
-        let shift = adjusted.lsb.unwrap_or(0.0);
-        let curves = pen.finish();
-        let curves = if shift == 0.0 {
-            curves
-        } else {
-            curves.into_iter().map(|c| c.shifted(shift)).collect()
-        };
-        let (min, max) = bounds(&curves)?;
+        let kept = self
+            .0
+            .outlines
+            .read()
+            .ok()
+            .and_then(|m| m.get(&glyph.id.0).cloned());
+        let kept = kept.unwrap_or_else(|| {
+            let read = self.read_outline(glyph.id);
+            if let Ok(mut m) = self.0.outlines.write() {
+                m.insert(glyph.id.0, read.clone());
+            }
+            read
+        })?;
+        let (min, max) = (kept.1, kept.2);
         let factor = self.as_scaled(glyph.scale).scale_factor();
         let outlined = OutlinedGlyph::new(
             glyph,
@@ -475,7 +550,7 @@ impl Font for FontArc {
                     min: point(min.x, max.y),
                     max: point(max.x, min.y),
                 },
-                curves,
+                curves: kept,
             },
             factor,
         );
@@ -670,7 +745,7 @@ fn bounds(curves: &[Curve]) -> Option<(Point, Point)> {
 struct Outline {
     /// Font units, `min` the top left (`y` up).
     bounds: Rect,
-    curves: Vec<Curve>,
+    curves: Arc<(Vec<Curve>, Point, Point)>,
 }
 
 /// A glyph's outline placed at its size and position, ready to draw.
@@ -728,7 +803,7 @@ impl OutlinedGlyph {
             self.px_bounds.width() as usize,
             self.px_bounds.height() as usize,
         );
-        for curve in &self.outline.curves {
+        for curve in &self.outline.curves.0 {
             match *curve {
                 Curve::Line(a, b) => r.draw_line(at(a), at(b)),
                 Curve::Quad(a, b, c) => r.draw_quad(at(a), at(b), at(c)),
@@ -906,6 +981,42 @@ mod tests {
                 "{name}: coverage differs by {worst} levels"
             );
             assert!(drawn > 100, "{name}: only {drawn} glyphs drawn");
+        }
+    }
+
+    #[test]
+    fn fr_134_a_kept_glyph_draws_as_a_fresh_one() {
+        // The face keeps what it read (glyph ids, advances, outlines); a glyph drawn a second
+        // time, from what was kept, is the first one exactly, at another size and position too.
+        let font = FontArc::try_from_slice(include_bytes!("../assets/fonts/XanhMono-Regular.ttf"))
+            .unwrap_or_else(|e| panic!("Xanh Mono: {e}"));
+        let draw = |c: char, px: f32, x: f32| {
+            let id = font.glyph_id(c);
+            let glyph = id.with_scale_and_position(PxScale::from(px), point(x, px));
+            let o = font
+                .outline_glyph(glyph)
+                .unwrap_or_else(|| panic!("{c} has no outline"));
+            let mut cells = Vec::new();
+            o.draw(|x, y, v| cells.push((x, y, v.to_bits())));
+            (font.h_advance_unscaled(id), o.px_bounds(), cells)
+        };
+        for c in ['g', 'ư', 'W'] {
+            let first = draw(c, 37.0, 0.25);
+            assert_eq!(draw(c, 37.0, 0.25), first, "{c}");
+            let fresh =
+                FontArc::try_from_slice(include_bytes!("../assets/fonts/XanhMono-Regular.ttf"))
+                    .unwrap_or_else(|e| panic!("Xanh Mono: {e}"));
+            let id = fresh.glyph_id(c);
+            let o = fresh
+                .outline_glyph(id.with_scale_and_position(PxScale::from(91.0), point(3.5, 91.0)))
+                .unwrap_or_else(|| panic!("{c}"));
+            let mut cells = Vec::new();
+            o.draw(|x, y, v| cells.push((x, y, v.to_bits())));
+            assert_eq!(
+                draw(c, 91.0, 3.5),
+                (fresh.h_advance_unscaled(id), o.px_bounds(), cells),
+                "{c} at 91 px"
+            );
         }
     }
 
