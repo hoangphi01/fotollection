@@ -358,7 +358,7 @@ const PROFILES = {
     grid: ['DSCF1990'],
     stamp: ['DSCF1983'],
     frame: ['DSCF1909'],
-    card: ['DSC06311'],
+    card: ['DSC06332'],
     crop: ['DSCF1905'],
     compare: ['DSCF1938'],
     night: ['DSCF2041'],

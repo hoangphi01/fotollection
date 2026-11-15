@@ -496,11 +496,11 @@ fn korea_demos() -> (PostcardDemo, PostcardDemo) {
             "sheet-postcard",
             true,
             false,
-            // @imyourctus's autumn pond (Gwanghwamun is on the page three times already, owner
-            // 2026-11-15).
-            "DSC06311",
+            // @imyourctus's red maples, landscape (Gwanghwamun is on the page three times already;
+            // owner 2026-11-15: "a landscape of red leaves there would be beautiful").
+            "DSC06332",
             [
-                "가을 호수에서 안부 전해요.",
+                "단풍 아래에서 안부 전해요.",
                 "서울의 가을을 보냅니다.",
                 "건강하세요!",
             ],
