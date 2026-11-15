@@ -484,6 +484,7 @@ export function App() {
           ticked={selectMode ? select.ordered : undefined}
           tickedSheets={selectMode ? tickedSheets(collage.sheets, select.checked) : 0}
           cell={collage.cell}
+          cellPhoto={photos.find((p) => p.id === collage.cell?.id)}
           sheetInfo={collage.info ?? undefined}
           customStamps={customStamps}
           revision={revision}

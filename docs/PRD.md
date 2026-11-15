@@ -1380,7 +1380,7 @@ Each block is built from the shared blocks (STYLE_RULE §4) and checked by `chec
 
 ### FR-137 — Looks, LUTs and presets in Collage mode
 
-**P2 (v0.14.3; owner, 2026-11-15: "the photos in Collage mode take Looks, LUTs and presets as in Pro; reuse the code").** The Collage panel gets the Pro panel's tabs, one joined group: **Colour**, the same `ApplyLookCard` as Pro (a built-in look, a saved one, a Lightroom preset or a LUMIX Lab LUT, with its strength), on the chosen sheet's photo or on every ticked photo, in one undo step; and **Print**, the sheet, postcard, cells and stamp cards it shows today. No new colour code: the card, its IPC and its batch are Pro's (FR-079, FR-114).
+**P2 (v0.14.3; owner, 2026-11-15: "the photos in Collage mode take Looks, LUTs and presets as in Pro; reuse the code").** The Collage panel gets the Pro panel's tabs, one joined group: **Colour**, the same `ApplyLookCard` as Pro (a built-in look, a saved one, a Lightroom preset or a LUMIX Lab LUT, with its strength), on the chosen sheet's photo or on every ticked photo, in one undo step; and **Print**, the sheet, postcard, cells and stamp cards it shows today. No new colour code: the card, its IPC and its batch are Pro's (FR-079, FR-114). **Built (2026-11-15):** `CollagePanel` holds the same `InspectorTabs` and `ApplyLookCard` as `SettingsPanel`, the chosen sheet's photo passed as `cellPhoto`. Checked by UI-MODE-013.
 
 ## 7. Non-functional requirements
 
