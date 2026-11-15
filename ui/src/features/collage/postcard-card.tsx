@@ -67,7 +67,11 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
           </Select>
         </Field>
       )}
-      <Field label={t('postcard.orientation')}>
+      {/* An upright Korean card goes at the non-standard rate (Korea Post); the sender's choice. */}
+      <Field
+        label={t('postcard.orientation')}
+        hint={card === 'korea' && orientation === 'portrait' ? t('postcard.portraitKoreaHint') : undefined}
+      >
         <SegmentedToggle<PostcardOrientation>
           value={orientation}
           options={shapes.map(({ value, icon: Icon }) => ({

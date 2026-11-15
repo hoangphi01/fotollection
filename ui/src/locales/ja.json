@@ -948,6 +948,7 @@
     "portrait": "縦",
     "landscapeHint": "左に写真、右にカード",
     "portraitHint": "上にカード、下に写真",
+    "portraitKoreaHint": "韓国の郵便では、縦向きのカードは定形外の郵便物になります",
     "lines": "メッセージの行数（宛名は3行）",
     "lineCount_one": "{{count}}行",
     "lineCount_other": "{{count}}行",

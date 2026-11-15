@@ -911,6 +911,7 @@
     "portrait": "Dọc",
     "landscapeHint": "Ảnh bên trái, bưu thiếp bên phải",
     "portraitHint": "Bưu thiếp ở trên, ảnh ở dưới",
+    "portraitKoreaHint": "Bưu điện Hàn tính thẻ dọc là thư ngoài quy cách",
     "lines": "Dòng cho lời nhắn (địa chỉ có 3 dòng)",
     "lineCount_one": "{{count}} dòng",
     "lineCount_other": "{{count}} dòng",

@@ -948,6 +948,7 @@
     "portrait": "Álló",
     "landscapeHint": "Bal oldalt a fotó, jobb oldalt a lap",
     "portraitHint": "Fent a lap, lent a fotó",
+    "portraitKoreaHint": "A koreai posta az álló lapot nem szabványos küldeményként számolja",
     "lines": "Üzenetsorok (a címé 3)",
     "lineCount_one": "{{count}} sor",
     "lineCount_other": "{{count}} sor",

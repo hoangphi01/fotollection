@@ -948,6 +948,7 @@
     "portrait": "Portrait",
     "landscapeHint": "The photo on the left, the card on the right",
     "portraitHint": "The card on top, the photo below",
+    "portraitKoreaHint": "Korea Post charges an upright card as non-standard mail",
     "lines": "Message lines (the address has 3)",
     "lineCount_one": "{{count}} line",
     "lineCount_other": "{{count}} lines",

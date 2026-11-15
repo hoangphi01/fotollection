@@ -1523,7 +1523,7 @@ pub(crate) mod tests {
     }
 
     /// A board's box moved by a rule of Japan Post's (`dx`, `dy` in millimetres).
-    fn moved(b: [f32; 4], dx: f32, dy: f32) -> [f32; 4] {
+    pub(crate) fn moved(b: [f32; 4], dx: f32, dy: f32) -> [f32; 4] {
         [b[0] + dx, b[1] + dy, b[2] + dx, b[3] + dy]
     }
 

@@ -343,19 +343,19 @@ pub fn layout(
         // A Japanese or Korean card with a bordered photo keeps a line for the message under
         // it (boards A and K1), above Korea Post's machine zone where that crosses the photo.
         let zone = if korea && settings.postcard.postal_use && side {
-            crate::korea::MACHINE_ZONE_MM
+            crate::korea::MACHINE_ZONE_MM + crate::korea::TAPE_MM
         } else {
             0.0
         };
-        // Always kept, a full-bleed photo stopping above it: Japan Post wants a message on the
-        // address side in its lower half (§23(4); owner, 2026-11-15), and a Korean card's
-        // writing half has no room left for one.
         // A full-bleed はがき photo starts 1 mm under the half (75 mm), its lower half kept for
         // a print's shift (the Japan Post review).
         if japan && settings.fill && !side {
             photo_half.y += 1.0;
             photo_half.height -= 1.0;
         }
+        // Always kept, a full-bleed photo stopping above it: Japan Post wants a message on the
+        // address side in its lower half (§23(4); owner, 2026-11-15), and a Korean card's
+        // writing half has no room left for one.
         let band = (japan || korea).then(|| {
             let band = if settings.fill {
                 HAGAKI_FILL_BAND_MM
@@ -375,10 +375,12 @@ pub fn layout(
             let mut placed = place(photo_half, p);
             if let Some(zone) = postal {
                 // Cut short at the strip's line: at the foot, or at the right edge.
+                // Korea's words keep their strip beside the zone free too.
+                let tape = if korea { crate::korea::TAPE_MM } else { 0.0 };
                 let (start, extent, line) = if foot {
-                    (placed.y, placed.area.1, zone.y)
+                    (placed.y, placed.area.1, zone.y - tape)
                 } else {
-                    (placed.x, placed.area.0, zone.x)
+                    (placed.x, placed.area.0, zone.x - tape)
                 };
                 let room = line - start;
                 if room >= 1.0 && f64::from(start) + f64::from(extent) > f64::from(line) {
@@ -490,7 +492,7 @@ fn postcard_paper(settings: &RenderSettings) -> std::borrow::Cow<'_, RenderSetti
 
 /// The post's zone of a card made to be posted (FR-073, *Postal use*): its line, and its
 /// words repeated under it; Korea Post's left blank, where its machines print their barcode
-/// (the Korea Post review, 2026-11-15).
+/// (the Korea Post review), its line and words in a strip beside it (owner, 2026-11-15).
 fn draw_postal_zone(
     canvas: &mut RgbImage,
     sheet: &SheetLayout,
@@ -498,8 +500,12 @@ fn draw_postal_zone(
     settings: &RenderSettings,
 ) {
     let korea = settings.collage.postcard.card == crate::settings::PostcardDestination::Korea;
-    if let Some(zone) = sheet.postal.filter(|_| !korea) {
-        crate::postcard::draw_postal(canvas, density, zone, settings.border_color);
+    match sheet.postal {
+        Some(zone) if korea => {
+            crate::korea::draw_tape(canvas, density, zone, settings.border_color);
+        }
+        Some(zone) => crate::postcard::draw_postal(canvas, density, zone, settings.border_color),
+        None => {}
     }
 }
 
@@ -2274,6 +2280,33 @@ mod tests {
                     );
                 }
             }
+            // Its line and Korean words in the strip beside it (owner, 2026-11-15).
+            let strip = if zone.width >= zone.height {
+                RectMm {
+                    y: zone.y - crate::korea::TAPE_MM,
+                    height: crate::korea::TAPE_MM,
+                    ..zone
+                }
+            } else {
+                RectMm {
+                    x: zone.x - crate::korea::TAPE_MM,
+                    width: crate::korea::TAPE_MM,
+                    ..zone
+                }
+            };
+            let (sx0, sy0) = ((strip.x * k) as u32, (strip.y * k) as u32);
+            let (sx1, sy1) = (
+                ((strip.x + strip.width) * k) as u32,
+                ((strip.y + strip.height) * k) as u32,
+            );
+            let inked = (sy0..sy1.min(out.height))
+                .flat_map(|y| (sx0..sx1.min(out.width)).map(move |x| (x, y)))
+                .filter(|&(x, y)| {
+                    let i = ((y * out.width + x) * 3) as usize;
+                    out.data[i..i + 3].iter().any(|c| *c < 200)
+                })
+                .count();
+            assert!(inked > 50, "the strip's line and words ({orientation:?})");
         }
     }
 

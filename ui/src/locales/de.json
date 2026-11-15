@@ -948,6 +948,7 @@
     "portrait": "Hoch",
     "landscapeHint": "Das Foto links, die Karte rechts",
     "portraitHint": "Die Karte oben, das Foto unten",
+    "portraitKoreaHint": "Korea Post berechnet eine Karte im Hochformat als Sendung ohne Standardmaß",
     "lines": "Nachrichtenzeilen (die Adresse hat 3)",
     "lineCount_one": "{{count}} Zeile",
     "lineCount_other": "{{count}} Zeilen",

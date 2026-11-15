@@ -948,6 +948,7 @@
     "portrait": "세로",
     "landscapeHint": "왼쪽에 사진, 오른쪽에 카드",
     "portraitHint": "위에 카드, 아래에 사진",
+    "portraitKoreaHint": "세로형 엽서는 규격외 우편물 요금이 적용됩니다",
     "lines": "메시지 줄 수(주소는 3줄)",
     "lineCount_one": "{{count}}줄",
     "lineCount_other": "{{count}}줄",

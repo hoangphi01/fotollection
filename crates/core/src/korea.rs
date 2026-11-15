@@ -30,6 +30,41 @@ pub static GAEGU_FACE: LazyLock<Option<VerticalFace>> = LazyLock::new(|| Vertica
 
 /// Korea Post's machine zone: the last 17 mm at the card's foot (jodal.koreapost.go.kr 216).
 pub const MACHINE_ZONE_MM: f32 = 17.0;
+/// The strip beside the machine zone for its line and words (owner, 2026-11-15: "a line as the
+/// European card's, and the Korean words repeated"): the zone itself stays blank (Korea Post),
+/// so the line is 22 mm from the foot and the words between it and the zone.
+pub const TAPE_MM: f32 = 5.0;
+/// What the strip repeats, and its em in Nanum Pen.
+const TAPE_WORDS: [&str; 1] = ["우편물 처리 영역"];
+const TAPE_EM_MM: f32 = 2.2;
+
+/// The machine zone's line and its words in the strip beside `zone`: above a zone at the foot,
+/// left of a zone down an upright card's right edge.
+pub fn draw_tape(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: BorderColor) {
+    let Some(face) = NANUM.as_ref() else {
+        return;
+    };
+    let strip = if zone.width >= zone.height {
+        RectMm {
+            y: zone.y - TAPE_MM,
+            height: TAPE_MM,
+            ..zone
+        }
+    } else {
+        RectMm {
+            x: zone.x - TAPE_MM,
+            width: TAPE_MM,
+            ..zone
+        }
+    };
+    let tape = crate::postcard::Tape {
+        words: &TAPE_WORDS,
+        font: &face.font,
+        em_mm: TAPE_EM_MM,
+    };
+    crate::postcard::draw_postal_tape(canvas, density, strip, paper, &tape);
+}
+
 /// The stamp box and the card's margins.
 pub const STAMP_MM: (f32, f32) = (20.0, 25.0);
 const EDGE_MM: f32 = 5.0;
@@ -58,15 +93,16 @@ const SENDER_ADDRESS: f32 = 15.0 / 17.0;
 const SENDER_GAP_MM: f32 = 0.75;
 /// The recipient: from 8.5 mm into the half to 5 mm from its right (330 and 20 px); its name
 /// 30/17 em on the right, its address 17/17, 1 mm between rows (4 px), the boxes 4 mm under the
-/// address and 4 mm above the machine zone (FR-132: 4 mm clear), 20 mm from the right edge.
+/// address and 6 mm above the zone's words (FR-132 asks 4; 6 for a kiosk's cut), 22 mm from the
+/// right edge.
 const RECIPIENT_LEFT_MM: f32 = 8.5;
 const RECIPIENT_NAME: f32 = 30.0 / 17.0;
 const RECIPIENT_GAP_MM: f32 = 1.0;
-const BOXES_GAP_MM: f32 = 4.0;
-const BOXES_CLEAR_MM: f32 = 4.0;
-/// The code's right end 20 mm or more from the card's right edge (Korea Post: 우편번호 오른쪽
-/// 끝에서 20 mm).
-const BOXES_RIGHT_MM: f32 = 20.0;
+const BOXES_GAP_MM: f32 = 6.0;
+const BOXES_CLEAR_MM: f32 = 6.0;
+/// 20 mm blank right of the code (Korea Post: 우편번호 오른쪽 끝에서 20 mm), 22 here for a
+/// kiosk's cut (the Korea Post review, 2026-11-15).
+const BOXES_RIGHT_MM: f32 = 22.0;
 /// Where a line's em starts in its line box, against its em (Nanum Pen; measured).
 const EM_IN_BOX: f32 = 0.05;
 /// The message under a bordered photo: 19/17 em, 2.5 mm under it (322 px against 312).
@@ -298,7 +334,7 @@ fn dotted(canvas: &mut RgbImage, density: f32, x0: f32, x1: f32, y: f32) {
 pub fn writing_area(card: RectMm, zone: Option<RectMm>) -> RectMm {
     match zone {
         Some(z) if z.height > z.width && z.x > card.x && z.x < card.x + card.width => RectMm {
-            width: z.x - card.x,
+            width: z.x - TAPE_MM - card.x,
             ..card
         },
         _ => card,
@@ -359,7 +395,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
     let limit = spec
         .zone
         .filter(|z| z.width >= z.height && z.y < card.y + card.height)
-        .map_or(card.y + card.height, |z| z.y);
+        .map_or(card.y + card.height, |z| z.y - TAPE_MM);
     // A line's em in its line box of `lh` ems from `top`.
     let em_top = |top: f32, size: f32, lh: f32| top + size * ((lh - 1.0) / 2.0 + EM_IN_BOX);
 
@@ -810,7 +846,7 @@ mod tests {
 
     #[test]
     fn fr_132_the_landscape_card_matches_board_k1() {
-        use crate::hagaki::tests::{assert_board, runs, zone};
+        use crate::hagaki::tests::{assert_board, moved, runs, zone};
         // The board's card: 148 × 100 mm, its writing half from 74 mm, the zone from 83 mm.
         let (settings, text) = board_k1();
         let half = zone(74.0, 0.0, 74.0, 100.0);
@@ -838,15 +874,16 @@ mod tests {
             ),
             (
                 "recipient",
-                zone(80.0, 43.0, 66.0, 39.0),
+                // Korea Post's rules over the board move the block 10.55 mm up: the words'
+                // strip above the zone (5 mm), 6 mm round the larger boxes (5.5 × 7 inside), the
+                // code's right end 22 mm from the edge (the Korea Post review, 2026-11-15).
+                zone(80.0, 30.0, 66.0, 48.0),
                 &[
-                    [82.63, 44.56, 89.0, 46.13],
-                    [121.0, 47.63, 143.0, 54.81],
-                    [82.56, 57.25, 117.06, 61.13],
-                    [82.56, 63.38, 101.63, 67.25],
-                    // Korea Post's rule over the board: the code's right end 20 mm from the
-                    // edge, 4 mm above the zone (the Korea Post review, 2026-11-15).
-                    [101.25, 73.0, 128.0, 79.0],
+                    moved([82.63, 44.56, 89.0, 46.13], 0.0, -10.55),
+                    moved([121.0, 47.63, 143.0, 54.81], 0.0, -10.55),
+                    moved([82.56, 57.25, 117.06, 61.13], 0.0, -10.55),
+                    moved([82.56, 63.38, 101.63, 67.25], 0.0, -10.55),
+                    [91.5, 63.1, 126.0, 70.7],
                 ],
             ),
         ];
@@ -909,8 +946,8 @@ mod tests {
     };
 
     #[test]
-    fn fr_132_the_code_ends_20_mm_from_the_right_edge() {
-        // Korea Post: 20 mm clear right of the code, landscape and upright.
+    fn fr_132_the_code_ends_22_mm_from_the_right_edge() {
+        // Korea Post: 20 mm clear right of the code, 22 for a kiosk's cut, landscape and upright.
         use crate::hagaki::tests::runs;
         let (settings, text) = board_k1();
         for (half, zone) in [(LANDSCAPE, ZONE), (UPRIGHT, UPRIGHT_ZONE)] {

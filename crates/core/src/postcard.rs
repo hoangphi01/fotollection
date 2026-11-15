@@ -410,18 +410,41 @@ const POSTAL_TRACKING: f32 = 0.02;
 /// grey line across the whole card at the zone's edge, where the photo ends, and at the card's
 /// foot "postal use" in seven languages, repeated without end across the card, cut by its
 /// edges. `zone` is in millimetres.
-#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 pub fn draw_postal(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: BorderColor) {
+    if let Some(font) = crate::render::regular() {
+        let tape = Tape {
+            words: &POSTAL_WORDS,
+            font,
+            em_mm: POSTAL_EM_MM,
+        };
+        draw_postal_tape(canvas, density, zone, paper, &tape);
+    }
+}
+
+/// What a postal tape repeats, in which face and size.
+pub struct Tape<'a> {
+    pub words: &'a [&'a str],
+    pub font: &'a FontArc,
+    pub em_mm: f32,
+}
+
+/// [`draw_postal`] with its own words: the line at `zone`'s edge and the words repeated at its
+/// foot (or down a portrait strip), as on the European card.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+pub fn draw_postal_tape(
+    canvas: &mut RgbImage,
+    density: f32,
+    zone: RectMm,
+    paper: BorderColor,
+    tape: &Tape<'_>,
+) {
     let (outline, rule) = inks(paper);
     let px = |mm: f32| (mm * density).round().max(0.0) as u32;
     let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
-    let Some(font) = crate::render::regular() else {
-        return;
-    };
     // Low at the card's foot (owner, 2026-11-12, showing the posted card): the post prints its
     // fluorescent code in the upper part of the zone, so the words keep under it, 2 mm from
     // the edge, clear of what a kiosk trims off a borderless print.
-    let from_edge = POSTAL_FOOT_MM + POSTAL_EM_MM;
+    let from_edge = POSTAL_FOOT_MM + tape.em_mm;
     if zone.width >= zone.height {
         crate::sheet::fill_rect(
             canvas,
@@ -434,7 +457,7 @@ pub fn draw_postal(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: Bor
         let top = (zone.y + zone.height - from_edge) * density;
         postal_tape(
             canvas,
-            font,
+            tape,
             density,
             top,
             zone.x * density,
@@ -456,19 +479,19 @@ pub fn draw_postal(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: Bor
         rule,
     );
     let depth = from_edge + 0.5;
-    let mut tape = crate::render::filled(px(zone.height).max(1), px(depth).max(1), paper.rgb());
+    let mut strip = crate::render::filled(px(zone.height).max(1), px(depth).max(1), paper.rgb());
     postal_tape(
-        &mut tape,
-        font,
+        &mut strip,
+        tape,
         density,
         0.5 * density,
         0.0,
         zone.height * density,
         outline,
     );
-    let tape = crate::image::apply_orientation(tape, 8);
+    let strip = crate::image::apply_orientation(strip, 8);
     let x = px(zone.x + zone.width - depth);
-    crate::render::blit(canvas, &tape, x, px(zone.y));
+    crate::render::blit(canvas, &strip, x, px(zone.y));
 }
 
 /// "Postal use" in every language, endless as a printed tape (owner, 2026-11-12): from beyond
@@ -476,14 +499,15 @@ pub fn draw_postal(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: Bor
 /// phrases, so the words read anywhere; `top` is the words' top.
 fn postal_tape(
     canvas: &mut RgbImage,
-    font: &FontArc,
+    tape: &Tape<'_>,
     density: f32,
     top: f32,
     start: f32,
     end: f32,
     ink: [u8; 3],
 ) {
-    let size = POSTAL_EM_MM * density;
+    let (font, words) = (tape.font, tape.words);
+    let size = tape.em_mm * density;
     let gap = crate::text::text_width(font, size, POSTAL_SEPARATOR, POSTAL_TRACKING);
     let draw = |canvas: &mut RgbImage, text: &str, left: f32| {
         let run = crate::text::TextRun {
@@ -494,9 +518,11 @@ fn postal_tape(
         };
         crate::text::draw_text(canvas, &run, left, top, ink, 1.0);
     };
-    let first = crate::text::text_width(font, size, POSTAL_WORDS[0], POSTAL_TRACKING);
+    let first = words.first().map_or(0.0, |w| {
+        crate::text::text_width(font, size, w, POSTAL_TRACKING)
+    });
     let mut left = start - first / 2.0;
-    for phrase in POSTAL_WORDS.iter().cycle().take(128) {
+    for phrase in words.iter().cycle().take(128) {
         if left > end {
             break;
         }
@@ -672,12 +698,13 @@ pub struct CodeBoxes {
 }
 
 /// Korea's five boxes for the recipient's code, black, its digits printed one in each when
-/// typed (FR-132: exactly five boxes if boxes are drawn).
+/// typed (FR-132: exactly five boxes if boxes are drawn); 5.5 × 7 mm inside, 1 mm apart, room
+/// for a hand (the Korea Post review, 2026-11-15).
 pub const KOREA_BOXES: CodeBoxes = CodeBoxes {
     groups: &[5],
-    box_mm: (4.75, 6.0),
-    lefts_mm: &[0.0, 5.5, 11.0, 16.5, 22.0],
-    inner: false,
+    box_mm: (5.5, 7.0),
+    lefts_mm: &[0.0, 7.1, 14.2, 21.3, 28.4],
+    inner: true,
     color: [45, 45, 45],
     lines_mm: &[0.3],
     hyphen: false,
