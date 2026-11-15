@@ -83,6 +83,16 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.14.2" date="2026-11-15">
+      <description>
+        <ul>
+          <li>New: 日本語 and 한국어, the whole app in Japanese and Korean.</li>
+          <li>New: Japanese and Korean postcards, laid out as Japan Post and Korea Post ask, the はがき written top to bottom.</li>
+          <li>New: AddAssist, a postal code fills a Japanese or Korean address from the post's own data, offline.</li>
+          <li>New: print sizes of Japan and Korea, the size list grouped by market.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.14.1" date="2026-11-13">
       <description>
         <ul>
@@ -170,15 +180,6 @@
         <ul>
           <li>Fixes: instant previews keep the photo on screen, and never mix up photos after another project is opened</li>
           <li>Fixes: fast browsing through RAW photos no longer queues up work for photos already left behind</li>
-        </ul>
-      </description>
-    </release>
-    <release version="0.11.0" date="2026-11-05">
-      <description>
-        <ul>
-          <li>New: any photo opens at once, RAW too: previews are prepared in the background and kept, as in Lightroom</li>
-          <li>UI update: colour cards in the previews only; sliders take a near press and the arrow keys</li>
-          <li>Fixes: a RAW preview that could hang for good</li>
         </ul>
       </description>
     </release>

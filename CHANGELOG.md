@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.14.2] - 2026-11-15 — 日本語 and 한국어
+
 ### Highlights
 
 - New: **日本語 and 한국어**, the whole app in Japanese and Korean.

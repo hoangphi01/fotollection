@@ -1507,7 +1507,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "chrono",
  "fotollection-core",
@@ -1531,14 +1531,14 @@ dependencies = [
 
 [[package]]
 name = "fotollection-addassistdata"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "blake3",
 ]
 
 [[package]]
 name = "fotollection-core"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "ab_glyph",
  "blake3",
@@ -1572,14 +1572,14 @@ dependencies = [
 
 [[package]]
 name = "fotollection-geodata"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "blake3",
 ]
 
 [[package]]
 name = "fotollection-oscamera"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "block2",
  "objc2",
@@ -1593,7 +1593,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-oscodec"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "objc2-core-foundation",
  "objc2-core-graphics",
@@ -1604,7 +1604,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-rawcore"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "rayon",
  "thiserror 2.0.21",
@@ -1612,7 +1612,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-rawlgpl"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "image",
  "rawler",
