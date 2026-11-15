@@ -1,4 +1,4 @@
-{%- comment %} A carousel of the landing page (owner, 2026-11-09, after Apple's): a title, then cards that scroll sideways, each a screenshot of the app and a sentence led by its name in bold; ‹ › move by one card, and a swipe, the trackpad or the keyboard scroll it as well (scroll-snap, no library). Takes `cards` (site/_data/carousels.yml), `title`, `id` and `tint`. assets/js/carousel.js. {% endcomment -%}
+{%- comment %} A carousel of the landing page (owner, 2026-11-09, after Apple's): a title, then cards that scroll sideways, each a screenshot of the app and a sentence led by its name in bold; ‹ › move by one card, and a swipe, the trackpad or the keyboard scroll it as well (scroll-snap, no library). Takes `cards` (site/_data/carousels.yml; a card with `only` shows where that flag of `pg` is true), `title`, `id` and `tint`. assets/js/carousel.js. {% endcomment -%}
 {%- assign t = site.data.i18n[pg.lang] -%}
 <section class="section carousel-section{% if include.tint %} tint{% endif %}" id="{{ include.id }}">
   <div class="wrap">
@@ -7,6 +7,7 @@
   <div class="carousel" data-carousel>
     <ul class="carousel-track" tabindex="0" aria-label="{{ include.title }}">
       {%- for c in include.cards %}
+      {%- if c.only and pg[c.only] != true %}{% continue %}{% endif %}
       {%- assign title = t[c.title] %}
       <li class="carousel-card">
         <figure class="shot">{% include shot.html name=c.shot alt=title %}</figure>

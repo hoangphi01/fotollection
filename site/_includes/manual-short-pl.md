@@ -312,6 +312,8 @@ Odbitka z kiosku staje się pocztówką do wysłania: zdjęcie na jednej połowi
 5. **Postal use** w karcie *Postcard*, domyślnie włączone, zostawia na dole poziomej karty 15 mm wolne na kod sortujący poczty: zdjęcie kończy się cienką linią, u dołu biegnie „postal use” w siedmiu językach, a adres kończy się 15 mm od prawej krawędzi. Na pionowej karcie pasek biegnie wzdłuż prawej krawędzi, a pole na znaczek jest na lewo od niego. Wyłącz je dla karty, którą zatrzymujesz. Pocztówka drukuje się na białym papierze, a jej obramowanie 3 mm jest białe.
 6. **Export** zapisuje jeden plik na pocztówkę, na przykład `P1000123-postcard.jpg`.
 
+**Pocztówki japońskie i koreańskie:** w 日本語 każda pocztówka to はがき (100 × 148 mm), w 한국어 우편엽서 (4 × 6 in); po angielsku i wietnamsku **Pocztówka do** wybiera Europę, Japonię lub Koreę. Obie stosują zasady swojej poczty: czerwone pola kodu pocztowego na はがき, pięć pól i wolne 17 mm na koreańskiej. Krótka wiadomość trafia pod zdjęcie, dłuższa do pola z liniami na stronie adresowej, jeśli jest tam miejsce. **AddAssist** uzupełnia adres z kodu pocztowego. Papier fotograficzny do 300 g/m².
+
 <!-- shot: manual-postcard | Tryb Collage z włączoną pocztówką: praskie tramwaje nocą, na każdej odbitce jedno zdjęcie wypełniające połowę i rewers pocztówki z polem na znaczek i liniami do pisania -->
 
 <!-- chapter: colour -->

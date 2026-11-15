@@ -11,10 +11,11 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+use fotollection_core::addassist::{Address, Country};
 use fotollection_core::frame::FrameSettings;
 use fotollection_core::library::{CullFilter, Flag, PhotoId};
 use fotollection_core::looks::{Adjust, LookSettings};
-use fotollection_core::settings::StampSettings;
+use fotollection_core::settings::{Language, StampSettings};
 use serde_json::{Value, json};
 use tauri::{AppHandle, Manager};
 
@@ -64,13 +65,16 @@ pub fn run(app: &AppHandle, folder: PathBuf, out: &Path) {
 }
 
 fn record(app: &AppHandle, folder: PathBuf, out: &Path) -> Result<(), String> {
+    let language = demo_language();
+    set_language(app, language)?;
     let ids = prepare(app, folder)?;
+    let (bordered, full) = postcard_demos(language);
     let fixtures = json!({
         "common": record_common(app, &ids, out)?,
         "scenarios": record_scenarios(app, &ids, out)?,
         "collage": record_collage(app, out)?,
-        "postcard": record_postcard(app, out, &BORDERED)?,
-        "postcard_full": record_postcard(app, out, &FULL)?,
+        "postcard": record_postcard(app, out, &bordered)?,
+        "postcard_full": record_postcard(app, out, &full)?,
     });
     let text = serde_json::to_string_pretty(&fixtures).map_err(|e| e.to_string())?;
     write(&out.join("fixtures.json"), text.as_bytes())?;
@@ -119,11 +123,27 @@ fn prepare(app: &AppHandle, folder: PathBuf) -> Result<Vec<PhotoId>, String> {
         ids.iter().copied().skip(1).step_by(5).collect(),
         3,
     ))?;
-    if let Some(&last) = ids.last() {
+    // The reject: the last photo, or in a language's own set one its pages do not show (the
+    // grid hides rejects, and Japan's last photo is its lead, Tokyo Tower).
+    let named = match demo_language() {
+        Language::Ja => Some("IMG_4421"),
+        Language::Ko => Some("IMG_1473"),
+        _ => None,
+    };
+    let reject = named
+        .and_then(|stem| {
+            let lib = state.library.read().ok()?;
+            ids.iter().copied().find(|&id| {
+                lib.summary(id)
+                    .is_some_and(|s| s.file_name.starts_with(stem))
+            })
+        })
+        .or_else(|| ids.last().copied());
+    if let Some(reject) = reject {
         ok(commands::set_photo_flag(
             app.clone(),
             app.state(),
-            vec![last],
+            vec![reject],
             Some(Flag::Reject),
         ))?;
     }
@@ -353,42 +373,214 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
     }))
 }
 
+/// The demo's language (`FOTOLLECTION_DEMO_LANGUAGE`: en, vi, ja or ko; English by default):
+/// the interface it is recorded in, which also picks the postcard (a はがき in Japanese, a
+/// 우편엽서 in Korean, FR-130, FR-132).
+fn demo_language() -> Language {
+    std::env::var("FOTOLLECTION_DEMO_LANGUAGE")
+        .map(|tag| Language::from_locale(&tag))
+        .unwrap_or_default()
+}
+
+/// Sets the interface language before the recording, as the user would in Settings.
+fn set_language(app: &AppHandle, language: Language) -> Result<(), String> {
+    let state = app.state::<AppState>();
+    let mut ui = state.ui.read().map_err(|e| e.to_string())?.clone();
+    ui.language = language;
+    ok(commands::set_ui_settings(app.clone(), app.state(), ui)).map(|_| ())
+}
+
+/// Who a demo postcard goes to: a famous place's public address and a demo name in the
+/// page's language (owner, 2026-11-15: "landmarks and demo names, in place of Ahoj Praha"),
+/// typed free on a European card, filled as the address assistant would on a Japanese or Korean one.
+enum Recipient {
+    Free(&'static str),
+    Assisted(Address),
+}
+
 /// One recording of the demo postcards (FR-073): how the photo half is set, and the
-/// messages typed on three cards from the named photo on (the owner's, `demo_set.txt`), or
-/// from the first card when the set does not have it. Each is sent to the National Museum
-/// in Prague, a public address, on the address's three lines.
+/// messages typed on three cards from the named photo on (`demo_set.txt` or its language's),
+/// or from the first card when the set does not have it.
 struct PostcardDemo {
     key: &'static str,
     border: bool,
     fill: bool,
     from: &'static str,
     messages: [&'static str; 3],
+    to: Recipient,
 }
-const NATIONAL_MUSEUM: &str = "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia";
-/// The red tram by day, with the 3 mm border round the photo.
-const BORDERED: PostcardDemo = PostcardDemo {
-    key: "sheet-postcard",
-    border: true,
-    fill: false,
-    from: "P1067865",
-    messages: [
-        "Ahoj Praha!\nPozdravy z Prahy.",
-        "Ahoj Praha!\nLove from the funicular.",
-        "Ahoj Praha!\nThương gửi cả nhà.",
-    ],
-};
-/// The trams by night, the photo filling its half to the edge.
-const FULL: PostcardDemo = PostcardDemo {
-    key: "sheet-postcard-full",
-    border: false,
-    fill: true,
-    from: "P1068073",
-    messages: [
-        "Ahoj Praha!\nDobrou noc z Prahy.",
-        "Ahoj Praha!\nPozdrav z tramvaje.",
-        "Ahoj Praha!\nThe last 22 home.",
-    ],
-};
+
+/// The bordered and the full-bleed demo of `language`; a long second message on the full-bleed
+/// one shows the card's message box (通信欄 / 통신란 on the Japanese and Korean cards).
+fn postcard_demos(language: Language) -> (PostcardDemo, PostcardDemo) {
+    match language {
+        Language::Ja => japan_demos(),
+        Language::Ko => korea_demos(),
+        _ => europe_demos(language),
+    }
+}
+
+fn demo(
+    key: &'static str,
+    border: bool,
+    fill: bool,
+    from: &'static str,
+    messages: [&'static str; 3],
+    to: Recipient,
+) -> PostcardDemo {
+    PostcardDemo {
+        key,
+        border,
+        fill,
+        from,
+        messages,
+        to,
+    }
+}
+
+fn japan_demos() -> (PostcardDemo, PostcardDemo) {
+    // Tokyo Tower's own address (東京タワー, 港区芝公園4-2-8).
+    let tower = || {
+        let mut a = Address::new(Country::Jp);
+        a.code = "1050011".into();
+        a.region = "東京都".into();
+        a.city = "港区".into();
+        a.town = "芝公園".into();
+        a.line = "4-2-8 東京タワー".into();
+        a.name = "山田太郎".into();
+        Recipient::Assisted(a)
+    };
+    (
+        demo(
+            "sheet-postcard",
+            true,
+            false,
+            // The owner's Gokurakuji station (PRD FR-130, "Its pictures").
+            "Gokurakuji",
+            [
+                "鎌倉の極楽寺駅から、こんにちは。",
+                "江ノ電に乗りました。",
+                "お元気で。",
+            ],
+            tower(),
+        ),
+        demo(
+            "sheet-postcard-full",
+            false,
+            true,
+            "IMG_5773",
+            [
+                "東京タワーの夕暮れを送ります。今度は一緒に登りましょう。お元気で。",
+                "京都の清水寺にて。",
+                "富士山がきれいでした。",
+            ],
+            tower(),
+        ),
+    )
+}
+
+fn korea_demos() -> (PostcardDemo, PostcardDemo) {
+    // The Sejong Center's own address (세종문화회관, 세종대로 175).
+    let sejong = || {
+        let mut a = Address::new(Country::Kr);
+        a.code = "03172".into();
+        a.region = "서울특별시".into();
+        a.city = "종로구".into();
+        a.road = "세종대로".into();
+        a.line = "175 세종문화회관".into();
+        a.name = "김민준".into();
+        Recipient::Assisted(a)
+    };
+    (
+        demo(
+            "sheet-postcard",
+            true,
+            false,
+            "DSCF1990",
+            [
+                "광화문에서 안부 전해요.",
+                "서울의 가을을 보냅니다.",
+                "건강하세요!",
+            ],
+            sejong(),
+        ),
+        demo(
+            "sheet-postcard-full",
+            false,
+            true,
+            "DSCF2041",
+            [
+                "서울의 밤을 보냅니다. 다음에는 같이 걸어요. 건강하세요!",
+                "경복궁에서 인사드려요.",
+                "곧 만나요!",
+            ],
+            sejong(),
+        ),
+    )
+}
+
+fn europe_demos(language: Language) -> (PostcardDemo, PostcardDemo) {
+    let europe = |name: &'static str| {
+        Recipient::Free(match name {
+            "vi" => "Nguyễn Văn Anh\nNárodní muzeum, Václavské náměstí 68\n110 00 Praha 1\nCzechia",
+            _ => "Emma Johnson\nNárodní muzeum, Václavské náměstí 68\n110 00 Praha 1\nCzechia",
+        })
+    };
+    match language {
+        Language::Vi => (
+            demo(
+                "sheet-postcard",
+                true,
+                false,
+                "P1067865",
+                [
+                    "Chào từ Praha!\nThương gửi cả nhà.",
+                    "Praha mùa thu,\nnhớ mọi người lắm.",
+                    "Hẹn gặp lại nhé!",
+                ],
+                europe("vi"),
+            ),
+            demo(
+                "sheet-postcard-full",
+                false,
+                true,
+                "P1068073",
+                [
+                    "Chúc ngủ ngon từ Praha!\nTàu điện đêm về nhà.",
+                    "Đêm Praha lung linh.",
+                    "Chuyến tàu 22 cuối ngày.",
+                ],
+                europe("vi"),
+            ),
+        ),
+        _ => (
+            demo(
+                "sheet-postcard",
+                true,
+                false,
+                "P1067865",
+                [
+                    "Greetings from Prague!\nLove from the funicular.",
+                    "Hello from the Old Town,\nwish you were here.",
+                    "See you soon!",
+                ],
+                europe("en"),
+            ),
+            demo(
+                "sheet-postcard-full",
+                false,
+                true,
+                "P1068073",
+                [
+                    "Good night from Prague!\nThe night tram home.",
+                    "Prague by night.",
+                    "The last 22 home.",
+                ],
+                europe("en"),
+            ),
+        ),
+    }
+}
 
 /// Postcards (FR-073), after the collage: the same photos, one per card, held landscape,
 /// three with a typed message; each card's facts, its text and its images.
@@ -413,21 +605,29 @@ fn record_postcard(app: &AppHandle, out: &Path, demo: &PostcardDemo) -> Result<V
     };
     let texted = sheets.iter().cycle().skip(start).take(sheets.len());
     for (sheet, message) in texted.zip(demo.messages) {
-        for (part, text) in [
-            (fotollection_core::settings::PostcardPart::Message, message),
-            (
-                fotollection_core::settings::PostcardPart::Address,
-                NATIONAL_MUSEUM,
-            ),
-        ] {
-            ok(commands::set_postcard_text(
+        ok(commands::set_postcard_text(
+            app.clone(),
+            app.state(),
+            sheet.first,
+            fotollection_core::settings::PostcardPart::Message,
+            Some(message.to_owned()),
+        ))?;
+        match &demo.to {
+            Recipient::Free(text) => ok(commands::set_postcard_text(
                 app.clone(),
                 app.state(),
                 sheet.first,
-                part,
-                Some(text.to_owned()),
-            ))?;
-        }
+                fotollection_core::settings::PostcardPart::Address,
+                Some((*text).to_owned()),
+            ))?,
+            Recipient::Assisted(address) => ok(commands::set_postcard_address(
+                app.clone(),
+                app.state(),
+                sheet.first,
+                address.country,
+                Some(address.clone()),
+            ))?,
+        };
     }
     let mut info = serde_json::Map::new();
     let mut geometry = serde_json::Map::new();

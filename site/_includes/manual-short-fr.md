@@ -323,6 +323,8 @@ Un tirage de borne devient une carte postale à envoyer : une photo sur une mo
 
 **Écrire à la main :** prenez un feutre permanent fin, essayez-le d’abord dans la case du timbre et laissez sécher environ une minute. Les stylos à bille sautent souvent.
 
+**Cartes japonaises et coréennes :** en 日本語, chaque carte est une はがき (100 × 148 mm), en 한국어 une 우편엽서 (4 × 6 in) ; en anglais et en vietnamien, **Carte pour** choisit l'Europe, le Japon ou la Corée. Chacune suit les règles de sa poste : les cases rouges du code postal de la はがき, les cinq cases et les 17 mm laissés libres de la carte coréenne. Un message court va sous la photo, un plus long dans un cadre ligné côté adresse s'il y a la place. **AddAssist** remplit l'adresse à partir du code postal. Papier photo de 300 g/m² au plus.
+
 <!-- shot: manual-postcard | Mode Collage avec Postcard activé : des trams la nuit à Prague, chaque tirage une photo qui remplit sa moitié, et un dos de carte postale avec case de timbre et lignes d’écriture -->
 
 <!-- chapter: colour -->

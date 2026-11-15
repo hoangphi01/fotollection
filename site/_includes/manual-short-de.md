@@ -323,6 +323,8 @@ Ein Abzug vom Automaten wird zur Postkarte, die du verschicken kannst: ein Foto 
 
 **Von Hand schreiben:** Nimm einen feinen Permanentmarker, probier ihn zuerst im Briefmarkenfeld und lass ihn etwa eine Minute trocknen. Kugelschreiber setzen oft aus.
 
+**Japanische und koreanische Karten:** In 日本語 ist jede Postkarte eine はがき (100 × 148 mm), in 한국어 ein 우편엽서 (4 × 6 in); auf Englisch und Vietnamesisch wählt **Karte für** Europa, Japan oder Korea. Beide Karten folgen den Regeln ihrer Post: die roten Postleitzahlfelder der はがき, die fünf Felder und die freien 17 mm der koreanischen Karte. Eine kurze Nachricht steht unter dem Foto, eine längere in einem linierten Feld auf der Adressseite, wenn dort Platz ist. **AddAssist** füllt die Adresse aus der Postleitzahl. Fotopapier bis 300 g/m².
+
 <!-- shot: manual-postcard | Collage-Modus mit eingeschalteter Postkarte: Straßenbahnen bei Nacht in Prag, jeder Abzug ein Foto, das seine Hälfte füllt, und eine Postkartenrückseite mit Briefmarkenfeld und Schreiblinien -->
 
 <!-- chapter: colour -->

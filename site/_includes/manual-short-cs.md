@@ -334,6 +334,8 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 
 **Psaní rukou a pošta:** piš tenkým permanentním fixem a nech ho asi minutu schnout. Poštovní podmínky České pošty nemají zvláštní třídu pro pohlednice: karta jde jako dopis (aspoň 14 × 9 cm a 180 g/m²). Pošta tiskne třídicí kód do spodních 15 mm, které musí přijmout barvu; na lesklém fotopapíru se může rozmazat, matný papír je bezpečnější.
 
+**Japonské a korejské pohlednice:** v 日本語 je každá pohlednice はがき (100 × 148 mm), v 한국어 우편엽서 (4 × 6 in); v angličtině a vietnamštině vybírá **Pohlednice pro** Evropu, Japonsko nebo Koreu. Obě se řídí pravidly své pošty: červená políčka PSČ na はがき, pět políček a volných 17 mm na korejské. Krátký vzkaz je pod fotkou, delší v linkovaném poli na adresní straně, je-li tam místo. **AddAssist** vyplní adresu podle PSČ. Fotopapír nejvýš 300 g/m².
+
 <!-- shot: manual-postcard | Režim Collage se zapnutým Postcard: noční tramvaje v Praze, každý tisk jedna fotka vyplňující svou polovinu a rub pohlednice s polem na známku a řádky na psaní -->
 
 <!-- chapter: colour -->

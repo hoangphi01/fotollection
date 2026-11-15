@@ -2,7 +2,8 @@
 # one card per feature, a screenshot of the app (`shot`, site/assets/img/<shot>-<lang>-<theme>.webp
 # through shot.html) and its words from i18n/<code>.yml (`title`, `text`), with the notes those words
 # need (`fn`, in the order the page shows them). The pictures are the website's screenshots
-# (site/screenshots/build.sh); a card whose screenshot changes needs nothing here.
+# (site/screenshots/build.sh); a card whose screenshot changes needs nothing here. `only` names
+# a flag of the page (`pg`, languages.yml) the card needs: AddAssist on the Japanese and Korean pages.
 new:
   - { shot: window, title: car_presets_title, text: car_presets_text }
   - { shot: simple, title: car_simple_title, text: car_simple_text }
@@ -12,6 +13,7 @@ new:
 print:
   - { shot: postcard, title: postcard_title, text: postcard_text }
   - { shot: postcard-night, title: pc_type_title, text: pc_type_text }
+  - { shot: addassist, title: addassist_title, text: addassist_text, only: addassist }
   - { shot: stamp, title: f_stamp_title, text: f_stamp_text }
   - { shot: frame, title: f_frame_title, text: f_frame_text }
   - { shot: crop, title: f_crop_title, text: f_crop_text }

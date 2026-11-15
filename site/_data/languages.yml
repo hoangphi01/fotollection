@@ -8,7 +8,11 @@
 #                (Slovak readers read Czech)
 #   prefix       its path, "" for English at the root
 #   pages        the pages it has (page ids of pages.yml); a page it lacks links to English's
-#   assets       whose screenshots it shows: the app speaks English and Vietnamese (FR-084)
+#   assets       whose screenshots it shows (FR-084): English's, Vietnamese's, or its own where
+#                the app speaks it and its photos are shot (ja, ko: their country's photos, PRD FR-130)
+#   legacy       the v0.12 gallery its makeover shows, when it has none of its own (en)
+#   addassist    true: its home page shows AddAssist, the postal-code lookup of its country's
+#                cards (FR-133; owner, 2026-11-15: the Japanese and Korean pages only)
 #   date_format  how it writes a date (strftime)
 #   support      how its readers buy the author a coffee: vietqr (a bank app's code, Vietnam's
 #                way) or card (Ko-fi first, then GitHub Sponsors), owner 2026-11-11
@@ -124,7 +128,9 @@
   og_locale: ko_KR
   prefix: /ko
   aliases: [kr]
-  assets: en
+  assets: ko
+  legacy: en
+  addassist: true
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-ko.md
   support: card
@@ -138,7 +144,9 @@
   og_locale: ja_JP
   prefix: /ja
   aliases: [jp]
-  assets: en
+  assets: ja
+  legacy: en
+  addassist: true
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-ja.md
   support: card

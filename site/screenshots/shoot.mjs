@@ -77,7 +77,7 @@ const fixtures = trip.fixtures
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, update, settingsPatch, verdict }) {
+function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, update, settingsPatch, verdict, profile }) {
   const { common, scenarios } = fixtures
   // Collage mode (FR-035) has its own recording; older dumps have none.
   // Postcards (FR-073) are recorded after the collage, as its own sheets; older dumps have none.
@@ -92,8 +92,11 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
   const withQueues = (photos) =>
     photos.map((p, i) => ({ ...p, queue: queues.print.includes(i) ? 'print' : queues.aside.includes(i) ? 'aside' : null }))
   // The folder-tabs shot (FR-056): the demo photos as three folders, by file name.
-  const tabOf = (name) =>
-    /wilhelma/.test(name) ? [0, 'Wilhelma Zoo'] : /tuebingen|ammerschlag|anlagensee|neckar/.test(name) ? [1, 'Tübingen'] : /^P10|charles-bridge/.test(name) ? [2, 'Praha'] : [3, 'Travels']
+  // The set's folder tabs (PROFILES `tabs`, passed as data: this runs in the page).
+  const tabOf = (name) => {
+    const rule = profile.tabRules.find(([pattern]) => new RegExp(pattern).test(name))
+    return rule ? [rule[1], rule[2]] : profile.tabElse
+  }
   const inTabs = (photos) =>
     tabs ? photos.map((p) => { const [folderId, folderName] = tabOf(p.fileName); return { ...p, folderId, folderName } }) : photos
   const inView = (photos, filter) => {
@@ -165,7 +168,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
       return null
     },
     // The export dialog's example name (FR-104): the first photo's own name.
-    export_name_example: () => 'P1067823.jpg',
+    export_name_example: () => profile.exportName,
     // The Settings window's memory and cache (FR-086): a 16 GB Mac at 25 %, a trip's cache.
     memory_info: () => ({ total: 16 * 2 ** 30, budget: 4 * 2 ** 30, held: 1.3 * 2 ** 30 }),
     machine_info: () => ({ cpu: 'Apple M3', cores: 8, memory: 16 * 2 ** 30, freeDisk: 31e9 }),
@@ -219,10 +222,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     ],
     addassist_lookup: () => [],
     addassist_search: () => [],
-    recent_addresses: () => [
-      'Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia',
-      'Magyar Nemzeti Múzeum\nMúzeum krt. 14–16\n1088 Budapest, Hungary',
-    ],
+    recent_addresses: () => profile.recent,
     sheet_info: (a) => collage.sheet_info[a.sheet.second == null ? `${a.sheet.first}` : `${a.sheet.first}-${a.sheet.second}`],
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
@@ -305,7 +305,75 @@ const browser = await (process.env.MEASURE_ENGINE === 'webkit' ? webkit : chromi
 const shots = []
 
 // Demo culling state for the print basket (FR-050), by position: the trip's, or none.
-const TRIP_QUEUES = { print: [1, 4, 6], aside: [7, 13] } // not the shown photos (SHOW)
+// The languages shot from this recording (SHOT_LANGS, comma-separated; en,vi by default):
+// build.sh records each language's own photo set in that language (demo.rs), so a はがき
+// shows on the Japanese pages and a 우편엽서 on the Korean ones.
+const LANGUAGES = (process.env.SHOT_LANGS ?? 'en,vi').split(',').map((l) => l.trim()).filter(Boolean)
+// Each photo set's picks by file name (PRD FR-130, "Its pictures"): the grid's photo, the one
+// with GPS for the date and place, the info frame, the postcard, the straightening, the before
+// and after, the full-bleed card; the folder tabs, the export's example name and the recent
+// addresses (famous places' public addresses, owner 2026-11-15).
+const PROFILES = {
+  prague: {
+    grid: ['P1068073', 'erdmaennchen-in-der-wilhelma-1'],
+    stamp: ['bennetts-beach'],
+    frame: ['P1067865', 'erdmaennchen-in-der-wilhelma-1'],
+    card: ['P1067865', 'erdmaennchen-in-der-wilhelma-1'],
+    crop: ['bir-hakeim-bridge'],
+    compare: ['P1067950', 'charles-bridge-at-sunset'],
+    night: ['P1068073'],
+    pair: ['P1068256'],
+    tabRules: [['wilhelma', 0, 'Wilhelma Zoo'], ['tuebingen|ammerschlag|anlagensee|neckar', 1, 'Tübingen'], ['^P10|charles-bridge', 2, 'Praha']],
+    tabElse: [3, 'Travels'],
+    tabs: ['Wilhelma Zoo', 'Praha', 'Travels'],
+    exportName: 'P1067823.jpg',
+    recent: ['Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia', 'Magyar Nemzeti Múzeum\nMúzeum krt. 14–16\n1088 Budapest, Hungary'],
+  },
+  // The owner's photos of Japan (JAPAN DEMO by hoangphi01), their city read from the GPS.
+  ja: {
+    grid: ['IMG_5773'],
+    stamp: ['IMG_5745'],
+    frame: ['IMG_5745'],
+    card: ['Gokurakuji', 'IMG_5710'],
+    crop: ['IMG_5758'],
+    compare: ['IMG_4453'],
+    night: ['IMG_5773'],
+    pair: [],
+    tabRules: [['IMG_57(10|45)|Gokurakuji', 0, '鎌倉'], ['IMG_57(58|73)', 1, '東京']],
+    tabElse: [2, '旅行'],
+    tabs: ['鎌倉', '東京', '旅行'],
+    exportName: 'IMG_5773.heic',
+    queues: { print: ['IMG_4329'], aside: ['IMG_5710'] },
+    recent: ['東京都港区芝公園4-2-8 東京タワー', '京都府京都市東山区清水1-294 清水寺'],
+  },
+  // Seoul by @9adox (Fujifilm XF10) and @imyourctus (Sony ZV-1).
+  ko: {
+    grid: ['DSCF1990'],
+    stamp: ['DSCF1983'],
+    frame: ['DSCF1909'],
+    card: ['DSCF1990'],
+    crop: ['DSCF1905'],
+    compare: ['DSCF1938'],
+    night: ['DSCF2041'],
+    pair: [],
+    tabRules: [['^IMG_14', 1, 'ZV-1'], ['DSCF19[0-6]', 0, '광화문']],
+    tabElse: [2, '서울'],
+    tabs: ['광화문', '서울', 'ZV-1'],
+    exportName: 'DSCF1990.JPG',
+    queues: { print: ['DSCF1986', 'DSCF2022', 'DSCF1915'], aside: ['DSCF2068'] },
+    recent: ['서울특별시 종로구 세종대로 175 세종문화회관', '서울특별시 종로구 사직로 161 경복궁'],
+  },
+}
+const PROFILE = PROFILES[process.env.SHOT_SET ?? LANGUAGES[0]] ?? PROFILES.prague
+
+// The print basket and set-aside photos by position, never the shown ones (SHOW): the Prague
+// set's, or a set's own by file name (PROFILES `queues`).
+const TRIP_QUEUES = (() => {
+  const named = PROFILE.queues
+  if (!named) return { print: [1, 4, 6], aside: [7, 13] }
+  const at = (stem) => fixtures.common.list_photos.photos.findIndex((p) => p.fileName.startsWith(stem))
+  return { print: named.print.map(at).filter((i) => i >= 0), aside: named.aside.map(at).filter((i) => i >= 0) }
+})()
 const NO_QUEUES = { print: [], aside: [] }
 
 async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null, fault = null, verdict = null, os = process.env.DEMO_OS }) {
@@ -358,7 +426,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
   await context.addInitScript((words) => {
     globalThis.__englishWords = words
   }, ENGLISH_WORDS)
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict, profile: { tabRules: PROFILE.tabRules, tabElse: PROFILE.tabElse, exportName: PROFILE.exportName, recent: PROFILE.recent } })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
@@ -409,6 +477,7 @@ async function zoomed(page, name, clip) {
   shots.push(file)
 }
 
+
 async function save(page, name) {
   const file = path.join(outDir, `${name}.png`)
   await page.screenshot({ path: file })
@@ -423,18 +492,26 @@ const idOf = (name) => {
 }
 // The owner's Prague photos when the set has them (demo_set.txt), the CC0 ones otherwise.
 const has = (name) => fixtures.common.list_photos.photos.some((p) => p.fileName.startsWith(name))
+// The first of a pick's names the set has; none, null.
+const pick = (names) => {
+  const name = names.find(has)
+  return name === undefined ? null : idOf(name)
+}
 const SHOW = {
-  grid: idOf(has('P1068073') ? 'P1068073' : 'erdmaennchen-in-der-wilhelma-1'),
-  stamp: idOf('bennetts-beach'), // has GPS: the place joins the date
-  // The Lumix frame on the owner's tram, the Fujifilm one otherwise.
-  frame: idOf(has('P1067865') ? 'P1067865' : 'erdmaennchen-in-der-wilhelma-1'),
-  crop: idOf('bir-hakeim-bridge'),
-  // The view over Prague for the before and after, when the set has it.
-  compare: idOf(has('P1067950') ? 'P1067950' : 'charles-bridge-at-sunset'),
-  // A tram by night on a postcard filled to the edge (demo.rs FULL), when the set has it.
-  night: has('P1068073') ? idOf('P1068073') : null,
-  // A collage sheet by night: a tram and the National Museum, two photos on one print.
-  pair: has('P1068256') ? idOf('P1068256') : null,
+  grid: pick(PROFILE.grid),
+  stamp: pick(PROFILE.stamp), // has GPS (in the Prague set): the place joins the date
+  frame: pick(PROFILE.frame),
+  // The card carrying the first typed text (demo.rs).
+  card: pick(PROFILE.card),
+  crop: pick(PROFILE.crop),
+  compare: pick(PROFILE.compare),
+  // A postcard filled to the edge (demo.rs FULL), when the set has it.
+  night: pick(PROFILE.night),
+  // A collage sheet of two photos, when the set has one named.
+  pair: pick(PROFILE.pair),
+}
+for (const [what, id] of Object.entries(SHOW)) {
+  if (id === null && !['night', 'pair'].includes(what)) throw new Error(`demo photo for ${what} is missing`)
 }
 const tile = (page, id) => page.locator(`img[src*="/thumb/${id}?"]`).first()
 // The grid is virtualized: scroll it (up, then down) until the photo's tile is drawn.
@@ -1040,7 +1117,7 @@ if (process.env.MEASURE) {
   process.exit()
 }
 
-for (const language of ['en', 'vi']) {
+for (const language of LANGUAGES) {
   for (const theme of ['dark', 'light']) {
     const suffix = `${language}-${theme}`
 
@@ -1238,14 +1315,17 @@ for (const language of ['en', 'vi']) {
     // counts them all, and hovering a tab shows its close button.
     ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 3, tabs: true }))
     const tab = (name) => page.getByRole('button', { name: new RegExp(`^${name}`) })
-    await tab('Wilhelma Zoo').click()
+    await tab(PROFILE.tabs[0]).click()
     await page.getByRole('button', { name: say('select.start') }).click()
-    await page.locator('img[src*="/thumb/"]').nth(1).click()
-    await page.locator('img[src*="/thumb/"]').nth(4).click()
-    await tab('Praha').click()
+    // The second and fifth photos, or the last where a folder has fewer.
+    const thumbs = page.locator('img[src*="/thumb/"]')
+    const tick = async (i) => thumbs.nth(Math.min(i, (await thumbs.count()) - 1)).click()
+    await tick(1)
+    await tick(4)
+    await tab(PROFILE.tabs[1]).click()
     await page.waitForTimeout(300)
-    await page.locator('img[src*="/thumb/"]').nth(2).click()
-    await tab('Travels').hover()
+    await tick(2)
+    await tab(PROFILE.tabs[2]).hover()
     await settle(page)
     await zoomed(page, `tabs-${suffix}`, { x: 0, y: 0, width: 1040, height: 650 })
     await context.close()
@@ -1279,8 +1359,8 @@ for (const language of ['en', 'vi']) {
     // 11. Postcards (FR-073): one photo and a postcard back on each print, the panel's
     // postcard card open, for the landing page.
     ;({ context, page } = await open({ scenario: 'postcard', language, theme, mode: 'collage', queues: NO_QUEUES }))
-    // The card on the owner's red tram, which carries the first typed text (demo.rs).
-    const card = await cell(page, SHOW.frame)
+    // The card carrying the first typed text (demo.rs): the owner's red tram, Gokurakuji, Gwanghwamun.
+    const card = await cell(page, SHOW.card)
     await card.click()
     await settle(page)
     await save(page, `postcard-${suffix}`)
@@ -1299,10 +1379,24 @@ for (const language of ['en', 'vi']) {
       await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
       await settle(page)
       await save(page, `postcard-night-${suffix}`)
+      // The card's text has its own tab in the preview (Mail icon, 2026-11-15).
+      const postcardTab = page.locator('[role="dialog"] [data-slot="inspector-tabs"]').getByLabel(say('postcard.title'))
+      if (await postcardTab.count()) {
+        await postcardTab.first().click()
+        await settle(page)
+      }
       // 11c. For the manual (FR-077): the typed address, the note with "Use for them" under it;
       // then the recent addresses, listed on every card (v0.13.2).
       const textCard = (pattern) =>
         page.locator('[role="dialog"] section', { has: page.getByText(pattern) }).first()
+      // AddAssist (FR-133) on a Japanese or Korean card, for those pages' landing section.
+      const assist = textCard(say('addassist.recipient'))
+      if (await assist.count()) {
+        await assist.scrollIntoViewIfNeeded()
+        await settle(page)
+        const box = await assist.boundingBox()
+        if (box) await zoomed(page, `addassist-${suffix}`, { x: box.x - 16, y: box.y - 16, width: box.width + 32, height: Math.min(box.height + 32, 900) })
+      }
       const apply = textCard(say('postcard.reuse.fill'))
       if (await apply.count()) {
         await apply.scrollIntoViewIfNeeded()

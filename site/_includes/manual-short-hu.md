@@ -302,6 +302,8 @@ Egy kioszkban nyomtatott kép feladható képeslappá válik: az egyik felén eg
 5. **Egy cím egy egész sorozatnak:** ha egy lapra beírtad a címet, a **Használat ezekhez** a többi cím nélküli lapra is ráteszi. A **Legutóbbi címek** az ezen a gépen legutóbb beírt címeket listázza.
 6. Az **Exportálás** képeslaponként egy fájlt ír.
 
+**Japán és koreai lapok:** 日本語 nyelven minden képeslap はがき (100 × 148 mm), 한국어 nyelven 우편엽서 (4 × 6 in); angolul és vietnámiul a **Lap ide** választ Európa, Japán és Korea között. Mindkettő a saját postája szabályait követi: a はがき piros irányítószám-mezői, a koreai lap öt mezője és szabadon hagyott 17 mm-e. A rövid üzenet a fotó alá kerül, a hosszabb a címoldal vonalazott üzenetmezőjébe, ha van ott hely. Az **AddAssist** az irányítószámból kitölti a címet. Legfeljebb 300 g/m²-es fotópapír.
+
 <!-- shot: manual-postcard | Collage mód bekapcsolt Postcard-dal: prágai villamosok éjjel, minden nyomaton egy fotó, amely kitölti a felét, és egy képeslap hátoldala bélyegkerettel és írósorokkal -->
 
 **Kézzel írva:** a fotópapír felületét sok toll nem fogja. Használj vékony alkoholos filcet, előbb próbáld ki a bélyegkeretben, és hagyd kb. egy percig száradni. Ha a bolt engedi, nyomtasd a képeslapokat **matt** papírra, és használj öntapadós bélyeget.

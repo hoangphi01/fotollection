@@ -21,6 +21,10 @@ export default {
       lang: data.language.code,
       // The screenshots a language shows: its own, or English's while the app lacks it (FR-084).
       assets: data.language.assets,
+      // The v0.12 gallery of its makeover: its own, or English's (languages.yml `legacy`).
+      legacy: data.language.legacy ?? data.language.assets,
+      // AddAssist on its home page (languages.yml `addassist`, the Japanese and Korean pages).
+      addassist: data.language.addassist === true,
       prefix: data.language.prefix,
       date_format: data.language.date_format,
       guide: data.language.guide,
