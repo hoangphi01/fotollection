@@ -355,7 +355,8 @@ const PROFILES = {
     crop: ['DSCF1905'],
     compare: ['DSCF1938'],
     night: ['DSCF2041'],
-    pair: [],
+    // Two upright photos side by side, as the keynote's collage scene shows them (2026-11-15).
+    pair: ['IMG_1471'],
     tabRules: [['^IMG_14', 1, 'ZV-1'], ['DSCF19[0-6]', 0, '광화문']],
     tabElse: [2, '서울'],
     tabs: ['광화문', '서울', 'ZV-1'],

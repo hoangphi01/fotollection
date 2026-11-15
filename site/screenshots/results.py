@@ -27,7 +27,7 @@ PICKS = {
            "stamp": ("preview/stamp", "IMG_5745"), "sheet": ("sheet", ("IMG_4329", "IMG_4421")),
            "frame": ("preview/frame", "IMG_5758")},
     "ko": {"card": ("sheet-postcard-full", "DSCF2041"), "card2": ("sheet-postcard", "DSCF1990"),
-           "stamp": ("preview/stamp", "IMG_1469"), "sheet": ("sheet", ("DSCF2023", "DSCF2041")),
+           "stamp": ("preview/stamp", "IMG_1469"), "sheet": ("sheet", ("DSCF1972", "DSCF1975")),
            "frame": ("preview/frame", "DSCF2022")},
     "en": {"card": ("sheet-postcard-full", "P1068073"), "card2": ("sheet-postcard", "P1067865"),
            "stamp": ("preview/stamp", "P1067865"), "sheet": ("sheet", ("P1067819", "P1067829")),
