@@ -54,6 +54,8 @@ Read this table in full before any task; then read in full every entry whose Are
 - A decoder's "ok" is not trusted: a fast decoder only on the layouts a test proves, damaged copies run through every fallback reader. Kept by: the JPEG layout corpus and the cut-to-40 % test.
 - Before trusting a library's field or a platform API, write and read it back, log what it hands over, read its source. Kept by: `fr_072_png_gamma_is_converted` (one case).
 - Every format is measured on a real sample before building on it, and every pattern or offset is tested with its origin moved off zero. Kept by: no machine check yet.
+- Before swapping a library that draws or decodes, record what the old one produced at the level everything is built from, and explain every difference from the new one's source. Kept by: `fr_134_text_renders_as_before`.
+- What a parser allocates from a file's numbers is bounded and mutation-tested for memory and time. Kept by: `font_mutate`, `raw_mutate`.
 
 ### image-colour
 
@@ -121,6 +123,24 @@ Read this table in full before any task; then read in full every entry whose Are
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - A layout with a chosen board copies the board's measured numbers and has a test per part against them. Kept by: `fr_130_the_upright_card_matches_board_a` and its siblings.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
+
+## 2026-11-16
+
+### Two font readers drew the same glyph 3 units apart, and one rounded what the other kept (FR-134)
+
+- **Area:** decode-third-party, checks
+- **Seen:** moving from `ttf-parser` to `skrifa`, `text_parity` showed whole Nanum Pen and Arial glyphs a few font units to the right, coverage off by up to 115 levels, and Inter at 600 and 800 off by 30 levels; every metric and advance agreed.
+- **Why:** `skrifa` loads a glyph as FreeType does: it moves every point so the outline starts at the left side bearing of `hmtx` (the origin phantom point, varied by `gvar`), where `ttf-parser` kept the glyph's own coordinates; and in font units its FreeType path rounds `gvar` deltas to whole units, where `ttf-parser` kept them in f32. Read in their source once the outlines were printed side by side.
+- **Fix:** outlines drawn with the HarfBuzz path style (f32, deltas whole) and the shift taken back from `AdjustedMetrics::lsb`, which is that phantom point; every glyph of ten faces then identical but Inter between masters, at most one level (16.16 against f32 interpolation), held by `fr_134_text_renders_as_before`.
+- **Rule:** before swapping a library that draws, record what the old one drew at the level everything is built from (glyphs, not pages), compare the new one against it, and read the new library's source for each difference until it is explained.
+
+### A damaged font could ask for a glyph of any size (FR-134)
+
+- **Area:** decode-third-party
+- **Seen:** `font_mutate` was killed by the system in its first minute: out of memory.
+- **Why:** a mutated `glyf` claimed huge bounds and the rasterizer holds a glyph's whole coverage, 4 bytes a pixel; `ab_glyph` did the same, no test had tried.
+- **Fix:** no glyph larger than a print is drawn (8,192 px a side, 16 Mpx); 123,530 mutated fonts then 0 panics, 0 hangs; a user font is read whole when it is added.
+- **Rule:** every parser of a file a user gives is mutation-tested for memory and time as well as panics, and what it allocates from the file's numbers is bounded.
 
 ## 2026-11-15
 
