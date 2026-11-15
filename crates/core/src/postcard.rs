@@ -661,6 +661,9 @@ pub struct CodeBoxes {
     pub box_mm: (f32, f32),
     /// Each box's left edge from the first one's, left to right (Japan's from 別記1's figure).
     pub lefts_mm: &'static [f32],
+    /// Sizes and edges are the boxes' insides, the frames drawn outside them (別記1 備考:
+    /// 枠線の内側を起点として測ります); else the frames are inside the sizes.
+    pub inner: bool,
     pub color: [u8; 3],
     /// Each group's line weight; the hyphen takes the first group's.
     pub lines_mm: &'static [f32],
@@ -674,6 +677,7 @@ pub const KOREA_BOXES: CodeBoxes = CodeBoxes {
     groups: &[5],
     box_mm: (4.75, 6.0),
     lefts_mm: &[0.0, 5.5, 11.0, 16.5, 22.0],
+    inner: false,
     color: [45, 45, 45],
     lines_mm: &[0.3],
     hyphen: false,
@@ -684,6 +688,7 @@ pub const KOREA_SENDER_BOXES: CodeBoxes = CodeBoxes {
     groups: &[5],
     box_mm: (3.75, 4.75),
     lefts_mm: &[0.0, 4.25, 8.5, 12.75, 17.0],
+    inner: false,
     color: [45, 45, 45],
     lines_mm: &[0.25],
     hyphen: false,
@@ -691,14 +696,16 @@ pub const KOREA_SENDER_BOXES: CodeBoxes = CodeBoxes {
 
 /// Japan's seven boxes as 内国郵便約款 別記1's figure for a private card measures them: 5.7 × 8
 /// mm, their left edges at 0, 7.0, 14.0, 21.6, 28.4, 35.2 and 42.0 mm, 8 mm from the right
-/// edge and 12 mm from the top; vermilion (金赤) with no black in them, the first three and the
+/// edge and 12 mm from the top, all measured on the boxes' insides; vermilion (金赤) with no
+/// black in them (255, 60, 30: R full, so no black is added when printed in CMYK), the first three and the
 /// hyphen 0.5 mm, the last four 0.3 mm (0.4–0.6 and 0.2–0.4 mm). Japan Post's figure, not the
 /// style board, sets them (the Japan Post review, 2026-11-15).
 pub const JAPAN_BOXES: CodeBoxes = CodeBoxes {
     groups: &[3, 4],
     box_mm: (5.7, 8.0),
     lefts_mm: &[0.0, 7.0, 14.0, 21.6, 28.4, 35.2, 42.0],
-    color: [232, 56, 32],
+    inner: true,
+    color: [255, 60, 30],
     lines_mm: &[0.5, 0.3],
     hyphen: true,
 };
@@ -707,7 +714,34 @@ impl CodeBoxes {
     /// The boxes' whole width.
     #[allow(clippy::cast_precision_loss)]
     pub fn width_mm(&self) -> f32 {
+        let boxes = self.boxes(0.0, 0.0);
+        let left = boxes.iter().map(|(r, _)| r.x).fold(f32::MAX, f32::min);
+        let right = boxes.iter().map(|(r, _)| r.x + r.width).fold(0.0, f32::max);
+        (right - left).max(0.0)
+    }
+
+    /// From the first box's left edge to the last one's right, as `lefts_mm` measures them
+    /// (insides for Japan's).
+    pub fn span_mm(&self) -> f32 {
         self.lefts_mm.last().copied().unwrap_or(0.0) + self.box_mm.0
+    }
+
+    /// The `left` to pass to `boxes` so the frames end at `right`.
+    pub fn left_for_right(&self, right: f32) -> f32 {
+        let line = if self.inner {
+            self.lines_mm.last().copied().unwrap_or(0.0)
+        } else {
+            0.0
+        };
+        right - line - self.span_mm()
+    }
+
+    /// The boxes' whole height, frames included.
+    pub fn height_mm(&self) -> f32 {
+        self.boxes(0.0, 0.0)
+            .iter()
+            .map(|(r, _)| r.height)
+            .fold(0.0, f32::max)
     }
 
     /// Each box's rectangle and its group's line weight, from `left`, `top`.
@@ -722,13 +756,15 @@ impl CodeBoxes {
                 .or(self.lines_mm.last())
                 .copied()
                 .unwrap_or(0.3);
+            // An inside measure: the frame outside it, so the rectangle (frame included) grows.
+            let grow = if self.inner { line } else { 0.0 };
             for x in lefts.by_ref().take(usize::from(*count)) {
                 out.push((
                     RectMm {
-                        x: left + x,
-                        y: top,
-                        width: self.box_mm.0,
-                        height: self.box_mm.1,
+                        x: left + x - grow,
+                        y: top - grow,
+                        width: self.box_mm.0 + 2.0 * grow,
+                        height: self.box_mm.1 + 2.0 * grow,
                     },
                     line,
                 ));
@@ -1513,11 +1549,15 @@ mod tests {
         // The first three heavier than the last four.
         assert!(boxes[..3].iter().all(|(_, l)| (*l - 0.5).abs() < 1e-6));
         assert!(boxes[3..].iter().all(|(_, l)| (*l - 0.3).abs() < 1e-6));
-        assert!((b.width_mm() - 47.7).abs() < 1e-4, "別記1: 42.0 + 5.7");
-        // Each box where 別記1's figure puts it.
-        for ((r, _), at) in boxes.iter().zip([0.0, 7.0, 14.0, 21.6, 28.4, 35.2, 42.0]) {
-            assert!((r.x - 10.0 - at).abs() < 1e-4 && (r.width - 5.7).abs() < 1e-4);
+        assert!((b.span_mm() - 47.7).abs() < 1e-4, "別記1: 42.0 + 5.7");
+        // Each box's inside where 別記1's figure puts it (備考: measured inside the frames),
+        // R full so no black creeps in when printed in CMYK (the Japan Post review).
+        for ((r, line), at) in boxes.iter().zip([0.0, 7.0, 14.0, 21.6, 28.4, 35.2, 42.0]) {
+            let (inside_x, inside_w) = (r.x + line, r.width - 2.0 * line);
+            assert!((inside_x - 10.0 - at).abs() < 1e-4 && (inside_w - 5.7).abs() < 1e-4);
+            assert!((r.height - 2.0 * line - 8.0).abs() < 1e-4);
         }
+        assert_eq!(b.color[0], 255);
         let density = 300.0 / 25.4;
         let (w, h) = (700, 300);
         let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])
@@ -1527,13 +1567,13 @@ mod tests {
             canvas.data.as_chunks::<3>().0.iter().copied().collect();
         // Vermilion and white only: no black or blue in the boxes (FAQ 45).
         assert_eq!(colours.len(), 2);
-        assert!(colours.contains(&[232, 56, 32]));
+        assert!(colours.contains(&b.color));
         // The hyphen: ink in the gap after the third box, at mid height.
-        let gap_x = ((2.0 + 2.0 * 6.8 + 5.7 + 1.85) * density) as usize;
+        let gap_x = ((2.0 + 14.0 + 5.7 + 0.95) * density) as usize;
         let mid_y = ((2.0 + 4.0) * density) as usize;
         assert_eq!(
             &canvas.data[(mid_y * w as usize + gap_x) * 3..][..3],
-            &[232, 56, 32]
+            &b.color
         );
     }
 }

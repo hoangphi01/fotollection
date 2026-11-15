@@ -350,6 +350,12 @@ pub fn layout(
         // Always kept, a full-bleed photo stopping above it: Japan Post wants a message on the
         // address side in its lower half (§23(4); owner, 2026-11-15), and a Korean card's
         // writing half has no room left for one.
+        // A full-bleed はがき photo starts 1 mm under the half (75 mm), its lower half kept for
+        // a print's shift (the Japan Post review).
+        if japan && settings.fill && !side {
+            photo_half.y += 1.0;
+            photo_half.height -= 1.0;
+        }
         let band = (japan || korea).then(|| {
             let band = if settings.fill {
                 HAGAKI_FILL_BAND_MM
@@ -2331,7 +2337,7 @@ mod tests {
         let Some(photo) = sheet.cells[0] else {
             panic!("the photo is placed");
         };
-        assert!(photo.y >= 74.0, "{}", photo.y);
+        assert!(photo.y >= 75.0, "{}", photo.y);
     }
 
     #[test]

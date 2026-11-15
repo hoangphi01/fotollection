@@ -194,7 +194,7 @@
     --warning-foreground: oklch(0.99 0 0);
     --success: oklch(0.55 0.13 155);
     --success-foreground: oklch(0.99 0 0);
-    --vermilion: rgb(232 56 32);
+    --vermilion: rgb(255 60 30);
     --destructive-foreground: oklch(0.99 0 0);
     /* Solid state colours for badges: deep, with white text, in both themes (owner,
        2026-11-06). `--warning` and `--success` above stay for text and icons. */

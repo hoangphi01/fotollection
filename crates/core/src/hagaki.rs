@@ -41,13 +41,13 @@ const CODE_MIDDLE: f32 = 0.52;
 /// Japan Post's postmark zone, the top left 35 mm wide and 70 mm tall upright (70 × 35 mm at
 /// the top right on a landscape card): nothing but the stamp box in it (別記1 備考3).
 pub const POSTMARK_MM: (f32, f32) = (35.0, 70.0);
-/// The address: its first column's top 30.5 mm, more than 10 mm under the boxes (別記1
-/// (1)(ｵ); board B: 122 px), its em 16/17 of the text's (B: 16 px), its right 7.5 mm from the
-/// edge (30 px), columns 1.5 em apart (line-height 1.5), each after the first one character
-/// lower.
-const ADDRESS_TOP_MM: f32 = 30.5;
+/// The address: its first column's top 32 mm, 11 mm under the boxes' frames (別記1 (1)(ｵ) asks
+/// 10; the Japan Post review, 2026-11-15), its em 16/17 of the text's (board B: 16 px), its ink
+/// 15 mm or more from the right edge, inside 別記1's address area (例1: 10, 15 and 10 mm),
+/// columns 1.5 em apart (line-height 1.5), each after the first one character lower.
+const ADDRESS_TOP_MM: f32 = 32.0;
 const ADDRESS_SCALE: f32 = 16.0 / 17.0;
-const ADDRESS_RIGHT_MM: f32 = 7.5;
+const ADDRESS_RIGHT_MM: f32 = 14.5;
 const COLUMN_STEP: f32 = 1.5;
 /// The name: its column centred 51.4 mm from the left, starting 1 mm above the address, at
 /// most 30/17 of the address's em (A: 30 px), smaller to end at the half's foot, 0.1 em
@@ -70,9 +70,13 @@ const MESSAGE_IN_MM: f32 = 1.0;
 
 /// Landscape: the stamp box 6 mm from the top and right, 20 × 24 mm, 切手 across.
 const L_STAMP_MM: (f32, f32) = (20.0, 24.0);
-/// The code column: its right 7.5 mm from the edge, its top 35 mm (30 px, 140 px).
+/// The code column: its right 7.5 mm from the edge (board: 30 px), its top 37 mm, 2 mm under
+/// the postmark zone for a kiosk's shift (the Japan Post review, 2026-11-15).
 const L_BOXES_RIGHT_MM: f32 = 7.5;
-const L_BOXES_TOP_MM: f32 = 35.0;
+const L_BOXES_TOP_MM: f32 = 37.0;
+/// The text keeps 10 mm from the code column (別記1 例2) and above 85 mm (its 15 mm foot).
+const L_BOXES_CLEAR_MM: f32 = 10.0;
+const L_TEXT_BOTTOM_MM: f32 = 85.0;
 /// 「郵便はがき」 down the edge right of the boxes: em 2.75 mm (11 px), 1 mm between (4 px),
 /// its column centred 4 mm from the edge and on the card's height (§22(6): 右側部 中央).
 const L_HEADING_MM: f32 = 2.75;
@@ -114,8 +118,9 @@ pub fn stamp_box(card: RectMm) -> RectMm {
 
 /// The code boxes' top-left.
 fn boxes_origin(card: RectMm) -> (f32, f32) {
+    // 12 and 8 mm to the boxes' insides (別記1).
     (
-        card.x + card.width - BOXES_RIGHT_MM - JAPAN_BOXES.width_mm(),
+        card.x + card.width - BOXES_RIGHT_MM - JAPAN_BOXES.span_mm(),
         card.y + BOXES_TOP_MM,
     )
 }
@@ -363,7 +368,8 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
     // of it, its code across above them. What it takes moves the recipient's name right.
     let mut sender_right = card.x + POSTMARK_MM.0;
     let small = em * SENDER_SCALE;
-    let left = card.x + POSTMARK_MM.0 + 1.0;
+    // 3 mm clear of the zone, for a kiosk's shift (the Japan Post review).
+    let left = card.x + POSTMARK_MM.0 + 3.0;
     if let Some(from) = sender(settings, Country::Jp) {
         let from_top = card.y + SENDER_TOP_MM;
         if from.latin {
@@ -587,7 +593,8 @@ pub fn stamp_box_landscape(card: RectMm) -> RectMm {
 /// The landscape はがき's code column: its top-left, along the right edge.
 fn boxes_down_origin(card: RectMm) -> (f32, f32) {
     (
-        card.x + card.width - L_BOXES_RIGHT_MM - JAPAN_BOXES.box_mm.1,
+        // The insides' column; its frames end 7.5 mm from the edge.
+        card.x + card.width - L_BOXES_RIGHT_MM - JAPAN_BOXES.box_mm.1 - 0.5,
         card.y + L_BOXES_TOP_MM,
     )
 }
@@ -689,8 +696,9 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
 
     // The text: from the half's left to the boxes.
     let left = card.x + L_TEXT_LEFT_MM;
-    let width = bx - 2.0 - left;
-    let bottom = card.y + card.height - 5.0;
+    // From the column's frames, half a millimetre outside its insides.
+    let width = bx - 0.5 - L_BOXES_CLEAR_MM - left;
+    let bottom = card.y + L_TEXT_BOTTOM_MM;
     let a_em = em * L_ADDRESS_SCALE;
     if let Some(to) = &to {
         let draw_at = |canvas: &mut RgbImage, text: &str, indent: f32, top: f32| {
@@ -1320,13 +1328,36 @@ pub(crate) mod tests {
     }
 
     #[test]
+    fn fr_130_the_text_keeps_to_the_address_area() {
+        // 別記1 例1 and 例2 (the Japan Post review, 2026-11-15): upright, the recipient's ink
+        // 15 mm or more from the right edge; landscape, the text 10 mm from the boxes and above
+        // 85 mm, the boxes 2 mm under the postmark zone.
+        let card = drawn(&board_sender("1200024"), Some(&board_text("2480024")));
+        let right = runs(&card, zone(60.0, 21.0, 40.0, 53.0), true, dark)
+            .iter()
+            .map(|b| b[2])
+            .fold(0.0, f32::max);
+        assert!(right <= 85.0, "{right}");
+        let (card, half) = drawn_landscape(&board_sender("1200024"), Some(&board_text("")));
+        let (bx, by) = boxes_down_origin(half);
+        assert!(by >= POSTMARK_MM.0 + 2.0 - 0.01);
+        let text = runs(&card, zone(0.0, 30.0, bx - 1.0, 70.0), false, dark);
+        let right = text.iter().map(|b| b[2]).fold(0.0, f32::max);
+        let foot = text.iter().map(|b| b[3]).fold(0.0, f32::max);
+        assert!(right <= bx - 0.5 - 10.0 + 0.3, "{right}");
+        assert!(foot <= 85.0, "{foot}");
+    }
+
+    #[test]
     fn fr_130_the_address_keeps_10_mm_under_the_boxes() {
         // 別記1 (1)(ｵ): 10 mm or more between the boxes and the address.
         for code in ["2480024", ""] {
             let card = drawn(&PostcardSettings::default(), Some(&board_text(code)));
             let address = runs(&card, zone(70.0, 21.0, 29.0, 53.0), true, dark);
             let top = address.iter().map(|b| b[1]).fold(f32::MAX, f32::min);
-            assert!(top >= BOXES_TOP_MM + JAPAN_BOXES.box_mm.1 + 10.0, "{top}");
+            // From the frames' outside edge (the Japan Post review: 11 mm is the safe margin).
+            let boxes_foot = BOXES_TOP_MM + JAPAN_BOXES.box_mm.1 + 0.5;
+            assert!(top >= boxes_foot + 10.0, "{top}");
         }
     }
 
@@ -1491,6 +1522,11 @@ pub(crate) mod tests {
         }
     }
 
+    /// A board's box moved by a rule of Japan Post's (`dx`, `dy` in millimetres).
+    fn moved(b: [f32; 4], dx: f32, dy: f32) -> [f32; 4] {
+        [b[0] + dx, b[1] + dy, b[2] + dx, b[3] + dy]
+    }
+
     pub(crate) const fn zone(x: f32, y: f32, width: f32, height: f32) -> RectMm {
         RectMm {
             x,
@@ -1502,29 +1538,20 @@ pub(crate) mod tests {
 
     #[test]
     fn fr_130_the_upright_card_matches_board_a() {
-        // Board A, where Japan Post agrees: its heading, and the address and name as board B's
-        // now that a typed code is written in the boxes (別記1); the sender is checked against
-        // the postmark zone instead (`fr_130_nothing_but_the_stamp_in_the_postmark_zone`).
+        // Board A, where Japan Post agrees: its heading; the address and name as board B's,
+        // moved by 別記1: the address 7 mm left into its 15 mm margin, both 1.5 mm lower for
+        // 11 mm under the boxes (the Japan Post review, 2026-11-15).
         let card = drawn(&PostcardSettings::default(), Some(&board_text("2480024")));
+        let address = [
+            moved([87.63, 30.63, 91.44, 54.44], -7.0, 1.5),
+            moved([81.63, 34.75, 85.44, 66.19], -7.0, 1.5),
+        ];
+        let name = [moved([48.0, 29.81, 54.25, 72.13], 0.0, 1.5)];
+        let heading = [[38.25, 4.63, 59.63, 7.63]];
         let parts: [(&str, RectMm, bool, &[[f32; 4]]); 3] = [
-            (
-                "heading",
-                zone(30.0, 0.0, 40.0, 9.0),
-                false,
-                &[[38.25, 4.63, 59.63, 7.63]],
-            ),
-            (
-                "address",
-                zone(70.0, 22.0, 29.0, 52.0),
-                true,
-                &[[87.63, 30.63, 91.44, 54.44], [81.63, 34.75, 85.44, 66.19]],
-            ),
-            (
-                "name",
-                zone(40.0, 22.0, 22.0, 52.0),
-                true,
-                &[[48.0, 29.81, 54.25, 72.13]],
-            ),
+            ("heading", zone(30.0, 0.0, 40.0, 9.0), false, &heading),
+            ("address", zone(66.0, 22.0, 30.0, 52.0), true, &address),
+            ("name", zone(40.0, 22.0, 22.0, 52.0), true, &name),
         ];
         for (part, z, down, board) in parts {
             assert_board(part, &runs(&card, z, down, dark), board, 0.0);
@@ -1542,12 +1569,22 @@ pub(crate) mod tests {
             boxes.iter().map(|b| b[2]).fold(0.0, f32::max),
             boxes.iter().map(|b| b[3]).fold(0.0, f32::max),
         ];
-        assert_board("boxes", &[whole], &[[44.25, 12.0, 92.0, 20.0]], 0.0);
-        let address = runs(&card, zone(70.0, 22.0, 29.0, 52.0), true, dark);
-        let board = [[87.63, 30.63, 91.44, 54.44], [81.63, 34.75, 85.44, 66.19]];
+        // 別記1 measures the boxes inside their frames: the frames reach 0.5 mm further.
+        assert_board("boxes", &[whole], &[[44.25, 11.5, 92.3, 20.5]], 0.0);
+        let address = runs(&card, zone(66.0, 22.0, 30.0, 52.0), true, dark);
+        // Moved by 別記1 as in board A's test.
+        let board = [
+            moved([87.63, 30.63, 91.44, 54.44], -7.0, 1.5),
+            moved([81.63, 34.75, 85.44, 66.19], -7.0, 1.5),
+        ];
         assert_board("address", &address, &board, 0.0);
         let name = runs(&card, zone(40.0, 22.0, 22.0, 52.0), true, dark);
-        assert_board("name", &name, &[[48.0, 29.81, 54.25, 72.13]], 0.0);
+        assert_board(
+            "name",
+            &name,
+            &[moved([48.0, 29.81, 54.25, 72.13], 0.0, 1.5)],
+            0.0,
+        );
     }
 
     #[test]
@@ -1562,7 +1599,8 @@ pub(crate) mod tests {
             boxes.iter().map(|b| b[2]).fold(0.0, f32::max),
             boxes.iter().map(|b| b[3]).fold(0.0, f32::max),
         ];
-        assert_board("boxes", &[whole], &[[132.5, 35.0, 140.5, 82.75]], dx);
+        // 2 mm lower and measured inside the frames (the Japan Post review, 2026-11-15).
+        assert_board("boxes", &[whole], &[[131.5, 36.5, 140.5, 85.0]], dx);
         let parts: [(&str, RectMm, bool, &[[f32; 4]]); 4] = [
             (
                 "heading",
@@ -1580,17 +1618,20 @@ pub(crate) mod tests {
                 "name",
                 zone(2.0, 49.0, 55.0, 13.0),
                 false,
-                &[[78.13, 52.19, 123.63, 58.81]],
+                // 様 ends 10 mm from the boxes (別記1 例2), the name a little smaller.
+                &[[78.13, 52.19, 122.0, 58.5]],
             ),
             (
                 "sender",
-                zone(2.0, 70.0, 55.0, 25.0),
+                zone(2.0, 62.0, 55.0, 33.0),
                 false,
+                // Kept above 85 mm, 別記1's 15 mm foot (the Japan Post review): 5.7 mm higher.
                 &[
-                    [78.31, 73.75, 90.44, 75.81],
-                    [78.06, 77.94, 112.19, 80.56],
-                    [84.0, 82.19, 114.25, 84.75],
-                    [115.06, 86.75, 127.94, 89.81],
+                    moved([78.31, 73.75, 90.44, 75.81], 0.0, -5.7),
+                    moved([78.06, 77.94, 112.19, 80.56], 0.0, -5.7),
+                    moved([84.0, 82.19, 114.25, 84.75], 0.0, -5.7),
+                    // Its right end 10 mm from the boxes, as the address's (別記1 例2).
+                    moved([115.06, 86.75, 127.94, 89.81], -6.0, -5.7),
                 ],
             ),
         ];

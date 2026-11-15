@@ -482,7 +482,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
     let boxes_h = if to.latin {
         0.0
     } else {
-        BOXES_GAP_MM + KOREA_BOXES.box_mm.1
+        BOXES_GAP_MM + KOREA_BOXES.height_mm()
     };
     let head = LABEL_MM * 1.25 + RECIPIENT_GAP_MM + name_em * 1.05 + 0.25 + RECIPIENT_GAP_MM;
     // Rows that do not fit above the boxes are left out, never pushed into the zone.
@@ -536,7 +536,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
     }
     if !to.latin {
         let boxes_right = right.min(spec.card.x + spec.card.width - BOXES_RIGHT_MM);
-        let bx = boxes_right - KOREA_BOXES.width_mm();
+        let bx = KOREA_BOXES.left_for_right(boxes_right);
         let by = y + BOXES_GAP_MM - RECIPIENT_GAP_MM;
         draw_boxes(canvas, density, faces, bx, by, &KOREA_BOXES, &to.code, ink);
     }
