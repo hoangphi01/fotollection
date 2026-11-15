@@ -633,6 +633,8 @@ fn message_box(
     let Some(first) = rows.first() else {
         return true;
     };
+    // Rows set closer for the room take a smaller text.
+    let em = em.min(first.height / 1.5);
     let mm = |v: f32| v * density;
     let lines: Vec<String> = message
         .lines()

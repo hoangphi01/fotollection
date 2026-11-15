@@ -628,7 +628,8 @@ pub const MAX_BOX_ROWS: usize = 4;
 
 /// The message box of a Japanese or Korean card, 通信欄 / 통신란 (owner, 2026-11-15): a thin
 /// frame and writing lines as the European card's, a row every `step` millimetres, across, or
-/// in columns from the right for text set top to bottom. Japan Post lets a message stand
+/// in columns from the right for text set top to bottom, its rows closer when the room is
+/// short (each row's size says how much). Japan Post lets a message stand
 /// outside the lower half when it is clearly apart from the address (内国郵便約款 §23(4)
 /// ただし書). Each row's rectangle, where its text goes; none, and nothing drawn, when `rect`
 /// holds fewer than two.
@@ -648,8 +649,21 @@ pub fn draw_message_box(
     const PAD_MM: f32 = 1.5;
     let (outline, rule) = inks(paper);
     let depth = if vertical { rect.width } else { rect.height };
-    // At most four rows, the box no taller than they need (owner, 2026-11-15).
-    let count = (((depth - 2.0 * PAD_MM) / step).floor().max(0.0) as usize).min(MAX_BOX_ROWS);
+    // Four rows (owner, 2026-11-15), a little closer when the room is short, down to 70 % of
+    // `step`; fewer only where even that does not fit; the box no taller than its rows.
+    let room = depth - 2.0 * PAD_MM;
+    #[allow(clippy::cast_precision_loss)]
+    let four = MAX_BOX_ROWS as f32;
+    let (count, step) = if room >= four * step {
+        (MAX_BOX_ROWS, step)
+    } else if room >= four * step * 0.7 {
+        (MAX_BOX_ROWS, room / four)
+    } else {
+        (
+            ((room / (step * 0.7)).floor().max(0.0) as usize).min(MAX_BOX_ROWS),
+            step * 0.7,
+        )
+    };
     if count < 2 {
         return Vec::new();
     }
@@ -1657,6 +1671,45 @@ mod tests {
             if row == 0 { room / 2.0 } else { room * 3.0 }
         });
         assert_eq!(rows, ["Liebe", "Grüße aus Budapest"]);
+    }
+
+    #[test]
+    fn fr_130_a_message_box_holds_four_rows() {
+        // Owner, 2026-11-15: four lines at most, set a little closer when the room is short.
+        let mut canvas = RgbImage::from_raw(400, 400, vec![255; 400 * 400 * 3])
+            .unwrap_or_else(|| RgbImage::new(1, 1));
+        let rect = |height: f32| RectMm {
+            x: 1.0,
+            y: 1.0,
+            width: 40.0,
+            height,
+        };
+        let roomy = draw_message_box(&mut canvas, 4.0, rect(40.0), 5.0, false, BorderColor::White);
+        assert_eq!(roomy.len(), 4);
+        assert!(roomy.iter().all(|r| (r.height - 5.0).abs() < 1e-4));
+        // Room for 3.2 rows: four, closer.
+        let short = draw_message_box(
+            &mut canvas,
+            4.0,
+            rect(3.0 + 16.0),
+            5.0,
+            false,
+            BorderColor::White,
+        );
+        assert_eq!(short.len(), 4);
+        assert!(short.iter().all(|r| r.height < 5.0 && r.height >= 3.5));
+        // Too little for four even closer: fewer, or none under two.
+        let tight = draw_message_box(
+            &mut canvas,
+            4.0,
+            rect(3.0 + 10.0),
+            5.0,
+            false,
+            BorderColor::White,
+        );
+        assert_eq!(tight.len(), 2);
+        let none = draw_message_box(&mut canvas, 4.0, rect(5.0), 5.0, false, BorderColor::White);
+        assert_eq!(none.len(), 0);
     }
 
     #[test]

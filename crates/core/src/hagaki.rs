@@ -559,6 +559,10 @@ fn message_box(
     let Some(first) = rows.first() else {
         return true;
     };
+    // Rows set closer for the room take a smaller text.
+    let row = if vertical { first.width } else { first.height };
+    let em = em.min(row / BOX_STEP);
+    let step = row;
     let mm = |v: f32| v * density;
     let ink = ink(spec.settings, spec.paper);
     if vertical {
