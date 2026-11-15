@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useTranslation } from 'react-i18next'
 import { AddAssist } from '@/components/forms/addassist'
-import { FieldLabel, Stack } from '@/components/forms/field'
 import { commands, type Address, type Country, type PhotoId } from '@/ipc/bindings'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 
@@ -29,16 +28,14 @@ export function PostcardAddressField({ photo, country, revision, assisted, onAss
   const recipient = useLiveQuery(String(photo), revision, load).data?.recipients?.find((r) => r.country === country) ?? null
   const save = (address: Address) => void commands.setPostcardAddress(photo, country, address)
   return (
-    <Stack>
-      <FieldLabel>{t('addassist.recipient')}</FieldLabel>
-      <AddAssist
-        key={photo}
-        country={country}
-        value={recipient}
-        onCommit={save}
-        assisted={assisted}
-        onAssisted={onAssisted}
-      />
-    </Stack>
+    <AddAssist
+      key={photo}
+      label={t('addassist.recipient')}
+      country={country}
+      value={recipient}
+      onCommit={save}
+      assisted={assisted}
+      onAssisted={onAssisted}
+    />
   )
 }

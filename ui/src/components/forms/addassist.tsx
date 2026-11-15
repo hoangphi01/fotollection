@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { commands, type Address, type Country, type CountryInfo, type Found } from '@/ipc/bindings'
 import { emptyAddress } from '@/lib/address'
 import { CommitInput } from './commit-input'
-import { FactLines, Field, Hint, Inset, Stack } from './field'
+import { Badge } from '@/components/ui/badge'
+import { FactLines, Field, FieldLabel, Hint, Inset, Stack } from './field'
 import { ListRow } from './list-row'
 import { SegmentedToggle } from './segmented-toggle'
 import { SwitchField } from './switch-field'
@@ -29,6 +30,8 @@ const codeLabel = (country: Country, code: string) =>
   country === 'jp' && code.length === 7 ? `〒${code.slice(0, 3)}-${code.slice(3)}` : code
 
 type AddAssistProps = {
+  /** The block's title (Recipient), its AddAssist badge in the corner (the style board). */
+  label?: string
   country: Country
   value: Address | null
   /** Called with the whole address when a field is left or a place picked (a draft never). */
@@ -45,7 +48,7 @@ type AddAssistProps = {
  * typed; the post's data is looked up offline in Rust. By hand: every line typed. The one block
  * for an address: `check-lego` refuses AddAssist's commands anywhere else.
  */
-export function AddAssist({ country, value, onCommit, assisted, onAssisted }: AddAssistProps) {
+export function AddAssist({ label, country, value, onCommit, assisted, onAssisted }: AddAssistProps) {
   const { t } = useTranslation()
   const address = value ?? emptyAddress(country)
   const [found, setFound] = useState<Found[] | null>(null)
@@ -103,6 +106,14 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
   const filled = places(address)
   return (
     <Stack>
+      <div className="flex items-center justify-between gap-2">
+        {label && <FieldLabel>{label}</FieldLabel>}
+        {version && (
+          <Badge variant="outline" className="ml-auto">
+            {t('addassist.version', { version })}
+          </Badge>
+        )}
+      </div>
       <SegmentedToggle<'assisted' | 'hand'>
         value={assisted ? 'assisted' : 'hand'}
         options={[
@@ -116,18 +127,24 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
         <>
           <Field label={t(`addassist.code.${country}`)} hint={t('addassist.enterHint')}>
             <div ref={codeRow} className="flex items-center gap-2">
+              {country === 'jp' && (
+                <span aria-hidden className="font-bold text-vermilion">
+                  〒
+                </span>
+              )}
               <CommitInput
                 value={parts[0]}
                 placeholder={country === 'jp' ? '123' : '12345'}
                 ariaLabel={t(`addassist.code.${country}`)}
                 numeric
                 maxLength={head}
+                vermilion={country === 'jp' ? 'heavy' : undefined}
                 liveMs={country === 'jp' ? 50 : undefined}
                 onCommit={(v) => onPart(0, v)}
               />
               {country === 'jp' && (
                 <>
-                  <span aria-hidden className="text-muted-foreground">
+                  <span aria-hidden className="font-bold text-vermilion">
                     –
                   </span>
                   <CommitInput
@@ -136,6 +153,7 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
                     ariaLabel={t('addassist.codeSecond')}
                     numeric
                     maxLength={codeDigits - head}
+                    vermilion="light"
                     onCommit={(v) => onPart(1, v)}
                   />
                 </>
@@ -183,6 +201,7 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
               ariaLabel={t(`addassist.code.${country}`)}
               numeric
               maxLength={codeDigits + 1}
+              vermilion={country === 'jp' ? 'heavy' : undefined}
               onCommit={(v) => commit({ code: v.replace(/\D/g, '').slice(0, codeDigits) })}
             />
           </Field>
@@ -208,7 +227,6 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
         onChange={(latin) => commit({ latin })}
         hint={t('addassist.latinHint')}
       />
-      {version && <Hint>{t('addassist.version', { version })}</Hint>}
     </Stack>
   )
 }

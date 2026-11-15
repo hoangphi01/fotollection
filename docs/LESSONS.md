@@ -72,6 +72,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Free disk with `scripts/clean.sh`, never part of a profile; on `Undefined symbols`, `cargo clean -p fotollection-core`. Kept by: `scripts/clean.sh`.
 - A check meant to stop a deletion is an `if` read before it, never a link in a `&&` chain whose success means "go". Kept by: no machine check yet.
 - Finish edits before a build, wait for the dev app's rebuild before tests, stop it before a demo recording. Kept by: no machine check yet.
+- Run only the formatters and tools the project declares; never `npx` one it lacks. Kept by: no machine check yet.
 
 ### measure
 
@@ -115,6 +116,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### A formatter the project does not use rewrote three files (FR-133)
+
+- **Area:** resources-tooling
+- **Seen:** `npx prettier --write` on three UI files downloaded Prettier and reformatted every line of them: 249 lines changed for a 40-line change.
+- **Why:** the project has no Prettier (no config, not in `package.json`); `npx` fetched one rather than failing.
+- **Fix:** the files restored from git and only the change applied again; the gates are `tsc -b` and `npm run lint` (oxlint, check-i18n, check-lego).
+- **Rule:** run only the tools the project declares (its `package.json` scripts, `cargo fmt`); never `npx` a tool that is not installed, and read `git diff --stat` before a commit for lines the change did not mean to touch.
 
 ### A layout built from guessed numbers when the board had the real ones (FR-130, FR-132)
 

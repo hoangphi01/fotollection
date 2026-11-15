@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -18,6 +19,9 @@ type CommitInputProps = {
   onCommit(value: string): void
   /** The field was left: typing is done (a postcard's address is remembered then, FR-077). */
   onDone?(value: string): void
+  /** A Japanese postal code's part, in the vermilion of the printed boxes: the first three
+   * heavier, as on the card (FR-133, the style board). */
+  vermilion?: 'heavy' | 'light'
 }
 
 /**
@@ -35,6 +39,7 @@ export function CommitInput({
   limit = (v) => v,
   onCommit,
   onDone,
+  vermilion,
 }: CommitInputProps) {
   const [draft, setDraft] = useState(value)
   const committed = useRef(value)
@@ -95,7 +100,11 @@ export function CommitInput({
       maxLength={maxLength}
       aria-label={ariaLabel}
       inputMode={numeric ? 'decimal' : undefined}
-      className="h-8 w-full min-w-0 text-sm"
+      className={cn(
+        'h-8 w-full min-w-0 text-sm',
+        vermilion && 'border-vermilion text-center tabular-nums',
+        vermilion === 'heavy' && 'border-2',
+      )}
       onChange={(e) => setDraft(limit(e.target.value))}
       {...events}
       onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
