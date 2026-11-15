@@ -530,15 +530,23 @@ pub struct CollageSettings {
 
 /// Which way a postcard sheet is held: landscape puts the photo on the left half, portrait
 /// on the bottom half; the stamp box is always at the top right (FR-073).
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum PostcardOrientation {
     #[default]
     Landscape,
     Portrait,
-    /// A Korean card on a square print (4 × 4 in, FR-132): the writing on the top half, the
-    /// photo below. Korea Post takes it as a non-standard letter.
-    Square,
+}
+
+/// Read by hand so v20's square Korean card, gone before a release (Korea Post's minimum is
+/// 140 × 90 mm), reads as landscape; any other unknown name too.
+impl<'de> Deserialize<'de> for PostcardOrientation {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        Ok(match String::deserialize(d)?.as_str() {
+            "portrait" => Self::Portrait,
+            _ => Self::Landscape,
+        })
+    }
 }
 
 /// The bundled faces a postcard's text can be typed in (FR-073, FR-076).
@@ -690,18 +698,10 @@ impl PostcardSettings {
         }
     }
 
-    /// The shape the card is drawn in: a Korean card is landscape or square (owner,
-    /// 2026-11-15), the others landscape or portrait; a shape a card does not take reads as its
-    /// nearest (a square left from a Korean card is a portrait はがき).
+    /// The shape the card is drawn in: landscape or upright, every card (owner, 2026-11-15: the
+    /// Korean card too, its square gone).
     pub fn shape(&self) -> PostcardOrientation {
-        match (self.card, self.orientation) {
-            (PostcardDestination::Korea, PostcardOrientation::Square) => {
-                PostcardOrientation::Square
-            }
-            (PostcardDestination::Korea, _) => PostcardOrientation::Landscape,
-            (_, PostcardOrientation::Square) => PostcardOrientation::Portrait,
-            (_, o) => o,
-        }
+        self.orientation
     }
 }
 
@@ -1253,22 +1253,26 @@ mod tests {
     use super::*;
 
     #[test]
-    fn fr_132_a_card_takes_only_its_own_shapes() {
-        use PostcardDestination::{Europe, Japan, Korea};
-        use PostcardOrientation::{Landscape, Portrait, Square};
-        let card = |card, orientation| {
-            PostcardSettings {
+    fn fr_132_a_korean_card_is_landscape_or_upright() {
+        // Korea Post's minimum is 140 × 90 mm: the square card is gone (the Korea Post review,
+        // 2026-11-15), and a v20 file's "square" reads as landscape.
+        let read: PostcardSettings =
+            serde_json::from_str(r#"{"orientation":"square"}"#).unwrap_or_default();
+        assert_eq!(read.orientation, PostcardOrientation::Landscape);
+        let read: PostcardSettings =
+            serde_json::from_str(r#"{"orientation":"portrait"}"#).unwrap_or_default();
+        assert_eq!(read.orientation, PostcardOrientation::Portrait);
+        for orientation in [
+            PostcardOrientation::Landscape,
+            PostcardOrientation::Portrait,
+        ] {
+            let card = PostcardSettings {
                 orientation,
-                card,
+                card: PostcardDestination::Korea,
                 ..PostcardSettings::default()
-            }
-            .shape()
-        };
-        assert_eq!(card(Korea, Square), Square);
-        assert_eq!(card(Korea, Portrait), Landscape);
-        assert_eq!(card(Japan, Square), Portrait);
-        assert_eq!(card(Europe, Square), Portrait);
-        assert_eq!(card(Japan, Landscape), Landscape);
+            };
+            assert_eq!(card.shape(), orientation);
+        }
     }
 
     #[test]

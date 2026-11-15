@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { Mail, Mailbox, PenLine, RectangleHorizontal, RectangleVertical, Square, UserRound } from 'lucide-react'
+import { Mail, Mailbox, PenLine, RectangleHorizontal, RectangleVertical, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
@@ -17,12 +17,11 @@ import { patchPostcard } from './postcard-defaults'
 type Shape = { value: PostcardOrientation; icon: typeof RectangleHorizontal }
 const LANDSCAPE: Shape = { value: 'landscape', icon: RectangleHorizontal }
 const PORTRAIT: Shape = { value: 'portrait', icon: RectangleVertical }
-const SQUARE: Shape = { value: 'square', icon: Square }
-/** The shapes each card takes: a Korean card is landscape or square (owner, 2026-11-15). */
+/** The shapes each card takes: landscape or upright (owner, 2026-11-15: Korea's square gone). */
 const SHAPES: Record<PostcardDestination, Shape[]> = {
   europe: [LANDSCAPE, PORTRAIT],
   japan: [PORTRAIT, LANDSCAPE],
-  korea: [LANDSCAPE, SQUARE],
+  korea: [LANDSCAPE, PORTRAIT],
 }
 const DESTINATIONS: PostcardDestination[] = ['europe', 'japan', 'korea']
 const LINES = [3, 4]
@@ -46,7 +45,6 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
   if (!postcard?.enabled) return null
   const setPostcard = (patch: Partial<PostcardSettings>) => patchPostcard(onChange, patch)
   const shapes = SHAPES[card]
-  // A shape this card does not take reads as its first one (a square left from a Korean card).
   const orientation = shapes.find((s) => s.value === postcard.orientation)?.value ?? shapes[0]?.value ?? 'landscape'
   const country = card === 'japan' ? 'jp' : 'kr'
   return (
@@ -69,7 +67,7 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
           </Select>
         </Field>
       )}
-      <Field label={t('postcard.orientation')} hint={orientation === 'square' ? t('postcard.squareHint') : undefined}>
+      <Field label={t('postcard.orientation')}>
         <SegmentedToggle<PostcardOrientation>
           value={orientation}
           options={shapes.map(({ value, icon: Icon }) => ({

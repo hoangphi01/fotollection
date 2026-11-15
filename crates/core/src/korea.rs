@@ -5,7 +5,8 @@
 //! 우표 box at the top right with `fotollection.org/ko` under it, the recipient at the bottom
 //! right (받는 사람, the name the largest, 귀하 when chosen, the address in the road-name
 //! order, the five boxes right-aligned with 4 mm clear round them), the machine zone's 17 mm
-//! at the card's foot kept free. A square card (4 × 4 in) sets the same on its top half.
+//! at the card's foot kept blank. An upright card sets the same on its top half, the zone down
+//! its right edge (Korea Post's foot when the card is read turned).
 
 use std::sync::LazyLock;
 
@@ -57,12 +58,15 @@ const SENDER_ADDRESS: f32 = 15.0 / 17.0;
 const SENDER_GAP_MM: f32 = 0.75;
 /// The recipient: from 8.5 mm into the half to 5 mm from its right (330 and 20 px); its name
 /// 30/17 em on the right, its address 17/17, 1 mm between rows (4 px), the boxes 4 mm under the
-/// address and 3.75 mm above the machine zone (FR-132: 4 mm clear).
+/// address and 4 mm above the machine zone (FR-132: 4 mm clear), 20 mm from the right edge.
 const RECIPIENT_LEFT_MM: f32 = 8.5;
 const RECIPIENT_NAME: f32 = 30.0 / 17.0;
 const RECIPIENT_GAP_MM: f32 = 1.0;
 const BOXES_GAP_MM: f32 = 4.0;
-const BOXES_CLEAR_MM: f32 = 3.75;
+const BOXES_CLEAR_MM: f32 = 4.0;
+/// The code's right end 20 mm or more from the card's right edge (Korea Post: 우편번호 오른쪽
+/// 끝에서 20 mm).
+const BOXES_RIGHT_MM: f32 = 20.0;
 /// Where a line's em starts in its line box, against its em (Nanum Pen; measured).
 const EM_IN_BOX: f32 = 0.05;
 /// The message under a bordered photo: 19/17 em, 2.5 mm under it (322 px against 312).
@@ -75,11 +79,9 @@ pub struct KoreaSpec<'a> {
     pub settings: &'a PostcardSettings,
     pub text: Option<&'a PostcardText>,
     pub paper: BorderColor,
-    /// The machine zone, when it crosses the writing half (a landscape card's foot).
+    /// The machine zone, when it crosses the writing half (a landscape card's foot, an upright
+    /// card's right edge).
     pub zone: Option<RectMm>,
-    /// The message to set on the writing half, between the sender and the recipient (a
-    /// landscape card whose photo fills its half has no band under it).
-    pub message: Option<&'a str>,
 }
 
 /// The two faces in use: the chosen one, and Nanum Pen for what it lacks.
@@ -291,23 +293,72 @@ fn dotted(canvas: &mut RgbImage, density: f32, x0: f32, x1: f32, y: f32) {
     }
 }
 
-/// Draws a 우편엽서's writing half onto `canvas`, `density` pixels per millimetre, as board K1.
-#[allow(clippy::too_many_lines, clippy::cast_precision_loss)]
-pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
+/// The part of `card` the writing may take: short of a machine zone down its right edge (an
+/// upright card, the zone being its foot when read turned).
+pub fn writing_area(card: RectMm, zone: Option<RectMm>) -> RectMm {
+    match zone {
+        Some(z) if z.height > z.width && z.x > card.x && z.x < card.x + card.width => RectMm {
+            width: z.x - card.x,
+            ..card
+        },
+        _ => card,
+    }
+}
+
+/// Each line of `text` as rows at most `width` pixels wide, each with its em: a line a little
+/// too wide set smaller on one row (down to 80 %) rather than a word left alone below.
+fn fit_rows(
+    faces: (&VerticalFace, &VerticalFace),
+    text: &str,
+    em: f32,
+    width: f32,
+) -> Vec<(String, f32)> {
+    let mut rows = Vec::new();
+    for paragraph in text.lines().map(str::trim).filter(|l| !l.is_empty()) {
+        let w = line(None, faces, paragraph, em, 0.0, 0.0, [0; 3]);
+        if w <= width || w * 0.8 <= width {
+            rows.push((paragraph.to_owned(), em * (width / w).min(1.0)));
+        } else {
+            rows.extend(
+                wrap(faces, paragraph, em, width)
+                    .into_iter()
+                    .map(|r| (r, em)),
+            );
+        }
+    }
+    rows
+}
+
+/// A label set no wider than `width` pixels: its em, smaller for a long name.
+fn fit_em(faces: (&VerticalFace, &VerticalFace), text: &str, em: f32, width: f32) -> f32 {
+    let w = line(None, faces, text, em, 0.0, 0.0, [0; 3]);
+    if w > width { em * width / w } else { em }
+}
+
+/// Draws a 우편엽서's writing half onto `canvas`, `density` pixels per millimetre, as board K1
+/// within Korea Post's rules; whether anything typed was left out (a row).
+#[allow(
+    clippy::too_many_lines,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
+pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
     let Some(faces) = faces(spec.settings) else {
-        return;
+        return false;
     };
-    let card = spec.card;
+    let card = writing_area(spec.card, spec.zone);
     let settings = spec.settings;
     let (outline, _) = crate::postcard::inks(spec.paper);
     let ink = settings.ink.rgb(spec.paper);
     let mm = |v: f32| v * density;
     let em = crate::settings::postcard_text_mm(settings.text_size);
     let stamp = stamp_box(card);
-    // The writing ends above the machine zone when the zone crosses this half.
+    let mut cut = false;
+    // The writing ends above a machine zone at the foot when it crosses this half.
     let limit = spec
         .zone
-        .filter(|z| z.y < card.y + card.height)
+        .filter(|z| z.width >= z.height && z.y < card.y + card.height)
         .map_or(card.y + card.height, |z| z.y);
     // A line's em in its line box of `lh` ems from `top`.
     let em_top = |top: f32, size: f32, lh: f32| top + size * ((lh - 1.0) / 2.0 + EM_IN_BOX);
@@ -341,9 +392,8 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
         );
     }
 
-    // Where the message may go: under the stamp box and the sender, above the recipient.
-    let mut message_top = stamp.y + stamp.height + 4.0;
-    let mut message_bottom = limit - 2.0;
+    // What the recipient keeps clear of: the stamp box and the sender.
+    let mut clear_top = stamp.y + stamp.height + 4.0;
     // The sender at the top left, left of the stamp box: the label, the name, the address,
     // each over a dotted rule, then its five boxes.
     if let Some(from) = settings
@@ -352,6 +402,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
     {
         let left = card.x + SENDER_LEFT_MM;
         let right = left + SENDER_WIDTH_MM.min(stamp.x - 2.0 - left);
+        let width = mm(right - left);
         let mut y = card.y + SENDER_TOP_MM;
         line(
             Some(canvas),
@@ -366,11 +417,12 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
         let name = from.name.trim();
         if !name.is_empty() {
             let size = em * SENDER_NAME;
+            let fitted = fit_em(faces, name, mm(size), width);
             line(
                 Some(canvas),
                 faces,
                 name,
-                mm(size),
+                fitted,
                 mm(left),
                 mm(em_top(y, size, 1.1)),
                 ink,
@@ -380,17 +432,14 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
             y += 0.25 + SENDER_GAP_MM;
         }
         let size = em * SENDER_ADDRESS;
-        let rows: Vec<String> = address_text(from)
-            .lines()
-            .flat_map(|l| wrap(faces, l, mm(size), mm(right - left)))
-            .take(2)
-            .collect();
-        for row in &rows {
+        let rows = fit_rows(faces, &address_text(from), mm(size), width);
+        cut |= rows.len() > 2;
+        for (row, row_em) in rows.iter().take(2) {
             line(
                 Some(canvas),
                 faces,
                 row,
-                mm(size),
+                *row_em,
                 mm(left),
                 mm(em_top(y, size, 1.2)),
                 ink,
@@ -413,101 +462,85 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
             );
             y += KOREA_SENDER_BOXES.box_mm.1;
         }
-        message_top = message_top.max(y + 3.0);
+        clear_top = clear_top.max(y + 3.0);
     }
 
-    // The recipient at the bottom right, its boxes 3.75 mm above the machine zone: the label,
-    // the name on the right, the address, each over a dotted rule, then the boxes.
-    if let Some(to) = recipient(spec.text) {
-        let left = card.x + RECIPIENT_LEFT_MM;
-        let right = card.x + card.width - EDGE_MM;
-        let rows: Vec<String> = address_text(&to)
-            .lines()
-            .flat_map(|l| wrap(faces, l, mm(em), mm(right - left)))
-            .collect();
-        let name_em = em * RECIPIENT_NAME;
-        let row_h = em * 1.2 + 0.25 + RECIPIENT_GAP_MM;
-        let boxes_h = if to.latin {
-            0.0
+    // The recipient at the bottom right, its boxes 4 mm clear above the machine zone and 20 mm
+    // or more from the card's right edge (Korea Post): the label, the name on the right, the
+    // address, each over a dotted rule, then the boxes; drawn empty for the hand when no one is
+    // typed (FR-132).
+    let to = recipient(spec.text).unwrap_or_else(|| Address::new(Country::Kr));
+    let left = card.x + RECIPIENT_LEFT_MM;
+    let right = card.x + card.width - EDGE_MM;
+    let width = mm(right - left);
+    let mut rows = fit_rows(faces, &address_text(&to), mm(em), width);
+    if rows.is_empty() {
+        rows.push((String::new(), mm(em)));
+    }
+    let name_em = em * RECIPIENT_NAME;
+    let row_h = em * 1.2 + 0.25 + RECIPIENT_GAP_MM;
+    let boxes_h = if to.latin {
+        0.0
+    } else {
+        BOXES_GAP_MM + KOREA_BOXES.box_mm.1
+    };
+    let head = LABEL_MM * 1.25 + RECIPIENT_GAP_MM + name_em * 1.05 + 0.25 + RECIPIENT_GAP_MM;
+    // Rows that do not fit above the boxes are left out, never pushed into the zone.
+    // Under the stamp box and the sender, whichever ends lower.
+    let room = limit - BOXES_CLEAR_MM - (clear_top - 1.0);
+    let fit = ((room - head - boxes_h) / row_h).floor().max(1.0) as usize;
+    if rows.len() > fit {
+        rows.truncate(fit);
+        cut = true;
+    }
+    let block = head + row_h * rows.len() as f32 + boxes_h;
+    let mut y = limit - BOXES_CLEAR_MM - block;
+    line(
+        Some(canvas),
+        faces,
+        "받는 사람",
+        mm(LABEL_MM),
+        mm(left),
+        mm(y),
+        GREY,
+    );
+    y += LABEL_MM * 1.25 + RECIPIENT_GAP_MM;
+    let name = to.name.trim();
+    if !name.is_empty() {
+        let label = if to.honorific && !to.latin {
+            format!("{name} 귀하")
         } else {
-            BOXES_GAP_MM + KOREA_BOXES.box_mm.1
+            name.to_owned()
         };
-        let block = LABEL_MM * 1.25
-            + RECIPIENT_GAP_MM
-            + name_em * 1.05
-            + 0.25
-            + RECIPIENT_GAP_MM
-            + row_h * rows.len() as f32
-            + boxes_h;
-        let mut y = (limit - BOXES_CLEAR_MM - block).max(stamp.y + stamp.height + 3.0);
-        message_bottom = y - 2.0;
+        let fitted = fit_em(faces, &label, mm(name_em), width);
+        let w = line(None, faces, &label, fitted, 0.0, 0.0, ink);
+        let top = mm(em_top(y, name_em, 1.05));
+        line(Some(canvas), faces, &label, fitted, mm(right) - w, top, ink);
+    }
+    y += name_em * 1.05;
+    dotted(canvas, density, left, right, y);
+    y += 0.25 + RECIPIENT_GAP_MM;
+    for (row, row_em) in &rows {
         line(
             Some(canvas),
             faces,
-            "받는 사람",
-            mm(LABEL_MM),
+            row,
+            *row_em,
             mm(left),
-            mm(y),
-            GREY,
+            mm(em_top(y, em, 1.2)),
+            ink,
         );
-        y += LABEL_MM * 1.25 + RECIPIENT_GAP_MM;
-        let name = to.name.trim();
-        if !name.is_empty() {
-            let label = if to.honorific && !to.latin {
-                format!("{name} 귀하")
-            } else {
-                name.to_owned()
-            };
-            let w = line(None, faces, &label, mm(name_em), 0.0, 0.0, ink);
-            let top = mm(em_top(y, name_em, 1.05));
-            line(
-                Some(canvas),
-                faces,
-                &label,
-                mm(name_em),
-                mm(right) - w,
-                top,
-                ink,
-            );
-        }
-        y += name_em * 1.05;
+        y += em * 1.2;
         dotted(canvas, density, left, right, y);
         y += 0.25 + RECIPIENT_GAP_MM;
-        for row in &rows {
-            line(
-                Some(canvas),
-                faces,
-                row,
-                mm(em),
-                mm(left),
-                mm(em_top(y, em, 1.2)),
-                ink,
-            );
-            y += em * 1.2;
-            dotted(canvas, density, left, right, y);
-            y += 0.25 + RECIPIENT_GAP_MM;
-        }
-        if !to.latin {
-            let bx = right - KOREA_BOXES.width_mm();
-            let by = y + BOXES_GAP_MM - RECIPIENT_GAP_MM;
-            draw_boxes(canvas, density, faces, bx, by, &KOREA_BOXES, &to.code, ink);
-        }
     }
-    // The message, when the photo has no band for it, in the room between.
-    if let Some(message) = spec.message.filter(|m| !m.trim().is_empty()) {
-        let small = em * 0.85;
-        let left = card.x + EDGE_MM;
-        let mut y = message_top;
-        'lines: for paragraph in message.lines() {
-            for row in wrap(faces, paragraph, mm(small), mm(card.width - 2.0 * EDGE_MM)) {
-                if y + small > message_bottom {
-                    break 'lines;
-                }
-                line(Some(canvas), faces, &row, mm(small), mm(left), mm(y), ink);
-                y += small * 1.3;
-            }
-        }
+    if !to.latin {
+        let boxes_right = right.min(spec.card.x + spec.card.width - BOXES_RIGHT_MM);
+        let bx = boxes_right - KOREA_BOXES.width_mm();
+        let by = y + BOXES_GAP_MM - RECIPIENT_GAP_MM;
+        draw_boxes(canvas, density, faces, bx, by, &KOREA_BOXES, &to.code, ink);
     }
+    cut
 }
 
 /// The message under a bordered photo (board K1): one line from the photo's left, 19/17 em,
@@ -597,7 +630,6 @@ mod tests {
                 text,
                 paper: BorderColor::White,
                 zone,
-                message: None,
             },
         );
         canvas
@@ -807,7 +839,9 @@ mod tests {
                     [121.0, 47.63, 143.0, 54.81],
                     [82.56, 57.25, 117.06, 61.13],
                     [82.56, 63.38, 101.63, 67.25],
-                    [116.25, 73.25, 143.0, 79.25],
+                    // Korea Post's rule over the board: the code's right end 20 mm from the
+                    // edge, 4 mm above the zone (the Korea Post review, 2026-11-15).
+                    [101.25, 73.0, 128.0, 79.0],
                 ],
             ),
         ];
@@ -835,6 +869,138 @@ mod tests {
         );
         let line = runs(&canvas, band, false, dark);
         assert_board("message", &line, &[[5.13, 80.81, 53.69, 84.75]], 0.0);
+    }
+
+    /// Pixels inside `r` that are not white, any colour.
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    fn any_ink(canvas: &RgbImage, r: RectMm) -> usize {
+        let (x0, y0) = ((r.x * DENSITY) as u32, (r.y * DENSITY) as u32);
+        let (x1, y1) = (
+            ((r.x + r.width) * DENSITY) as u32,
+            ((r.y + r.height) * DENSITY) as u32,
+        );
+        let mut n = 0;
+        for y in y0..y1.min(canvas.height) {
+            for x in x0..x1.min(canvas.width) {
+                let i = ((y * canvas.width + x) * 3) as usize;
+                n += usize::from(canvas.data[i..i + 3].iter().any(|c| *c < 250));
+            }
+        }
+        n
+    }
+
+    /// An upright card's writing half (102 × 76 mm) and its zone down the right edge.
+    const UPRIGHT: RectMm = RectMm {
+        x: 0.0,
+        y: 0.0,
+        width: 102.0,
+        height: 76.0,
+    };
+    const UPRIGHT_ZONE: RectMm = RectMm {
+        x: 85.0,
+        y: 0.0,
+        width: 17.0,
+        height: 152.0,
+    };
+
+    #[test]
+    fn fr_132_the_code_ends_20_mm_from_the_right_edge() {
+        // Korea Post: 20 mm clear right of the code, landscape and upright.
+        use crate::hagaki::tests::runs;
+        let (settings, text) = board_k1();
+        for (half, zone) in [(LANDSCAPE, ZONE), (UPRIGHT, UPRIGHT_ZONE)] {
+            let canvas = drawn(half, Some(zone), &settings, Some(&text));
+            let low = RectMm {
+                y: half.y + half.height * 0.55,
+                height: half.height * 0.45,
+                ..half
+            };
+            // The boxes' frames only (their own grey), not the address above them.
+            let right = runs(&canvas, low, true, |p| p == KOREA_BOXES.color)
+                .iter()
+                .map(|b| b[2])
+                .fold(0.0, f32::max);
+            assert!(
+                half.x + half.width - right >= 20.0 - 0.3,
+                "{right} in {half:?}"
+            );
+            // Nothing in an upright card's zone.
+            assert_eq!(
+                any_ink(
+                    &canvas,
+                    RectMm {
+                        height: half.height,
+                        ..zone
+                    }
+                ),
+                0
+            );
+        }
+    }
+
+    #[test]
+    fn fr_132_long_text_never_leaves_its_place() {
+        // A long name shrinks to its width; five address rows at the large size drop rows
+        // rather than push the boxes into the zone; drawn, it says something was left out.
+        let (mut settings, mut text) = board_k1();
+        settings.text_size = crate::settings::StampSize::Large;
+        if let Some(to) = text.recipients.first_mut() {
+            to.name = "Nguyễn Thị Phương Thảo Hoàng".into();
+            to.line = "175 세종문화회관 대극장 별관 3층 302호 사무국 담당자 앞, 세종로 1가 81-3 옆 건물 2층 안내데스크 옆 우편함, 지하 1층 주차장 입구 맞은편 관리사무소 전달 부탁드립니다".into();
+        }
+        if let Some(from) = settings.senders.first_mut() {
+            from.name = "Nguyễn Thị Phương Thảo Hoàng".into();
+        }
+        let (w, h) = ((LANDSCAPE.x + LANDSCAPE.width) * DENSITY, 102.0 * DENSITY);
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let mut canvas = RgbImage::from_raw(
+            w as u32,
+            h as u32,
+            vec![255; (w as u32 * h as u32 * 3) as usize],
+        )
+        .unwrap_or_else(|| RgbImage::new(1, 1));
+        let spec = KoreaSpec {
+            card: LANDSCAPE,
+            settings: &settings,
+            text: Some(&text),
+            paper: BorderColor::White,
+            zone: Some(ZONE),
+        };
+        let cut = draw(&mut canvas, DENSITY, &spec);
+        assert!(cut, "the rows left out are reported");
+        let photo_half = RectMm {
+            x: 0.0,
+            y: 0.0,
+            width: LANDSCAPE.x,
+            height: 102.0,
+        };
+        assert_eq!(
+            any_ink(&canvas, photo_half),
+            0,
+            "nothing runs onto the photo"
+        );
+        let zone_in_half = RectMm {
+            x: LANDSCAPE.x,
+            ..ZONE
+        };
+        assert_eq!(
+            any_ink(&canvas, zone_in_half),
+            0,
+            "nothing in the 17 mm zone"
+        );
+    }
+
+    #[test]
+    fn fr_132_no_recipient_still_draws_its_boxes() {
+        // FR-132: five empty boxes to fill by hand.
+        let canvas = drawn(LANDSCAPE, Some(ZONE), &PostcardSettings::default(), None);
+        let low = RectMm {
+            x: LANDSCAPE.x,
+            y: 60.0,
+            width: LANDSCAPE.width,
+            height: 25.0,
+        };
+        assert!(any_ink(&canvas, low) > 1000);
     }
 
     #[test]

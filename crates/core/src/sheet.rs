@@ -81,14 +81,8 @@ pub fn sheet_print(settings: &RenderSettings) -> PrintSize {
     if postcard.enabled {
         match postcard.card {
             crate::settings::PostcardDestination::Japan => return PrintSize::HAGAKI,
-            // A Korean card is a 4 × 6 in print, or the square 4 × 4 (FR-132).
-            crate::settings::PostcardDestination::Korea => {
-                return if postcard.shape() == crate::settings::PostcardOrientation::Square {
-                    PrintSize::KR_4X4
-                } else {
-                    PrintSize::KR_4X6
-                };
-            }
+            // A Korean card is a 4 × 6 in print, landscape or upright (FR-132).
+            crate::settings::PostcardDestination::Korea => return PrintSize::KR_4X6,
             crate::settings::PostcardDestination::Europe => {}
         }
     }
@@ -348,14 +342,15 @@ pub fn layout(
         let korea = settings.postcard.card == crate::settings::PostcardDestination::Korea;
         // A Japanese or Korean card with a bordered photo keeps a line for the message under
         // it (boards A and K1), above Korea Post's machine zone where that crosses the photo.
-        let zone = if korea && settings.postcard.postal_use {
+        let zone = if korea && settings.postcard.postal_use && side {
             crate::korea::MACHINE_ZONE_MM
         } else {
             0.0
         };
-        // A はがき always keeps it, a full-bleed photo stopping above it: Japan Post wants a
-        // message on the address side in its lower half (§23(4); owner, 2026-11-15).
-        let band = (japan || (korea && !settings.fill)).then(|| {
+        // Always kept, a full-bleed photo stopping above it: Japan Post wants a message on the
+        // address side in its lower half (§23(4); owner, 2026-11-15), and a Korean card's
+        // writing half has no room left for one.
+        let band = (japan || korea).then(|| {
             let band = if settings.fill {
                 HAGAKI_FILL_BAND_MM
             } else {
@@ -396,10 +391,17 @@ pub fn layout(
         let band = match (band, &cell) {
             (Some(b), Some(placed)) => {
                 let top = placed.y + placed.area.1 as f32;
+                let x = b.x + HAGAKI_BAND_EDGE_MM;
+                // Short of a zone down the right edge (an upright Korean card).
+                let right = postal
+                    .filter(|_| !foot)
+                    .map_or(b.x + b.width - HAGAKI_BAND_EDGE_MM, |z| {
+                        z.x - HAGAKI_BAND_EDGE_MM
+                    });
                 Some(RectMm {
-                    x: b.x + HAGAKI_BAND_EDGE_MM,
+                    x,
                     y: top,
-                    width: b.width - 2.0 * HAGAKI_BAND_EDGE_MM,
+                    width: right - x,
                     height: b.y + b.height - top,
                 })
             }
@@ -441,9 +443,10 @@ fn postal_zone(
     japan: bool,
 ) -> (Option<RectMm>, bool) {
     let korea = settings.postcard.card == crate::settings::PostcardDestination::Korea;
-    // Korea Post's machine zone is 17 mm at the card's foot (FR-132), whatever its shape.
+    // Korea Post's machine zone is 17 mm at the card's foot (FR-132), down the right edge of an
+    // upright card as the European one's (its foot when the card is read turned).
     let (strip, foot) = if korea {
-        (crate::korea::MACHINE_ZONE_MM, true)
+        (crate::korea::MACHINE_ZONE_MM, side)
     } else {
         (crate::postcard::CODE_ZONE_MM, side)
     };
@@ -480,10 +483,17 @@ fn postcard_paper(settings: &RenderSettings) -> std::borrow::Cow<'_, RenderSetti
 }
 
 /// The post's zone of a card made to be posted (FR-073, *Postal use*): its line, and its
-/// words repeated under it.
-fn draw_postal_zone(canvas: &mut RgbImage, sheet: &SheetLayout, density: f32, paper: BorderColor) {
-    if let Some(zone) = sheet.postal {
-        crate::postcard::draw_postal(canvas, density, zone, paper);
+/// words repeated under it; Korea Post's left blank, where its machines print their barcode
+/// (the Korea Post review, 2026-11-15).
+fn draw_postal_zone(
+    canvas: &mut RgbImage,
+    sheet: &SheetLayout,
+    density: f32,
+    settings: &RenderSettings,
+) {
+    let korea = settings.collage.postcard.card == crate::settings::PostcardDestination::Korea;
+    if let Some(zone) = sheet.postal.filter(|_| !korea) {
+        crate::postcard::draw_postal(canvas, density, zone, settings.border_color);
     }
 }
 
@@ -816,7 +826,7 @@ pub fn render_sheet_with(
         sources[0].and_then(|s| s.postcard),
         card_font,
     );
-    draw_postal_zone(&mut canvas, &sheet, density, settings.border_color);
+    draw_postal_zone(&mut canvas, &sheet, density, settings);
     // A sheet with one photo has nothing to cut apart, and filled halves meet at an edge
     // that needs no line.
     let collage = &settings.collage;
@@ -849,12 +859,6 @@ fn draw_card(
     card_font: Option<&ab_glyph::FontArc>,
 ) {
     let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
-    // No band under a full-bleed Korean photo: the card sets its message on the writing half.
-    let message_here = sheet
-        .band
-        .is_none()
-        .then(|| text.map(|t| t.message.as_str()))
-        .flatten();
     if let Some(card) = sheet.card {
         if japan && !sheet.side_by_side {
             crate::hagaki::draw_upright(
@@ -877,8 +881,6 @@ fn draw_card(
                     text,
                     paper: settings.border_color,
                     zone: sheet.postal,
-                    // A landscape card whose photo fills its half: the message on this one.
-                    message: message_here,
                 },
             );
         } else if japan {
@@ -981,7 +983,7 @@ fn sheet_credit(
     // naming the Japanese pages (PRD FR-130).
     // A 우편엽서's 우표 box is at its top right: under it, right-aligned, the Korean pages.
     if let (Some(card), crate::settings::PostcardDestination::Korea) = (sheet.card, card_of) {
-        let stamp = crate::korea::stamp_box(card);
+        let stamp = crate::korea::stamp_box(crate::korea::writing_area(card, sheet.postal));
         let spot = Place {
             area: BoxF {
                 x: (stamp.x - 12.0) * density,
@@ -2141,6 +2143,72 @@ mod tests {
     }
 
     #[test]
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss
+    )]
+    fn fr_132_korea_posts_machine_zone_is_left_blank() {
+        // Korea Post prints its barcode there: no words, no rule (the Korea Post review).
+        use crate::settings::{PostcardDestination, PostcardOrientation, PostcardSettings};
+        for orientation in [
+            PostcardOrientation::Landscape,
+            PostcardOrientation::Portrait,
+        ] {
+            let mut settings = RenderSettings::default();
+            settings.collage.postcard = PostcardSettings {
+                enabled: true,
+                card: PostcardDestination::Korea,
+                orientation,
+                ..PostcardSettings::default()
+            };
+            let image = RgbImage::from_raw(300, 200, vec![90; 300 * 200 * 3])
+                .unwrap_or_else(|| RgbImage::new(1, 1));
+            let source = CellSource {
+                image: &image,
+                capture: None,
+                crop: None,
+                straighten: 0.0,
+                place: None,
+                stamp: None,
+                caption: None,
+                look: None,
+                postcard: None,
+            };
+            let print = sheet_print(&settings);
+            let Ok(out) = render_sheet(
+                &settings,
+                print,
+                [Some(source), None],
+                false,
+                Some(900),
+                None,
+            ) else {
+                panic!("the sheet renders");
+            };
+            let sheet = layout(print, [Some((300, 200)), None], false, &settings.collage);
+            let Some(zone) = sheet.postal else {
+                panic!("a Korean card made to be posted keeps its zone");
+            };
+            let k = out.width as f32 / sheet.width;
+            let (x0, y0) = (((zone.x + 0.5) * k) as u32, ((zone.y + 0.5) * k) as u32);
+            let (x1, y1) = (
+                ((zone.x + zone.width - 0.5) * k) as u32,
+                ((zone.y + zone.height - 0.5) * k) as u32,
+            );
+            for y in y0..y1.min(out.height) {
+                for x in x0..x1.min(out.width) {
+                    let i = ((y * out.width + x) * 3) as usize;
+                    assert!(
+                        out.data[i..i + 3].iter().all(|c| *c > 245),
+                        "ink at {x},{y} ({orientation:?})"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
     fn fr_130_a_full_bleed_photo_keeps_to_the_lower_half() {
         // §23(4): the address side's upper half is the address's; the photo starts at 74 mm.
         use crate::settings::{PostcardDestination, PostcardOrientation, PostcardSettings};
@@ -2227,13 +2295,25 @@ mod tests {
                 assert!(full.y > 74.0 && full.y + full.height <= 148.01, "{full:?}");
             }
         }
-        for orientation in [PostcardOrientation::Landscape, PostcardOrientation::Square] {
+        // Landscape, the band above the 17 mm zone at the foot; upright, the zone down the
+        // right edge, the band clear of it.
+        for orientation in [
+            PostcardOrientation::Landscape,
+            PostcardOrientation::Portrait,
+        ] {
             let (Some(b), Some(zone)) = band(PostcardDestination::Korea, orientation, false) else {
                 panic!("a Korean card's band and machine zone");
             };
+            let clear = b.y + b.height <= zone.y + 0.01 || b.x + b.width <= zone.x + 0.01;
             assert!(
-                b.y + b.height <= zone.y + 0.01,
-                "the band stays above the 17 mm zone"
+                clear,
+                "the band stays out of the 17 mm zone: {b:?} {zone:?}"
+            );
+            // A full-bleed photo keeps one too: the writing half has no room for the message.
+            assert!(
+                band(PostcardDestination::Korea, orientation, true)
+                    .0
+                    .is_some()
             );
         }
         assert!(

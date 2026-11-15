@@ -2091,12 +2091,7 @@ export type PostcardInk = "auto" |
  *  Which way a postcard sheet is held: landscape puts the photo on the left half, portrait
  *  on the bottom half; the stamp box is always at the top right (FR-073).
  */
-export type PostcardOrientation = "landscape" | "portrait" | 
-/**
- *  A Korean card on a square print (4 × 4 in, FR-132): the writing on the top half, the
- *  photo below. Korea Post takes it as a non-standard letter.
- */
-"square";
+export type PostcardOrientation = "landscape" | "portrait";
 
 /**  The two parts of a postcard's text (FR-073). */
 export type PostcardPart = "message" | "address";
