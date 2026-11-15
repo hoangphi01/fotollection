@@ -118,6 +118,8 @@ pub struct KoreaSpec<'a> {
     /// The machine zone, when it crosses the writing half (a landscape card's foot, an upright
     /// card's right edge).
     pub zone: Option<RectMm>,
+    /// The message for the card's 통신란, when it does not fit the line under the photo.
+    pub message: Option<&'a str>,
 }
 
 /// The two faces in use: the chosen one, and Nanum Pen for what it lacks.
@@ -379,9 +381,9 @@ fn fit_em(faces: (&VerticalFace, &VerticalFace), text: &str, em: f32, width: f32
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss
 )]
-pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
+pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> crate::postcard::Fit {
     let Some(faces) = faces(spec.settings) else {
-        return false;
+        return crate::postcard::Fit::default();
     };
     let card = writing_area(spec.card, spec.zone);
     let settings = spec.settings;
@@ -430,6 +432,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
 
     // What the recipient keeps clear of: the stamp box and the sender.
     let mut clear_top = stamp.y + stamp.height + 4.0;
+    let mut sender_drawn = false;
     // The sender at the top left, left of the stamp box: the label, the name, the address,
     // each over a dotted rule, then its five boxes.
     if let Some(from) = settings
@@ -499,6 +502,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
             y += KOREA_SENDER_BOXES.box_mm.1;
         }
         clear_top = clear_top.max(y + 3.0);
+        sender_drawn = true;
     }
 
     // The recipient at the bottom right, its boxes 4 mm clear above the machine zone and 20 mm
@@ -531,6 +535,25 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
     }
     let block = head + row_h * rows.len() as f32 + boxes_h;
     let mut y = limit - BOXES_CLEAR_MM - block;
+    // The 통신란 between the sender (or the stamp box) and the recipient, across, 5 mm clear of
+    // both (owner, 2026-11-15).
+    // With no sender, its place beside the stamp box is the box's.
+    let rect = if sender_drawn {
+        RectMm {
+            x: card.x + SENDER_LEFT_MM,
+            y: clear_top + 1.0,
+            width: card.x + card.width - EDGE_MM - (card.x + SENDER_LEFT_MM),
+            height: (y - BOX_CLEAR_MM - (clear_top + 1.0)).max(0.0),
+        }
+    } else {
+        RectMm {
+            x: card.x + SENDER_LEFT_MM,
+            y: card.y + SENDER_TOP_MM,
+            width: (stamp.x - BOX_CLEAR_MM - (card.x + SENDER_LEFT_MM)).max(0.0),
+            height: (y - BOX_CLEAR_MM - (card.y + SENDER_TOP_MM)).max(0.0),
+        }
+    };
+    let message_cut = message_box(canvas, faces, density, rect, spec);
     line(
         Some(canvas),
         faces,
@@ -576,7 +599,64 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
         let by = y + BOXES_GAP_MM - RECIPIENT_GAP_MM;
         draw_boxes(canvas, density, faces, bx, by, &KOREA_BOXES, &to.code, ink);
     }
-    cut
+    crate::postcard::Fit {
+        message_cut,
+        address_cut: cut,
+    }
+}
+
+/// The 통신란: 5 mm clear of the sender and the recipient; its text the message's size.
+const BOX_CLEAR_MM: f32 = 5.0;
+
+/// Draws the 통신란 in `rect` and the message in it; whether some was left out.
+fn message_box(
+    canvas: &mut RgbImage,
+    faces: (&VerticalFace, &VerticalFace),
+    density: f32,
+    rect: RectMm,
+    spec: &KoreaSpec<'_>,
+) -> bool {
+    let em = crate::settings::postcard_text_mm(spec.settings.text_size) * MESSAGE_SCALE * 0.85;
+    let step = em * 1.5;
+    let rows = crate::postcard::draw_message_box(canvas, density, rect, step, false, spec.paper);
+    let Some(message) = spec.message.map(str::trim).filter(|m| !m.is_empty()) else {
+        return false;
+    };
+    let Some(first) = rows.first() else {
+        return true;
+    };
+    let mm = |v: f32| v * density;
+    let lines: Vec<String> = message
+        .lines()
+        .flat_map(|p| wrap(faces, p, mm(em), mm(first.width - 1.0)))
+        .collect();
+    let ink = spec.settings.ink.rgb(spec.paper);
+    for (row, text) in rows.iter().zip(&lines) {
+        line(
+            Some(canvas),
+            faces,
+            text,
+            mm(em),
+            mm(row.x + 0.5),
+            mm(row.y + row.height - em * 1.1),
+            ink,
+        );
+    }
+    lines.len() > rows.len()
+}
+
+/// Whether `message` fits the one line under the photo (`band`): one line as typed, no wider.
+pub fn message_fits_band(band: RectMm, message: &str, settings: &PostcardSettings) -> bool {
+    let Some(faces) = faces(settings) else {
+        return false;
+    };
+    let mut lines = message.lines().map(str::trim).filter(|l| !l.is_empty());
+    let (Some(first), None) = (lines.next(), lines.next()) else {
+        return message.trim().is_empty();
+    };
+    // Measured at 10 px a millimetre.
+    let em = crate::settings::postcard_text_mm(settings.text_size) * MESSAGE_SCALE * 10.0;
+    line(None, faces, first, em, 0.0, 0.0, [0; 3]) <= band.width * 10.0
 }
 
 /// The message under a bordered photo (board K1): one line from the photo's left, 19/17 em,
@@ -671,6 +751,7 @@ mod tests {
                 text,
                 paper: BorderColor::White,
                 zone,
+                message: None,
             },
         );
         canvas
@@ -752,7 +833,11 @@ mod tests {
             &PostcardSettings::default(),
             Some(&seoul()),
         );
-        assert_eq!(inked(&off, corner), 0);
+        // No sender's text there (its place holds the empty 통신란's grey lines).
+        let text_ink = |c: &RgbImage| {
+            crate::hagaki::tests::runs(c, corner, false, |p| p.iter().all(|v| *v < 120)).len()
+        };
+        assert_eq!(text_ink(&off), 0);
         let mut from = Address::new(Country::Kr);
         from.region = "부산광역시".into();
         from.city = "해운대구".into();
@@ -770,7 +855,7 @@ mod tests {
             },
             Some(&seoul()),
         );
-        assert!(inked(&on, corner) > 500);
+        assert!(inked(&on, corner) > 500 && text_ink(&on) > 0);
     }
 
     #[test]
@@ -1007,9 +1092,10 @@ mod tests {
             text: Some(&text),
             paper: BorderColor::White,
             zone: Some(ZONE),
+            message: None,
         };
         let cut = draw(&mut canvas, DENSITY, &spec);
-        assert!(cut, "the rows left out are reported");
+        assert!(cut.address_cut, "the rows left out are reported");
         let photo_half = RectMm {
             x: 0.0,
             y: 0.0,

@@ -104,6 +104,8 @@ pub struct HagakiSpec<'a> {
     pub settings: &'a PostcardSettings,
     pub text: Option<&'a PostcardText>,
     pub paper: BorderColor,
+    /// The message for the card's 通信欄, when it does not fit the line under the photo.
+    pub message: Option<&'a str>,
 }
 
 /// The stamp box of a はがき whose writing half is `card`.
@@ -296,9 +298,13 @@ fn ink(settings: &PostcardSettings, paper: BorderColor) -> [u8; 3] {
 /// Draws a はがき's upright writing half onto `canvas`, `density` pixels per millimetre, as
 /// boards A and B within Japan Post's rules; whether a column was left out (the warning).
 #[allow(clippy::too_many_lines)]
-pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) -> bool {
+pub fn draw_upright(
+    canvas: &mut RgbImage,
+    density: f32,
+    spec: &HagakiSpec<'_>,
+) -> crate::postcard::Fit {
     let Some(face) = vertical::KLEE.as_ref() else {
-        return false;
+        return crate::postcard::Fit::default();
     };
     let mut cut = false;
     let card = spec.card;
@@ -450,10 +456,13 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
         }
     }
 
+    // What the recipient takes across the half, for the 通信欄 beside it.
+    let mut taken: Vec<(f32, f32)> = Vec::new();
     if let Some(to) = &to {
         if to.latin {
             let left = (sender_right + 2.0).max(card.x + card.width * 0.38);
             cut |= draw_latin(canvas, face, density, spec, to, left, top, text_ink);
+            taken.push((left, right));
         } else {
             let set = vertical::set(
                 face,
@@ -467,6 +476,9 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
                 1,
             );
             cut |= set.cut;
+            #[allow(clippy::cast_precision_loss)]
+            let address_left = right - set.columns as f32 * em_address * COLUMN_STEP;
+            taken.push((address_left, right));
             vertical::draw(canvas, face, &set, mm(em_address), text_ink);
             let name = to.name.trim();
             if !name.is_empty() {
@@ -487,11 +499,116 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
                     mm(bottom - name_top),
                 );
                 cut |= set.cut;
+                taken.push((centre - name_em / 2.0, centre + name_em / 2.0));
                 vertical::draw(canvas, face, &set, mm(name_em), text_ink);
             }
         }
     }
-    cut
+
+    // The 通信欄 in the widest free stretch between the sender (or the postmark zone) and the
+    // recipient, 5 mm clear of each, its columns top to bottom (§23(4) ただし書).
+    taken.sort_by(|a, b| a.0.total_cmp(&b.0));
+    let mut from = sender_right.max(card.x + POSTMARK_MM.0) + BOX_CLEAR_MM;
+    let mut widest = (0.0, 0.0);
+    for &(l, r) in taken.iter().chain(std::iter::once(&(right, right))) {
+        if l - BOX_CLEAR_MM - from > widest.1 - widest.0 {
+            widest = (from, l - BOX_CLEAR_MM);
+        }
+        from = from.max(r + BOX_CLEAR_MM);
+    }
+    let rect = RectMm {
+        x: widest.0,
+        y: card.y + ADDRESS_TOP_MM - 1.0,
+        width: (widest.1 - widest.0).max(0.0),
+        height: card.y + card.height - 2.0 - (card.y + ADDRESS_TOP_MM - 1.0),
+    };
+    // Top to bottom for Japanese; a message with Latin letters (Vietnamese, English) reads
+    // across, as a column of single letters would not.
+    let latin = spec.message.is_some_and(|m| {
+        m.chars()
+            .any(|c| c.is_ascii_alphabetic() || ('\u{00C0}'..='\u{1EFF}').contains(&c))
+    });
+    let message_cut = message_box(canvas, face, density, rect, spec, !latin);
+    crate::postcard::Fit {
+        message_cut,
+        address_cut: cut,
+    }
+}
+
+/// The 通信欄: 5 mm clear of the address, the name and the sender (Japan Post's "clearly
+/// apart", §23(4)); its text 14/17 of the address's em, a row 1.6 of that.
+const BOX_CLEAR_MM: f32 = 5.0;
+const BOX_STEP: f32 = 1.6;
+
+/// Draws the 通信欄 in `rect` and the message in it, across or top to bottom; whether some of
+/// the message was left out.
+fn message_box(
+    canvas: &mut RgbImage,
+    face: &VerticalFace,
+    density: f32,
+    rect: RectMm,
+    spec: &HagakiSpec<'_>,
+    vertical: bool,
+) -> bool {
+    let em = crate::settings::postcard_text_mm(spec.settings.text_size) * MESSAGE_SCALE;
+    let step = em * BOX_STEP;
+    let rows = crate::postcard::draw_message_box(canvas, density, rect, step, vertical, spec.paper);
+    let Some(message) = spec.message.map(str::trim).filter(|m| !m.is_empty()) else {
+        return false;
+    };
+    let Some(first) = rows.first() else {
+        return true;
+    };
+    let mm = |v: f32| v * density;
+    let ink = ink(spec.settings, spec.paper);
+    if vertical {
+        let set = vertical::set(
+            face,
+            message,
+            mm(em),
+            mm(first.x + first.width),
+            mm(first.y + 0.5),
+            mm(first.height - 0.5),
+            mm(step),
+            rows.len(),
+            0,
+        );
+        vertical::draw(canvas, face, &set, mm(em), ink);
+        return set.cut;
+    }
+    let lines: Vec<String> = message
+        .lines()
+        .flat_map(|p| vertical::wrap_across(face, p, mm(em), mm(first.width - 1.0), 0.0))
+        .collect();
+    for (row, line) in rows.iter().zip(&lines) {
+        let (set, _) = vertical::across(
+            face,
+            line,
+            mm(em),
+            mm(row.x + 0.5),
+            mm(row.y + row.height - em * 1.2),
+            0.0,
+        );
+        vertical::draw(canvas, face, &set, mm(em), ink);
+    }
+    lines.len() > rows.len()
+}
+
+/// Whether `message` fits the one line under the photo (`band`, from the photo's foot): one
+/// line as typed, no wider than the band.
+pub fn message_fits_band(band: RectMm, message: &str, settings: &PostcardSettings) -> bool {
+    let Some(face) = vertical::KLEE.as_ref() else {
+        return false;
+    };
+    let mut lines = message.lines().map(str::trim).filter(|l| !l.is_empty());
+    let (Some(line), None) = (lines.next(), lines.next()) else {
+        return message.trim().is_empty();
+    };
+    // Measured at 10 px a millimetre: one would round the face too coarsely.
+    let px = |mm: f32| mm * 10.0;
+    let em = crate::settings::postcard_text_mm(settings.text_size) * MESSAGE_SCALE;
+    let (_, w) = vertical::across(face, line, px(em), 0.0, 0.0, 0.0);
+    w <= px(band.width - 2.0 * MESSAGE_IN_MM)
 }
 
 /// A typed code's digits, black, one centred in each box (別記1: the code written in the
@@ -650,9 +767,13 @@ fn draw_lines_across(
 /// top right, the seven boxes down the right edge with 「郵便はがき」 right of them, the
 /// address across in two lines, the name under it with 様, the sender lower down.
 #[allow(clippy::too_many_lines)]
-pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) -> bool {
+pub fn draw_landscape(
+    canvas: &mut RgbImage,
+    density: f32,
+    spec: &HagakiSpec<'_>,
+) -> crate::postcard::Fit {
     let Some(face) = vertical::KLEE.as_ref() else {
-        return false;
+        return crate::postcard::Fit::default();
     };
     let card = spec.card;
     let settings = spec.settings;
@@ -700,6 +821,8 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
     let width = bx - 0.5 - L_BOXES_CLEAR_MM - left;
     let bottom = card.y + L_TEXT_BOTTOM_MM;
     let a_em = em * L_ADDRESS_SCALE;
+    // Where the recipient ends, for the 通信欄 under it: at least the name's room.
+    let mut text_bottom = card.y + L_NAME_TOP_MM + em * L_NAME_SCALE * 1.2;
     if let Some(to) = &to {
         let draw_at = |canvas: &mut RgbImage, text: &str, indent: f32, top: f32| {
             draw_lines_across(
@@ -761,7 +884,9 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
                 NAME_TRACK,
             );
             vertical::draw(canvas, face, &set, mm(name_em), text_ink);
+            text_bottom = text_bottom.max(name_top + name_em * 1.2);
         }
+        text_bottom = text_bottom.max(y);
     }
 
     // The sender's lines, each with its em, its indent in ems and whether it sits on the
@@ -806,6 +931,20 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
     let lead = (L_LINE - 1.0) / 2.0;
     let height: f32 = lines.iter().map(|l| l.1 * L_LINE).sum();
     let mut line_top = (card.y + L_SENDER_TOP_MM - lead * s_em).min(bottom - height);
+    // The 通信欄 between the recipient and the sender, across; with no sender to the card's
+    // edge less 5 mm, since the 85 mm line bounds the address's area, not a message apart.
+    let box_bottom = if lines.is_empty() {
+        card.y + card.height - BOX_CLEAR_MM
+    } else {
+        line_top - BOX_CLEAR_MM
+    };
+    let rect = RectMm {
+        x: left,
+        y: text_bottom + BOX_CLEAR_MM,
+        width,
+        height: (box_bottom - text_bottom - BOX_CLEAR_MM).max(0.0),
+    };
+    let message_cut = message_box(canvas, face, density, rect, spec, false);
 
     let sender_width = L_SENDER_WIDTH_MM.min(width);
     for (text, size, indent, right) in &lines {
@@ -831,8 +970,11 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
             line_top = next / density - lead * size;
         }
     }
-    // Its lines wrap and push down; nothing is left out.
-    false
+    // The address and sender wrap and push down; nothing of them is left out.
+    crate::postcard::Fit {
+        message_cut,
+        address_cut: false,
+    }
 }
 
 /// The recipient in Latin letters, across from `left` (romaji reads across): a long name set
@@ -972,6 +1114,8 @@ pub(crate) mod tests {
                 settings,
                 text,
                 paper: BorderColor::White,
+                // A message the test types goes to the 通信欄, as on a card whose line it overflows.
+                message: text.map(|t| t.message.as_str()).filter(|m| !m.is_empty()),
             },
         );
         canvas
@@ -1198,6 +1342,8 @@ pub(crate) mod tests {
                 settings,
                 text,
                 paper: BorderColor::White,
+                // A message the test types goes to the 通信欄, as on a card whose line it overflows.
+                message: text.map(|t| t.message.as_str()).filter(|m| !m.is_empty()),
             },
         );
         (canvas, half)
@@ -1285,9 +1431,11 @@ pub(crate) mod tests {
         let empty = PostcardSettings::default();
         let upright_zone = zone(0.0, 0.0, POSTMARK_MM.0, POSTMARK_MM.1);
         let landscape_zone = zone(74.0 - POSTMARK_MM.1, 0.0, POSTMARK_MM.1, POSTMARK_MM.0);
-        for settings in [board_sender("1200024"), latin] {
+        for settings in [board_sender("1200024"), latin, PostcardSettings::default()] {
             for code in ["2480024", ""] {
-                let text = board_text(code);
+                // A long message in the 通信欄 keeps out of the zone too.
+                let mut text = board_text(code);
+                text.message = "鎌倉の紅葉を送ります。お元気で。また一緒に歩きましょう。".repeat(3);
                 let card = drawn(&settings, Some(&text));
                 assert_eq!(
                     inked(&card, upright_zone, |_| true),

@@ -623,6 +623,80 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
     }
 }
 
+/// The message box of a Japanese or Korean card, 通信欄 / 통신란 (owner, 2026-11-15): a thin
+/// frame and writing lines as the European card's, a row every `step` millimetres, across, or
+/// in columns from the right for text set top to bottom. Japan Post lets a message stand
+/// outside the lower half when it is clearly apart from the address (内国郵便約款 §23(4)
+/// ただし書). Each row's rectangle, where its text goes; none, and nothing drawn, when `rect`
+/// holds fewer than two.
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::cast_precision_loss
+)]
+pub fn draw_message_box(
+    canvas: &mut RgbImage,
+    density: f32,
+    rect: RectMm,
+    step: f32,
+    vertical: bool,
+    paper: BorderColor,
+) -> Vec<RectMm> {
+    const PAD_MM: f32 = 1.5;
+    let (outline, rule) = inks(paper);
+    let depth = if vertical { rect.width } else { rect.height };
+    let count = ((depth - 2.0 * PAD_MM) / step).floor().max(0.0) as usize;
+    if count < 2 {
+        return Vec::new();
+    }
+    let px = |mm: f32| (mm * density).round().max(0.0) as u32;
+    let thick = (LINE_MM * density).round().max(1.0) as u32;
+    // The frame.
+    for (x, y, w, h) in [
+        (rect.x, rect.y, rect.width, 0.0),
+        (rect.x, rect.y + rect.height, rect.width, 0.0),
+        (rect.x, rect.y, 0.0, rect.height),
+        (rect.x + rect.width, rect.y, 0.0, rect.height),
+    ] {
+        let (w, h) = (px(w).max(thick), px(h).max(thick));
+        crate::sheet::fill_rect(canvas, px(x), px(y), w, h, outline);
+    }
+    let mut rows = Vec::with_capacity(count);
+    for k in 0..count {
+        let at = PAD_MM + k as f32 * step;
+        let row = if vertical {
+            RectMm {
+                x: rect.x + rect.width - at - step,
+                y: rect.y + PAD_MM,
+                width: step,
+                height: rect.height - 2.0 * PAD_MM,
+            }
+        } else {
+            RectMm {
+                x: rect.x + PAD_MM,
+                y: rect.y + at,
+                width: rect.width - 2.0 * PAD_MM,
+                height: step,
+            }
+        };
+        // The writing line: under a row, or left of a column.
+        if vertical {
+            crate::sheet::fill_rect(canvas, px(row.x), px(row.y), thick, px(row.height), rule);
+        } else {
+            crate::sheet::fill_rect(
+                canvas,
+                px(row.x),
+                px(row.y + step),
+                px(row.width),
+                thick,
+                rule,
+            );
+        }
+        rows.push(row);
+    }
+    rows
+}
+
 /// The stamp box, dashed as on a postcard, with STAMP in its middle.
 fn draw_stamp_box(canvas: &mut RgbImage, density: f32, s: RectMm, outline: [u8; 3]) {
     draw_dashed_box(canvas, density, s, outline);

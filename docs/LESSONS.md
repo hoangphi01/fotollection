@@ -106,6 +106,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - What passes through a service (the post, a kiosk) follows that service's layout documents, and the real thing is tried once. Kept by: `fr_073_the_posts_coding_zone_stays_free`.
 - A board for such a layout is checked against the service's figures before it is chosen; a reviewer who knows only the rules reads the render. Kept by: `fr_130_nothing_but_the_stamp_in_the_postmark_zone`.
+- A rule is read in full from its source, provisos included, before it constrains a layout. Kept by: no machine check yet.
 - Every change is checked in Collage mode too: two photos a sheet, each with its own edits, no pick, postcards. Kept by: no machine check yet.
 - A fit check counts only what prints, tested on text as the field sends it; ink is measured from the outline. Kept by: no machine check yet.
 
@@ -117,6 +118,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### A rule read without its proviso emptied half the card (FR-130, FR-132)
+
+- **Area:** print-post, spec-request
+- **Seen:** after the Japan Post review the message was kept to one line under the photo, cut mid-word, while the address side's right half stood empty; the owner asked why.
+- **Why:** §23(4) was read as "the message in the lower half" and its ただし書 ("unless clearly distinguishable from the address and code") was left out, so a flexible rule became a wall; the first reviewer's mention of the proviso was not followed up.
+- **Fix:** the rule read in full from the 約款 itself; a framed, ruled 通信欄 / 통신란 in the writing half's free space, 5 mm clear of the address, a message that fits one line still under the photo, a card too full keeping it there with the warning (`fr_130_a_long_message_goes_to_the_cards_message_box`).
+- **Rule:** read a rule in full from its source, provisos included, before it constrains a layout; where it allows a choice, give the user the room and keep the rule's purpose.
 
 ### A new card reused the old card's fit check and one sender for every country (FR-130, FR-132, FR-133)
 

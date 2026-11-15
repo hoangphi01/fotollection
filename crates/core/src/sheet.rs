@@ -566,62 +566,15 @@ pub fn postcard_fit(
     let postcard = &settings.collage.postcard;
     let japan = postcard.card == crate::settings::PostcardDestination::Japan;
     if japan || postcard.card == crate::settings::PostcardDestination::Korea {
-        const DENSITY: f32 = 3.0;
-        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-        let (w, h) = (
-            (sheet.width * DENSITY) as u32 + 1,
-            (sheet.height * DENSITY) as u32 + 1,
-        );
-        let Some(mut canvas) = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize]) else {
-            return crate::postcard::Fit::default();
-        };
-        let paper = settings.border_color;
-        let address_cut = if japan {
-            let spec = crate::hagaki::HagakiSpec {
-                card,
-                settings: postcard,
-                text: Some(text),
-                paper,
-            };
-            if sheet.side_by_side {
-                crate::hagaki::draw_landscape(&mut canvas, DENSITY, &spec)
-            } else {
-                crate::hagaki::draw_upright(&mut canvas, DENSITY, &spec)
-            }
-        } else {
-            let spec = crate::korea::KoreaSpec {
-                card,
-                settings: postcard,
-                text: Some(text),
-                paper,
-                zone: sheet.postal,
-            };
-            crate::korea::draw(&mut canvas, DENSITY, &spec)
-        };
-        let message_cut = sheet.band.is_some_and(|band| {
-            if japan {
-                crate::hagaki::draw_message(
-                    &mut canvas,
-                    DENSITY,
-                    band,
-                    &text.message,
-                    postcard,
-                    paper,
-                )
-            } else {
-                crate::korea::draw_message(
-                    &mut canvas,
-                    DENSITY,
-                    band,
-                    &text.message,
-                    postcard,
-                    paper,
-                )
-            }
-        });
+        // The line under the photo takes a message that fits it, the box the rest; a message
+        // neither holds is cut under the photo.
+        let (under, in_box) = message_places(&sheet, settings, Some(text));
+        let fit = card_fit(&sheet, settings, Some(text), in_box).unwrap_or_default();
+        let cut_under =
+            under.is_some_and(|m| sheet.band.is_some_and(|b| !fits_band(postcard, b, m)));
         return crate::postcard::Fit {
-            message_cut,
-            address_cut,
+            message_cut: fit.message_cut || cut_under,
+            address_cut: fit.address_cut,
         };
     }
     crate::postcard::fit(&crate::postcard::CardSpec {
@@ -923,6 +876,88 @@ pub fn render_sheet_with(
     Ok(canvas)
 }
 
+/// Where a Japanese or Korean card's message goes (owner, 2026-11-15): the line under the photo
+/// when it fits there, else the card's 通信欄 / 통신란 on the writing half when that holds it,
+/// else the line under the photo again, cut (the panel says so); (under the photo, in the box).
+fn message_places<'a>(
+    sheet: &SheetLayout,
+    settings: &RenderSettings,
+    text: Option<&'a crate::library::PostcardText>,
+) -> (Option<&'a str>, Option<&'a str>) {
+    let postcard = &settings.collage.postcard;
+    let Some(message) = text
+        .map(|t| t.message.as_str())
+        .filter(|m| !m.trim().is_empty())
+    else {
+        return (None, None);
+    };
+    if sheet
+        .band
+        .is_some_and(|band| fits_band(postcard, band, message))
+    {
+        return (Some(message), None);
+    }
+    match card_fit(sheet, settings, text, Some(message)) {
+        Some(fit) if !fit.message_cut => (None, Some(message)),
+        _ if sheet.band.is_some() => (Some(message), None),
+        _ => (None, Some(message)),
+    }
+}
+
+/// Whether `message` fits the line under the photo, in the card's face.
+fn fits_band(postcard: &crate::settings::PostcardSettings, band: RectMm, message: &str) -> bool {
+    match postcard.card {
+        crate::settings::PostcardDestination::Korea => {
+            crate::korea::message_fits_band(band, message, postcard)
+        }
+        _ => crate::hagaki::message_fits_band(band, message, postcard),
+    }
+}
+
+/// A Japanese or Korean card drawn small, `in_box` in its message box: what it leaves out.
+fn card_fit(
+    sheet: &SheetLayout,
+    settings: &RenderSettings,
+    text: Option<&crate::library::PostcardText>,
+    in_box: Option<&str>,
+) -> Option<crate::postcard::Fit> {
+    const DENSITY: f32 = 3.0;
+    let card = sheet.card?;
+    let postcard = &settings.collage.postcard;
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let (w, h) = (
+        (sheet.width * DENSITY) as u32 + 1,
+        (sheet.height * DENSITY) as u32 + 1,
+    );
+    let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])?;
+    let paper = settings.border_color;
+    let fit = if postcard.card == crate::settings::PostcardDestination::Korea {
+        let spec = crate::korea::KoreaSpec {
+            card,
+            settings: postcard,
+            text,
+            paper,
+            zone: sheet.postal,
+            message: in_box,
+        };
+        crate::korea::draw(&mut canvas, DENSITY, &spec)
+    } else {
+        let spec = crate::hagaki::HagakiSpec {
+            card,
+            settings: postcard,
+            text,
+            paper,
+            message: in_box,
+        };
+        if sheet.side_by_side {
+            crate::hagaki::draw_landscape(&mut canvas, DENSITY, &spec)
+        } else {
+            crate::hagaki::draw_upright(&mut canvas, DENSITY, &spec)
+        }
+    };
+    Some(fit)
+}
+
 /// A postcard sheet's writing half: a はがき's upright side (FR-130) or the European card
 /// (FR-073), and an upright はがき's message band.
 fn draw_card(
@@ -934,6 +969,7 @@ fn draw_card(
     card_font: Option<&ab_glyph::FontArc>,
 ) {
     let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
+    let (under_photo, in_box) = message_places(sheet, settings, text);
     if let Some(card) = sheet.card {
         if japan && !sheet.side_by_side {
             crate::hagaki::draw_upright(
@@ -944,6 +980,7 @@ fn draw_card(
                     settings: &settings.collage.postcard,
                     text,
                     paper: settings.border_color,
+                    message: in_box,
                 },
             );
         } else if settings.collage.postcard.card == crate::settings::PostcardDestination::Korea {
@@ -956,6 +993,7 @@ fn draw_card(
                     text,
                     paper: settings.border_color,
                     zone: sheet.postal,
+                    message: in_box,
                 },
             );
         } else if japan {
@@ -967,6 +1005,7 @@ fn draw_card(
                     settings: &settings.collage.postcard,
                     text,
                     paper: settings.border_color,
+                    message: in_box,
                 },
             );
         } else {
@@ -985,14 +1024,14 @@ fn draw_card(
         }
     }
     // The message's band under a bordered photo, on a Japanese or Korean card.
-    if let (Some(band), Some(text)) = (sheet.band, text) {
+    if let (Some(band), Some(message)) = (sheet.band, under_photo) {
         let postcard = &settings.collage.postcard;
         if japan {
             crate::hagaki::draw_message(
                 canvas,
                 density,
                 band,
-                &text.message,
+                message,
                 postcard,
                 settings.border_color,
             );
@@ -1001,7 +1040,7 @@ fn draw_card(
                 canvas,
                 density,
                 band,
-                &text.message,
+                message,
                 postcard,
                 settings.border_color,
             );
@@ -2311,6 +2350,94 @@ mod tests {
     }
 
     #[test]
+    fn fr_130_a_long_message_goes_to_the_cards_message_box() {
+        // The owner's card (2026-11-15): "Chào Minh Hồng nhé. chúc Hồng có ngày mới thật vui"
+        // was cut on one line under the photo while the writing half stood empty; now a message
+        // that fits the line stays there, a longer one goes whole to the 通信欄 / 통신란.
+        use crate::addassist::{Address, Country};
+        use crate::settings::{PostcardDestination, PostcardOrientation, PostcardSettings};
+        let long = "Chào Minh Hồng nhé. chúc Hồng có ngày mới thật vui, hẹn gặp lại ở Kamakura!";
+        for (card, orientation) in [
+            (PostcardDestination::Japan, PostcardOrientation::Landscape),
+            (PostcardDestination::Japan, PostcardOrientation::Portrait),
+            (PostcardDestination::Korea, PostcardOrientation::Landscape),
+        ] {
+            let mut settings = RenderSettings::default();
+            settings.collage.postcard = PostcardSettings {
+                enabled: true,
+                card,
+                orientation,
+                ..PostcardSettings::default()
+            };
+            let country = if card == PostcardDestination::Japan {
+                Country::Jp
+            } else {
+                Country::Kr
+            };
+            let mut to = Address::new(country);
+            to.region = if country == Country::Jp {
+                "千葉県"
+            } else {
+                "서울특별시"
+            }
+            .into();
+            to.city = if country == Country::Jp {
+                "松戸市"
+            } else {
+                "종로구"
+            }
+            .into();
+            let text = crate::library::PostcardText {
+                message: long.into(),
+                address: String::new(),
+                recipients: vec![to],
+            };
+            let print = sheet_print(&settings);
+            let sheet = layout(print, [Some((1000, 1000)), None], false, &settings.collage);
+            let (under, in_box) = message_places(&sheet, &settings, Some(&text));
+            assert!(
+                under.is_none() && in_box.is_some(),
+                "{card:?} {orientation:?}"
+            );
+            let fit = postcard_fit(print, &settings, &text, None);
+            assert!(
+                !fit.message_cut,
+                "{card:?} {orientation:?}: the box holds it"
+            );
+            // A short one stays under the photo.
+            let short = crate::library::PostcardText {
+                message: "Hello!".into(),
+                ..text
+            };
+            let (under, in_box) = message_places(&sheet, &settings, Some(&short));
+            assert!(under.is_some() && in_box.is_none());
+            // A card too full for the box (a sender on an upright はがき) never loses the message:
+            // it goes under the photo, cut, and the panel says so.
+            if orientation == PostcardOrientation::Portrait {
+                let mut from = Address::new(country);
+                from.region = "東京都足立区千住関町".into();
+                from.line = "5-27 ロイヤルアパート3号室".into();
+                from.name = "東 京子".into();
+                let mut full = settings.clone();
+                full.collage.postcard.sender_on = true;
+                full.collage.postcard.senders = vec![from];
+                let mut named = short.clone();
+                named.message = long.into();
+                if let Some(to) = named.recipients.first_mut() {
+                    to.town = "松戸".into();
+                    to.line = "1117-1".into();
+                    to.name = "鎌倉花子".into();
+                }
+                let (under, in_box) = message_places(&sheet, &full, Some(&named));
+                if in_box.is_none() {
+                    assert!(under.is_some(), "the message stays on the card");
+                    assert!(postcard_fit(print, &full, &named, None).message_cut);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn fr_130_the_cut_warning_reads_the_card_that_prints() {
         // A Japanese or Korean card warns about its own message and address, never the European
         // one left in the record (the QA review, 2026-11-15).
@@ -2341,7 +2468,8 @@ mod tests {
             let print = sheet_print(&settings);
             let fit = postcard_fit(print, &settings, &text, None);
             assert!(!fit.message_cut && !fit.address_cut, "{card:?}: {fit:?}");
-            text.message = "First line.\nA second line the band has no room for.".into();
+            // More than the line under the photo and the 通信欄 together hold.
+            text.message = "A line of the message that will not fit. ".repeat(40);
             assert!(
                 postcard_fit(print, &settings, &text, None).message_cut,
                 "{card:?}"
