@@ -8,7 +8,7 @@
 
 use std::sync::LazyLock;
 
-use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
+use crate::glyph::{Font, FontArc, PxScale, ScaleFont};
 
 use crate::image::RgbImage;
 use crate::library::PostcardText;
@@ -106,7 +106,7 @@ fn face_px(face: &FontArc, px: f32) -> f32 {
 fn capital(face: &FontArc) -> f32 {
     let glyph = face
         .glyph_id('H')
-        .with_scale_and_position(PxScale::from(100.0), ab_glyph::point(0.0, 0.0));
+        .with_scale_and_position(PxScale::from(100.0), crate::glyph::point(0.0, 0.0));
     face.outline_glyph(glyph)
         .map_or(1.0, |o| (o.px_bounds().height() / 100.0).max(0.3))
 }
@@ -1576,7 +1576,7 @@ mod tests {
         const PX_PER_MM: f32 = 300.0;
         let glyph = face.glyph_id('l').with_scale_and_position(
             PxScale::from(size_mm * PX_PER_MM),
-            ab_glyph::point(0.0, 0.0),
+            crate::glyph::point(0.0, 0.0),
         );
         let Some(outline) = face.outline_glyph(glyph) else {
             return 0.0;

@@ -9,7 +9,7 @@
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-use ab_glyph::{Font, FontArc, GlyphId, PxScale, ScaleFont, point};
+use crate::glyph::{Font, FontArc, GlyphId, PxScale, ScaleFont, point};
 
 use crate::image::RgbImage;
 

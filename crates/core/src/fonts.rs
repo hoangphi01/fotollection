@@ -3,7 +3,7 @@
 //! Font files are untrusted input: magic bytes and a size cap are checked, and the file is
 //! parsed by the pure-Rust `ab_glyph`/`ttf-parser` before use (SECURITY.md §3).
 
-use ab_glyph::{Font, FontArc};
+use crate::glyph::{Font, FontArc};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 

@@ -69,6 +69,7 @@ crates/
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
+      glyph.rs             # the font layer every text is drawn through: faces, metrics, glyph coverage (FR-134)
       settings_store.rs  † # settings.json v18 (machine part by part, ADR-0048): load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 sources in memory (a quarter of the RAM, by bytes) and on disk as standard previews, prefetch, preview rendering (FR-007, FR-091)
       cancel.rs          † # CancellationToken

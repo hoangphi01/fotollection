@@ -4,7 +4,7 @@
 
 use std::sync::LazyLock;
 
-use ab_glyph::{Font, FontArc, FontRef, PxScale, ScaleFont, VariableFont};
+use crate::glyph::{Font, FontArc, FontRef, PxScale, ScaleFont, VariableFont};
 use fast_image_resize::images::{Image, ImageRef};
 use fast_image_resize::{FilterType, PixelType, ResizeAlg, ResizeOptions, Resizer};
 

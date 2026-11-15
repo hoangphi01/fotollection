@@ -2,7 +2,7 @@
 //! Text measuring and drawing shared by the stamp (`stamp`) and the info frame (`render`),
 //! plus ASCII folding for fonts and searches without accented letters.
 
-use ab_glyph::{Font, FontArc, PxScale, ScaleFont, point};
+use crate::glyph::{Font, FontArc, PxScale, ScaleFont, point};
 
 use crate::image::RgbImage;
 

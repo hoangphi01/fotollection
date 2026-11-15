@@ -1346,7 +1346,7 @@ pub(crate) mod tests {
 
     #[test]
     fn fr_130_every_character_printed_is_in_the_face() {
-        use ab_glyph::Font;
+        use crate::glyph::Font;
         // A typed line with marks, a code, 様 and 切手: no character falls to the empty glyph.
         let Some(face) = vertical::KLEE.as_ref() else {
             return;

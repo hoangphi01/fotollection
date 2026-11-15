@@ -594,7 +594,7 @@ pub fn postcard_fit(
     print: PrintSize,
     settings: &RenderSettings,
     text: &crate::library::PostcardText,
-    font: Option<&ab_glyph::FontArc>,
+    font: Option<&crate::glyph::FontArc>,
 ) -> crate::postcard::Fit {
     let sheet = layout(print, [Some((1000, 1000)), None], false, &settings.collage);
     let Some(card) = sheet.card else {
@@ -754,7 +754,7 @@ pub fn render_sheet(
     sources: [Option<CellSource<'_>>; 2],
     turned: bool,
     max_long_edge: Option<u32>,
-    card_font: Option<&ab_glyph::FontArc>,
+    card_font: Option<&crate::glyph::FontArc>,
 ) -> Result<RgbImage, RenderError> {
     render_sheet_with(
         settings,
@@ -802,7 +802,7 @@ pub fn render_sheet_with(
     sources: [Option<CellSource<'_>>; 2],
     turned: bool,
     max_long_edge: Option<u32>,
-    card_font: Option<&ab_glyph::FontArc>,
+    card_font: Option<&crate::glyph::FontArc>,
     marks: [CellMark; 2],
     credit: bool,
 ) -> Result<RgbImage, RenderError> {
@@ -1012,7 +1012,7 @@ fn draw_card(
     sheet: &SheetLayout,
     settings: &RenderSettings,
     text: Option<&crate::library::PostcardText>,
-    card_font: Option<&ab_glyph::FontArc>,
+    card_font: Option<&crate::glyph::FontArc>,
 ) {
     let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
     let (under_photo, in_box) = message_places(sheet, &settings.collage.postcard, text);

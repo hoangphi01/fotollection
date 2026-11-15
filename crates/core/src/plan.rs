@@ -805,7 +805,7 @@ fn frame_boxes(layout: &FrameLayout, request: &FrameRequest) -> Vec<crate::credi
             h: layout.logo_height,
         });
     }
-    let font: Option<&ab_glyph::FontArc> = match &request.font {
+    let font: Option<&crate::glyph::FontArc> = match &request.font {
         Some(f) => Some(&f.font),
         None => crate::render::regular(),
     };

@@ -10,7 +10,7 @@
 
 use std::sync::LazyLock;
 
-use ab_glyph::Font;
+use crate::glyph::Font;
 
 use crate::addassist::{Address, Country};
 use crate::image::RgbImage;

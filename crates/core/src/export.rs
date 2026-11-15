@@ -140,7 +140,7 @@ pub struct ExportOptions<'a> {
     /// the destination (or its group, or `Share/`).
     pub by_day: bool,
     /// The user's font for postcard text (FR-073, FR-042); `None` uses the bundled face.
-    pub postcard_font: Option<ab_glyph::FontArc>,
+    pub postcard_font: Option<crate::glyph::FontArc>,
     /// Subfolder, names, existing files, metadata and size limit (FR-009, FR-010, FR-104,
     /// FR-105).
     pub files: &'a ExportFiles,

@@ -6,7 +6,7 @@
 
 use std::sync::LazyLock;
 
-use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
+use crate::glyph::{Font, FontArc, PxScale, ScaleFont};
 
 use crate::image::RgbImage;
 use crate::plan::StampSpec;

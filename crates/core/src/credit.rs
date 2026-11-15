@@ -9,7 +9,7 @@
 //! paper it is a quiet grey; on the photo a half-clear white with a soft shadow under it.
 //! Where no place is free it is left out rather than drawn over something.
 
-use ab_glyph::{Font, FontArc, PxScale, ScaleFont, point};
+use crate::glyph::{Font, FontArc, PxScale, ScaleFont, point};
 
 use crate::image::RgbImage;
 use crate::settings::Corner;
