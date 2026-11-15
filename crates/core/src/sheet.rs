@@ -69,6 +69,8 @@ pub struct SheetLayout {
 
 /// The message band under a bordered photo on a Japanese or Korean card.
 const HAGAKI_BAND_MM: f32 = 8.0;
+/// The message's margin from the half's edges (boards A and K1: 20 px).
+const HAGAKI_BAND_EDGE_MM: f32 = 5.0;
 
 /// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
 /// size of its own until a photo gives it one; a Japanese postcard is always a はがき (FR-130).
@@ -378,15 +380,16 @@ pub fn layout(
             }
             placed
         });
-        // The message runs under its photo, wherever the photo ends (boards A and K1).
+        // The message runs under its photo, wherever the photo ends, across the half within
+        // its 5 mm border, however narrow the photo (boards A and K1).
         #[allow(clippy::cast_precision_loss)]
         let band = match (band, &cell) {
             (Some(b), Some(placed)) => {
                 let top = placed.y + placed.area.1 as f32;
                 Some(RectMm {
-                    x: placed.x,
+                    x: b.x + HAGAKI_BAND_EDGE_MM,
                     y: top,
-                    width: placed.area.0 as f32,
+                    width: b.width - 2.0 * HAGAKI_BAND_EDGE_MM,
                     height: b.y + b.height - top,
                 })
             }
@@ -2149,6 +2152,32 @@ mod tests {
             );
             (sheet.band, sheet.postal)
         };
+        // A portrait photo is narrow; its message still spans the half (the owner's render,
+        // 2026-11-15: 鎌倉の紅葉を送り, cut at the photo's width).
+        let mut settings = RenderSettings::default();
+        settings.collage.postcard = PostcardSettings {
+            enabled: true,
+            orientation: PostcardOrientation::Portrait,
+            card: PostcardDestination::Japan,
+            ..PostcardSettings::default()
+        };
+        let narrow = layout(
+            sheet_print(&settings),
+            [Some((1200, 1800)), None],
+            false,
+            &settings.collage,
+        );
+        let (Some(b), Some(photo)) = (narrow.band, narrow.cells[0]) else {
+            panic!("a bordered はがき has a band");
+        };
+        #[allow(clippy::cast_precision_loss)]
+        let photo_width = photo.area.0 as f32;
+        assert!(
+            b.width > photo_width + 10.0,
+            "{} against the photo's {photo_width}",
+            b.width
+        );
+        assert!((b.width - 90.0).abs() < 0.01);
         for orientation in [
             PostcardOrientation::Portrait,
             PostcardOrientation::Landscape,
