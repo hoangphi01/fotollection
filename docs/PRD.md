@@ -1367,6 +1367,7 @@ On the website, once it ships, AddAssist is presented as a strength beside the o
 - **Each picture for its job** (owner): a beautiful result (a finished postcard, a stamped print, a look) shown large, the exported file itself; where the experience is the point, the whole window, legible; never a window shrunk until its text is gone.
 - **Legible on a phone:** text in a picture at least 11 CSS px on a 390 px screen, with crops served below 600 px; checked by the screenshot run.
 - **Words:** one claim and one short line per caption; Korean in 해요체; Japanese with its own size names (はがきサイズ, L判); no duplicate headings.
+- **Built (2026-11-15):** the six sections and `/features/`; every picture of both pages with a 4:5 phone crop per language and theme, its smallest text 11.2 to 12.4 px on a 390 px phone (`phone()` in `shoot.mjs`, UI-VISUAL-003); on a phone the Download page's link to copy or share; the keynote in English made again from the day's screenshots and a Vietnamese cut of its own beside the Japanese and Korean ones. The manual's phone crops come in v0.14.4.
 
 ### FR-136 — The Postcard tab in three blocks
 

@@ -120,6 +120,7 @@
   og_locale: vi_VN
   prefix: /vi
   assets: vi
+  keynote: vi
   pages: [home, features, download, performance, manual, story, wiki, code-signing]
   guide: docs/USER_GUIDE.vi.md
   support: vietqr

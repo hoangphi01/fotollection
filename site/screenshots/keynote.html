@@ -41,9 +41,10 @@
       const CUT = params.get('cut') === 'mobile' ? 'mobile' : 'desktop'
       const TEXT = params.get('text') !== '0'
       // The language whose screenshots it shows (site/_data/languages.yml `keynote`): English's
-      // serve every page but Japanese and Korean, which show their own country's photos and cards
-      // (owner, 2026-11-15). Each set has its own places, measured on its own screenshots.
-      const LANG = ['ja', 'ko'].includes(params.get('lang')) ? params.get('lang') : 'en'
+      // serve every page but Vietnamese, Japanese and Korean, which show the app in their language,
+      // the last two their own country's photos and cards (owner, 2026-11-15). Each set has its own
+      // places, measured on its own screenshots.
+      const LANG = ['vi', 'ja', 'ko'].includes(params.get('lang')) ? params.get('lang') : 'en'
       const shot = (name) => `${name}-${LANG}-dark`
       // Message rows, then address rows: each typed from `start` to `end`, the paper up to `right`.
       const GEO = {
@@ -51,6 +52,14 @@
           stamp: { from: { x: 274, y: 230, w: 718, h: 335 }, to: { x: 281, y: 308, w: 704, h: 329 }, fromM: { x: 394, y: 158, w: 478, h: 478 }, toM: { x: 587, y: 231, w: 405, h: 405 } },
           left: { x: 232, y: 237, w: 339, h: 459 }, right: { x: 696, y: 237, w: 339, h: 459 },
           rows: [[377, 402, 666, 922, 23], [416, 441, 666, 889, 20], [546, 569, 666, 785, 12], [575, 599, 666, 1007, 36], [605, 628, 666, 801, 14], [638, 657, 666, 738, 7]].map(([top, bottom, start, end, letters]) => ({ top, bottom, start, end, right: 1070, letters })),
+          list: { x: 1262, y: 292, w: 330, h: 530 }, sizes: [437, 472, 543, 579, 614, 650, 792], ring: { x: 1266, w: 320 },
+        },
+        // Vietnamese: the English set's photos and layout (measured 2026-11-15 on its own shots);
+        // the typewriter's letters are of one width, so only the name, two letters longer, ends later.
+        vi: {
+          stamp: { from: { x: 274, y: 230, w: 718, h: 335 }, to: { x: 281, y: 308, w: 704, h: 329 }, fromM: { x: 394, y: 158, w: 478, h: 478 }, toM: { x: 587, y: 231, w: 405, h: 405 } },
+          left: { x: 232, y: 237, w: 339, h: 459 }, right: { x: 696, y: 237, w: 339, h: 459 },
+          rows: [[377, 402, 666, 922, 23], [416, 441, 666, 889, 20], [546, 569, 666, 803, 14], [575, 599, 666, 1007, 36], [605, 628, 666, 801, 14], [638, 657, 666, 738, 7]].map(([top, bottom, start, end, letters]) => ({ top, bottom, start, end, right: 1070, letters })),
           list: { x: 1262, y: 292, w: 330, h: 530 }, sizes: [437, 472, 543, 579, 614, 650, 792], ring: { x: 1266, w: 320 },
         },
         ja: {
@@ -167,7 +176,8 @@
       const LOOKS = ['original', 'warm-film', 'cool', 'mono-soft']
       const lookImgs = LOOKS.map((name) => {
         const i = el('img', 'plate', { width: '1200px', height: '1600px', borderRadius: '10px' }, W2c)
-        i.src = `/img/looks/${name}${LANG === 'en' ? '' : `-${LANG}`}.webp`
+        // Japanese and Korean have their own country's look photo (languages.yml `looks`); Vietnamese shows English's.
+        i.src = `/img/looks/${name}${['ja', 'ko'].includes(LANG) ? `-${LANG}` : ''}.webp`
         return i
       })
 

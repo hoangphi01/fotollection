@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // The landing page's keynote video, from keynote.html and the real app's screenshots.
 //
-//   node site/screenshots/keynote.mjs <out-dir> [desktop|mobile ...] [--lang ja|ko] [--text] [--frame <seconds>]
+//   node site/screenshots/keynote.mjs <out-dir> [desktop|mobile ...] [--lang vi|ja|ko] [--text] [--frame <seconds>]
 //
 // Steps keynote.html through every frame (no real-time recording, so each run gives the same
 // video), pipes the frames to ffmpeg as a lossless master, then encodes AV1 and H.264 MP4s
 // with no audio. --text bakes the headlines in (for review; the page lays them over the video).
-// --frame writes one PNG instead. --lang renders the Japanese or Korean page's cut, from that
+// --frame writes one PNG instead. --lang renders the Vietnamese, Japanese or Korean page's cut, from that
 // language's screenshots (keynote-<cut>-<lang>-*.mp4); without it, English's, for every other page. No network: every request outside keynote.localhost is refused.
 
 import { readFile, mkdir, stat } from 'node:fs/promises'
@@ -27,7 +27,7 @@ if (!args[0]) {
 const text = args.includes('--text')
 const frameAt = args.includes('--frame') ? Number(args[args.indexOf('--frame') + 1]) : null
 const lang = args.includes('--lang') ? args[args.indexOf('--lang') + 1] : null
-if (lang !== null && !['ja', 'ko'].includes(lang)) throw new Error('--lang takes ja or ko')
+if (lang !== null && !['vi', 'ja', 'ko'].includes(lang)) throw new Error('--lang takes vi, ja or ko')
 const CUTS = { desktop: { w: 1280, h: 720 }, mobile: { w: 720, h: 900 } }
 const cuts = args.filter((a) => a in CUTS)
 const FPS = 30
