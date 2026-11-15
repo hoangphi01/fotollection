@@ -18,7 +18,7 @@ Photos are chosen by file name in `shoot.mjs` (`PROFILES`: each set's grid photo
 
 ```sh
 SHOT_LANGS="ja ko" DEMO_DIRS_JA="<JAPAN DEMO>:<folder with Gokurakuji.jpg>" \
-  DEMO_DIRS_KO="<9adox Korea 26>:<imyourctus KOR image>" \
+  DEMO_DIRS_KO="<9adox Korea 26>:<imyourctus KOR image>:<fall in seoul 2026>" \
   site/screenshots/build.sh <any-folder> <work-dir> P1057694.JPG
 ```
 
@@ -30,7 +30,7 @@ The site shows a language's set when `site/_data/languages.yml` gives it `assets
 
 ## The Japanese and Korean pages' photos
 
-[PRD FR-130](../../docs/PRD.md#fr-130--the-japanese-postcard), *Its pictures* (owner, 2026-11-15). **Japanese** ([`demo_set.ja.txt`](demo_set.ja.txt)): the owner's photos of Japan, *JAPAN DEMO by hoangphi01* (iPhone 15 and 16 Pro, GPS whole: the screenshots show the city the app reads from it, never the coordinates), and the owner's Gokurakuji station for the はがき (`JAPAN POSTCARD.jpg`, copied as `Gokurakuji.jpg`); © @hoangphi01, all rights reserved. **Korean** ([`demo_set.ko.txt`](demo_set.ko.txt)): Seoul by @9adox (Fujifilm XF10, EXIF whole, no GPS) and @imyourctus (Sony ZV-1, EXIF lost in transit); © each photographer, all rights reserved, credited in the Korean pages' `fn_photos`. None is ever kept in the repository, only the screenshots that show them.
+[PRD FR-130](../../docs/PRD.md#fr-130--the-japanese-postcard), *Its pictures* (owner, 2026-11-15). **Japanese** ([`demo_set.ja.txt`](demo_set.ja.txt)): the owner's photos of Japan, *JAPAN DEMO by hoangphi01* (iPhone 15 and 16 Pro, GPS whole: the screenshots show the city the app reads from it, never the coordinates), and the owner's Gokurakuji station for the はがき (`JAPAN POSTCARD.jpg`, copied as `Gokurakuji.jpg`); © @hoangphi01, all rights reserved. **Korean** ([`demo_set.ko.txt`](demo_set.ko.txt)): Seoul by @9adox (Fujifilm XF10, EXIF whole, no GPS) and @imyourctus (Sony ZV-1: *KOR image*, its EXIF lost in transit, and *fall in seoul 2026*, the originals with their EXIF, 2026-11-15; the date-stamp print is DSC06335, the second info frame on the Korean landing page DSC06325, so a Sony frame shows beside the Fujifilm one; no photo of a person is used); © each photographer, all rights reserved, credited in the Korean pages' `fn_photos`. None is ever kept in the repository, only the screenshots that show them.
 
 ## The owner's photos
 

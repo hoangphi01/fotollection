@@ -27,8 +27,8 @@ PICKS = {
            "stamp": ("preview/stamp", "IMG_5745"), "sheet": ("sheet", ("IMG_4329", "IMG_4421")),
            "frame": ("preview/frame", "IMG_5758")},
     "ko": {"card": ("sheet-postcard-full", "DSCF2041"), "card2": ("sheet-postcard", "DSCF1990"),
-           "stamp": ("preview/stamp", "IMG_1469"), "sheet": ("sheet", ("DSCF1972", "DSCF1975")),
-           "frame": ("preview/frame", "DSCF2022")},
+           "stamp": ("preview/stamp", "DSC06335"), "sheet": ("sheet", ("DSCF1972", "DSCF1975")),
+           "frame": ("preview/frame", "DSCF2022"), "frame2": ("preview/frame", "DSC06325")},
     "en": {"card": ("sheet-postcard-full", "P1068073"), "card2": ("sheet-postcard", "P1067865"),
            "stamp": ("preview/stamp", "P1067865"), "sheet": ("sheet", ("P1067819", "P1067829")),
            "frame": ("preview/frame", "P1068073")},
@@ -40,7 +40,7 @@ PICKS["vi"] = PICKS["en"]
 def author(stem: str) -> str:
     if stem.startswith("DSCF"):
         return "@9adox"
-    if stem.startswith("IMG_14"):
+    if stem.startswith(("IMG_14", "DSC0")):  # ZV-1 files: DSC0…, the phone's IMG_14…
         return "@imyourctus"
     return "@hoangphi01"
 
@@ -56,18 +56,24 @@ def source(dump: Path, ids: dict, folder: str, stem) -> Path:
 
 
 def rows(sizes: dict) -> list:
-    """The stamp, the sheet and the frame in rows of columns, by shape: two upright prints share
-    a row and a wide one takes the next; one upright beside two wide ones stacked."""
-    names = ["stamp", "sheet", "frame"]
+    """The prints after the postcard in rows of columns, by shape, so no corner stays empty:
+    upright ones two to a row, wide ones two to a row (a second frame beside the first); one
+    upright left over sits beside two wide ones stacked, one wide alone takes its row."""
+    names = [n for n in ("stamp", "sheet", "frame", "frame2") if n in sizes]
     tall = [n for n in names if sizes[n][1] > sizes[n][0]]
     wide = [n for n in names if n not in tall]
-    if len(tall) == 3:
-        return [[[n] for n in tall]]
-    if len(tall) == 2:
-        return [[[tall[0]], [tall[1]]], [[wide[0]]]]
-    if len(tall) == 1:
-        return [[[tall[0]], wide]]
-    return [[[wide[0]], [wide[1]]], [[wide[2]]]]
+    out = [[[a], [b]] for a, b in zip(tall[0::2], tall[1::2])]
+    pairs = [[[a], [b]] for a, b in zip(wide[0::2], wide[1::2])]
+    if len(tall) % 2 and len(wide) >= 2:
+        out.append([[tall[-1]], wide[:2]])
+        wide = wide[2:]
+        pairs = [[[a], [b]] for a, b in zip(wide[0::2], wide[1::2])]
+    elif len(tall) % 2:
+        out.append([[tall[-1]]])
+    out += pairs
+    if len(wide) % 2:
+        out.append([[wide[-1]]])
+    return out
 
 
 def main() -> None:
