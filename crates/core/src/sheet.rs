@@ -378,6 +378,20 @@ pub fn layout(
             }
             placed
         });
+        // The message runs under its photo, wherever the photo ends (boards A and K1).
+        #[allow(clippy::cast_precision_loss)]
+        let band = match (band, &cell) {
+            (Some(b), Some(placed)) => {
+                let top = placed.y + placed.area.1 as f32;
+                Some(RectMm {
+                    x: placed.x,
+                    y: top,
+                    width: placed.area.0 as f32,
+                    height: b.y + b.height - top,
+                })
+            }
+            (b, _) => b,
+        };
         return SheetLayout {
             width,
             height,

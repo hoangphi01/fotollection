@@ -32,12 +32,42 @@ pub const MACHINE_ZONE_MM: f32 = 17.0;
 /// The stamp box and the card's margins.
 pub const STAMP_MM: (f32, f32) = (20.0, 25.0);
 const EDGE_MM: f32 = 5.0;
-/// Clear round the recipient's code boxes (FR-132: 4 mm).
-const CODE_CLEAR_MM: f32 = 4.0;
-/// The small labels (보내는 사람, 받는 사람) and 「우편엽서」.
-const LABEL_MM: f32 = 2.4;
-const HEADING_MM: f32 = 2.8;
 const GREY: [u8; 3] = [110, 110, 110];
+/// The dotted rule under a name and an address line (board K1: 1 px dotted #9a9a9a).
+const RULE: [u8; 3] = [154, 154, 154];
+
+// Every position below is board K1's (PRD FR-132): 4 px a millimetre on a 148 × 100 card,
+// measured in Chromium in Nanum Pen (LESSONS 2026-11-15: a layout that has a board takes the
+// board's numbers). Ems scale with the text size; the board's is 17 px.
+
+/// 「우 편 엽 서」: em 2.25 mm (9 px), 1.25 mm between characters (5 px), centred between
+/// 2.5 mm into the half and the stamp box's left.
+const HEADING_MM: f32 = 2.25;
+const HEADING_TRACK_MM: f32 = 1.25;
+const HEADING_TOP_MM: f32 = 1.75;
+/// 보내는 사람, 받는 사람.
+const LABEL_MM: f32 = 2.2;
+/// The sender: from 4 mm into the half, top 7.5 mm, 42 mm wide (312, 30, 168 px); its name
+/// 20/17 em, its address 15/17, its code's digits 14/17; 0.75 mm between rows (3 px).
+const SENDER_LEFT_MM: f32 = 4.0;
+const SENDER_TOP_MM: f32 = 7.5;
+const SENDER_WIDTH_MM: f32 = 42.0;
+const SENDER_NAME: f32 = 20.0 / 17.0;
+const SENDER_ADDRESS: f32 = 15.0 / 17.0;
+const SENDER_GAP_MM: f32 = 0.75;
+/// The recipient: from 8.5 mm into the half to 5 mm from its right (330 and 20 px); its name
+/// 30/17 em on the right, its address 17/17, 1 mm between rows (4 px), the boxes 4 mm under the
+/// address and 3.75 mm above the machine zone (FR-132: 4 mm clear).
+const RECIPIENT_LEFT_MM: f32 = 8.5;
+const RECIPIENT_NAME: f32 = 30.0 / 17.0;
+const RECIPIENT_GAP_MM: f32 = 1.0;
+const BOXES_GAP_MM: f32 = 4.0;
+const BOXES_CLEAR_MM: f32 = 3.75;
+/// Where a line's em starts in its line box, against its em (Nanum Pen; measured).
+const EM_IN_BOX: f32 = 0.05;
+/// The message under a bordered photo: 19/17 em, 2.5 mm under it (322 px against 312).
+const MESSAGE_SCALE: f32 = 19.0 / 17.0;
+const MESSAGE_GAP_MM: f32 = 2.5;
 
 /// What a 우편엽서's writing half draws.
 pub struct KoreaSpec<'a> {
@@ -131,8 +161,8 @@ fn wrap(faces: (&VerticalFace, &VerticalFace), text: &str, em: f32, width: f32) 
     rows
 }
 
-/// An address in the road-name order: 시·도 시·군·구 읍·면 도로명, then the typed line (건물번호,
-/// 상세주소); in Latin letters the international order, the code last.
+/// An address in the road-name order: 시·도 시·군·구 읍·면 도로명 건물번호, then on a line of its
+/// own what follows the number (상세주소); in Latin letters the international order, the code last.
 fn address_text(a: &Address) -> String {
     if a.latin {
         let found = crate::addassist::lookup(Country::Kr, &a.code)
@@ -160,17 +190,28 @@ fn address_text(a: &Address) -> String {
         }
         return format!("{first}\n{region} {}", a.code).trim().to_owned();
     }
-    [
+    // The building number with the road, what follows it (a building, a floor) on a line of
+    // its own (board K1: 세종대로 175 / 세종문화회관 3층).
+    let typed = a.line.trim();
+    let (number, rest) = typed
+        .split_once(|c: char| c == ',' || c.is_whitespace())
+        .map_or((typed, ""), |(n, r)| (n, r.trim()));
+    let first = [
         a.region.as_str(),
         a.city.as_str(),
         a.town.as_str(),
         a.road.as_str(),
-        a.line.trim(),
+        number,
     ]
     .into_iter()
     .filter(|s| !s.is_empty())
     .collect::<Vec<_>>()
-    .join(" ")
+    .join(" ");
+    if rest.is_empty() {
+        first
+    } else {
+        format!("{first}\n{rest}")
+    }
 }
 
 /// The recipient of this card: its own record, never the European card's free address
@@ -211,7 +252,46 @@ fn draw_boxes(
     }
 }
 
-/// Draws a 우편엽서's writing half onto `canvas`, `density` pixels per millimetre.
+/// One line with `track` pixels after each character (「우 편 엽 서」); its width.
+#[allow(clippy::too_many_arguments)]
+fn tracked(
+    mut canvas: Option<&mut RgbImage>,
+    faces: (&VerticalFace, &VerticalFace),
+    text: &str,
+    em: f32,
+    left: f32,
+    top: f32,
+    track: f32,
+    color: [u8; 3],
+) -> f32 {
+    let mut x = left;
+    for c in text.chars() {
+        x += line(
+            canvas.as_deref_mut(),
+            faces,
+            &c.to_string(),
+            em,
+            x,
+            top,
+            color,
+        ) + track;
+    }
+    x - left
+}
+
+/// The dotted rule under a name or an address line, from `x0` to `x1` at `y` (millimetres).
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn dotted(canvas: &mut RgbImage, density: f32, x0: f32, x1: f32, y: f32) {
+    let px = |v: f32| (v * density).round().max(0.0) as u32;
+    let dot = px(0.25).max(1);
+    let mut x = x0;
+    while x < x1 {
+        crate::sheet::fill_rect(canvas, px(x), px(y), dot, dot, RULE);
+        x += 0.5;
+    }
+}
+
+/// Draws a 우편엽서's writing half onto `canvas`, `density` pixels per millimetre, as board K1.
 #[allow(clippy::too_many_lines, clippy::cast_precision_loss)]
 pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
     let Some(faces) = faces(spec.settings) else {
@@ -225,11 +305,12 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
     let em = crate::settings::postcard_text_mm(settings.text_size);
     let stamp = stamp_box(card);
     // The writing ends above the machine zone when the zone crosses this half.
-    let bottom = spec
+    let limit = spec
         .zone
         .filter(|z| z.y < card.y + card.height)
-        .map_or(card.y + card.height, |z| z.y)
-        - 2.0;
+        .map_or(card.y + card.height, |z| z.y);
+    // A line's em in its line box of `lh` ems from `top`.
+    let em_top = |top: f32, size: f32, lh: f32| top + size * ((lh - 1.0) / 2.0 + EM_IN_BOX);
 
     crate::postcard::draw_dashed_box(canvas, density, stamp, outline);
     let word_w = line(None, faces, "우표", mm(3.4), 0.0, 0.0, outline);
@@ -245,29 +326,32 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
 
     if settings.postal_use {
         let heading = "우 편 엽 서";
-        let w = line(None, faces, heading, mm(HEADING_MM), 0.0, 0.0, ink);
-        let centre = card.x + (card.width - STAMP_MM.0 - EDGE_MM) / 2.0;
-        line(
+        let track = mm(HEADING_TRACK_MM);
+        let w = tracked(None, faces, heading, mm(HEADING_MM), 0.0, 0.0, track, ink);
+        let centre = card.x + (card.width - STAMP_MM.0) / 2.0;
+        tracked(
             Some(canvas),
             faces,
             heading,
             mm(HEADING_MM),
             mm(centre) - w / 2.0,
-            mm(card.y + 1.5),
+            mm(card.y + HEADING_TOP_MM),
+            track,
             ink,
         );
     }
 
     // Where the message may go: under the stamp box and the sender, above the recipient.
     let mut message_top = stamp.y + stamp.height + 4.0;
-    let mut message_bottom = bottom;
-    // The sender at the top left, left of the stamp box.
+    let mut message_bottom = limit - 2.0;
+    // The sender at the top left, left of the stamp box: the label, the name, the address,
+    // each over a dotted rule, then its five boxes.
     if settings.sender_on
         && let Some(from) = settings.sender.as_ref().filter(|a| !a.is_blank())
     {
-        let left = card.x + EDGE_MM;
-        let width = stamp.x - 3.0 - left;
-        let mut y = card.y + EDGE_MM + 1.0;
+        let left = card.x + SENDER_LEFT_MM;
+        let right = left + SENDER_WIDTH_MM.min(stamp.x - 2.0 - left);
+        let mut y = card.y + SENDER_TOP_MM;
         line(
             Some(canvas),
             faces,
@@ -277,57 +361,84 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
             mm(y),
             GREY,
         );
-        y += LABEL_MM * 1.4;
-        let small = em * 0.8;
-        if !from.name.trim().is_empty() {
+        y += LABEL_MM * 1.25 + SENDER_GAP_MM;
+        let name = from.name.trim();
+        if !name.is_empty() {
+            let size = em * SENDER_NAME;
             line(
                 Some(canvas),
                 faces,
-                from.name.trim(),
-                mm(small * 1.15),
+                name,
+                mm(size),
                 mm(left),
-                mm(y),
+                mm(em_top(y, size, 1.1)),
                 ink,
             );
-            y += small * 1.15 * 1.3;
+            y += size * 1.1;
+            dotted(canvas, density, left, right, y);
+            y += 0.25 + SENDER_GAP_MM;
         }
-        for row in wrap(faces, &address_text(from), mm(small), mm(width))
-            .iter()
+        let size = em * SENDER_ADDRESS;
+        let rows: Vec<String> = address_text(from)
+            .lines()
+            .flat_map(|l| wrap(faces, l, mm(size), mm(right - left)))
             .take(2)
-        {
-            line(Some(canvas), faces, row, mm(small), mm(left), mm(y), ink);
-            y += small * 1.25;
+            .collect();
+        for row in &rows {
+            line(
+                Some(canvas),
+                faces,
+                row,
+                mm(size),
+                mm(left),
+                mm(em_top(y, size, 1.2)),
+                ink,
+            );
+            y += size * 1.2;
+            dotted(canvas, density, left, right, y);
+            y += 0.25 + SENDER_GAP_MM;
         }
         if !from.latin {
+            y += 1.0;
             draw_boxes(
                 canvas,
                 density,
                 faces,
                 left,
-                y + 0.8,
+                y,
                 &KOREA_SENDER_BOXES,
                 &from.code,
                 ink,
             );
-            y += KOREA_SENDER_BOXES.box_mm.1 + 1.0;
+            y += KOREA_SENDER_BOXES.box_mm.1;
         }
         message_top = message_top.max(y + 3.0);
     }
 
-    // The recipient at the bottom right: the label, the name, the address, the boxes.
+    // The recipient at the bottom right, its boxes 3.75 mm above the machine zone: the label,
+    // the name on the right, the address, each over a dotted rule, then the boxes.
     if let Some(to) = recipient(spec.text) {
-        let left = card.x + card.width * 0.16;
+        let left = card.x + RECIPIENT_LEFT_MM;
         let right = card.x + card.width - EDGE_MM;
-        let width = right - left;
+        let rows: Vec<String> = address_text(&to)
+            .lines()
+            .flat_map(|l| wrap(faces, l, mm(em), mm(right - left)))
+            .collect();
+        let name_em = em * RECIPIENT_NAME;
+        let row_h = em * 1.2 + 0.25 + RECIPIENT_GAP_MM;
         let boxes_h = if to.latin {
             0.0
         } else {
-            KOREA_BOXES.box_mm.1 + CODE_CLEAR_MM
+            BOXES_GAP_MM + KOREA_BOXES.box_mm.1
         };
-        let address = wrap(faces, &address_text(&to), mm(em), mm(width));
-        let name_em = em * 1.5;
-        let block = LABEL_MM * 1.4 + name_em * 1.25 + em * 1.3 * address.len() as f32 + boxes_h;
-        let mut y = (bottom - block).max(stamp.y + stamp.height + 3.0);
+        let block = LABEL_MM * 1.25
+            + RECIPIENT_GAP_MM
+            + name_em * 1.05
+            + 0.25
+            + RECIPIENT_GAP_MM
+            + row_h * rows.len() as f32
+            + boxes_h;
+        let mut y = (limit - BOXES_CLEAR_MM - block).max(stamp.y + stamp.height + 3.0);
         message_bottom = y - 2.0;
         line(
             Some(canvas),
@@ -338,7 +449,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
             mm(y),
             GREY,
         );
-        y += LABEL_MM * 1.4;
+        y += LABEL_MM * 1.25 + RECIPIENT_GAP_MM;
         let name = to.name.trim();
         if !name.is_empty() {
             let label = if to.honorific && !to.latin {
@@ -347,33 +458,38 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
                 name.to_owned()
             };
             let w = line(None, faces, &label, mm(name_em), 0.0, 0.0, ink);
+            let top = mm(em_top(y, name_em, 1.05));
             line(
                 Some(canvas),
                 faces,
                 &label,
                 mm(name_em),
                 mm(right) - w,
-                mm(y),
+                top,
                 ink,
             );
         }
-        y += name_em * 1.25;
-        for row in &address {
-            line(Some(canvas), faces, row, mm(em), mm(left), mm(y), ink);
-            y += em * 1.3;
+        y += name_em * 1.05;
+        dotted(canvas, density, left, right, y);
+        y += 0.25 + RECIPIENT_GAP_MM;
+        for row in &rows {
+            line(
+                Some(canvas),
+                faces,
+                row,
+                mm(em),
+                mm(left),
+                mm(em_top(y, em, 1.2)),
+                ink,
+            );
+            y += em * 1.2;
+            dotted(canvas, density, left, right, y);
+            y += 0.25 + RECIPIENT_GAP_MM;
         }
         if !to.latin {
             let bx = right - KOREA_BOXES.width_mm();
-            draw_boxes(
-                canvas,
-                density,
-                faces,
-                bx,
-                y + CODE_CLEAR_MM / 2.0,
-                &KOREA_BOXES,
-                &to.code,
-                ink,
-            );
+            let by = y + BOXES_GAP_MM - RECIPIENT_GAP_MM;
+            draw_boxes(canvas, density, faces, bx, by, &KOREA_BOXES, &to.code, ink);
         }
     }
     // The message, when the photo has no band for it, in the room between.
@@ -393,8 +509,8 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
     }
 }
 
-/// The message on a bordered photo's half (board K1): one line across the band under the photo,
-/// as much of it as fits, in the card's face.
+/// The message under a bordered photo (board K1): one line from the photo's left, 19/17 em,
+/// 2.5 mm under it, as much as fits; `band` starts at the photo's foot.
 pub fn draw_message(
     canvas: &mut RgbImage,
     density: f32,
@@ -414,9 +530,10 @@ pub fn draw_message(
     if first.is_empty() {
         return;
     }
-    let em =
-        (band.height * 0.6).min(crate::settings::postcard_text_mm(settings.text_size)) * density;
-    let room = (band.width - 4.0) * density;
+    let em_mm = crate::settings::postcard_text_mm(settings.text_size) * MESSAGE_SCALE;
+    let top = (band.y + MESSAGE_GAP_MM).min(band.y + band.height - em_mm);
+    let em = em_mm * density;
+    let room = band.width * density;
     let mut shown = String::new();
     for c in first.chars() {
         shown.push(c);
@@ -430,8 +547,8 @@ pub fn draw_message(
         faces,
         &shown,
         em,
-        (band.x + 2.0) * density,
-        band.y * density + (band.height * density - em) / 2.0,
+        band.x * density,
+        top * density,
         settings.ink.rgb(paper),
     );
 }
@@ -609,13 +726,114 @@ mod tests {
         let Some(mut to) = seoul().recipients.into_iter().next() else {
             return;
         };
-        assert_eq!(address_text(&to), "서울특별시 종로구 세종대로 175, 3층");
+        assert_eq!(address_text(&to), "서울특별시 종로구 세종대로 175\n3층");
         to.latin = true;
         to.line = "175".into();
         assert_eq!(
             address_text(&to),
             "175 Sejong-daero, Jongno-gu\nSeoul 03172"
         );
+    }
+
+    /// Board K1's sample, measured in Chromium in Nanum Pen (scratch `board-measure`).
+    fn board_k1() -> (PostcardSettings, PostcardText) {
+        let mut to = Address::new(Country::Kr);
+        to.code = "03172".into();
+        to.region = "서울특별시".into();
+        to.city = "종로구".into();
+        to.road = "세종대로".into();
+        to.line = "175 세종문화회관 3층".into();
+        to.name = "홍길동".into();
+        let mut from = Address::new(Country::Kr);
+        from.code = "48094".into();
+        from.region = "부산광역시".into();
+        from.city = "해운대구".into();
+        from.road = "해운대해변로".into();
+        from.line = "264".into();
+        from.name = "김민지".into();
+        let settings = PostcardSettings {
+            face: PostcardFace::NanumPen,
+            sender_on: true,
+            sender: Some(from),
+            ..PostcardSettings::default()
+        };
+        let text = PostcardText {
+            message: String::new(),
+            address: String::new(),
+            recipients: vec![to],
+        };
+        (settings, text)
+    }
+
+    /// Ink, not the grey dotted rules.
+    fn dark(p: [u8; 3]) -> bool {
+        p.iter().all(|c| *c < 140)
+    }
+
+    #[test]
+    fn fr_132_the_landscape_card_matches_board_k1() {
+        use crate::hagaki::tests::{assert_board, runs, zone};
+        // The board's card: 148 × 100 mm, its writing half from 74 mm, the zone from 83 mm.
+        let (settings, text) = board_k1();
+        let half = zone(74.0, 0.0, 74.0, 100.0);
+        let canvas = drawn(
+            half,
+            Some(zone(0.0, 83.0, 148.0, 17.0)),
+            &settings,
+            Some(&text),
+        );
+        let parts: [(&str, RectMm, &[[f32; 4]]); 3] = [
+            (
+                "heading",
+                zone(80.0, 0.0, 40.0, 5.6),
+                &[[91.88, 2.19, 108.69, 4.13]],
+            ),
+            (
+                "sender",
+                zone(76.0, 6.0, 45.0, 24.0),
+                &[
+                    [78.06, 7.56, 86.0, 9.13],
+                    [78.06, 11.13, 86.44, 14.38],
+                    [78.13, 17.25, 118.75, 20.19],
+                    [78.0, 23.25, 98.75, 28.0],
+                ],
+            ),
+            (
+                "recipient",
+                zone(80.0, 43.0, 66.0, 39.0),
+                &[
+                    [82.63, 44.56, 89.0, 46.13],
+                    [121.0, 47.63, 143.0, 54.81],
+                    [82.56, 57.25, 117.06, 61.13],
+                    [82.56, 63.38, 101.63, 67.25],
+                    [116.25, 73.25, 143.0, 79.25],
+                ],
+            ),
+        ];
+        for (part, z, board) in parts {
+            assert_board(part, &runs(&canvas, z, false, dark), board, 0.0);
+        }
+    }
+
+    #[test]
+    fn fr_132_the_message_under_the_photo_matches_board_k1() {
+        use crate::hagaki::tests::{assert_board, runs, zone};
+        // Board K1's photo ends at 78 mm; the band starts there.
+        let (settings, _) = board_k1();
+        let half = zone(0.0, 0.0, 74.0, 100.0);
+        let mut canvas = drawn(half, None, &PostcardSettings::default(), None);
+        canvas.data.fill(255);
+        let band = zone(5.0, 78.0, 64.0, 8.0);
+        draw_message(
+            &mut canvas,
+            DENSITY,
+            band,
+            "광화문에서 안부 전해요. 건강하세요!",
+            &settings,
+            BorderColor::White,
+        );
+        let line = runs(&canvas, band, false, dark);
+        assert_board("message", &line, &[[5.13, 80.81, 53.69, 84.75]], 0.0);
     }
 
     #[test]

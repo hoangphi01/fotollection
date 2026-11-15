@@ -111,9 +111,18 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - When the owner says "like X", list every section of X as built, later or never before building. Kept by: no machine check yet.
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
+- A layout with a chosen board copies the board's measured numbers and has a test per part against them. Kept by: `fr_130_the_upright_card_matches_board_a` and its siblings.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### A layout built from guessed numbers when the board had the real ones (FR-130, FR-132)
+
+- **Area:** spec-request, print-post, checks
+- **Seen:** the owner had chosen a style board in the morning, and the PRD said "as board A"; the evening's dev build looked nothing like it (「郵便はがき」 left of the boxes, the name centred, the sender's name inside its address), and the owner corrected detail after detail by hand.
+- **Why:** the layout was written from the board's look, with round numbers chosen in the code (5 mm edges, the name at 54 mm), and no test compared a render with the board. Each fix moved one number by eye and left the rest guessed.
+- **Fix:** the artboards measured in Chromium (each part's ink, 4 px a millimetre), the numbers copied into constants that name their artboard and pixels, and tests that measure each part's ink in a render against the board's within 1.5 mm (`fr_130_…_matches_board_a`, `…_board_b`, `…_matches_its_board`, `fr_132_…_matches_board_k1`), failing on the old code first.
+- **Rule:** a layout that has a chosen board takes the board's numbers, measured, never estimated, and is tested part by part against them before the owner sees it.
 
 ### A word on a はがき was set in two hands (FR-130)
 

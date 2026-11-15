@@ -672,14 +672,14 @@ pub struct CodeBoxes {
 
 /// Japan's seven boxes, vermilion (金赤) with no black in them, the first three and the hyphen
 /// 0.5 mm, the last four 0.3 mm (内国郵便約款 別記1: 0.4–0.6 and 0.2–0.4 mm). Their size and
-/// pitch are estimates from Japan Post's figures, 5.7 × 8 mm at 6.8 mm, to measure on a real
-/// card before the release (PRD FR-130).
+/// pitch are the style board's, within Japan Post's figures: 5.75 × 8 mm, 1 mm apart, the
+/// hyphen 1.5 mm long in a 2.5 mm gap (board B: 23 × 32 px, 4 px, 6 px with 2 px each side).
 /// Korea's five boxes for the recipient's code, black, its digits printed one in each when
 /// typed (FR-132: exactly five boxes if boxes are drawn).
 pub const KOREA_BOXES: CodeBoxes = CodeBoxes {
     groups: &[5],
-    box_mm: (4.6, 6.0),
-    pitch_mm: 5.4,
+    box_mm: (4.75, 6.0),
+    pitch_mm: 5.5,
     group_gap_mm: 0.0,
     color: [45, 45, 45],
     lines_mm: &[0.3],
@@ -689,8 +689,8 @@ pub const KOREA_BOXES: CodeBoxes = CodeBoxes {
 /// The sender's five, smaller.
 pub const KOREA_SENDER_BOXES: CodeBoxes = CodeBoxes {
     groups: &[5],
-    box_mm: (3.6, 4.8),
-    pitch_mm: 4.2,
+    box_mm: (3.75, 4.75),
+    pitch_mm: 4.25,
     group_gap_mm: 0.0,
     color: [45, 45, 45],
     lines_mm: &[0.25],
@@ -699,9 +699,9 @@ pub const KOREA_SENDER_BOXES: CodeBoxes = CodeBoxes {
 
 pub const JAPAN_BOXES: CodeBoxes = CodeBoxes {
     groups: &[3, 4],
-    box_mm: (5.7, 8.0),
-    pitch_mm: 6.8,
-    group_gap_mm: 2.6,
+    box_mm: (5.75, 8.0),
+    pitch_mm: 6.75,
+    group_gap_mm: 1.5,
     color: [232, 56, 32],
     lines_mm: &[0.5, 0.3],
     hyphen: true,
@@ -803,9 +803,9 @@ pub fn draw_code_boxes_down(
         crate::sheet::fill_rect(
             canvas,
             x,
-            px(gap_top + gap * 0.25),
+            px(gap_top + gap * 0.2),
             t,
-            px(gap * 0.5).max(1),
+            px(gap * 0.6).max(1),
             b.color,
         );
     }
@@ -831,9 +831,9 @@ pub fn draw_code_boxes(canvas: &mut RgbImage, density: f32, left: f32, top: f32,
         let y = px(first.0.y + first.0.height / 2.0).saturating_sub(t / 2);
         crate::sheet::fill_rect(
             canvas,
-            px(gap_left + gap * 0.25),
+            px(gap_left + gap * 0.2),
             y,
-            px(gap * 0.5).max(1),
+            px(gap * 0.6).max(1),
             t,
             b.color,
         );
@@ -1517,7 +1517,7 @@ mod tests {
         // The first three heavier than the last four.
         assert!(boxes[..3].iter().all(|(_, l)| (*l - 0.5).abs() < 1e-6));
         assert!(boxes[3..].iter().all(|(_, l)| (*l - 0.3).abs() < 1e-6));
-        assert!((b.width_mm() - (6.0 * 6.8 + 5.7 + 2.6)).abs() < 1e-4);
+        assert!((b.width_mm() - 47.75).abs() < 1e-4, "board B: 191 px");
         let density = 300.0 / 25.4;
         let (w, h) = (700, 300);
         let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])

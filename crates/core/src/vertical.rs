@@ -98,11 +98,16 @@ fn latin() -> Option<&'static FontArc> {
     crate::postcard::handwriting()
 }
 
-/// A Latin letter, digit or mark as typed (ASCII and the Latin blocks, Vietnamese included);
-/// never a full-width form, which belongs to the Japanese text.
+/// A Latin letter as typed (ASCII and the Latin blocks, Vietnamese included); never a
+/// full-width form, which belongs to the Japanese text.
 fn is_latin(c: char) -> bool {
-    c.is_ascii_graphic()
+    c.is_ascii_alphabetic()
         || matches!(c, '\u{00C0}'..='\u{024F}' | '\u{0300}'..='\u{036F}' | '\u{1E00}'..='\u{1EFF}')
+}
+
+/// An ASCII figure or mark, which takes its word's face (`across`).
+fn is_neutral(c: char) -> bool {
+    c.is_ascii_graphic() && !c.is_ascii_alphabetic()
 }
 
 /// The scale that makes one em of `font` `em` pixels (`PxScale` is the line's height).
@@ -287,16 +292,33 @@ pub fn across(
 ) -> (Set, f32) {
     let mut x = left;
     let mut glyphs = Vec::new();
-    for c in text.chars() {
-        let (_, from_latin) = face.pick(c);
-        // Across, a character keeps its horizontal form; only the face may change.
-        let id = if from_latin {
-            face.pick(c).0
+    let chars: Vec<char> = text.chars().collect();
+    for (i, &c) in chars.iter().enumerate() {
+        // A figure or mark goes with its word: in the handwriting inside a word of Latin
+        // letters (4B, I'm), in the card's face in a word of its own (5-27, 120-0024).
+        let word = |step: fn(usize) -> Option<usize>| {
+            std::iter::successors(step(i), |&j| step(j))
+                .map_while(|j| chars.get(j).filter(|c| !c.is_whitespace()))
+                .any(|&c| is_latin(c))
+        };
+        let in_latin_word =
+            is_neutral(c) && (word(|j| j.checked_sub(1)) || word(|j| j.checked_add(1)));
+        let latin_face = latin().filter(|l| in_latin_word && l.glyph_id(c).0 != 0);
+        let (id, from_latin, advance) = if let Some(l) = latin_face {
+            let id = l.glyph_id(c);
+            (id, true, l.as_scaled(em_scale(l, em)).h_advance(id))
         } else {
-            face.font.glyph_id(c)
+            let (picked, from_latin) = face.pick(c);
+            // Across, a character keeps its horizontal form; only the face may change.
+            let id = if from_latin {
+                picked
+            } else {
+                face.font.glyph_id(c)
+            };
+            (id, from_latin, face.advance(c, em))
         };
         glyphs.push((id, x, top, from_latin));
-        x += face.advance(c, em) + tracking * em;
+        x += advance + tracking * em;
     }
     let width = (x - left - tracking * em).max(0.0);
     (
@@ -560,6 +582,22 @@ mod tests {
         // Japanese breaks between characters, a closing mark kept with the one before.
         let jp = wrap_across(face, "神奈川県鎌倉市稲村ガ崎。", em, em * 11.0, 0.0);
         assert!(jp.iter().all(|l| !l.starts_with('。')));
+    }
+
+    #[test]
+    fn fr_130_a_figure_takes_its_words_face() {
+        // In a word of their own, figures stay in the card's face (the board's 5-27); in a word
+        // of letters, the handwriting's.
+        let latin = |text: &str| -> Vec<bool> {
+            across(klee(), text, 10.0, 0.0, 0.0, 0.0)
+                .0
+                .glyphs
+                .iter()
+                .map(|g| g.3)
+                .collect()
+        };
+        assert_eq!(latin("5-27"), [false; 4]);
+        assert_eq!(latin("4B"), [true; 2]);
     }
 
     #[test]
