@@ -121,6 +121,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-15
 
+### A file named in the wrong case was left out of its commit (FR-137)
+
+- **Area:** resources-tooling, checks
+- **Seen:** the FR-137 commit held the Collage panel's tabs but not the line in `ui/src/app.tsx` that passes the chosen photo; the change stayed in the working tree and surfaced only when a later rebase refused to start.
+- **Why:** the file is tracked as `app.tsx`; `git add ui/src/App.tsx` on macOS (a case-insensitive disk) found it on disk but matched no tracked path, staged nothing, and said nothing.
+- **Fix:** the line folded into its commit before the push; the pre-push hook now refuses to push while a tracked file is changed but not committed.
+- **Rule:** stage the paths as `git status` prints them, and read the commit's `--stat` before moving on.
+
 ### The landing page said "Straight from the app" and opened on a clipped phrase, after being asked many times for a polite tone (website, FR-135)
 
 - **Area:** text-i18n, checks

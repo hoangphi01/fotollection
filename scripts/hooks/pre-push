@@ -29,6 +29,13 @@ done
 [ "${#ranges[@]}" -gt 0 ] || exit 0
 
 start=$(date +%s)
+# What is pushed is what is committed: a tracked file still changed means a change left out of
+# its commit (LESSONS 2026-11-15: `git add ui/src/App.tsx` on macOS staged nothing for app.tsx).
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+  echo "pre-push: tracked files are changed but not committed; commit or stash them first:" >&2
+  git status --short --untracked-files=no >&2
+  exit 1
+fi
 step() { echo "── pre-push: $1"; }
 changed() { printf '%s\n' $files | grep -Eq "$1"; }
 
