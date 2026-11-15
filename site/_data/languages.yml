@@ -29,7 +29,8 @@
 #                where Vietnamese readers find apps) or, by default, intl (AlternativeTo), owner 2026-11-14
 #   guide        the manual it shows (ADR-0031): the full one in docs/ (English, Vietnamese) or
 #                a short one, site/_includes/manual-short-<code>.md, that links the English one
-#   flag         its country's flag before its name in the menu, site/assets/flag/<flag>.svg (owner,
+#   flag         its country's flag before its name in the menu and on the language button (wide
+#                screens), site/assets/flag/<flag>.svg written into the page (inline_flag; owner,
 #                2026-11-15); English the British one
 #   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
 #                words are done (scripts/check-site-i18n.mjs --build)

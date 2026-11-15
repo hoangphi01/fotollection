@@ -37,8 +37,13 @@ for (const dir of ['_layouts', '_includes']) {
       const file = path.join(d, name)
       if (statSync(file).isDirectory()) walk(file)
       else if (name.endsWith('.html')) {
+        // A lazy picture inside a popover loads only when the popover opens, so it shows late
+        // (the language menu's flags, LESSONS 2026-11-15): from a popover's line on, none.
+        let popover = false
         readFileSync(file, 'utf8').split('\n').forEach((line, i) => {
           for (const [re, why] of banned) if (re.test(line)) problems.push(`${path.relative(root, file)}:${i + 1} ${why}`)
+          if (/<\w+[^>]*\spopover[\s>=]/.test(line)) popover = true
+          if (popover && /loading="lazy"/.test(line)) problems.push(`${path.relative(root, file)}:${i + 1} a lazy picture inside a popover shows only after it opens; inline it or load it with the page`)
         })
       }
     }

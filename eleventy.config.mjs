@@ -101,6 +101,15 @@ export default function (eleventyConfig) {
     escape(value ?? '')
       .replace(/\*([^*]+)\*/g, '<em>$1</em>')
       .replace(/\{(dm|rossmann|seven|lawson|familymart|cu|gs25|leclerc|intermarche|fnac)\}/g, (_, name) => `<span class="keynote-logo">${logo(name)}</span>`))
+  // `{{ l.flag | inline_flag }}`: a language's round flag (languages.yml `flag`,
+  // site/assets/flag/<code>.svg, circle-flags, MIT) written into the page, so the language menu
+  // shows it as it opens instead of fetching it then (LESSONS 2026-11-15). Only a two-letter
+  // code the registry names; the SVGs carry no id, so a page may hold one twice.
+  const flags = new Set(languages.map((l) => l.flag).filter(Boolean))
+  eleventyConfig.addFilter('inline_flag', (code) => {
+    if (!/^[a-z]{2}$/.test(`${code}`) || !flags.has(code)) throw new Error(`inline_flag: ${code} is not a flag of languages.yml`)
+    return readFileSync(path.join(SITE, 'assets/flag', `${code}.svg`), 'utf8').trim().replace('<svg ', '<svg aria-hidden="true" ')
+  })
   // `{{ 'manual' | url_for: pg.lang }}`: a page's path in a language (eleventy.registry.mjs).
   eleventyConfig.addFilter('url_for', (id, code) => urlFor(id, code))
   // `markdownify` as Jekyll's kramdown did for these pages: raw HTML kept, `{#id}` after a

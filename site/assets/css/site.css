@@ -247,7 +247,7 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .nav-links a:hover { color: var(--ink); }
 .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .lang { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 7px 10px; border-radius: 999px; text-decoration: none; font-size: 0.9rem; color: var(--ink-2); }
-.lang span { display: none; }
+.lang .lang-flag { display: none; margin: 0; }
 .lang { border: 0; background: none; font: inherit; font-size: 0.9rem; cursor: pointer; }
 .lang:hover { background: var(--tint); color: var(--ink); }
 /* The language menu, under the top bar at the right (lang-menu.html). */
@@ -259,7 +259,7 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .lang-menu a[aria-current] { color: var(--accent); }
 /* Each language's flag before its name. */
 .lang-flag { display: inline-block; width: 18px; height: 18px; margin-right: 10px; vertical-align: -3px; }
-.lang-flag img { display: block; }
+.lang-flag svg { display: block; width: 18px; height: 18px; }
 .lang-regions { margin-left: 6px; font-size: 0.8rem; font-weight: 400; color: var(--muted); }
 
 /* Round header buttons: Star, Coffee and Download share one shape. */
@@ -801,7 +801,7 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
   .systems-table td, .systems-table thead th:not(:first-child) { padding-left: 12px; padding-right: 12px; white-space: nowrap; }
   .systems-table thead th { letter-spacing: 0.06em; font-size: 0.8rem; }
   .systems .table-scroll { padding: 6px 18px; }
-  .lang span { display: inline; }
+  .lang .lang-flag { display: inline-block; }
   .footer-base { flex-direction: row; justify-content: space-between; }
 }
 

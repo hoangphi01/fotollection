@@ -24,6 +24,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A card whose height depends on an answer from Rust shows the last answer (`.data`, kept across remounts), never `return null` per photo. Kept by: no machine check yet.
 - A box that clips is sized for everything it draws (rings, knobs, the scroll bar); a popup is placed after measuring it, the title bar a collision edge. Kept by: UI-LAYOUT-016, UI-LAYOUT-021.
 - A picture is checked in the frame that shows it, on the built page; a carousel picture is the whole window at 1600 × 1000. Kept by: `check-site-i18n` (carousel sizes).
+- A picture inside a popover or anything closed is inlined or loaded with the page, never lazy. Kept by: `check-site-i18n` (lazy in a popover).
 
 ### ui-blocks
 
@@ -120,6 +121,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### The language menu's flags appeared after the menu opened (website)
+
+- **Area:** ui-layout, checks
+- **Seen:** on the website, a click on the language button opened the menu with empty spaces where the flags go; they came a moment later, and the menu seemed to jolt.
+- **Why:** each flag was an `<img loading="lazy">` inside a closed popover; a browser loads a lazy picture only once it is shown, so the requests started when the menu opened.
+- **Fix:** the flags are written into the page at build (`inline_flag`, about 1.5 KB gzipped), nothing left to fetch; the button shows the current flag on a wide screen.
+- **Rule:** a picture inside a popover, a menu or anything closed is inlined or loaded with the page, never lazy; `check-site-i18n` refuses `loading="lazy"` after a popover's line.
 
 ### A file named in the wrong case was left out of its commit (FR-137)
 
