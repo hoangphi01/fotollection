@@ -61,7 +61,7 @@ Read this table in full before any task; then read in full every entry whose Are
 ### release-ci
 
 - After every push, look at every workflow it started (`gh run list`), CI and pages too, not only the one expected (learnt three times). Kept by: no machine check yet.
-- Every check CI runs also runs locally before a push; when one fails only in CI, its twin joins the local checks. Kept by: `check-lego`, `check-docs.sh`, `check-docs-with-code.sh`.
+- Every check CI runs also runs locally before a push; when one fails only in CI, its twin joins the local checks. Kept by: `check-lego`, `check-docs.sh`, `check-docs-with-code.sh`, `cargo deny check licenses bans sources` in the pre-push hook.
 - What only CI, the bundler or a release runs is proved before the release: installers workflow, dry run, a green push. Kept by: the `installers` workflow.
 - Never write "supports" before it is tried on every system; `cfg(windows)` code is grepped, since this Mac cannot compile it. Kept by: CI's `build (windows-latest)`.
 - A page and its stylesheet and scripts ship as one: every `/assets/css` and `/assets/js` link carries its content's hash (`| bust`), so no visitor sees a new page on old CSS. Kept by: `check-docs.sh` (no such link through `relative_url`).
@@ -118,6 +118,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### A new crate of ours failed CI's licence check after the push (FR-133)
+
+- **Area:** release-ci, checks
+- **Seen:** CI's `security` job refused `fotollection-addassistdata`: `GPL-3.0-only` is not explicitly allowed.
+- **Why:** each workspace crate has its own exception in `deny.toml`; the AddAssist data crate was added without one, and cargo deny ran only in CI.
+- **Fix:** its exception, like `fotollection-geodata`'s; the pre-push hook runs `cargo deny check licenses bans sources` when a `Cargo.toml`, `Cargo.lock` or `deny.toml` changes.
+- **Rule:** a new crate of ours gets its `deny.toml` exception in the same commit; the licence check runs before the push.
 
 ### A rule read without its proviso emptied half the card (FR-130, FR-132)
 

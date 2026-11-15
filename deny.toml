@@ -75,6 +75,10 @@ allow = ["LGPL-2.1"]
 crate = "fotollection-geodata"
 allow = ["GPL-3.0-only"]
 
+[[licenses.exceptions]]
+crate = "fotollection-addassistdata"
+allow = ["GPL-3.0-only"]
+
 [bans]
 multiple-versions = "allow"
 wildcards = "deny"
