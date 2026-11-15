@@ -41,7 +41,7 @@
   og_locale: en_GB
   prefix: ""
   assets: en
-  pages: [home, download, performance, manual, story, wiki, code-signing]
+  pages: [home, features, download, performance, manual, story, wiki, code-signing]
   guide: docs/USER_GUIDE.md
   support: card
   flag: gb
@@ -55,7 +55,7 @@
   also: [sk]
   prefix: /cs
   assets: en
-  pages: [home, download, performance, manual, wiki, code-signing]
+  pages: [home, features, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-cs.md
   support: card
   flag: cz
@@ -68,7 +68,7 @@
   regions: DE/AT
   prefix: /de
   assets: en
-  pages: [home, download, performance, manual, wiki, code-signing]
+  pages: [home, features, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-de.md
   support: card
   flag: de
@@ -80,7 +80,7 @@
   og_locale: fr_FR
   prefix: /fr
   assets: en
-  pages: [home, download, performance, manual, wiki, code-signing]
+  pages: [home, features, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-fr.md
   support: card
   kiosk: fr
@@ -93,7 +93,7 @@
   og_locale: hu_HU
   prefix: /hu
   assets: en
-  pages: [home, download, performance, manual, wiki, code-signing]
+  pages: [home, features, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-hu.md
   support: card
   flag: hu
@@ -105,7 +105,7 @@
   og_locale: pl_PL
   prefix: /pl
   assets: en
-  pages: [home, download, performance, manual, wiki, code-signing]
+  pages: [home, features, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-pl.md
   support: card
   flag: pl
@@ -117,7 +117,7 @@
   og_locale: vi_VN
   prefix: /vi
   assets: vi
-  pages: [home, download, performance, manual, story, wiki, code-signing]
+  pages: [home, features, download, performance, manual, story, wiki, code-signing]
   guide: docs/USER_GUIDE.vi.md
   support: vietqr
   community: vn
@@ -134,7 +134,7 @@
   legacy: en
   addassist: true
   looks: ko
-  pages: [home, download, performance, manual, wiki, code-signing]
+  pages: [home, features, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-ko.md
   support: card
   kiosk: kr
@@ -151,7 +151,7 @@
   legacy: en
   addassist: true
   looks: ja
-  pages: [home, download, performance, manual, wiki, code-signing]
+  pages: [home, features, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-ja.md
   support: card
   kiosk: jp

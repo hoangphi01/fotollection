@@ -113,7 +113,7 @@ cta_desktop_note: "Ứng dụng cho máy tính: mở trang này trên máy tính
 latest: Phiên bản mới nhất
 no_release: Các bản phát hành ở trên GitHub
 shot_grid: Thư viện ảnh, đã chấm sao và chọn ảnh
-features_title: Đủ mọi thứ cho một lần in ảnh
+features_title: "Nét, nhanh, và cả RAW."
 features_lead: Làm cho buổi tối sau chuyến đi, khi vài trăm tấm ảnh cần trở thành một xấp ảnh in nhỏ.
 f_stamp_title: Dấu ngày kiểu máy film
 f_stamp_text: Dòng ngày LED màu cam của máy film ngày xưa, tên nơi chụp cùng dòng và một dòng chữ của bạn bên dưới. Đặt riêng từng ảnh hoặc cho tất cả.
@@ -647,3 +647,34 @@ kn_8: "Offline. *Miễn phí* trên mọi máy tính."
 kn_label: "Fotollection trong 20 giây: mọi tấm ảnh của chuyến đi, tấm đẹp nhất có ngày và có màu, hai ảnh trên một bản in, ảnh của bạn thành bưu thiếp, mọi khổ in ở dm và Rossmann, rồi xuất ảnh và in. Miễn phí, offline trên macOS, Windows và Linux."
 kn_pause: "Tạm dừng video"
 kn_play: "Phát video"
+
+# The short landing page's results and the Features page (FR-135, 2026-11-15).
+feat_page_title: "Tính năng"
+feat_page_description: "Mọi thứ Fotollection làm, từ ảnh đẹp nhất tới bản in hoàn chỉnh: các chế độ, bưu thiếp, khổ in, preset và LUT, RAW, tốc độ và riêng tư."
+feat_page_lead: "Mọi công cụ, từ lần xem đầu tiên của chuyến đi tới tấm ảnh in trên tay."
+fnav_modes: "Chế độ"
+fnav_print: "In ảnh"
+fnav_speed: "Tốc độ và RAW"
+fnav_looks: "Preset và LUT"
+fnav_compare: "So sánh"
+fnav_privacy: "Riêng tư"
+fnav_develop: "Phím tắt"
+fnav_faq: "Hỏi đáp"
+fn_legal: "Nhãn hiệu và nguồn ảnh"
+res_title: "Xuất thẳng từ app."
+res_lead: "Không phải ảnh dựng: đây là file Fotollection xuất ra, đủ cỡ."
+res_card2_title: "Một tấm bưu thiếp."
+res_card2_text: "Ảnh của bạn một nửa, lời nhắn và địa chỉ nửa kia."
+res_stamp_title: "Ngày chụp, như máy phim."
+res_stamp_text: "Ở góc ảnh, cùng cỡ trên mọi bản in."
+res_frame_title: "Khung thông tin."
+res_frame_text: "Máy ảnh và thông số chụp dưới tấm ảnh."
+res_more: "Mọi tính năng"
+res_card_alt: "Bưu thiếp do Fotollection xuất, có lời nhắn và địa chỉ"
+og_card_features:
+  kicker: "Tính năng"
+  before: "Mọi thứ "
+  accent: "cho bản in"
+  after: ""
+  sub: "Chế độ, bưu thiếp, khổ in, Looks, RAW và tốc độ, offline."
+  shield: "Miễn phí, mã nguồn mở, offline"

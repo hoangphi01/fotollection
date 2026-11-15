@@ -68,6 +68,8 @@ for lang in $langs; do
       *) cwebp -quiet -q 82 -resize 1600 0 "$png" -o "$out/$name.webp" ;;
     esac
   done
+  # The finished prints at full size for the landing page (FR-135), from the same recording.
+  uv run python -I site/screenshots/results.py "$work/dump-$lang" "$lang"
 done
 # The link previews of every page, from the WebP screenshots just written (og.mjs).
 node site/screenshots/og.mjs

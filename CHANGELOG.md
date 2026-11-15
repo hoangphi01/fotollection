@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **A shorter website:** the home page keeps six sections and opens on a finished postcard at full size, the app's own render; the prints themselves (a postcard, a date stamp, an info frame) come large, where the old page showed a whole window too small to read. Everything else moved to a new Features page, with a bar that follows you to each section; the v0.12 makeover moved to the Wiki. Korean speaks in 해요체, Japanese names its sizes as Japan does (はがきサイズ), and the trademarks fold under one line.
+
 ## [0.14.2] - 2026-11-15 — 日本語 and 한국어
 
 ### Highlights

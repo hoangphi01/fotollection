@@ -7,6 +7,7 @@
 {%- assign path_signing = 'code-signing' | url_for: pg.lang | relative_url -%}
 {%- assign path_story = 'story' | url_for: pg.lang | relative_url -%}
 {%- assign path_wiki = 'wiki' | url_for: pg.lang | relative_url -%}
+{%- assign path_features = 'features' | url_for: pg.lang | relative_url -%}
 {%- assign path_en = pg.page_id | url_for: 'en' -%}
 {%- if pg.title_key %}{% assign page_title = t[pg.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
 {%- if pg.description_key %}{% assign page_description = t[pg.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
@@ -130,8 +131,8 @@
           <span>Fotollection</span>
         </a>
         <nav class="nav-links" aria-label="Main">
-          <a href="{{ home }}#features">{{ t.nav_features }}</a>
-          <a href="{{ home }}#privacy">{{ t.nav_privacy }}</a>
+          <a href="{{ path_features }}"{% if pg.page_id == 'features' %} aria-current="page"{% endif %}>{{ t.nav_features }}</a>
+          <a href="{{ path_features }}#privacy">{{ t.nav_privacy }}</a>
           <a href="{{ path_perf }}"{% if pg.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a>
           <a href="{{ path_manual }}"{% if pg.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a>
         </nav>
@@ -242,6 +243,9 @@
         </ol>
         {%- endif %}
         {%- comment %} dm and Rossmann's note only where the home page shows them (languages.yml kiosk); Japan's and Korea's stores have their own (fn_konbini, fn_printingbox). {% endcomment %}
+        {%- comment %} Trademarks and photo credits, folded (FR-135, owner 2026-11-15: the landing page short; every word still on the page for the reader who opens it). {% endcomment %}
+        <details class="fn-legal">
+        <summary>{{ t.fn_legal }}</summary>
         {%- if pg.kiosk == 'eu' %}
         <p>{{ t.fn_cewe }}</p>
         {%- endif %}
@@ -254,6 +258,7 @@
         <p>{{ t.fn_brand }}</p>
         <p>{{ t.fn_notify }}</p>
         <p>{{ t.fn_cite }}</p>
+        </details>
       </div>
     </section>
 
@@ -280,7 +285,7 @@
         <ul class="footer-links">
           <li><a href="{{ site.repo_url }}">{{ t.footer_source }}</a></li>
           <li><a href="{{ home }}#kiosk">{{ t.nav_kiosk }}</a></li>
-          <li><a href="{{ home }}#quality">{{ t.nav_quality }}</a></li>
+          <li><a href="{{ path_features }}#features">{{ t.nav_quality }}</a></li>
           <li><a href="{{ path_download }}">{{ t.nav_download }}</a></li>
           <li><a href="{{ path_download }}#changelog">{{ t.footer_changelog }}</a></li>
           <li><a href="{{ site.repo_url }}/blob/main/LICENSE">{{ t.footer_license }}</a></li>

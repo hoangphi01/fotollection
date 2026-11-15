@@ -1,0 +1,20 @@
+{%- assign t = site.data.i18n[pg.lang] -%}
+{%- comment -%} The Features page's head (FR-135): its title, then a local nav to each section that sticks under the site's header and scrolls sideways on a phone (as Apple's product pages). {%- endcomment -%}
+<section class="section features-head">
+  <div class="wrap">
+    <h1>{{ t.feat_page_title }}</h1>
+    <p class="lead">{{ t.feat_page_lead }}</p>
+  </div>
+</section>
+<nav class="local-nav" aria-label="{{ t.feat_page_title }}">
+  <div class="wrap local-nav-row">
+    <a href="#modes">{{ t.fnav_modes }}</a>
+    <a href="#print">{{ t.fnav_print }}</a>
+    <a href="#features">{{ t.fnav_speed }}</a>
+    <a href="#compat">{{ t.fnav_looks }}</a>
+    <a href="#compare">{{ t.fnav_compare }}</a>
+    <a href="#privacy">{{ t.fnav_privacy }}</a>
+    <a href="#develop">{{ t.fnav_develop }}</a>
+    <a href="#faq">{{ t.fnav_faq }}</a>
+  </div>
+</nav>

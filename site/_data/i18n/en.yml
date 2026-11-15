@@ -117,7 +117,7 @@ cta_desktop_note: "A desktop app: open this page on your computer to install it.
 latest: Latest version
 no_release: Releases are on GitHub
 shot_grid: The library, culled with stars and picks
-features_title: Everything a print order needs
+features_title: "Sharp, fast, and RAW."
 features_lead: Made for the evening after a trip, when hundreds of photos need to become a short stack of prints.
 f_stamp_title: Film-style date stamp
 f_stamp_text: The orange LED date of an old film camera, with the town on the same line and your own words below. Set per photo or for all.
@@ -667,3 +667,34 @@ kn_8: "Offline. *Free* for every desktop."
 kn_label: "Fotollection in 20 seconds: every photo of the trip, the best ones dated and in colour, two photos on one print, your photo as a postcard, every size at dm and Rossmann, then export and print. Free and offline on macOS, Windows and Linux."
 kn_pause: "Pause the video"
 kn_play: "Play the video"
+
+# The short landing page's results and the Features page (FR-135, 2026-11-15).
+feat_page_title: "Features"
+feat_page_description: "Everything Fotollection does, from the best shot to the finished print: modes, postcards, print sizes, presets and LUTs, RAW, speed and privacy."
+feat_page_lead: "Every tool, from the first look at a trip to the print in your hand."
+fnav_modes: "Modes"
+fnav_print: "Print"
+fnav_speed: "Speed and RAW"
+fnav_looks: "Presets and LUTs"
+fnav_compare: "Compare"
+fnav_privacy: "Privacy"
+fnav_develop: "Shortcuts"
+fnav_faq: "FAQ"
+fn_legal: "Trademarks and photo credits"
+res_title: "Straight from the app."
+res_lead: "Not mock-ups: what Fotollection exports, at full size."
+res_card2_title: "A postcard."
+res_card2_text: "Your photo on one half, the message and the address on the other."
+res_stamp_title: "The date, as film did."
+res_stamp_text: "In the corner, the same size on every print."
+res_frame_title: "The info frame."
+res_frame_text: "The camera and its settings under the photo."
+res_more: "All features"
+res_card_alt: "A postcard exported by Fotollection, its message and address typed"
+og_card_features:
+  kicker: "Features"
+  before: "Everything "
+  accent: "for the print"
+  after: ""
+  sub: "Modes, postcards, print sizes, Looks, RAW and speed, offline."
+  shield: "Free, open source, offline"
