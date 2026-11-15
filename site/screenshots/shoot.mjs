@@ -10,7 +10,7 @@
 
 import { axeChecks, baseline, fitReport, layoutChecks, stableChecks } from './checks.mjs'
 import { readFile } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -484,6 +484,7 @@ async function zoomed(page, name, clip) {
   const file = path.join(outDir, `${name}.png`)
   await page.screenshot({ path: file, clip })
   shots.push(file)
+  await phone(page, name, clip)
 }
 
 
@@ -491,6 +492,97 @@ async function save(page, name) {
   const file = path.join(outDir, `${name}.png`)
   await page.screenshot({ path: file })
   shots.push(file)
+  await phone(page, name)
+}
+
+// FR-135, legible on a phone: each picture of the landing and Features pages also comes as a
+// crop of the part worth reading, 4:5, served below 600 px (shot.html). Its smallest text, as
+// shown on a 390 px phone, is at least PHONE_MIN px: the DOM's text inside the crop, each run
+// measured where it is topmost (not behind a dialog's veil), its size scaled from the crop's
+// width to PHONE_SHOWN. Text inside a picture (a photo, a rendered sheet) is the print itself
+// and is not measured. A crop under the minimum fails the run; its facts go to phone.json.
+const PHONE_SHOWN = 328 // site.css .carousel-track, min(84vw, 760px) on a 390 px phone: the narrowest frame
+const PHONE_MIN = 11
+const PHONE_W = 320
+// Top-left corner of each crop in the 1440 × 900 window, on the part the picture is about.
+const PHONE = {
+  grid: [310, 190], // starred tiles, their badges
+  compare: [560, 140], // After, beside Before
+  window: [1120, 210], // the Looks and Faves cards
+  'export-dialog': [170, 60], // the export's presets
+  groups: [40, 270], // the best shot and its bars
+  select: [650, 100], // ticked photos
+  swipe: [310, 60], // In the basket, on the preview
+  estimate: 'zoom', // the size estimate on its button: the middle of the zoomed part
+  tabs: [0, 320], // the folders as tabs, a tab's hint
+  simple: [1120, 60], // the print size card
+  settings: [556, 110], // RAM & cache
+  collage: [1120, 80], // the sheet size card
+  'collage-preview': [1100, 60], // the photos on this sheet
+  postcard: [290, 300], // a postcard sheet
+  'postcard-night': [566, 150], // the card's typed words
+  addassist: [1100, 120], // the address AddAssist filled
+  stamp: 'photo-corner', // the date stamp: the photo's bottom right corner
+  frame: 'photo-foot', // the info frame: the middle of the photo's foot
+  crop: [400, 160], // the crop's size and sharpness
+}
+const phoneFacts = {}
+const smallestText = (clip) => {
+  let min = null
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const el = n.parentElement
+    if (!el || !n.textContent.trim()) continue
+    const style = getComputedStyle(el)
+    if (style.visibility === 'hidden') continue
+    const range = document.createRange()
+    range.selectNodeContents(n)
+    for (const r of range.getClientRects()) {
+      if (r.width < 2 || r.height < 2) continue
+      if (r.right <= clip.x || r.left >= clip.x + clip.width || r.bottom <= clip.y || r.top >= clip.y + clip.height) continue
+      const top = document.elementFromPoint(Math.min(Math.max(r.left + r.width / 2, 0), innerWidth - 1), Math.min(Math.max(r.top + r.height / 2, 0), innerHeight - 1))
+      if (!top || !(top === el || el.contains(top) || top.contains(el))) continue
+      const box = el.getBoundingClientRect()
+      const scale = el.offsetWidth > 0 ? box.width / el.offsetWidth : 1
+      const px = parseFloat(style.fontSize) * scale
+      if (min === null || px < min.px) min = { px, text: n.textContent.trim().slice(0, 40) }
+    }
+  }
+  return min
+}
+async function phone(page, name, zoom) {
+  const m = name.match(/^(.+)-([a-z]{2})-(dark|light)$/)
+  const at = m && PHONE[m[1]]
+  if (!at) return
+  const height = PHONE_W * 1.25
+  let [x, y] = Array.isArray(at) ? at : [0, 0]
+  if (at === 'zoom') [x, y] = [zoom.x + zoom.width / 2 - PHONE_W / 2, zoom.y + zoom.height / 2 - height / 2]
+  if (at === 'photo-corner' || at === 'photo-foot') {
+    // The photo in the preview, wherever its shape puts it in each language's set.
+    const boxes = await page.locator('img[src*="/preview/"]').evaluateAll((imgs) => imgs.map((i) => i.getBoundingClientRect()).map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height })))
+    const photo = boxes.sort((a, b) => b.w * b.h - a.w * a.h)[0]
+    if (!photo) throw new Error(`${name}: no photo in the preview for its phone crop`)
+    // A wide photo's frame is too wide for the crop: its right end, where "Shot on" is.
+    x = at === 'photo-corner' || photo.w > PHONE_W * 1.5 ? photo.x + photo.w - PHONE_W + 8 : photo.x + photo.w / 2 - PHONE_W / 2
+    y = photo.y + photo.h - height + 8
+  }
+  const clip = { x: Math.round(Math.min(Math.max(x, 0), 1440 - PHONE_W)), y: Math.round(Math.min(Math.max(y, 0), 900 - height)), width: PHONE_W, height }
+  const min = await page.evaluate(smallestText, clip)
+  const shown = min === null ? null : Math.round((min.px * PHONE_SHOWN * 100) / clip.width) / 100
+  const crop = `${m[1]}-phone-${m[2]}-${m[3]}`
+  const file = path.join(outDir, `${crop}.png`)
+  await page.screenshot({ path: file, clip })
+  shots.push(file)
+  phoneFacts[crop] = { width: clip.width, height: clip.height, minPx: shown, text: min?.text ?? null }
+  if (process.env.PHONE_WHOLE) {
+    // The check shown failing on the pictures as they were: the whole window in the same frame.
+    const whole = await page.evaluate(smallestText, { x: 0, y: 0, width: 1440, height: 900 })
+    console.log(`${name}: the whole window shows its smallest text at ${whole ? ((whole.px * PHONE_SHOWN) / 1440).toFixed(2) : '-'} px on a phone`)
+  }
+  if (shown !== null && shown < PHONE_MIN) {
+    console.error(`${crop}: its smallest text shows at ${shown} px on a phone ("${min.text}"), under ${PHONE_MIN} px (FR-135)`)
+    process.exitCode = 1
+  }
 }
 
 // Photos by file name, so adding demo photos never changes which one is shown.
@@ -1434,4 +1526,5 @@ for (const language of LANGUAGES) {
 }
 
 await browser.close()
+if (Object.keys(phoneFacts).length) writeFileSync(path.join(outDir, 'phone.json'), `${JSON.stringify(phoneFacts, null, 2)}\n`)
 console.log(shots.map((s) => path.relative(root, s)).join('\n'))

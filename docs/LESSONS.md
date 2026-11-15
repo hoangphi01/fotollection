@@ -96,6 +96,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - A code commit holds its doc; before a push, and after a cherry-pick, run `check-docs-with-code.sh <base>..HEAD`. Kept by: `scripts/check-docs-with-code.sh` in CI.
 - A fact lives in one doc and the others link to it; when a fact moves, grep every doc for its old value. Kept by: no machine check yet.
+- A released version's CHANGELOG section is frozen: new lines under `[Unreleased]`, found by its heading. Kept by: `check-docs-with-code.sh` (released sections).
 - Copy a link from its file name, keep markers out of headings, and say "planned" for what is not built. Kept by: `check-docs.sh` link check, CI's lychee.
 
 ### state-cache
@@ -121,6 +122,22 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-15
+
+### A released version's CHANGELOG section was edited twice in one day (docs)
+
+- **Area:** docs, checks
+- **Seen:** a line meant for `[Unreleased]` was written into v0.14.2's section, which had shipped that morning; earlier the same day a `sed` across the file had changed a size in the same section.
+- **Why:** the edit looked for the line by its words, and the words were in the released section too; nothing checks that a released section stays as it shipped.
+- **Fix:** the line restored in the commit that changed it (not yet pushed); `check-docs-with-code.sh` now fails when a commit, or the working tree, changes anything from the first `## [X.Y.Z]` heading on, a release only adding its section above.
+- **Rule:** new CHANGELOG lines go under `[Unreleased]`, found by that heading, never by words that may also be in a released section.
+
+### The screenshots' build deleted the photo set it was given (site/screenshots/build.sh)
+
+- **Area:** resources-tooling
+- **Seen:** `build.sh` stopped at once with "demo set (en): 0 photos", and the folder of gathered English photos was gone.
+- **Why:** `DEMO_DIRS_EN` pointed at `<work-dir>/demo-src-en`, the folder `build.sh` empties and fills for each language; it emptied its own source before reading it.
+- **Fix:** the photos gathered again from their originals into a new work folder; `build.sh` now refuses a `DEMO_DIRS_<LANG>` that is its own `demo-src-<lang>`.
+- **Rule:** a script's input never lives in the folder the script clears; point it at the originals.
 
 ### The language menu's flags appeared after the menu opened (website)
 

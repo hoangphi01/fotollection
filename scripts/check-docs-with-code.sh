@@ -42,6 +42,30 @@ else
   fi
 fi
 
+# A released version's CHANGELOG section is frozen (LESSONS 2026-11-15, changed twice that day by
+# an edit meant for Unreleased): everything from the first `## [X.Y.Z]` heading on stays as it
+# was, a release only adding its own section above it. $1 the old file's revision, $2 the new
+# file (a revision, or the working tree when empty), $3 a label.
+released() { awk '/^## \[[0-9]/{on=1} on'; }
+frozen() {
+  old=$(git show "$1:CHANGELOG.md" 2>/dev/null | released) || return 0
+  [ -n "$old" ] || return 0
+  if [ -n "$2" ]; then new=$(git show "$2:CHANGELOG.md" | released); else new=$(released < CHANGELOG.md); fi
+  n=$(printf '%s\n' "$old" | wc -l)
+  [ "$(printf '%s\n' "$new" | tail -n "$n")" = "$(printf '%s\n' "$old")" ] && return 0
+  echo "  ✗ $3 changes a released version's section of CHANGELOG.md; new lines go under [Unreleased]:"
+  diff <(printf '%s\n' "$old") <(printf '%s\n' "$new" | tail -n "$n") | head -6 | sed 's/^/      /'
+  return 1
+}
+if [ $# -gt 0 ]; then
+  for c in $(git rev-list --no-merges "$1"); do
+    git diff-tree --no-commit-id --name-only -r "$c" | grep -qx CHANGELOG.md || continue
+    frozen "$c^" "$c" "commit $(git log -1 --format='%h %s' "$c" | cut -c1-70)" || status=1
+  done
+elif ! git diff --quiet HEAD -- CHANGELOG.md; then
+  frozen HEAD "" "the working tree" || status=1
+fi
+
 # The range pushes Rust: CI's first step is `cargo fmt --all --check`, and a red CI hid for two
 # days behind pushes that did not run it (LESSONS), so it is checked before the push too.
 if [ $# -gt 0 ] && git diff --name-only "$1" | grep -qE '\.rs$'; then

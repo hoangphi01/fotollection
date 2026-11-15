@@ -1,6 +1,12 @@
-{%- comment -%} A screenshot of the app in the page's language, dark or light to follow the reader's theme. {%- endcomment -%}
+{%- comment -%} A screenshot of the app in the page's language, dark or light to follow the reader's theme. Below 600 px, the part worth reading at its own size when the picture has a phone crop (FR-135, site/_data/phone.json). {%- endcomment -%}
 {%- assign base = '/assets/img/' | append: include.name | append: '-' | append: pg.assets -%}
+{%- assign phone = include.name | append: '-phone-' | append: pg.assets -%}
+{%- assign phone_key = phone | append: '-light' -%}
 <picture>
+  {%- if site.data.phone[phone_key] %}
+  <source srcset="{{ '/assets/img/' | append: phone | append: '-dark.webp' | relative_url }}" media="(max-width: 600px) and (prefers-color-scheme: dark)" width="640" height="800" />
+  <source srcset="{{ '/assets/img/' | append: phone | append: '-light.webp' | relative_url }}" media="(max-width: 600px)" width="640" height="800" />
+  {%- endif %}
   <source srcset="{{ base | append: '-dark.webp' | relative_url }}" media="(prefers-color-scheme: dark)" />
   <img src="{{ base | append: '-light.webp' | relative_url }}" width="1600" height="1000" alt="{{ include.alt }}" {% if include.eager %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async" />
 </picture>

@@ -1,0 +1,914 @@
+{
+  "addassist-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Writing by hand on photo paper: use a fi"
+  },
+  "addassist-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Writing by hand on photo paper: use a fi"
+  },
+  "addassist-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "アシスト"
+  },
+  "addassist-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "アシスト"
+  },
+  "addassist-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.26,
+    "text": "AddAssist 1.1"
+  },
+  "addassist-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.26,
+    "text": "AddAssist 1.1"
+  },
+  "addassist-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "Địa chỉ"
+  },
+  "addassist-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "Địa chỉ"
+  },
+  "collage-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "600 DPI · Excellent"
+  },
+  "collage-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "600 DPI · Excellent"
+  },
+  "collage-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "各シートには写真が2枚、左右または上下に入ります。シートは最初の写真に合わせて向"
+  },
+  "collage-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "各シートには写真が2枚、左右または上下に入ります。シートは最初の写真に合わせて向"
+  },
+  "collage-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.26,
+    "text": "3,543 × 2,362 px(8 MP)"
+  },
+  "collage-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.26,
+    "text": "3,543 × 2,362 px(8 MP)"
+  },
+  "collage-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.12,
+    "text": "Đen"
+  },
+  "collage-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.12,
+    "text": "Đen"
+  },
+  "collage-preview-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "P1068256.JPG + P1068261.JPG"
+  },
+  "collage-preview-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "P1068256.JPG + P1068261.JPG"
+  },
+  "collage-preview-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "IMG_4453.HEIC + Gokurakuji.JPG"
+  },
+  "collage-preview-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "IMG_4453.HEIC + Gokurakuji.JPG"
+  },
+  "collage-preview-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "DSCF2068.JPG + IMG_1471.JPG"
+  },
+  "collage-preview-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "DSCF2068.JPG + IMG_1471.JPG"
+  },
+  "collage-preview-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "P1068256.JPG + P1068261.JPG"
+  },
+  "collage-preview-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "P1068256.JPG + P1068261.JPG"
+  },
+  "compare-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.38,
+    "text": "After"
+  },
+  "compare-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.38,
+    "text": "After"
+  },
+  "compare-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "補正後"
+  },
+  "compare-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "補正後"
+  },
+  "compare-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.33,
+    "text": "이후"
+  },
+  "compare-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.33,
+    "text": "이후"
+  },
+  "compare-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.35,
+    "text": "Sau"
+  },
+  "compare-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.35,
+    "text": "Sau"
+  },
+  "crop-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "crop-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "crop-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "crop-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "crop-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "crop-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "crop-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "crop-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "estimate-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "City"
+  },
+  "estimate-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "City"
+  },
+  "estimate-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "v"
+  },
+  "estimate-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "v"
+  },
+  "estimate-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "v"
+  },
+  "estimate-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "v"
+  },
+  "estimate-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.21,
+    "text": "Thành phố"
+  },
+  "estimate-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.21,
+    "text": "Thành phố"
+  },
+  "export-dialog-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Export 33 photos"
+  },
+  "export-dialog-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Export 33 photos"
+  },
+  "export-dialog-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "7枚を書き出し"
+  },
+  "export-dialog-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "7枚を書き出し"
+  },
+  "export-dialog-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "사진 28장 내보내기"
+  },
+  "export-dialog-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "사진 28장 내보내기"
+  },
+  "export-dialog-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Xuất 33 ảnh"
+  },
+  "export-dialog-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Xuất 33 ảnh"
+  },
+  "frame-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "frame-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "frame-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "frame-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "frame-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "frame-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "frame-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "frame-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "grid-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.23,
+    "text": "2018-09-21 22:28"
+  },
+  "grid-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.23,
+    "text": "2018-09-21 22:28"
+  },
+  "grid-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.27,
+    "text": "2026-06-06 14:57"
+  },
+  "grid-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.27,
+    "text": "2026-06-06 14:57"
+  },
+  "grid-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.26,
+    "text": "2026-11-07 07:52"
+  },
+  "grid-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.26,
+    "text": "2026-11-07 07:52"
+  },
+  "grid-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.23,
+    "text": "2018-09-21 22:28"
+  },
+  "grid-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.23,
+    "text": "2018-09-21 22:28"
+  },
+  "groups-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "Best"
+  },
+  "groups-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "Best"
+  },
+  "groups-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "P1057694.JPG"
+  },
+  "groups-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "P1057694.JPG"
+  },
+  "groups-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "P1057694.JPG"
+  },
+  "groups-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "P1057694.JPG"
+  },
+  "groups-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "Đẹp nhất"
+  },
+  "groups-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "Đẹp nhất"
+  },
+  "postcard-night-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-night-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-night-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-night-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-night-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-night-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-night-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-night-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "postcard-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "select-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.22,
+    "text": "2021-01-23 06:13"
+  },
+  "select-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.22,
+    "text": "2021-01-23 06:13"
+  },
+  "select-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.26,
+    "text": "2025-07-10 17:51"
+  },
+  "select-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.26,
+    "text": "2025-07-10 17:51"
+  },
+  "select-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.24,
+    "text": "2026-11-07 08:44"
+  },
+  "select-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.24,
+    "text": "2026-11-07 08:44"
+  },
+  "select-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.22,
+    "text": "2021-01-23 06:13"
+  },
+  "select-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.22,
+    "text": "2021-01-23 06:13"
+  },
+  "settings-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "15 %"
+  },
+  "settings-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "15 %"
+  },
+  "settings-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "15 %"
+  },
+  "settings-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "15 %"
+  },
+  "settings-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "15 %"
+  },
+  "settings-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.23,
+    "text": "15 %"
+  },
+  "settings-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "Đang giữ"
+  },
+  "settings-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "Đang giữ"
+  },
+  "simple-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Orientation"
+  },
+  "simple-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "Orientation"
+  },
+  "simple-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.29,
+    "text": "IMG_4329.HEIC"
+  },
+  "simple-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.29,
+    "text": "IMG_4329.HEIC"
+  },
+  "simple-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.29,
+    "text": "DSC06264.JPG"
+  },
+  "simple-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.29,
+    "text": "DSC06264.JPG"
+  },
+  "simple-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "In ảnh"
+  },
+  "simple-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "In ảnh"
+  },
+  "stamp-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "stamp-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "stamp-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "stamp-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "stamp-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "stamp-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "stamp-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "stamp-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": null,
+    "text": null
+  },
+  "swipe-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "In the basket"
+  },
+  "swipe-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.24,
+    "text": "In the basket"
+  },
+  "swipe-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "バスケット内"
+  },
+  "swipe-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "バスケット内"
+  },
+  "swipe-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "바구니에 있음"
+  },
+  "swipe-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.3,
+    "text": "바구니에 있음"
+  },
+  "swipe-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "Đã trong giỏ"
+  },
+  "swipe-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.27,
+    "text": "Đã trong giỏ"
+  },
+  "tabs-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.01,
+    "text": "2"
+  },
+  "tabs-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.01,
+    "text": "2"
+  },
+  "tabs-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "tabs-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "tabs-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "tabs-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "tabs-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.01,
+    "text": "2"
+  },
+  "tabs-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.01,
+    "text": "2"
+  },
+  "window-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "·"
+  },
+  "window-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "·"
+  },
+  "window-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.19,
+    "text": "8ビット"
+  },
+  "window-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.19,
+    "text": "8ビット"
+  },
+  "window-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "8비트"
+  },
+  "window-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "8비트"
+  },
+  "window-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "·"
+  },
+  "window-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.18,
+    "text": "·"
+  }
+}

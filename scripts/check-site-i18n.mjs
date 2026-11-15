@@ -123,6 +123,28 @@ for (const f of readdirSync(path.join(site, 'assets/img'))) {
   const [w, h] = webpSize(path.join(site, 'assets/img', f))
   if (w !== 1600 || h !== 1000) problems.push(`site/assets/img/${f} is ${w} × ${h}: a carousel picture is 1600 × 1000, the whole window (site/screenshots/shoot.mjs)`)
 }
+// Legible on a phone (FR-135): every picture of the landing and Features pages (the carousels,
+// the Features page's own) has its phone crop in each language and theme, 640 × 800, whose
+// smallest text shows at 11 px or more on a 390 px phone (site/_data/phone.json, measured by
+// site/screenshots/shoot.mjs).
+const featuresBody = readFileSync(path.join(site, '_includes/features-body.html'), 'utf8')
+const phoneShots = new Set([...carouselShots, ...[...featuresBody.matchAll(/shot\.html name="([\w-]+)"/g)].map((m) => m[1]), ...[...featuresBody.matchAll(/assign rows = "([^"]+)"/g)].flatMap((m) => m[1].split(','))])
+const phoneFile = path.join(site, '_data/phone.json')
+const phoneFacts = existsSync(phoneFile) ? JSON.parse(readFileSync(phoneFile, 'utf8')) : {}
+for (const f of readdirSync(path.join(site, 'assets/img'))) {
+  const m = f.match(/^(.+)-([a-z]{2})-light\.webp$/)
+  if (!m || !phoneShots.has(m[1])) continue
+  for (const theme of ['dark', 'light']) {
+    const crop = `${m[1]}-phone-${m[2]}-${theme}`
+    const file = path.join(site, 'assets/img', `${crop}.webp`)
+    if (!existsSync(file)) { problems.push(`site/assets/img/${crop}.webp is missing: a picture of the landing or Features page has its phone crop (site/screenshots/build.sh, FR-135)`); continue }
+    const [w, h] = webpSize(file)
+    if (w !== 640 || h !== 800) problems.push(`site/assets/img/${crop}.webp is ${w} × ${h}: a phone crop is 640 × 800`)
+    const fact = phoneFacts[crop]
+    if (!fact) problems.push(`site/_data/phone.json has no ${crop}: its text was not measured (site/screenshots/build.sh)`)
+    else if (fact.minPx !== null && fact.minPx < 11) problems.push(`${crop}: its smallest text shows at ${fact.minPx} px on a phone, under 11 px (FR-135)`)
+  }
+}
 // A language with its own keynote cut (languages.yml `keynote`) has both cuts, both codecs and
 // both posters (site/screenshots/keynote.mjs --lang).
 for (const [c, k] of Object.entries(keynoteOf)) {

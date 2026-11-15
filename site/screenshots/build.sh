@@ -47,6 +47,13 @@ for lang in $langs; do
     dirs=("$demo" ${owner:+"$owner"})
   fi
   folder="$work/demo-src-$lang"
+  # The folder is emptied below: a source inside it would be deleted before it is read (LESSONS 2026-11-15).
+  for dir in "${dirs[@]}"; do
+    if [ -d "$dir" ] && [ "$(cd "$dir" && pwd)" = "$folder" ]; then
+      echo "build.sh: $dir is the folder this script empties for $lang; point DEMO_DIRS_$(echo "$lang" | tr '[:lower:]' '[:upper:]') at the original photos" >&2
+      exit 1
+    fi
+  done
   rm -rf "$folder" && mkdir -p "$folder"
   while read -r stem; do
     case "$stem" in ''|'#'*) continue ;; esac
@@ -65,9 +72,12 @@ for lang in $langs; do
     name=$(basename "$png" .png)
     case "$name" in
       check-*) ;; # for checking controls by eye; not on the page
+      *-phone-*) cwebp -quiet -q 82 -resize 640 0 "$png" -o "$out/$name.webp" ;; # FR-135, 640 × 800
       *) cwebp -quiet -q 82 -resize 1600 0 "$png" -o "$out/$name.webp" ;;
     esac
   done
+  # The phone crops' measures (FR-135), merged into the site's data, for shot.html and the check.
+  node -e 'const fs = require("fs"); const [to, from] = process.argv.slice(1); const old = fs.existsSync(to) ? JSON.parse(fs.readFileSync(to, "utf8")) : {}; const all = { ...old, ...JSON.parse(fs.readFileSync(from, "utf8")) }; fs.writeFileSync(to, JSON.stringify(Object.fromEntries(Object.entries(all).sort()), null, 2) + "\n")' site/_data/phone.json "$work/png-$lang/phone.json"
   # The finished prints at full size for the landing page (FR-135), from the same recording.
   uv run python -I site/screenshots/results.py "$work/dump-$lang" "$lang"
 done
