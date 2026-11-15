@@ -1,0 +1,8 @@
+{%- comment %} One finished print (results.html, the hero): the app's own render at its size, its words, and who took the photo with what (site/_data/results.json). {% endcomment -%}
+{%- assign r = site.data.results[include.set] -%}
+{%- assign key_title = 'res_' | append: include.name | append: '_title' -%}
+{%- assign key_text = 'res_' | append: include.name | append: '_text' -%}
+<figure class="result result-{{ include.name }}">
+  <img src="{{ '/assets/img/results/' | append: include.name | append: '-' | append: include.set | append: '.webp' | relative_url }}" width="{{ r.sizes[include.name][0] }}" height="{{ r.sizes[include.name][1] }}" alt="{% if include.alt %}{{ include.alt }}{% else %}{{ t[key_title] }}{% endif %}" {% if include.eager %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async" />
+  <figcaption>{% if include.words %}<strong>{{ t[key_title] }}</strong> {{ t[key_text] }}{% endif %}<span class="result-credit">{{ t.res_photo_by }} {{ r.credits[include.name] }}</span></figcaption>
+</figure>

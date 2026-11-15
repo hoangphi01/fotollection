@@ -932,16 +932,19 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 /* The short landing page (FR-135, owner 2026-11-15): the finished prints at full size, as the
    app exports them; a print lies on the page with a paper's shadow, no frame of the app around it. */
 .hero-result { margin: 40px auto 0; max-width: 1100px; }
-.hero-result img { display: block; width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgb(0 0 0 / 12%), 0 24px 60px rgb(0 0 0 / 28%); }
+.hero-result .result img { box-shadow: 0 2px 4px rgb(0 0 0 / 12%), 0 24px 60px rgb(0 0 0 / 28%); }
 .results-section h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 12px; }
-.results-row { display: grid; gap: 40px 32px; margin-top: 36px; }
+.results-row { display: grid; gap: 40px 32px; margin-top: 40px; }
+.results-col { display: grid; gap: 40px; align-content: start; }
 .result { margin: 0; }
 .result img { display: block; width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgb(0 0 0 / 10%), 0 18px 44px rgb(0 0 0 / 22%); }
 .result figcaption { margin-top: 14px; max-width: 48ch; color: var(--ink-2); font-size: 1.02rem; text-wrap: pretty; }
 .result figcaption strong { color: var(--ink); }
+.result-credit { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted); }
+.hero-result .result-credit { margin-top: 0; }
 @media (min-width: 760px) {
-  .results-row { grid-template-columns: 1fr 1fr; align-items: end; }
-  .result-card2 { grid-column: 1 / -1; }
+  .results-cols-2 { grid-template-columns: 1fr 1fr; }
+  .results-cols-3 { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* The Features page (FR-135): its local nav sticks under the site's header and scrolls sideways

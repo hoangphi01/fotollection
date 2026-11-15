@@ -16,10 +16,8 @@
         {{ t.works_on }} · {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
       </p>
     </div>
-    {%- assign set = pg.assets | default: 'en' -%}
-    <figure class="hero-result">
-      <img src="{{ '/assets/img/results/card-' | append: set | append: '.webp' | relative_url }}" width="{{ site.data.results[set].card[0] }}" height="{{ site.data.results[set].card[1] }}" alt="{{ t.res_card_alt }}" fetchpriority="high" decoding="async" />
-    </figure>
+    {%- assign hero_set = pg.assets | default: 'en' -%}
+    <div class="hero-result">{% include result.html name="card" set=hero_set alt=t.res_card_alt eager=true %}</div>
   </div>
 </section>
 

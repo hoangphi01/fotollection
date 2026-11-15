@@ -1,74 +1,186 @@
 {
-  "en": {
-    "card": [
-      1600,
-      1067
-    ],
-    "card2": [
-      1600,
-      1067
-    ],
-    "stamp": [
-      1066,
-      1600
-    ],
-    "frame": [
-      1067,
-      1600
-    ]
+ "en": {
+  "sizes": {
+   "card": [
+    1600,
+    1067
+   ],
+   "card2": [
+    1600,
+    1067
+   ],
+   "stamp": [
+    1066,
+    1600
+   ],
+   "sheet": [
+    1600,
+    1067
+   ],
+   "frame": [
+    1067,
+    1600
+   ]
   },
-  "ja": {
-    "card": [
-      1600,
-      1081
-    ],
-    "card2": [
-      1600,
-      1081
-    ],
-    "stamp": [
-      1067,
-      1600
-    ],
-    "frame": [
-      1067,
-      1600
-    ]
+  "credits": {
+   "card": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "card2": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "stamp": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "sheet": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "frame": "@hoangphi01 \u00b7 Panasonic DC-GX9"
   },
-  "ko": {
-    "card": [
-      1600,
-      1074
+  "rows": [
+   [
+    [
+     "stamp"
     ],
-    "card2": [
-      1600,
-      1074
-    ],
-    "stamp": [
-      1066,
-      1600
-    ],
-    "frame": [
-      1600,
-      1067
+    [
+     "frame"
     ]
+   ],
+   [
+    [
+     "sheet"
+    ]
+   ]
+  ]
+ },
+ "ja": {
+  "sizes": {
+   "card": [
+    1600,
+    1081
+   ],
+   "card2": [
+    1600,
+    1081
+   ],
+   "stamp": [
+    1067,
+    1600
+   ],
+   "sheet": [
+    1600,
+    1067
+   ],
+   "frame": [
+    1067,
+    1600
+   ]
   },
-  "vi": {
-    "card": [
-      1600,
-      1067
+  "credits": {
+   "card": "@hoangphi01 \u00b7 Apple iPhone 16 Pro",
+   "card2": "@hoangphi01 \u00b7 SONY ILCE-6400",
+   "stamp": "@hoangphi01 \u00b7 Apple iPhone 16 Pro",
+   "sheet": "@hoangphi01 \u00b7 Apple iPhone 15",
+   "frame": "@hoangphi01 \u00b7 Apple iPhone 16 Pro"
+  },
+  "rows": [
+   [
+    [
+     "stamp"
     ],
-    "card2": [
-      1600,
-      1067
-    ],
-    "stamp": [
-      1066,
-      1600
-    ],
-    "frame": [
-      1067,
-      1600
+    [
+     "frame"
     ]
-  }
+   ],
+   [
+    [
+     "sheet"
+    ]
+   ]
+  ]
+ },
+ "ko": {
+  "sizes": {
+   "card": [
+    1600,
+    1074
+   ],
+   "card2": [
+    1600,
+    1074
+   ],
+   "stamp": [
+    1066,
+    1600
+   ],
+   "sheet": [
+    1067,
+    1600
+   ],
+   "frame": [
+    1600,
+    1067
+   ]
+  },
+  "credits": {
+   "card": "@9adox \u00b7 FUJIFILM XF10",
+   "card2": "@9adox \u00b7 FUJIFILM XF10",
+   "stamp": "@imyourctus",
+   "sheet": "@9adox \u00b7 FUJIFILM XF10",
+   "frame": "@9adox \u00b7 FUJIFILM XF10"
+  },
+  "rows": [
+   [
+    [
+     "stamp"
+    ],
+    [
+     "sheet"
+    ]
+   ],
+   [
+    [
+     "frame"
+    ]
+   ]
+  ]
+ },
+ "vi": {
+  "sizes": {
+   "card": [
+    1600,
+    1067
+   ],
+   "card2": [
+    1600,
+    1067
+   ],
+   "stamp": [
+    1066,
+    1600
+   ],
+   "sheet": [
+    1600,
+    1067
+   ],
+   "frame": [
+    1067,
+    1600
+   ]
+  },
+  "credits": {
+   "card": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "card2": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "stamp": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "sheet": "@hoangphi01 \u00b7 Panasonic DC-GX9",
+   "frame": "@hoangphi01 \u00b7 Panasonic DC-GX9"
+  },
+  "rows": [
+   [
+    [
+     "stamp"
+    ],
+    [
+     "frame"
+    ]
+   ],
+   [
+    [
+     "sheet"
+    ]
+   ]
+  ]
+ }
 }

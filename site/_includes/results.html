@@ -1,21 +1,23 @@
 {%- comment %} The finished prints at full size (FR-135, owner 2026-11-15: "where the photo is beautiful, show it large"): the app's own renders of a postcard, a photo with its date stamp and one in its info frame, from the page's language's recording (site/screenshots/results.py, site/_data/results.json), never a mock-up; then the way to every feature. {% endcomment -%}
 {%- assign res_set = pg.assets | default: 'en' -%}
-{%- assign sizes = site.data.results[res_set] -%}
-{%- assign res_names = "card2,stamp,frame" | split: "," -%}
 <section class="section results-section" id="results">
   <div class="wrap">
     <h2>{{ t.res_title }}</h2>
     <p class="lead">{{ t.res_lead }}</p>
     <div class="results-row">
-      {%- for name in res_names %}
-      {%- assign key_title = 'res_' | append: name | append: '_title' -%}
-      {%- assign key_text = 'res_' | append: name | append: '_text' -%}
-      <figure class="result result-{{ name }}">
-        <img src="{{ '/assets/img/results/' | append: name | append: '-' | append: res_set | append: '.webp' | relative_url }}" width="{{ sizes[name][0] }}" height="{{ sizes[name][1] }}" alt="{{ t[key_title] }}" loading="lazy" decoding="async" />
-        <figcaption><strong>{{ t[key_title] }}</strong> {{ t[key_text] }}</figcaption>
-      </figure>
+      {% include result.html name="card2" set=res_set words=true %}
+    </div>
+    {%- for row in site.data.results[res_set].rows %}
+    <div class="results-row results-cols-{{ row.size }}">
+      {%- for col in row %}
+      <div class="results-col">
+        {%- for name in col %}
+        {% include result.html name=name set=res_set words=true %}
+        {%- endfor %}
+      </div>
       {%- endfor %}
     </div>
+    {%- endfor %}
     <p class="systems-link"><a class="more" href="{{ path_features }}">{{ t.res_more }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>

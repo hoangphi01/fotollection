@@ -3,11 +3,12 @@
 
     uv run python -I site/screenshots/results.py <dump> <lang>
 
-Copies four renders the real app made into the recording <dump> (src-tauri/src/demo.rs: the
-postcards, a photo with its date stamp, one in its info frame) to
-site/assets/img/results/<name>-<lang>.webp, and records each one's size in
-site/_data/results.json, so the page gives every picture its width and height (LESSONS: a lazy
-image with no height moves the anchors below it). Never retouched elsewhere.
+Copies the renders the real app made into the recording <dump> (src-tauri/src/demo.rs: the
+postcards, a photo with its date stamp, a two-photo collage sheet, one in its info frame) to
+site/assets/img/results/<name>-<lang>.webp, and records in site/_data/results.json each one's
+size, so the page gives every picture its width and height (LESSONS: a lazy image with no
+height moves the anchors below it), and the rows they are laid in, from their shapes, so no
+corner is left empty (owner, 2026-11-15). Never retouched elsewhere.
 """
 
 import json
@@ -18,18 +19,55 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 
-# Per recording language: (render folder, photo stem) of each result. The postcards are the
-# language's demo cards (demo.rs `postcard_demos`); the stamp and the frame use photos the
-# set shows best.
+# Per recording language: (render folder, photo stem or the sheet's two stems) of each result.
+# The postcards are the language's demo cards (demo.rs `postcard_demos`); the stamp, the sheet
+# and the frame use photos the set shows best, none repeating the postcards' places.
 PICKS = {
     "ja": {"card": ("sheet-postcard-full", "IMG_5773"), "card2": ("sheet-postcard", "Gokurakuji"),
-           "stamp": ("preview/stamp", "IMG_5745"), "frame": ("preview/frame", "IMG_4329")},
+           "stamp": ("preview/stamp", "IMG_5745"), "sheet": ("sheet", ("IMG_4329", "IMG_4421")),
+           "frame": ("preview/frame", "IMG_5758")},
     "ko": {"card": ("sheet-postcard-full", "DSCF2041"), "card2": ("sheet-postcard", "DSCF1990"),
-           "stamp": ("preview/stamp", "IMG_1469"), "frame": ("preview/frame", "DSCF2022")},
+           "stamp": ("preview/stamp", "IMG_1469"), "sheet": ("sheet", ("DSCF2023", "DSCF2041")),
+           "frame": ("preview/frame", "DSCF2022")},
     "en": {"card": ("sheet-postcard-full", "P1068073"), "card2": ("sheet-postcard", "P1067865"),
-           "stamp": ("preview/stamp", "P1067865"), "frame": ("preview/frame", "P1068073")},
+           "stamp": ("preview/stamp", "P1067865"), "sheet": ("sheet", ("P1067819", "P1067829")),
+           "frame": ("preview/frame", "P1068073")},
 }
 PICKS["vi"] = PICKS["en"]
+
+# Who took each photo, by file name (credited under each print, owner 2026-11-15; the page's
+# fn_photos note says the rest). The camera comes from the photo's EXIF in the recording.
+def author(stem: str) -> str:
+    if stem.startswith("DSCF"):
+        return "@9adox"
+    if stem.startswith("IMG_14"):
+        return "@imyourctus"
+    return "@hoangphi01"
+
+
+def source(dump: Path, ids: dict, folder: str, stem) -> Path:
+    if isinstance(stem, tuple):
+        a, b = (ids[s] for s in stem)
+        for name in (f"{a}-{b}.jpg", f"{b}-{a}.jpg"):
+            if (dump / "img" / folder / name).exists():
+                return dump / "img" / folder / name
+        sys.exit(f"results.py: no sheet of {stem[0]} and {stem[1]} in the recording")
+    return dump / "img" / folder / f"{ids[stem]}.jpg"
+
+
+def rows(sizes: dict) -> list:
+    """The stamp, the sheet and the frame in rows of columns, by shape: two upright prints share
+    a row and a wide one takes the next; one upright beside two wide ones stacked."""
+    names = ["stamp", "sheet", "frame"]
+    tall = [n for n in names if sizes[n][1] > sizes[n][0]]
+    wide = [n for n in names if n not in tall]
+    if len(tall) == 3:
+        return [[[n] for n in tall]]
+    if len(tall) == 2:
+        return [[[tall[0]], [tall[1]]], [[wide[0]]]]
+    if len(tall) == 1:
+        return [[[tall[0]], wide]]
+    return [[[wide[0]], [wide[1]]], [[wide[2]]]]
 
 
 def main() -> None:
@@ -40,17 +78,20 @@ def main() -> None:
     out.mkdir(parents=True, exist_ok=True)
     data_file = ROOT / "site/_data/results.json"
     data = json.loads(data_file.read_text()) if data_file.exists() else {}
-    sizes = {}
+    cameras = {p["fileName"].rsplit(".", 1)[0]: p.get("camera") or "" for p in fixtures["common"]["list_photos"]["photos"]}
+    sizes, credits = {}, {}
     for name, (folder, stem) in PICKS[lang].items():
-        if stem not in ids:
-            sys.exit(f"results.py: {lang}: {stem} is not in the recording")
-        source = dump / "img" / folder / f"{ids[stem]}.jpg"
-        image = Image.open(source).convert("RGB")
+        first = stem[0] if isinstance(stem, tuple) else stem
+        credits[name] = " · ".join(x for x in (author(first), cameras.get(first, "")) if x)
+        for s in stem if isinstance(stem, tuple) else (stem,):
+            if s not in ids:
+                sys.exit(f"results.py: {lang}: {s} is not in the recording")
+        image = Image.open(source(dump, ids, folder, stem)).convert("RGB")
         image.save(out / f"{name}-{lang}.webp", quality=84, method=6)
         sizes[name] = list(image.size)
-    data[lang] = sizes
-    data_file.write_text(json.dumps(dict(sorted(data.items())), indent=2) + "\n")
-    print(f"results ({lang}): {', '.join(f'{k} {w}×{h}' for k, (w, h) in sizes.items())}")
+    data[lang] = {"sizes": sizes, "credits": credits, "rows": rows(sizes)}
+    data_file.write_text(json.dumps(dict(sorted(data.items())), indent=1) + "\n")
+    print(f"results ({lang}): {', '.join(f'{k} {w}×{h}' for k, (w, h) in sizes.items())}; rows {data[lang]['rows']}")
 
 
 if __name__ == "__main__":
