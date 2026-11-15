@@ -571,6 +571,7 @@ pub async fn sheet_info(app: AppHandle, sheet: SheetPair) -> Result<SheetInfo, I
             [Some(a), b],
             turned,
             &settings,
+            first.edits.postcard.as_ref(),
         ))
     })
     .await
@@ -625,11 +626,13 @@ pub fn cell_geometry(
     } else {
         [other, Some(size)]
     };
-    let layout = sheet::layout(
+    // As the print lays it out: a card's line under the photo only when its message is there.
+    let layout = sheet::layout_with_text(
         sheet::sheet_print(settings),
         photos,
         turned,
         &settings.collage,
+        first.edits.postcard.as_ref(),
     );
     let index = usize::from(sheet.first != record.id);
     let cell = layout.cells[index].ok_or_else(|| IpcError::internal("an empty cell"))?;

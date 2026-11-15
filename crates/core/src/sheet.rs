@@ -308,6 +308,41 @@ pub fn layout(
     turned: bool,
     settings: &CollageSettings,
 ) -> SheetLayout {
+    layout_banded(print, photos, turned, settings, true)
+}
+
+/// [`layout`] for a sheet whose postcard text is known: a Japanese or Korean card keeps the
+/// line under its photo only when the message goes there; a message in the card's box, or
+/// none, gives that room to the photo (owner, 2026-11-15: "the photo should grow"). The crop
+/// editor, the panel and the print all use it, so the crop and the print agree.
+pub fn layout_with_text(
+    print: PrintSize,
+    photos: [Option<(u32, u32)>; 2],
+    turned: bool,
+    settings: &CollageSettings,
+    text: Option<&crate::library::PostcardText>,
+) -> SheetLayout {
+    let banded = layout(print, photos, turned, settings);
+    if banded.band.is_none()
+        || message_places(&banded, &settings.postcard, text)
+            .0
+            .is_some()
+    {
+        return banded;
+    }
+    layout_banded(print, photos, turned, settings, false)
+}
+
+/// [`layout`], the line under a Japanese or Korean card's photo kept or not (`band`).
+#[allow(clippy::too_many_lines)]
+fn layout_banded(
+    print: PrintSize,
+    photos: [Option<(u32, u32)>; 2],
+    turned: bool,
+    settings: &CollageSettings,
+    band: bool,
+) -> SheetLayout {
+    let keep_band = band;
     let first = photos[0].or(photos[1]).unwrap_or((3, 2));
     let postcard = settings.postcard.enabled;
     // A postcard is held the way the user chose; its photo takes the left or bottom half.
@@ -356,7 +391,11 @@ pub fn layout(
         // Always kept, a full-bleed photo stopping above it: Japan Post wants a message on the
         // address side in its lower half (§23(4); owner, 2026-11-15), and a Korean card's
         // writing half has no room left for one.
-        let band = (japan || korea).then(|| {
+        if korea && !keep_band {
+            // Without the line, the photo still stops short of the zone and its words.
+            photo_half.height -= zone;
+        }
+        let band = ((japan || korea) && keep_band).then(|| {
             let band = if settings.fill {
                 HAGAKI_FILL_BAND_MM
             } else {
@@ -568,8 +607,8 @@ pub fn postcard_fit(
     if japan || postcard.card == crate::settings::PostcardDestination::Korea {
         // The line under the photo takes a message that fits it, the box the rest; a message
         // neither holds is cut under the photo.
-        let (under, in_box) = message_places(&sheet, settings, Some(text));
-        let fit = card_fit(&sheet, settings, Some(text), in_box).unwrap_or_default();
+        let (under, in_box) = message_places(&sheet, postcard, Some(text));
+        let fit = card_fit(&sheet, postcard, Some(text), in_box).unwrap_or_default();
         let cut_under =
             under.is_some_and(|m| sheet.band.is_some_and(|b| !fits_band(postcard, b, m)));
         return crate::postcard::Fit {
@@ -593,12 +632,14 @@ pub fn info(
     photos: [Option<SheetPhoto>; 2],
     turned: bool,
     settings: &RenderSettings,
+    text: Option<&crate::library::PostcardText>,
 ) -> SheetInfo {
-    let sheet = layout(
+    let sheet = layout_with_text(
         print,
         photos.map(|p| p.map(|(_, size, _, _)| size)),
         turned,
         &settings.collage,
+        text,
     );
     let inset = border_inset(settings);
     // Pixels a millimetre on the print, the export's density (`render_sheet`).
@@ -768,7 +809,8 @@ pub fn render_sheet_with(
     let paper = postcard_paper(settings);
     let settings = &*paper;
     let sizes = sources.map(|s| s.map(|s| (s.image.width, s.image.height)));
-    let sheet = layout(print, sizes, turned, &settings.collage);
+    let text = sources[0].and_then(|s| s.postcard);
+    let sheet = layout_with_text(print, sizes, turned, &settings.collage, text);
     let inset = border_inset(settings);
     let input =
         |source: &CellSource<'_>, cell: &CellLayout, own: &RenderSettings, max: Option<u32>| {
@@ -881,10 +923,9 @@ pub fn render_sheet_with(
 /// else the line under the photo again, cut (the panel says so); (under the photo, in the box).
 fn message_places<'a>(
     sheet: &SheetLayout,
-    settings: &RenderSettings,
+    postcard: &crate::settings::PostcardSettings,
     text: Option<&'a crate::library::PostcardText>,
 ) -> (Option<&'a str>, Option<&'a str>) {
-    let postcard = &settings.collage.postcard;
     let Some(message) = text
         .map(|t| t.message.as_str())
         .filter(|m| !m.trim().is_empty())
@@ -897,7 +938,7 @@ fn message_places<'a>(
     {
         return (Some(message), None);
     }
-    match card_fit(sheet, settings, text, Some(message)) {
+    match card_fit(sheet, postcard, text, Some(message)) {
         Some(fit) if !fit.message_cut => (None, Some(message)),
         _ if sheet.band.is_some() => (Some(message), None),
         _ => (None, Some(message)),
@@ -917,20 +958,20 @@ fn fits_band(postcard: &crate::settings::PostcardSettings, band: RectMm, message
 /// A Japanese or Korean card drawn small, `in_box` in its message box: what it leaves out.
 fn card_fit(
     sheet: &SheetLayout,
-    settings: &RenderSettings,
+    postcard: &crate::settings::PostcardSettings,
     text: Option<&crate::library::PostcardText>,
     in_box: Option<&str>,
 ) -> Option<crate::postcard::Fit> {
     const DENSITY: f32 = 3.0;
     let card = sheet.card?;
-    let postcard = &settings.collage.postcard;
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let (w, h) = (
         (sheet.width * DENSITY) as u32 + 1,
         (sheet.height * DENSITY) as u32 + 1,
     );
     let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])?;
-    let paper = settings.border_color;
+    // A postcard is white paper (`postcard_paper`).
+    let paper = BorderColor::White;
     let fit = if postcard.card == crate::settings::PostcardDestination::Korea {
         let spec = crate::korea::KoreaSpec {
             card,
@@ -969,7 +1010,7 @@ fn draw_card(
     card_font: Option<&ab_glyph::FontArc>,
 ) {
     let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
-    let (under_photo, in_box) = message_places(sheet, settings, text);
+    let (under_photo, in_box) = message_places(sheet, &settings.collage.postcard, text);
     if let Some(card) = sheet.card {
         if japan && !sheet.side_by_side {
             crate::hagaki::draw_upright(
@@ -1621,6 +1662,7 @@ mod tests {
                 ],
                 false,
                 &settings,
+                None,
             );
             assert!(
                 sheet.width_px.abs_diff(out.width) <= 1
@@ -1647,6 +1689,7 @@ mod tests {
             ],
             false,
             &settings,
+            None,
         );
         assert!(sheet.dpi <= 600 && sheet.width_px > 2000, "{sheet:?}");
         assert_eq!(sheet.quality, DpiBand::Excellent);
@@ -1667,6 +1710,7 @@ mod tests {
             ],
             false,
             &settings,
+            None,
         );
         let a = &sheet.cells[0];
         assert_eq!((a.area_width_mm, a.area_height_mm), (60, 90));
@@ -2132,6 +2176,7 @@ mod tests {
                 [Some((PhotoId(1), (4000, 6000), Some(frame), 0.0)), None],
                 false,
                 &settings,
+                None,
             )
             .cells[0]
                 .dpi
@@ -2394,7 +2439,7 @@ mod tests {
             };
             let print = sheet_print(&settings);
             let sheet = layout(print, [Some((1000, 1000)), None], false, &settings.collage);
-            let (under, in_box) = message_places(&sheet, &settings, Some(&text));
+            let (under, in_box) = message_places(&sheet, &settings.collage.postcard, Some(&text));
             assert!(
                 under.is_none() && in_box.is_some(),
                 "{card:?} {orientation:?}"
@@ -2404,12 +2449,36 @@ mod tests {
                 !fit.message_cut,
                 "{card:?} {orientation:?}: the box holds it"
             );
+            // The line under the photo stands empty, so the photo takes its room (owner): a
+            // photo its height limits (upright on a landscape card's half, square on an upright
+            // card's) grows; one its width limits only moves.
+            let tall = if orientation == PostcardOrientation::Landscape {
+                (1000, 1500)
+            } else {
+                (1000, 1000)
+            };
+            let banded = layout(print, [Some(tall), None], false, &settings.collage);
+            let grown = layout_with_text(
+                print,
+                [Some(tall), None],
+                false,
+                &settings.collage,
+                Some(&text),
+            );
+            let (Some(small), Some(big)) = (banded.cells[0], grown.cells[0]) else {
+                panic!("the photo is placed");
+            };
+            assert!(grown.band.is_none(), "{card:?} {orientation:?}");
+            assert!(
+                big.area.1 > small.area.1 || big.area.0 > small.area.0,
+                "{small:?} {big:?}"
+            );
             // A short one stays under the photo.
             let short = crate::library::PostcardText {
                 message: "Hello!".into(),
                 ..text
             };
-            let (under, in_box) = message_places(&sheet, &settings, Some(&short));
+            let (under, in_box) = message_places(&sheet, &settings.collage.postcard, Some(&short));
             assert!(under.is_some() && in_box.is_none());
             // A card too full for the box (a sender on an upright はがき) never loses the message:
             // it goes under the photo, cut, and the panel says so.
@@ -2428,7 +2497,7 @@ mod tests {
                     to.line = "1117-1".into();
                     to.name = "鎌倉花子".into();
                 }
-                let (under, in_box) = message_places(&sheet, &full, Some(&named));
+                let (under, in_box) = message_places(&sheet, &full.collage.postcard, Some(&named));
                 if in_box.is_none() {
                     assert!(under.is_some(), "the message stays on the card");
                     assert!(postcard_fit(print, &full, &named, None).message_cut);
