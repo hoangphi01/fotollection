@@ -623,6 +623,9 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
     }
 }
 
+/// The most rows a message box holds (owner, 2026-11-15: "four lines at most").
+pub const MAX_BOX_ROWS: usize = 4;
+
 /// The message box of a Japanese or Korean card, 通信欄 / 통신란 (owner, 2026-11-15): a thin
 /// frame and writing lines as the European card's, a row every `step` millimetres, across, or
 /// in columns from the right for text set top to bottom. Japan Post lets a message stand
@@ -645,10 +648,25 @@ pub fn draw_message_box(
     const PAD_MM: f32 = 1.5;
     let (outline, rule) = inks(paper);
     let depth = if vertical { rect.width } else { rect.height };
-    let count = ((depth - 2.0 * PAD_MM) / step).floor().max(0.0) as usize;
+    // At most four rows, the box no taller than they need (owner, 2026-11-15).
+    let count = (((depth - 2.0 * PAD_MM) / step).floor().max(0.0) as usize).min(MAX_BOX_ROWS);
     if count < 2 {
         return Vec::new();
     }
+    #[allow(clippy::cast_precision_loss)]
+    let used = 2.0 * PAD_MM + count as f32 * step;
+    let rect = if vertical {
+        RectMm {
+            x: rect.x + rect.width - used,
+            width: used,
+            ..rect
+        }
+    } else {
+        RectMm {
+            height: used,
+            ..rect
+        }
+    };
     let px = |mm: f32| (mm * density).round().max(0.0) as u32;
     let thick = (LINE_MM * density).round().max(1.0) as u32;
     // The frame.

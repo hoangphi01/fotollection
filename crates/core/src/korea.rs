@@ -32,11 +32,12 @@ pub static GAEGU_FACE: LazyLock<Option<VerticalFace>> = LazyLock::new(|| Vertica
 pub const MACHINE_ZONE_MM: f32 = 17.0;
 /// The strip beside the machine zone for its line and words (owner, 2026-11-15: "a line as the
 /// European card's, and the Korean words repeated"): the zone itself stays blank (Korea Post),
-/// so the line is 22 mm from the foot and the words between it and the zone.
-pub const TAPE_MM: f32 = 5.0;
+/// so the line is 23 mm from the foot and the words, 3 mm (2.2 read too small; owner,
+/// 2026-11-15), between it and the zone.
+pub const TAPE_MM: f32 = 6.0;
 /// What the strip repeats, and its em in Nanum Pen.
 const TAPE_WORDS: [&str; 1] = ["우편물 처리 영역"];
-const TAPE_EM_MM: f32 = 2.2;
+const TAPE_EM_MM: f32 = 3.0;
 
 /// The machine zone's line and its words in the strip beside `zone`: above a zone at the foot,
 /// left of a zone down an upright card's right edge.
@@ -435,6 +436,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> crate:
     // What the recipient keeps clear of: the stamp box and the sender.
     let mut clear_top = stamp.y + stamp.height + 4.0;
     let mut sender_drawn = false;
+    let mut sender_end = card.y;
     // The sender at the top left, left of the stamp box: the label, the name, the address,
     // each over a dotted rule, then its five boxes.
     if let Some(from) = settings
@@ -505,6 +507,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> crate:
         }
         clear_top = clear_top.max(y + 3.0);
         sender_drawn = true;
+        sender_end = y;
     }
 
     // The recipient at the bottom right, its boxes 4 mm clear above the machine zone and 20 mm
@@ -528,8 +531,11 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> crate:
     };
     let head = LABEL_MM * 1.25 + RECIPIENT_GAP_MM + name_em * 1.05 + 0.25 + RECIPIENT_GAP_MM;
     // Rows that do not fit above the boxes are left out, never pushed into the zone.
-    // Under the stamp box and the sender, whichever ends lower.
-    let room = limit - BOXES_CLEAR_MM - (clear_top - 1.0);
+    // The label, on the left, keeps under the sender; the name, on the right, under the stamp
+    // box: the block starts where both hold.
+    let name_under_stamp = stamp.y + stamp.height + 3.0 - (LABEL_MM * 1.25 + RECIPIENT_GAP_MM);
+    let top_bound = name_under_stamp.max(sender_end + 2.0);
+    let room = limit - BOXES_CLEAR_MM - top_bound;
     let fit = ((room - head - boxes_h) / row_h).floor().max(1.0) as usize;
     if rows.len() > fit {
         rows.truncate(fit);
@@ -961,16 +967,16 @@ mod tests {
             ),
             (
                 "recipient",
-                // Korea Post's rules over the board move the block 10.55 mm up: the words'
-                // strip above the zone (5 mm), 6 mm round the larger boxes (5.5 × 7 inside), the
+                // Korea Post's rules over the board move the block 12.2 mm up: the words'
+                // strip above the zone (6 mm), 6 mm round the larger boxes (5.5 × 7 inside), the
                 // code's right end 22 mm from the edge (the Korea Post review, 2026-11-15).
                 zone(80.0, 30.0, 66.0, 48.0),
                 &[
-                    moved([82.63, 44.56, 89.0, 46.13], 0.0, -10.55),
-                    moved([121.0, 47.63, 143.0, 54.81], 0.0, -10.55),
-                    moved([82.56, 57.25, 117.06, 61.13], 0.0, -10.55),
-                    moved([82.56, 63.38, 101.63, 67.25], 0.0, -10.55),
-                    [91.5, 63.1, 126.0, 70.7],
+                    moved([82.63, 44.56, 89.0, 46.13], 0.0, -12.2),
+                    moved([121.0, 47.63, 143.0, 54.81], 0.0, -12.2),
+                    moved([82.56, 57.25, 117.06, 61.13], 0.0, -12.2),
+                    moved([82.56, 63.38, 101.63, 67.25], 0.0, -12.2),
+                    [91.5, 62.1, 126.0, 69.7],
                 ],
             ),
         ];

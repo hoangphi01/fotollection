@@ -919,8 +919,9 @@ pub fn render_sheet_with(
 }
 
 /// Where a Japanese or Korean card's message goes (owner, 2026-11-15): the line under the photo
-/// when it fits there, else the card's 通信欄 / 통신란 on the writing half when that holds it,
-/// else the line under the photo again, cut (the panel says so); (under the photo, in the box).
+/// when it fits there, else the card's 通信欄 / 통신란 on the writing half when the card has room
+/// for one (cut past its rows), else the line under the photo, cut; the panel says what is cut.
+/// (under the photo, in the box).
 fn message_places<'a>(
     sheet: &SheetLayout,
     postcard: &crate::settings::PostcardSettings,
@@ -938,10 +939,14 @@ fn message_places<'a>(
     {
         return (Some(message), None);
     }
-    match card_fit(sheet, postcard, text, Some(message)) {
-        Some(fit) if !fit.message_cut => (None, Some(message)),
-        _ if sheet.band.is_some() => (Some(message), None),
-        _ => (None, Some(message)),
+    // The box keeps the message once it is there, cut past its rows with the warning (owner,
+    // 2026-11-15: typing on never makes it jump); only a card with no room for a box at all
+    // keeps it under the photo.
+    let room = card_fit(sheet, postcard, text, Some("·")).is_some_and(|fit| !fit.message_cut);
+    if room || sheet.band.is_none() {
+        (None, Some(message))
+    } else {
+        (Some(message), None)
     }
 }
 
@@ -2395,6 +2400,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::too_many_lines)]
     fn fr_130_a_long_message_goes_to_the_cards_message_box() {
         // The owner's card (2026-11-15): "Chào Minh Hồng nhé. chúc Hồng có ngày mới thật vui"
         // was cut on one line under the photo while the writing half stood empty; now a message
@@ -2480,6 +2486,18 @@ mod tests {
             };
             let (under, in_box) = message_places(&sheet, &settings.collage.postcard, Some(&short));
             assert!(under.is_some() && in_box.is_none());
+            // Typing on past the box's four rows never moves it under the photo (owner,
+            // 2026-11-15): it stays in the box, cut, and the panel says so.
+            let longer = crate::library::PostcardText {
+                message: long.repeat(6),
+                ..short.clone()
+            };
+            let (under, in_box) = message_places(&sheet, &settings.collage.postcard, Some(&longer));
+            assert!(
+                under.is_none() && in_box.is_some(),
+                "{card:?} {orientation:?}"
+            );
+            assert!(postcard_fit(print, &settings, &longer, None).message_cut);
             // A card too full for the box (a sender on an upright はがき) never loses the message:
             // it goes under the photo, cut, and the panel says so.
             if orientation == PostcardOrientation::Portrait {
