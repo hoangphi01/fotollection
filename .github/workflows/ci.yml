@@ -9,6 +9,7 @@ on:
       - "crates/**"
       - "src-tauri/**"
       - "ui/**"
+      - "site/_includes/manual-short-*.md" # check-i18n reads them (LESSONS 2026-11-16)
       - "Cargo.toml"
       - "Cargo.lock"
       - "package.json"
@@ -21,6 +22,7 @@ on:
       - "crates/**"
       - "src-tauri/**"
       - "ui/**"
+      - "site/_includes/manual-short-*.md" # check-i18n reads them (LESSONS 2026-11-16)
       - "Cargo.toml"
       - "Cargo.lock"
       - "package.json"

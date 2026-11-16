@@ -5,7 +5,7 @@
 # scripts/bootstrap.sh (`git config core.hooksPath scripts/hooks`).
 #
 #   always:            cargo fmt, clippy (Rust changed), cargo deny licenses (a manifest changed),
-#                      UI lint (ui/ changed), check-docs,
+#                      UI lint (ui/ or a short manual changed), check-docs,
 #                      check-docs-with-code over what is pushed
 #   UI changed:        QUICK=2 scripts/ui-check.sh (English and Hungarian, every UI- case)
 #   skip, when meant:  git push --no-verify, and say why in STATUS
@@ -50,7 +50,8 @@ if changed 'Cargo\.(toml|lock)$|^deny\.toml$'; then
   step "cargo deny (licenses, bans, sources)"
   cargo deny check licenses bans sources
 fi
-if changed '^ui/'; then
+# check-i18n reads the short manuals too: their letters must be in the CJK faces (LESSONS 2026-11-16).
+if changed '^ui/|^site/_includes/manual-short-'; then
   step "UI lint (oxlint, check-i18n, check-lego)"
   (cd ui && npx tsc -b && npm run lint)
 fi

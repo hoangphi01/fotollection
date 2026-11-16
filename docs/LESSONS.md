@@ -93,6 +93,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A check covers only what it reads and the cases it has: widen what it reads, walk folds, give states the demo lacks a stress view. Kept by: `ui-check` stress views.
 - A check runs as the app runs: scroll bars, fonts, the window's chrome, popups opening both ways. Kept by: the harness's scroll bars, UI-LAYOUT-021's macOS case.
 - Never chain on a piped gate: run a gate once on its own, then chain with `&&`. Kept by: no machine check yet.
+- A gate runs on every path its check reads, not only the folder it lives in. Kept by: the pre-push hook's UI lint and CI's paths on `site/_includes/manual-short-*`.
 - A harness waits only for what the screen shows (a lazy picture out of view never loads in WebKit), and a pass that stops early is read as a failure of every view after it. Kept by: `shoot.mjs` `open()`.
 
 ### docs
@@ -151,6 +152,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Why:** each crop's place was picked where the window had the most legible text, a panel, and checked only for the size of its letters, never against the words beside it.
 - **Fix:** every crop read against its caption (the carousel's title and text, the Features page's `show_*` line) and placed on what they name: the photo with its looks strip and Drop and Keep, the left column of the develop view, the Settings sections, the chosen sheet, the sheet itself.
 - **Rule:** a crop of a picture shows what its caption says; read the caption first, then place the crop, then check its letters.
+
+### A short manual's new letters were caught only at the push (check-i18n)
+
+- **Area:** checks, text-i18n
+- **Seen:** the Japanese short manual gained 背 and 旗 (the welcome's backdrop and flags) in a docs commit; the bundled Japanese face lacked them, and the push stopped on `check-i18n` four commits later.
+- **Why:** `check-i18n` reads `site/_includes/manual-short-<code>.md` as well as the locales, but it runs with the UI lint, which a docs commit does not run and the pre-push hook ran only when `ui/` changed; this push caught it because it changed `ui/` too.
+- **Fix:** the face recut (`scripts/cjk-font.sh ja`); the pre-push hook and CI's `ci` workflow run the UI lint when a short manual changes as well.
+- **Rule:** after editing a Japanese or Korean text, the UI's or the manual's, run `npm run lint`; a gate runs on every path its check reads.
 
 ### A released version's CHANGELOG section was edited twice in one day (docs)
 
