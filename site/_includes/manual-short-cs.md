@@ -4,7 +4,7 @@
 
 Fotollection pracuje se složkami fotek, které už máš. Čte je tam, kde jsou, a nikdy žádný soubor nepřesune, nepřejmenuje ani nezmění.
 
-Při prvním spuštění začne Fotollection v jazyce tvého počítače a otevře se na stránce **Language**: pozdrav v každém jazyce a seznam jazyků, jedno kliknutí přepne. Pak ukáže pět krátkých stránek se základy (znovu přes Settings → General → *Show the welcome again*). Celá příručka je i v aplikaci, offline: Settings → **Manual**.
+Při prvním spuštění začne Fotollection v jazyce tvého počítače a otevře se na stránce **Language**: pozdrav v každém jazyce nad fotkou země zvoleného jazyka a seznam jazyků s jejich vlajkami, jedno kliknutí přepne. Pak ukáže pět krátkých stránek se základy (znovu přes Settings → General → *Show the welcome again*). Celá příručka je i v aplikaci, offline: Settings → **Manual**.
 
 1. **Otevři složku:** klikni na **Open folder** (ikona složky vedle *Library* na postranním panelu), nebo složku přetáhni kamkoli do okna. Přijdou i její podsložky. Fotollection čte JPEG, PNG, HEIC a RAW z fotoaparátu.
 2. **Postranní panel** pod *Library* ukazuje **Workspace** (všechny fotky ze všech složek kromě odložených), **Print basket** a **Set aside** (kapitola 4) a každou složku s počtem fotek. **×** složku odebere z knihovny, soubory zůstanou na disku.
@@ -324,13 +324,13 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 1. V režimu Collage zapni přepínač **Postcard** v liště nad listy. Každá fotka teď tvoří vlastní list a v panelu se objeví karta **Postcard**.
 2. **Held**: **Landscape** dá fotku vlevo a kartu vpravo, **Portrait** kartu nahoru a fotku dolů. Vpravo nahoře je čárkované **pole na známku** a dole **řádky na psaní**: **3 lines** nebo **4 lines** na vzkaz, pak 3 na adresu.
 3. Polovina s fotkou funguje jako dřív.
-4. **Text on the postcard:** vyber pohlednici a napiš **Message** (až 400 znaků) a **Address** (až 200 znaků, na svislé pohlednici v 5 řádcích), nebo nech řádky prázdné a piš rukou. Karta nastaví i **Font**, **Size** a **Ink**; co se nevejde, označí červený **!**.
+4. **Recipient** a **Message** (na japonské a korejské pohlednici je před nimi **Sender**, sbalený, dokud nezapneš **Print a sender**): vyber pohlednici a napiš **Message** (až 400 znaků) a **Address** (až 200 znaků, na svislé pohlednici v 5 řádcích), nebo nech řádky prázdné a piš rukou. Karta nastaví i **Font**, **Size** a **Ink**; co se nevejde, označí červený **!**.
 5. **Postal use** v kartě *Postcard*, ve výchozím stavu zapnuté, nechá na ležaté pohlednici dole 15 mm volných pro třídicí kód pošty: fotka končí tenkou čarou, dole běží „postal use“ v sedmi jazycích a adresa končí 15 mm od pravého okraje. Na svislé pohlednici běží pruh podél pravého okraje a pole na známku je vlevo od něj. Pro pohlednici, kterou si necháš, ho vypni. Pohlednice se tiskne na bílý papír, její 3mm okraj je bílý.
 6. **Export** zapíše jeden soubor na pohlednici.
 
 <!-- shot: manual-postcard-apply | Karta Postcard text: napsaná adresa a pod ní poznámka s Use for them -->
 
-**Jedna adresa pro celou sadu:** napiš adresu na jednu pohlednici; **Use for them** ji dá na všechny ostatní bez adresy, v jednom kroku, který **Cmd/Ctrl+Z** vrátí.
+**Jedna adresa pro celou sadu:** napiš adresu na jednu pohlednici; **Use for them** ji dá na všechny ostatní bez adresy, v jednom kroku, který **Cmd/Ctrl+Z** vrátí. Totéž platí pro zprávu a pro japonského či korejského příjemce nebo odesílatele. **Address book** nahoře v kartě *Recipient* ukazuje příjemce uložené přes ☆ (až 100) a naposledy použité; kliknutím ho dáš na pohlednici, × ho zapomene.
 
 **Psaní rukou a pošta:** piš tenkým permanentním fixem a nech ho asi minutu schnout. Poštovní podmínky České pošty nemají zvláštní třídu pro pohlednice: karta jde jako dopis (aspoň 14 × 9 cm a 180 g/m²). Pošta tiskne třídicí kód do spodních 15 mm, které musí přijmout barvu; na lesklém fotopapíru se může rozmazat, matný papír je bezpečnější.
 
@@ -347,6 +347,7 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 - **Looks** jsou pás pod fotkou: každý look je dlaždice tvé fotky v něm, takže barvu vidíš dřív, než vybereš. Klikni na jeden a fotka ho dostane; **Amount** nastaví, jak silně. **Save as look** uloží look fotky pod vlastním jménem.
 - **Presets & LUTs** vlevo, mezi Navigator a History jako v Lightroomu, vypisuje tvoje looky, LUTy a presety z Lightroomu ve skupinách. **+** uloží look fotky nebo importuje presety (`.xmp`, `.lrtemplate` nebo `.zip`) a LUTy (`.cube` nebo HaldCLUT).
 - **Hodně fotek najednou:** v galerii režimu Pro má pravý sloupec karty **Colour** a **Print**. V **Colour** vyber look, LUT nebo preset, nastav **Amount** a **Apply to … photos** ho dá zaškrtnutým fotkám, nebo všem zobrazeným. **⌘Z** vrátí celou dávku.
+- **Režim Collage:** panel režimu Collage má také karty **Colour** a **Print**. V náhledu archu je vlevo **Presets & LUTs**: **+** importuje look, LUT nebo preset z Lightroomu a kliknutím ho dáš vybrané fotce, nebo když žádná vybraná není, oběma. Úzké okno sloupec sbalí; **Tab** ho otevře.
 - **Faves** ukazuje čtyři posuvníky: **Brightness**, **Contrast**, **Warm / cool** a **Saturation**. **More** přidá **Highlights**, **Shadows**, **Tint** a **Vibrance**. Dvojklik posuvník vrátí na 0.
 - **Color mixer**: nahoře vyber **Hue**, **Sat**, **Lum** nebo **All** a posuň posuvník každé z osmi barev.
 - **Tools**: **Dehaze**, **Fade**, tónování stínů a světel a **Black and white**. **Grain** přidá filmové zrno, nejsilnější ve středních tónech; **Grain size** ho nastaví od jemného po hrubé v milimetrech na tisku, takže 10 × 15 i 20 × 30 ukážou stejné zrno. **Vignette** ztmaví (−) nebo zesvětlí (+) rohy oříznuté fotky. Zrno a vinětace z presetu Lightroomu přijdou sem.

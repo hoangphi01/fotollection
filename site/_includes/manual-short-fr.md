@@ -4,7 +4,7 @@
 
 Fotollection travaille avec les dossiers de photos que vous avez déjà. Il les lit là où ils sont, et ne déplace, ne renomme ni ne modifie jamais aucun fichier.
 
-Au premier lancement après une installation ou une mise à jour, Fotollection s’ouvre dans la langue de votre ordinateur, sur la page **Language** : un bonjour dans chaque langue et la liste des langues, un clic suffit pour changer. Ensuite, cinq courtes pages présentent l’essentiel ; **Next** et **Back** les font défiler, **Start** les ferme. Settings → General → *Show the welcome again* les fait revenir. Ce manuel se trouve aussi dans l’application, hors ligne : Settings → **Manual**.
+Au premier lancement après une installation ou une mise à jour, Fotollection s’ouvre dans la langue de votre ordinateur, sur la page **Language** : un bonjour dans chaque langue sur une photo du pays de la langue choisie et la liste des langues avec leur drapeau, un clic suffit pour changer. Ensuite, cinq courtes pages présentent l’essentiel ; **Next** et **Back** les font défiler, **Start** les ferme. Settings → General → *Show the welcome again* les fait revenir. Ce manuel se trouve aussi dans l’application, hors ligne : Settings → **Manual**.
 
 1. **Ouvrir un dossier :** cliquez sur **Open folder** (l’icône de dossier à côté de *Library* dans la barre latérale) ou faites glisser un dossier n’importe où sur la fenêtre. Les sous-dossiers suivent. Fotollection lit les JPEG, PNG, HEIC et les RAW d’appareil photo.
 2. **La barre latérale** liste sous *Library* le **Workspace** (toutes les photos de tous les dossiers, sauf celles mises de côté), le **Print basket**, **Set aside** et chaque dossier avec son nombre de photos. Un clic sur un dossier n’affiche que ses photos ; avec Ctrl/⌘-clic ou **Select folders**, vous en voyez plusieurs ensemble. Le **×** d’un dossier le retire de la bibliothèque, les fichiers restent sur le disque.
@@ -315,11 +315,11 @@ Un tirage de borne devient une carte postale à envoyer : une photo sur une mo
 
 1. En mode Collage, activez l’interrupteur **Postcard** au-dessus des planches. Chaque photo a maintenant sa propre planche.
 2. **Held** : **Landscape** place la photo à gauche et la carte à droite, **Portrait** la carte en haut. Une case de timbre en pointillés se trouve en haut à droite, les lignes d’écriture en bas : **3 lines** ou **4 lines** pour le message, puis 3 pour l’adresse (5 sur une carte en hauteur).
-3. Dans la carte **Text on the postcard**, saisissez **Message** et **Address**, ou laissez les lignes vides pour écrire à la main. Choisissez **Typed text** (**Typewriter**, **Handwriting** ou votre propre police), **Size**, **Ink** et une **Credit line** facultative. Un **!** rouge signale un texte qui ne tient pas.
+3. Dans les cartes **Recipient** et **Message**, saisissez **Address** et **Message** (sur une carte japonaise ou coréenne, **Sender** vient avant, replié tant que **Print a sender** est éteint), ou laissez les lignes vides pour écrire à la main. Choisissez **Typed text** (**Typewriter**, **Handwriting** ou votre propre police), **Size**, **Ink** et une **Credit line** facultative. Un **!** rouge signale un texte qui ne tient pas.
 4. **Postal use**, dans la carte *Postcard*, activé par défaut, laisse libres 15 mm en bas d’une carte à l’horizontale pour le code de tri de la poste : la photo s’arrête à un trait fin, « postal use » figure en sept langues au pied, et l’adresse s’arrête à 15 mm du bord droit. Sur une carte en hauteur, la bande longe le bord droit, la case de timbre à sa gauche. Pour une carte que vous gardez, désactivez-le. Une carte postale s’imprime sur papier blanc, sa bordure de 3 mm est blanche. La Poste accepte une carte 10 × 15 (de 90 × 140 à 162 × 235 mm), timbre en haut à droite ; un papier mat est plus sûr pour le code de la poste.
 5. **Export** écrit un fichier par carte postale.
 
-**Une adresse pour toute une série :** saisissez l’adresse sur une carte ; **Use for them** la met sur chaque carte sans adresse. **Recent addresses** liste les dernières saisies.
+**Une adresse pour toute une série :** saisissez l’adresse sur une carte ; **Use for them** la met sur chaque carte sans adresse. **Recent addresses** liste les dernières saisies. Il en va de même pour le message et pour un destinataire ou un expéditeur japonais ou coréen. **Address book**, en haut de la carte *Recipient*, liste les destinataires enregistrés avec ☆ (jusqu’à 100) et les derniers utilisés ; un clic en met un sur la carte, × l’oublie.
 
 **Écrire à la main :** prenez un feutre permanent fin, essayez-le d’abord dans la case du timbre et laissez sécher environ une minute. Les stylos à bille sautent souvent.
 
@@ -336,6 +336,7 @@ Un tirage de borne devient une carte postale à envoyer : une photo sur une mo
 - Les **Looks** forment une bande sous la photo : chaque look est une vignette de votre photo dans ce look. Cliquez sur l’un d’eux pour le donner à la photo ; **Amount** règle son intensité. **Save as look** enregistre le look de la photo sous le nom de votre choix.
 - **Presets & LUTs**, à gauche, liste vos looks, LUT et presets Lightroom. **+** importe des presets (`.xmp`, `.lrtemplate` ou `.zip`) et des LUT (`.cube` ou HaldCLUT, par exemple de LUMIX Lab). Survolez une ligne pour voir le look sur la photo avant de cliquer.
 - **Plusieurs photos à la fois :** dans la galerie du mode Pro, choisissez dans l’onglet **Colour** un look, une LUT ou un preset, puis **Apply to … photos** le donne aux photos cochées ou à toutes celles affichées. **⌘Z** annule toute l’étape.
+- **Mode Collage :** le panneau du mode Collage a lui aussi les onglets **Colour** et **Print**. Dans l’aperçu d’une planche, **Presets & LUTs** est à gauche : **+** importe un look, une LUT ou un preset Lightroom, un clic le donne à la photo choisie ou, si aucune ne l’est, aux deux. Une fenêtre étroite replie la colonne ; **Tab** l’ouvre.
 
 Les cartes de couleur agissent dans l’aperçu d’une photo, et sur cette photo seule ; **Apply to all photos** donne son look à toutes.
 

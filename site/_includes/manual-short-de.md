@@ -4,7 +4,7 @@
 
 Fotollection arbeitet mit den Fotoordnern, die du schon hast. Es liest sie dort, wo sie liegen, und verschiebt, benennt oder ändert nie eine Datei.
 
-Beim ersten Start nach einer Installation oder einem Update öffnet Fotollection in der Sprache deines Computers auf der Seite **Sprache**: ein Gruß in jeder Sprache und die Liste der Sprachen, ein Klick wechselt. Danach zeigen fünf kurze Seiten die Grundlagen; **Weiter** und **Zurück** blättern, **Los geht’s** schließt sie. Einstellungen → Allgemein → *Willkommen erneut zeigen* holt sie zurück. Dieses Handbuch steckt auch in der App, offline: Einstellungen → **Handbuch**.
+Beim ersten Start nach einer Installation oder einem Update öffnet Fotollection in der Sprache deines Computers auf der Seite **Sprache**: ein Gruß in jeder Sprache über einem Foto aus dem Land der gewählten Sprache und die Liste der Sprachen mit ihren Flaggen, ein Klick wechselt. Danach zeigen fünf kurze Seiten die Grundlagen; **Weiter** und **Zurück** blättern, **Los geht’s** schließt sie. Einstellungen → Allgemein → *Willkommen erneut zeigen* holt sie zurück. Dieses Handbuch steckt auch in der App, offline: Einstellungen → **Handbuch**.
 
 1. **Ordner öffnen:** Klick auf **Ordner öffnen** (das Ordnersymbol neben *Bibliothek* in der Seitenleiste) oder zieh einen Ordner irgendwo auf das Fenster. Unterordner kommen mit. Gelesen werden JPEG, PNG, HEIC und Kamera-RAW.
 2. **Die Seitenleiste** listet unter *Bibliothek* den **Arbeitsbereich** (alle Fotos aus allen Ordnern, außer den zurückgelegten), den **Druckkorb**, **Zurückgelegt** und jeden Ordner mit seiner Anzahl. Klick auf einen Ordner zeigt nur seine Fotos; mit Ctrl/⌘-Klick oder **Ordner auswählen** siehst du mehrere zusammen. Das **×** an einem Ordner nimmt ihn aus der Bibliothek, die Dateien bleiben auf der Festplatte.
@@ -315,11 +315,11 @@ Ein Abzug vom Automaten wird zur Postkarte, die du verschicken kannst: ein Foto 
 
 1. Schalte im Collage-Modus den Schalter **Postkarte** über den Bögen ein. Jedes Foto bekommt jetzt seinen eigenen Bogen.
 2. **Gehalten**: **Quer** setzt das Foto links und die Karte rechts, **Hoch** die Karte oben. Ein gestricheltes Briefmarkenfeld sitzt oben rechts, die Schreiblinien unten: **3 Zeilen** oder **4 Zeilen** für die Nachricht, dann 3 für die Adresse (5 auf einer Karte im Hochformat).
-3. Tipp in der Karte **Text auf der Postkarte** **Nachricht** und **Adresse** ein, oder lass die Linien leer, um von Hand zu schreiben. Wähl **Getippter Text** (**Schreibmaschine**, **Handschrift** oder eine eigene Schrift), **Größe**, **Tinte** und eine optionale **Credit-Zeile**. Ein rotes **!** markiert Text, der nicht passt.
+3. Tipp in den Karten **Empfänger** und **Nachricht** die **Adresse** und die **Nachricht** ein (auf japanischen und koreanischen Karten steht davor **Absender**, eingeklappt, bis **Absender drucken** an ist), oder lass die Linien leer, um von Hand zu schreiben. Wähl **Getippter Text** (**Schreibmaschine**, **Handschrift** oder eine eigene Schrift), **Größe**, **Tinte** und eine optionale **Credit-Zeile**. Ein rotes **!** markiert Text, der nicht passt.
 4. **Für die Post** in der Karte *Postkarte*, standardmäßig an, hält unten auf einer Querkarte 15 mm für den Sortiercode der Post frei: Das Foto endet an einer dünnen Linie, „postal use“ steht in sieben Sprachen am Fuß, und die Adresse endet 15 mm vor dem rechten Rand. Auf einer Hochkarte läuft der Streifen am rechten Rand, das Briefmarkenfeld links davon. Für eine Karte, die du behältst, schalte es aus. Eine Postkarte wird auf weißem Papier gedruckt, ihr 3-mm-Rand ist weiß.
 5. **Export** schreibt eine Datei pro Postkarte.
 
-**Eine Adresse für einen ganzen Satz:** Tipp die Adresse auf einer Karte; **Für sie nutzen** setzt sie auf jede Karte ohne Adresse. **Letzte Adressen** listet die zuletzt getippten.
+**Eine Adresse für einen ganzen Satz:** Tipp die Adresse auf einer Karte; **Für sie nutzen** setzt sie auf jede Karte ohne Adresse. **Letzte Adressen** listet die zuletzt getippten. Das gilt auch für die Nachricht und für einen japanischen oder koreanischen Empfänger oder Absender. **Adressbuch** oben in der Karte *Empfänger* listet die mit ☆ gespeicherten Empfänger (bis zu 100) und die zuletzt genutzten; ein Klick setzt einen auf die Karte, × vergisst ihn.
 
 **Von Hand schreiben:** Nimm einen feinen Permanentmarker, probier ihn zuerst im Briefmarkenfeld und lass ihn etwa eine Minute trocknen. Kugelschreiber setzen oft aus.
 
@@ -336,6 +336,7 @@ Ein Abzug vom Automaten wird zur Postkarte, die du verschicken kannst: ein Foto 
 - **Looks** sind ein Streifen unter dem Foto: Jeder Look ist eine Kachel deines Fotos in diesem Look. Klick einen an, um ihn dem Foto zu geben; **Stärke** bestimmt, wie stark. **Als Look speichern** speichert den Look des Fotos unter eigenem Namen.
 - **Presets & LUTs** links listet deine Looks, LUTs und Lightroom-Presets. **+** importiert Presets (`.xmp`, `.lrtemplate` oder `.zip`) und LUTs (`.cube` oder HaldCLUT, etwa aus LUMIX Lab). Zeig auf eine Zeile, um den Look vor dem Klick auf dem Foto zu sehen.
 - **Viele Fotos auf einmal:** In der Galerie des Pro-Modus wählst du im Tab **Farbe** einen Look, eine LUT oder ein Preset, dann gibt **Auf … Fotos anwenden** ihn den abgehakten oder allen angezeigten Fotos. **⌘Z** macht den ganzen Schritt rückgängig.
+- **Collage-Modus:** Auch das Panel des Collage-Modus hat die Tabs **Farbe** und **Druck und Export**. In der Vorschau eines Bogens liegt **Presets & LUTs** links: **+** importiert einen Look, eine LUT oder ein Lightroom-Preset, ein Klick gibt ihn dem gewählten Foto oder, ist keines gewählt, beiden. Ein schmales Fenster klappt die Spalte ein; **Tab** öffnet sie.
 
 Die Farbkarten wirken in der Vorschau eines Fotos, und nur auf dieses Foto; **Auf alle Fotos anwenden** gibt seinen Look allen.
 
