@@ -1,7 +1,7 @@
 {
-  "minSafe": "0.14.0",
+  "minSafe": "0.14.3",
   "reason": {
-    "en": "Fixes for lost edits and crashes. Please update.",
-    "vi": "Sửa lỗi mất chỉnh sửa và lỗi tự tắt. Hãy cập nhật."
+    "en": "Fonts are now read by a maintained, memory-safe reader; a damaged font can no longer use up memory. Please update.",
+    "vi": "Phông chữ giờ được đọc bằng bộ đọc được bảo trì, an toàn bộ nhớ; phông hỏng không còn làm cạn bộ nhớ. Hãy cập nhật."
   }
 }

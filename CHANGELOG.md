@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.14.3] - 2026-11-16 — Postcards, part 2
+
 ### Highlights
 
 - New: **AddAssist 1.1**, an address book for postcards, and one recipient for many cards.

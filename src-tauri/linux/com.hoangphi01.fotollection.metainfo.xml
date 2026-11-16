@@ -64,6 +64,15 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.14.3" date="2026-11-16">
+      <description>
+        <ul>
+          <li>New: AddAssist 1.1, an address book for postcards, and one recipient for many cards.</li>
+          <li>UI update: a shorter website that opens on a finished postcard, with a Features page.</li>
+          <li>Security: every font is now read by a maintained, memory-safe font reader; the text on your prints is unchanged.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.14.2" date="2026-11-15">
       <description>
         <ul>
@@ -153,14 +162,6 @@
           <li>New: a develop view a Lightroom user can read: its keys, a filmstrip, the whole window with Navigator and History</li>
           <li>New: before and after side by side, split or one above the other</li>
           <li>Fixes: zooming into a portrait or turned photo shows it the right way up again</li>
-        </ul>
-      </description>
-    </release>
-    <release version="0.11.1" date="2026-11-06">
-      <description>
-        <ul>
-          <li>Fixes: instant previews keep the photo on screen, and never mix up photos after another project is opened</li>
-          <li>Fixes: fast browsing through RAW photos no longer queues up work for photos already left behind</li>
         </ul>
       </description>
     </release>
