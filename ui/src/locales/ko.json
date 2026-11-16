@@ -435,8 +435,10 @@
     "layoutDialog": "창으로 돌아가기(F)",
     "zoomToggle": "맞춤 ↔ 1:1(Z)",
     "sideFolded": "창이 좁아 한쪽 열만 보입니다. 창을 넓히면 왼쪽에 히스토그램, 탐색기, 작업 내역도 보입니다.",
+    "sideFoldedPresets": "창이 좁아 왼쪽 열이 접혀 있어요: 프리셋과 LUT. 룩, LUT, Lightroom 프리셋을 가져와 이 시트에 적용할 수 있어요.",
     "pickWhite": "사진에서 중간 회색이어야 할 곳을 클릭하세요. 색온도와 색조가 그에 맞춰집니다. Esc로 취소합니다.",
     "sideShow": "왼쪽 열 보기: 히스토그램, 탐색기, 작업 내역(Tab)",
+    "sideShowPresets": "왼쪽 열 보기: 프리셋과 LUT(Tab)",
     "sideHide": "왼쪽 열 숨기기(Tab)",
     "sideTitle": "개요",
     "sideOpen": "지금 보기(Tab)"

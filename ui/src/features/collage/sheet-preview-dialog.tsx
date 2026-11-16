@@ -24,6 +24,9 @@ import type { ExportApi } from '@/features/export/use-export'
 import { LookStrip } from '@/features/look/look-strip'
 import { PhotoLookCards } from '@/features/look/photo-look-cards'
 import { useLookPicker } from '@/features/look/use-looks'
+import { PresetsCard } from '@/features/look/presets-card'
+import { SideFoldedNote, SideHide, SideToggle } from '@/features/viewer/side-column'
+import { useSideColumn } from '@/features/viewer/use-side-column'
 import { SettingsButtons } from '@/features/develop/settings-buttons'
 import { HistogramCard } from '@/features/viewer/histogram-card'
 import { setSettingsTarget } from '@/features/develop/settings-copy'
@@ -162,6 +165,9 @@ export function SheetPreviewDialog({
   // sheet's when none is picked; the first photo's look marks the chosen tile.
   const sheetIds = sheet ? (sheet.second === null ? [sheet.first] : [sheet.first, sheet.second]) : undefined
   const looks = useLookPicker(photo ?? sheet?.first, revision, photo === null ? sheetIds : undefined)
+  // The photo preview's left column, the same block (owner, 2026-11-16: "learn from Pro"):
+  // *Presets & LUTs*, to import and give a look to the picked photo or the whole sheet.
+  const { show: showSide, narrow, setOpen: setSideOpen, toggle: sideToggle } = useSideColumn(true)
   const info = useSheetInfo(open ? sheet : undefined, revision)
   const cell = info?.cells.find((c) => c.id === photo) ?? info?.cells[0]
   const geometry = useCellGeometry(cropping ? photo : null, sheet, revision)
@@ -204,6 +210,8 @@ export function SheetPreviewDialog({
     else if (pressed === '1' || pressed === '2') choose(pressed === '1' ? 0 : 1)
     // 0 lets go of the photo: the colour cards then edit the whole sheet (owner, 2026-11-07).
     else if (pressed === '0') choose(null)
+    // Tab from the sheet itself folds the left column in a narrow window, as in the photo preview.
+    else if (event.key === 'Tab' && narrow && !event.metaKey && !event.ctrlKey && event.target === contentRef.current) setSideOpen((o) => !o)
     else if (pressed === 'e' && !event.metaKey && !event.ctrlKey) setTab('edit')
     else if (pressed === 'c' && photo !== null) setCropping(true)
     // J and W by the key's place, as in the photo preview (FR-098); W needs a picked photo.
@@ -237,6 +245,16 @@ export function SheetPreviewDialog({
         }
       }}
       stageRef={setStage}
+      sideOver={false}
+      sideTitle={t('viewer.sideTitle')}
+      sideAction={narrow ? <SideHide onHide={() => setSideOpen(false)} /> : undefined}
+      // Folded, the inspector says what the left column holds, as the photo preview does.
+      inspectorTop={sheet && narrow && !showSide ? <SideFoldedNote text={t('viewer.sideFoldedPresets')} onOpen={() => setSideOpen(true)} /> : undefined}
+      side={
+        showSide && sheet ? (
+          <PresetsCard photoId={photo ?? sheet.first} sheet={photo === null ? sheetIds : undefined} revision={revision} />
+        ) : undefined
+      }
       below={sheet && !cropping ? <LookStrip photoId={photo ?? sheet.first} picker={looks} numbered={false} folding /> : undefined}
       tabs={
         <InspectorTabs<SheetTab>
@@ -259,6 +277,7 @@ export function SheetPreviewDialog({
       // settings, then crop and turns, then zoom.
       toolbar={
         <div className="@container flex h-header items-center gap-2 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
+          {sideToggle && <SideToggle side={sideToggle} showLabel={t('viewer.sideShowPresets')} />}
           <HistoryButtons canUndo={canUndo} canRedo={canRedo} />
           <SettingsButtons photo={photo ?? undefined} ticked={ticked} collage />
           <Separator orientation="vertical" className="mx-1 h-5!" />

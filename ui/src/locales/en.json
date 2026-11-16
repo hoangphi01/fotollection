@@ -435,8 +435,10 @@
     "layoutDialog": "Back to a window (F)",
     "zoomToggle": "Fit ↔ 1:1 (Z)",
     "sideFolded": "A narrow window shows one side column: widen it to see the histogram, the Navigator and History on the left too.",
+    "sideFoldedPresets": "A narrow window folds the left column: Presets & LUTs, to import a look, a LUT or a Lightroom preset and give it to this sheet.",
     "pickWhite": "Click something in the photo that should be neutral grey: its warmth and tint follow. Esc cancels.",
     "sideShow": "Show the left column: histogram, Navigator, History (Tab)",
+    "sideShowPresets": "Show the left column: Presets & LUTs (Tab)",
     "sideHide": "Hide the left column (Tab)",
     "sideTitle": "Overview",
     "sideOpen": "Show it now (Tab)"

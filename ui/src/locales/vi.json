@@ -415,8 +415,10 @@
     "layoutDialog": "Về dạng cửa sổ (F)",
     "zoomToggle": "Vừa khung ↔ 1:1 (Z)",
     "sideFolded": "Cửa sổ hẹp chỉ hiện một cột bên: kéo cửa sổ rộng ra để thấy cả biểu đồ màu, Điều hướng và Lịch sử ở cột trái.",
+    "sideFoldedPresets": "Cửa sổ hẹp gập cột trái: Preset & LUT, nơi nhập look, LUT hay preset Lightroom và áp cho tấm này.",
     "pickWhite": "Nhấp vào một chỗ trong ảnh lẽ ra phải có màu xám trung tính: Ấm/lạnh và Tint sẽ chỉnh theo. Esc để huỷ.",
     "sideShow": "Hiện cột trái: biểu đồ màu, Điều hướng, Lịch sử (Tab)",
+    "sideShowPresets": "Hiện cột trái: Preset & LUT (Tab)",
     "sideHide": "Ẩn cột trái (Tab)",
     "sideTitle": "Tổng quan",
     "sideOpen": "Hiện ngay (Tab)"

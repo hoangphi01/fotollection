@@ -435,8 +435,10 @@
     "layoutDialog": "Zurück ins Fenster (F)",
     "zoomToggle": "Einpassen ↔ 1:1 (Z)",
     "sideFolded": "Ein schmales Fenster zeigt nur eine Seitenspalte: Mach es breiter, um links auch Histogramm, Navigator und Protokoll zu sehen.",
+    "sideFoldedPresets": "Ein schmales Fenster klappt die linke Spalte ein: Presets & LUTs, um einen Look, eine LUT oder ein Lightroom-Preset zu importieren und diesem Bogen zu geben.",
     "pickWhite": "Klick auf etwas im Foto, das neutralgrau sein soll: Temperatur und Tönung folgen. Esc bricht ab.",
     "sideShow": "Linke Spalte zeigen: Histogramm, Navigator, Protokoll (Tab)",
+    "sideShowPresets": "Linke Spalte zeigen: Presets & LUTs (Tab)",
     "sideHide": "Linke Spalte ausblenden (Tab)",
     "sideTitle": "Übersicht",
     "sideOpen": "Jetzt zeigen (Tab)"

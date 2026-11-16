@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, CircleAlert, Clock, Crop, Download, Info, MapPin, PanelLeftClose, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
+import { CalendarDays, CircleAlert, Clock, Crop, Download, Info, MapPin, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -10,7 +10,6 @@ import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import { ResetButton } from '@/components/forms/danger-button'
-import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { ExportSection } from '@/features/export/export-section'
 import { showExportDialog } from '@/features/export/use-export-dialog'
 import type { ExportApi } from '@/features/export/use-export'
@@ -32,6 +31,8 @@ import { setSettingsTarget } from '@/features/develop/settings-copy'
 import { NavigatorCard } from './navigator-card'
 import { HistoryCard } from './history-card'
 import { PresetsCard } from '@/features/look/presets-card'
+import { SideFoldedNote, SideHide } from './side-column'
+import { useSideColumn } from './use-side-column'
 import { HistogramCard } from './histogram-card'
 import { CompareStage, type Compare, type CompareMode } from './compare-stage'
 import { oneToOneScale } from './one-to-one'
@@ -101,9 +102,6 @@ type PreviewDialogProps = {
 /** The inspector's tabs (FR-095); Heal and Mask join beside Crop once built (FR-101, FR-102). */
 type PanelTab = 'edit' | 'print' | 'info'
 type InspectorTabValue = PanelTab | 'crop'
-
-/** The narrowest window that keeps the develop view's left column beside the stage (FR-095). */
-const WIDE_WINDOW = 1400
 
 /** The stage's padding on both sides, in px (`p-8`, `viewer-frame.tsx`). */
 const STAGE_PADDING = 64
@@ -268,14 +266,7 @@ export function PreviewDialog({
   const [panels, setPanels] = useState(true)
   // Under 1400 px of window, three columns leave the photo too small: the left column hides,
   // and Tab brings it over the stage instead of beside it (FR-095).
-  const [wide, setWide] = useState(() => window.innerWidth >= WIDE_WINDOW)
-  const [sideOpen, setSideOpen] = useState(false)
-  useEffect(() => {
-    const onResize = () => setWide(window.innerWidth >= WIDE_WINDOW)
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-  const showSide = windowed && panels && (wide || sideOpen)
+  const { show: showSide, narrow, setOpen: setSideOpen, toggle: sideToggle } = useSideColumn(windowed, panels)
   // Export as the card's button does (FR-093): the dialog, or at once after *Don't ask again*.
   // The progress shows in the Print tab's card, so it opens and comes into view.
   const toExport = () => {
@@ -305,7 +296,7 @@ export function PreviewDialog({
     // Tab only from the photo itself, so it still moves between the inspector's controls.
     if (event.key === 'Tab' && !mod && event.target === contentRef.current) {
       event.preventDefault()
-      if (windowed && !wide) setSideOpen((o) => !o)
+      if (narrow) setSideOpen((o) => !o)
       else setPanels((p) => !p)
       return
     }
@@ -429,7 +420,7 @@ export function PreviewDialog({
           windowed={windowed}
           // Folded in a narrow window, the left column's button waits at the start of the row;
           // opened, it moves to the column's own head (owner, 2026-11-07).
-          side={windowed && !wide && !sideOpen ? { open: false, onToggle: () => setSideOpen(true) } : undefined}
+          side={sideToggle}
           onLayout={toggleLayout}
         />
       }
@@ -456,17 +447,7 @@ export function PreviewDialog({
       // the two columns, never under one (owner, 2026-11-07).
       sideOver={false}
       sideTitle={t('viewer.sideTitle')}
-      sideAction={
-        windowed && !wide ? (
-          <ToolbarButton
-            icon={<PanelLeftClose />}
-            label={t('viewer.sideHide')}
-            data-hint={t('viewer.sideHide')}
-            iconOnly
-            onClick={() => setSideOpen(false)}
-          />
-        ) : undefined
-      }
+      sideAction={narrow ? <SideHide onHide={() => setSideOpen(false)} /> : undefined}
       // The histogram lives in the window layout's left column, above the Navigator, also when
       // a narrow window keeps that column folded (Tab opens it; owner, 2026-11-07); only the
       // dialog layout, which has no left column, puts it at the head of the inspector (FR-098).
@@ -480,16 +461,7 @@ export function PreviewDialog({
             <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
           ) : !showSide && panels ? (
             // A narrow window shows one side column (owner, 2026-11-07): say where the other is.
-            <PanelNote
-              icon={<PanelLeftOpen />}
-              action={
-                <Button size="sm" onClick={() => setSideOpen(true)}>
-                  <PanelLeftOpen data-icon="inline-start" /> {t('viewer.sideOpen')}
-                </Button>
-              }
-            >
-              {t('viewer.sideFolded')}
-            </PanelNote>
+            <SideFoldedNote text={t('viewer.sideFolded')} onOpen={() => setSideOpen(true)} />
           ) : undefined
         ) : undefined
       }

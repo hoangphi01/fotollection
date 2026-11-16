@@ -10,8 +10,6 @@ import {
   Minimize2,
   PanelBottomClose,
   PanelBottomOpen,
-  PanelLeftClose,
-  PanelLeftOpen,
   RotateCcwSquare,
   RotateCwSquare,
   Rows2,
@@ -28,6 +26,7 @@ import { Kbd } from '@/components/ui/kbd'
 import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { commands, type PhotoId, type PhotoSummary } from '@/ipc/bindings'
+import { SideToggle } from './side-column'
 import { MOD, isMac } from '@/lib/platform'
 import type { Compare, CompareMode } from './compare-stage'
 import { ListRow } from '@/components/forms/list-row'
@@ -88,20 +87,7 @@ export function PreviewToolbar({
     // Too narrow for every button (a narrow window with both columns open), the row scrolls
     // sideways rather than cut its last buttons (owner, 2026-11-07).
     <div className="@container flex h-header items-center gap-2 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
-      {side && (
-        <>
-          <ToolbarButton
-            icon={side.open ? <PanelLeftClose /> : <PanelLeftOpen />}
-            label={t(side.open ? 'viewer.sideHide' : 'viewer.sideShow')}
-            variant={side.open ? 'default' : 'outline'}
-            aria-pressed={side.open}
-            data-hint={t(side.open ? 'viewer.sideHide' : 'viewer.sideShow')}
-            iconOnly
-            onClick={side.onToggle}
-          />
-          <Separator orientation="vertical" className="mx-1 h-5!" />
-        </>
-      )}
+      {side && <SideToggle side={side} />}
       {/* Undo and redo first, apart from the photo's own actions (owner, 2026-11-07: they were
           taken for the turn buttons), then copy, paste and reset beside them. */}
       <HistoryButtons canUndo={canUndo} canRedo={canRedo} />

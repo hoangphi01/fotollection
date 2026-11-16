@@ -435,8 +435,10 @@
     "layoutDialog": "Vissza ablakba (F)",
     "zoomToggle": "Igazítás ↔ 1:1 (Z)",
     "sideFolded": "Keskeny ablakban csak egy oldalsó oszlop látszik: szélesítsd ki, hogy bal oldalt a hisztogramot, a Navigátort és az Előzményeket is lásd.",
+    "sideFoldedPresets": "Keskeny ablakban a bal oszlop össze van csukva: Presetek és LUT-ok, ahol lookot, LUT-ot vagy Lightroom-presetet importálhatsz, és erre a lapra teheted.",
     "pickWhite": "Kattints valamire a fotón, aminek semleges szürkének kell lennie: a melegség és az árnyalat ehhez igazodik. Esc: mégse.",
     "sideShow": "Bal oszlop mutatása: hisztogram, Navigátor, Előzmények (Tab)",
+    "sideShowPresets": "Bal oszlop mutatása: Presetek és LUT-ok (Tab)",
     "sideHide": "Bal oszlop elrejtése (Tab)",
     "sideTitle": "Áttekintés",
     "sideOpen": "Mutasd most (Tab)"
