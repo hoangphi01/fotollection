@@ -1,6 +1,6 @@
 # Data & Persistence — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-12
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-16
 >
 > This document is the single source of truth for **everything Fotollection stores**: where it lives, the **normalized data model**, the schemas, versioning and migration, safe writes, the in-memory layout, and retention.
 > Fotollection has **no database server and no embedded SQL database** ([ADR-0010](adr/0010-project-file-format.md)). Persistent state is a small set of versioned files, modelled **as if they were relational tables** and normalized to 3NF ([§2](#2-normalization-rules)).
@@ -282,8 +282,10 @@ These are read-only and compiled into the binary or bundled as resources, so the
 |---------|--------|--------|------|-------|
 | Print sizes | `print_size.rs` | Rust constants | — | [PRD §5](PRD.md#5-print-sizes-cewe--eu-standard) |
 | Places | GeoNames `cities1000` + admin1/country names | Packed binary built by `crates/geodata` (custom layout, version header, BLAKE3-checked at load; [GEODATA.md](../crates/core/assets/geo/GEODATA.md)), indexed in a 1° grid when first used. Country names are stored **once** and referenced by index | 5.4 MB | CC BY 4.0, attribution in About ([ADR-0003](adr/0003-offline-geocoding-geonames.md)). Also serves offline place search ([FR-032](PRD.md#fr-032--manual-date-and-place)) |
-| Built-in presets | `presets/builtin/*.fotopreset`, embedded with `include_str!` | Same schema as user presets ([§7](#7-presets)) | < 100 KB | Lab, stamp and Photo Style presets, including "C200 Natural" ([FR-039](PRD.md#fr-039--photo-style-looks)). Never fetched from the network |
-| Fonts | `fonts/` | TTF/OTF | < 2 MB | OFL/MIT only |
+| Postal codes, Japan | Japan Post's 郵便番号データ | `assets/addassist/jp.bin`, packed by `crates/addassistdata` (magic `FADJ`, version header, BLAKE3-checked at first use; [ADDASSIST.md](../crates/core/assets/addassist/ADDASSIST.md)), compiled in | 5.5 MB | AddAssist ([FR-133](PRD.md#fr-133--assisted-address-entry-where-the-posts-data-is-standardised), [ADR-0051](adr/0051-addassist-bundled-postal-data.md)). Never fetched from the network |
+| Postal codes, Korea | The Ministry of the Interior's 도로명주소 한글 전체분 | `assets/addassist/kr.bin`, packed the same way (magic `FADK`) | 6.5 MB | AddAssist, as above |
+| Built-in presets (planned) | `presets/builtin/*.fotopreset`, embedded with `include_str!` | Same schema as user presets ([§7](#7-presets)) | < 100 KB | Lab, stamp and Photo Style presets, including "C200 Natural" ([FR-039](PRD.md#fr-039--photo-style-looks)). Never fetched from the network |
+| Fonts | `assets/fonts/` | TTF/OTF | 9.5 MB | OFL/MIT only |
 
 ## 6. App settings
 
@@ -292,7 +294,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 19,
+  "schema_version": 21,
   "ui": { "language": "vi", "theme": "system", "mode": "professional", "exportFolders": "oneFolder",
           "previewMemoryPercent": 25, "cacheLimitGb": 5, "preparePreviews": true,
           "filmstrip": true, "previewLayout": "dialog",
@@ -324,7 +326,11 @@ These are read-only and compiled into the binary or bundled as resources, so the
       "lens": "Индустар-50-2", "focalMm": 50.0, "fNumber": 4.0, "photoStyle": "L. Monochrome D", "logo": "text" }
   ],
   "fonts": [ { "id": 1, "name": "DSEG7 Classic", "format": "ttf" } ],
-  "recent_addresses": [ "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1" ]
+  "recent_addresses": [ "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1" ],
+  "saved_addresses": [ { "id": 1, "label": "Museum",
+                         "recipient": { "kind": "free", "value": "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1" } } ],
+  "recent_recipients": [ { "country": "jp", "filledBy": "1.1", "code": "1050011", "region": "東京都", "city": "港区",
+                           "town": "芝公園", "road": "", "line": "4-2-8", "name": "山田太郎", "honorific": true, "latin": false } ]
 }
 ```
 
@@ -333,7 +339,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 - **`cameras` is a table** (N1–N3): the key is `id`, `(make, model)` is unique, and every override is optional (sparse, N5). A missing value falls back to EXIF or to a derived default, which is computed and never stored (N4). A row is created the first time a camera is imported.
 - **`fonts` is a table** (FR-042): `id` is the key, and the file lives at `fonts/<id>.<ttf|otf>`. `frame.font` and `render.collage.postcard.font` are foreign keys (`render.stamp.font` was dropped in v5). A dangling key falls back to Inter on load (N7) rather than failing.
 - **`render.customSizes`** (FR-043): values are in mm, `unit` only affects labels, and `printSize` may reference a custom `id`.
-- **`ui`** (FR-020): per-machine interface preferences: `language` (`"en"` or `"vi"`, default `"en"`), `theme` (v6), `mode` (v10: `simple`, `collage` or `professional`, the default) and `exportFolders` (v12: `oneFolder`, the default, or `byDay`, FR-009); since v15 the memory and cache settings of the Settings window (FR-086): `previewMemoryPercent`, `cacheLimitGb`, `preparePreviews`, and the photo preview's `filmstrip` (FR-090) and `previewLayout` (FR-095); since v16 the export dialog's `exportQuality`, `exportAsk`, `exportSeparate` and `exportDestination` (FR-092, FR-093). They are never copied into a project file, so opening a project on another machine keeps that machine's language. **Since v0.14.0 `render` and `frame` here are the machine's defaults for a new project** (`AppState.defaults`): the open document's own are in its bundle and the session (§4, v12), and opening a project never writes them here; only *Use this project's settings* does. Custom print sizes made in any project are joined into this file's, so a size is offered in every project.
+- **`ui`** (FR-020): per-machine interface preferences: `language` (`"en"`, `"de"`, `"hu"`, `"ja"`, `"ko"` or `"vi"`, default `"en"`), `theme` (v6), `mode` (v10: `simple`, `collage` or `professional`, the default) and `exportFolders` (v12: `oneFolder`, the default, or `byDay`, FR-009); since v15 the memory and cache settings of the Settings window (FR-086): `previewMemoryPercent`, `cacheLimitGb`, `preparePreviews`, and the photo preview's `filmstrip` (FR-090) and `previewLayout` (FR-095); since v16 the export dialog's `exportQuality`, `exportAsk`, `exportSeparate` and `exportDestination` (FR-092, FR-093). They are never copied into a project file, so opening a project on another machine keeps that machine's language. **Since v0.14.0 `render` and `frame` here are the machine's defaults for a new project** (`AppState.defaults`): the open document's own are in its bundle and the session (§4, v12), and opening a project never writes them here; only *Use this project's settings* does. Custom print sizes made in any project are joined into this file's, so a size is offered in every project.
 - **Logos** live next to the file as `logos/<camera-id>.png`, copied in after validation ([ADR-0014](adr/0014-user-supplied-brand-logos.md)). The JSON never references paths outside the config dir. `logo: "image"` means the file exists.
 - **Writes** use the same atomic protocol as projects ([§4.4](#44-write-protocol)): `.json.tmp`, then fsync, then the previous file copied to `.json.bak`, then rename. A write happens on every settings change; changes are rare and the file is tiny.
 - **Load rules:**

@@ -1,6 +1,6 @@
 # Development Environment — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-16
 >
 > Toolchain setup, everyday build commands, and **build disk hygiene**. Rust build artifacts grow quickly, so this file defines how we keep them small.
 > Code conventions live in [STYLE_RULE.md](STYLE_RULE.md). Release builds are covered in [RELEASE.md](RELEASE.md).
@@ -121,6 +121,7 @@ debug = false
 strip = "symbols"
 lto = "fat"
 codegen-units = 1
+panic = "unwind"
 ```
 
 - macOS uses `split-debuginfo = "unpacked"` by default, which avoids duplicating debug info.

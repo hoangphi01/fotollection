@@ -1,6 +1,6 @@
 # ADR-0036: Colour looks: `.cube` LUTs first, then Photo Style on the same engine
 
-- **Status:** Accepted (planned for v0.10.0, before the develop core, since [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md))
+- **Status:** Accepted (planned for v0.10.0, before the develop core, since [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md)); superseded in part by [ADR-0047](0047-thumbnails-show-the-look.md) (thumbnails show the look)
 - **Amended by:** [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md) (2026-11-05): looks apply on the photo's encoded values, and the sliders of FR-079 bake into the same table
 - **Date:** 2026-11-02
 - **Related:** FR-070, FR-039, FR-047, FR-040, FR-044, NFR-002, NFR-003, ADR-0011, ADR-0016

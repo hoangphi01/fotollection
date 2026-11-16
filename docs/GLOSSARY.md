@@ -1,11 +1,13 @@
 # Glossary — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-16
 
 | Term | Meaning |
 |------|---------|
 | **3 mm border** | A white border 3 mm wide inside the print size, cut into the photo, so the print keeps the kiosk's exact size ([FR-067](PRD.md#fr-067--3-mm-border-on-every-print)). With the info frame it takes the frame's colour. |
 | **3D LUT** | A lookup table that maps every input RGB colour to an output colour, sampled on a grid (33×33×33) and interpolated. Fotollection bakes a look's sliders, its LUT and a preset's curves into one, so a look costs one lookup per pixel. |
+| **AddAssist** | The assisted address entry (FR-133, ADR-0051): a postal code or a search fills a Japanese or Korean address from the post's own data, bundled in the app. |
+| **Address book** | The postcard addresses saved under a name on this machine, with the recent Japanese and Korean recipients (FR-133, AddAssist 1.1). |
 | **ADR** | Architecture Decision Record: a short document capturing one significant decision, its context and its consequences. See [adr/](adr/README.md). |
 | **Amount** | How much of a whole look a photo gets, 0–100 % (FR-079), as Lightroom's preset Amount: it scales the sliders, the table and the Dehaze together. |
 | **Back-pressure** | When a slower downstream stage blocks upstream stages from producing more work, so that memory stays bounded. |
@@ -30,12 +32,13 @@
 | **GeoNames** | Open geographic database. Our offline geocoder uses its `cities1000` dataset (all cities with a population of 1,000 or more). |
 | **Golden image** | A stored reference output that tests compare against to detect rendering regressions. |
 | **GPX** | GPS Exchange Format: an XML track recorded by phones, watches and GPS loggers. Used to infer locations for cameras without GPS. |
+| **はがき (hagaki)** | The Japanese postcard, 100 × 148 mm; its address side is written top to bottom (FR-130). |
 | **Half-frame** | A film camera that puts two frames on each 35 mm negative, 72 photos on a 36-exposure roll: the idea behind Collage mode. |
 | **HEIC / HEIF** | High Efficiency Image format, the iPhone default, compressed with HEVC. |
 | **ICC profile** | Colour-space description embedded in an image (sRGB, Display P3, Adobe RGB). Dropping it shifts colours in print. |
 | **Info frame** | A band under (or around) the photo showing the camera, lens, exposure, style and date, "Shot on …" style. The whole print keeps the selected size ([FR-040](PRD.md#fr-040--exif-info-frame)). |
 | **IPC** | Inter-process communication between the web UI and the Rust core, done through Tauri commands and events. |
-| **k-d tree** | Spatial index used for fast nearest-city lookup. |
+| **k-d tree** | Spatial index for nearest-neighbour search. Not used: the geocoder bins places in a 1° grid of latitude and longitude (`geocode.rs`). |
 | **Lightroom preset** | A user's own Lightroom® `.xmp` or `.lrtemplate`, read into a look (FR-089, ADR-0045): the sliders that match ours go to them, the per-pixel rest into one table, what no look holds named as not applied. |
 | **Look** | A photo's colour (FR-079): sliders, an optional LUT and an amount, kept per photo; one of Fotollection's eight, a saved one, a LUT or a Lightroom preset. Shown as tiles on the strip under the photo. |
 | **Lossless crop** | Cropping a JPEG in the DCT domain along MCU boundaries without re-encoding, so there is zero quality loss. |
@@ -56,8 +59,9 @@
 | **RenderPlan** | Fotollection's pure, serializable description of how one output photo is produced: crop rectangle, stamp, output path. It is shared by preview and export. |
 | **Settings → Data** | The Settings section of what Fotollection keeps on this computer (FR-116): moving it with a `.fotosettings`, each store's size and folder, starting afresh. |
 | **sRGB** | The standard colour space most print labs expect. Wider spaces (Display P3, Adobe RGB) look dull if a lab treats them as sRGB. |
-| **Standard preview** | A 1600 px preview kept on disk after the thumbnails, so any photo opens at once (FR-091, ADR-0041). |
+| **Standard preview** | A 2048 px preview kept on disk after the thumbnails, so any photo opens at once (FR-091, ADR-0041). |
 | **Tauri** | Rust framework for desktop apps that use the operating system's native webview for the UI. |
 | **Tier (T0–T3)** | Preview resolution levels, from the embedded thumbnail to full resolution. See [OPTIMIZATION.md §4.1](OPTIMIZATION.md#41-multi-tier-preview). |
+| **우편엽서 (upyeon yeopseo)** | The Korean postcard; its address side follows Korea Post's rules, with five code boxes and a machine zone at the foot (FR-132). |
 | **WebView2 / WKWebView** | The system webviews on Windows and macOS. |
 | **X-Trans** | Fujifilm's 6 × 6 colour filter, in place of the 2 × 2 Bayer pattern of other sensors; it needs its own demosaic ([FR-072](PRD.md#fr-072--our-own-develop-core)). |

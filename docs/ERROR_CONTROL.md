@@ -1,6 +1,6 @@
 # Error control — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-04
+> **Status:** Living · **Last reviewed:** 2026-11-16
 >
 > The dictionary of every error the app can show: the single source of truth for error codes. Fotollection is offline and sends nothing (NFR-006), so there is no Sentry. **The code a user reads out, `ERR-IMG-0002` for example, is the only clue we get.** It must say at once what went wrong, where it was raised, why, and what to do. Every new error gets its row here in the same commit as the code ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2).
 
@@ -30,7 +30,7 @@
 
 ## 2. What each row says
 
-Code · since which version users see it · Rust code · where it is raised (`file:line`, the first place) · what the user sees (English; the Vietnamese is in `ui/src/locales/vi.json` under the same key) · the cause · what the user does. How to debug a code, what the log line carries and the fixture that reproduces it go in the row's cause, in [LESSONS.md](LESSONS.md) when a debugging session found it, and in the test that pins it.
+Code · since which version users see it · Rust code · where it is raised (`file:line`, the first place) · what the user sees (English; every other language is in its `ui/src/locales/<code>.json` under the same key, `errors.<code>`) · the cause · what the user does. How to debug a code, what the log line carries and the fixture that reproduces it go in the row's cause, in [LESSONS.md](LESSONS.md) when a debugging session found it, and in the test that pins it.
 
 ## 3. Status of the plan (v0.9.1)
 

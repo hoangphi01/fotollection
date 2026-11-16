@@ -1,6 +1,6 @@
 # Security, Privacy & Resilience — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-09
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-16
 >
 > Threat model and defenses for an **offline desktop app** (Tauri 2 + Rust core).
 > v0.1 targeted a browser-based web app. Concerns that only applied to that architecture (Cloudflare headers, Nominatim rate limits, browser memory limits) were removed in v0.2. See [ADR-0001](adr/0001-desktop-tauri-over-web.md).
@@ -144,7 +144,7 @@ Layer 4: SAFE RENDERING (UI)
 
 - `Cargo.lock` and `package-lock.json` are committed. CI builds with `--locked`.
 - `cargo deny check` covers advisories, licenses (allowlist), banned crates and duplicate versions.
-- `cargo audit` and `npm audit --omit=dev` run in CI, and a weekly scheduled job catches new advisories.
+- CI runs `cargo deny` (advisories included, through `cargo-deny-action`) and `npm audit --omit=dev` on each push and pull request that changes code or dependencies. There is no scheduled job.
 - No native image library is linked today: JPEG/PNG are pure Rust, HEIC uses the OS codecs. A future native library (for example lcms2) is **pinned** and tracked in [STATUS.md](STATUS.md#dependencies-to-watch), with security releases applied within 7 days.
 - **Bundled ML models** (FR-041, [ADR-0018](adr/0018-face-models-and-runtime.md)) are static assets compiled into the binary: YuNet (MIT) and FaceMesh V2 (Apache-2.0). They are checked against pinned BLAKE3 sums when loaded, are never downloaded at runtime, and their origin, licences and checksums are in `crates/core/assets/models/MODELS.md`. The licences are re-checked whenever a model is replaced.
 - **Bundled brand logos** ([ADR-0020](adr/0020-bundled-brand-logos.md)) are PNGs rendered from public-domain SVGs on Wikimedia Commons, pinned by SHA-256 and checked for scripts and external references before rendering. At run time they go through the same validating PNG decoder as user logos.
@@ -161,7 +161,7 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 
 | Gate | Tool |
 |------|------|
-| Vulnerable dependencies | `cargo audit`, `npm audit` |
+| Vulnerable dependencies | `cargo deny` (advisories), `npm audit` |
 | License / banned crates | `cargo deny` |
 | Dangerous DOM APIs | `grep -rE "dangerouslySetInnerHTML\|innerHTML\|outerHTML\|insertAdjacentHTML\|document\.write\|eval\(\|new Function" ui/src` must be empty (also run locally by `ui/scripts/check-lego.mjs`, comments included) |
 | Network-free core | `cargo tree -p fotollection-core` contains no `reqwest`/`hyper`/`ureq` |

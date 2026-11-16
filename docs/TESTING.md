@@ -1,6 +1,6 @@
 # Testing Strategy — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-12
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-16
 >
 > How we prove that Fotollection is correct, robust and fast. Performance benchmarks are specified in [OPTIMIZATION.md](OPTIMIZATION.md).
 
@@ -16,7 +16,7 @@
 | Fuzz | RAW decoder: mutation testing on stable Rust (§4) | `crates/rawcore/examples/mutate.rs` | By hand, before a RAW format moves to our own decoder |
 | Benchmark | Budgets from [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) | `crates/core/examples/measure_*`, `bench/run.sh`, `bench/batch.sh`, `scripts/measure-startup.sh` | By hand, logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log) |
 | Release smoke test | The installed Linux packages (`.deb` file types, the AppImage runs 20 s, also on Debian 12) | [release.yml](../.github/workflows/release.yml) | Every release |
-| UI test cases | Every UI and UX case of [UI_TESTS.md](UI_TESTS.md): inside its card, no overlap, cut text with its hint, target size, WCAG 2.2 AA by axe-core, nothing jumping, the lego measures, approved pictures, in English, Vietnamese, Hungarian and the pseudo-locale `en-XA` (English 40 % longer), light and dark, Chromium and WebKit, at 1180 to 1600 px; English words always whole, translations' words fitted and listed (FR-125) | `scripts/ui-check.sh` (`MEASURE=1` of `site/screenshots/shoot.mjs`, `checks.mjs`) | On every push that changes the interface, English and Hungarian (the pre-push hook, `QUICK=2`); the whole matrix before each release |
+| UI test cases | Every UI and UX case of [UI_TESTS.md](UI_TESTS.md): inside its card, no overlap, cut text with its hint, target size, WCAG 2.2 AA by axe-core, nothing jumping, the lego measures, approved pictures, in English, Vietnamese, Hungarian, German, Japanese, Korean and the pseudo-locale `en-XA` (English 40 % longer), light and dark, Chromium and WebKit, at 1180 to 1600 px; English words always whole, translations' words fitted and listed (FR-125) | `scripts/ui-check.sh` (`MEASURE=1` of `site/screenshots/shoot.mjs`, `checks.mjs`) | On every push that changes the interface, English and Hungarian (the pre-push hook, `QUICK=2`); the whole matrix before each release |
 | Translations' widths (dry) | Every string drawn in Be Vietnam Pro at 12 px; the labels a translation makes over 30 % and 20 px wider than English, to shorten before they reach a button (FR-125) | `npm run text-widths` (`scripts/text-widths.mjs`) | With every new or changed translation |
 | CJK faces cover the text (dry) | Every character of `ja.json` and `ko.json` and their short manuals is in its bundled Noto Sans JP or KR cut (the list beside each, `noto-sans-<jp\|kr>-subset.txt`); fails naming the character (FR-128) | `cd ui && npm run lint` (`check-i18n`); fix with `scripts/cjk-font.sh ja` or `ko` (curl and uv; the source's SHA-1 checked; the same text gives the same file) | With every change to a CJK locale or its manual |
 | Manual | §7 checklist | By hand | Before each release |
@@ -46,7 +46,7 @@ The corpus is stored **outside** git, because the photos are personal and large.
 | Subset | Contents | Purpose |
 |--------|----------|---------|
 | Synthetic (generated) | `crates/core/tests/common/mod.rs` builds JPEGs with chosen EXIF (date, GPS, orientation) through `jpeg-encoder` + `little_exif`, plus broken and spoofed files, at test time. **Nothing personal is committed** | Unit, pipeline and security tests (implemented) |
-| `fixtures` (in git) | `crates/core/tests/fixtures/`: one project file per schema version (`project/v1.fotollection`, `v3`…`v10`), one settings file per version (`settings/v1…v12.json`; v13, the recent addresses, is covered by the `fr_077_*` tests) and a v1 bundle, so every migration is tested. **Planned:** ~20 small photos (each orientation 1–8, no-EXIF, (0,0) GPS, HEIC, PNG, wide-gamut ICC, CMYK, polyglot) | Migration tests today; golden and security tests later |
+| `fixtures` (in git) | `crates/core/tests/fixtures/`: one project file per schema version (`project/v1.fotollection`, `v3`…`v15`), one settings file per version (`settings/v1…v21.json`) and a v1 bundle, so every migration is tested. **Planned:** ~20 small photos (each orientation 1–8, no-EXIF, (0,0) GPS, HEIC, PNG, wide-gamut ICC, CMYK, polyglot) | Migration tests today; golden and security tests later |
 | JPEG layouts (in git) | `crates/core/tests/fixtures/jpeg/`: one drawn picture saved by `cjpeg`, Pillow or `ycck.c` in 23 layouts (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1, progressive, restart markers, optimised tables, one scan per component, a progressive file with a split DC scan, grey, lossless 16-bit grey and 8-bit colour, Adobe CMYK and YCCK, extended SOF1), plus two that must be refused (arithmetic coding, a file cut short); `tests/jpeg_layouts.rs` compares each decode with the picture by its mean and 99th-percentile error and checks each file's route (zune, the reference decoder, refused), so a decoder upgrade that breaks a layout, or a part of one, fails ([ADR-0033](adr/0033-reference-jpeg-decoder.md)) | Decoder regression tests |
 | ICC profiles (in git) | `crates/core/tests/fixtures/icc/`: Display P3 and Adobe RGB from the CC0 Compact ICC Profiles; `colour::tests` checks the conversion against the published matrices (±2 levels), `tests/colour_screen.rs` that a tagged photo is sRGB in its thumbnail, preview and zoom (FR-072) | Colour regression tests |
 | Demosaic charts (generated) | `crates/rawcore/examples/charts.rs`: a zone plate, a Siemens star, saturated colour edges, colour ramps and a flat grey with a Gr/Gb gap, mosaicked to RGGB and scored (PSNR, false colour, edge error, maze) against the truth; results in `bench/results/raw-quality.json`, [RESULT §23](RESULT.md#23-the-demosaics-score-card-v0110-session-15) | Every new demosaic or pre-demosaic step is scored against the old ones (FR-072); a test with thresholds follows RCD |
@@ -86,7 +86,7 @@ cargo run --release -p fotollection-core --example check_files -- path/to/folder
 | `fuzz_decode_jpeg` | Arbitrary bytes → JPEG decode at T1 scale |
 | `fuzz_decode_heic` | Arbitrary bytes → HEIC decode |
 | `fuzz_sanitize_path` | Arbitrary strings → export path builder; asserts the result stays under the root |
-| `fuzz_cube` (with FR-070, planned for v0.14.1) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
+| `fuzz_cube` (with FR-070, planned for v0.14.4) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 
 Any crash found by fuzzing is added to `fixtures` as a regression test.
 
@@ -99,7 +99,7 @@ Any crash found by fuzzing is added to `fixtures` as a regression test.
 - Reference outputs live in `crates/core/tests/golden/`.
 - Comparison: exact match on stamp geometry. On pixels, a maximum per-channel difference of 1 and a PSNR of at least 50 dB, to tolerate codec version differences.
 - To regenerate, run `UPDATE_GOLDEN=1 cargo test`. The diff must be reviewed visually in the PR.
-- **Looks (FR-070, planned for v0.14.1):** one golden image per built-in look, and an identity LUT must leave a photo unchanged.
+- **Looks (FR-070, planned for v0.14.4):** one golden image per built-in look, and an identity LUT must leave a photo unchanged.
 
 ## 6. CI matrix
 
@@ -125,7 +125,7 @@ Before tagging a release, on both `REF-MAC` and `REF-WIN`. Linux has no referenc
 7. Print one collage sheet at a shop, with and without the cut line, and one print with the 3 mm border: measure the photo areas and the border against the app's figures.
 8. Colour (FR-072): open an iPhone HEIC and a JPEG from a camera set to Adobe RGB, next to the system's photo viewer. Thumbnail, preview, zoom and crop view show the same colours as the viewer, not paler. On Windows this is the only check of WIC handing over the HEIC's profile (`oscodec` `profile`); the preview's *This photo* card says *Display P3* on its file line.
 9. Postcard (FR-073): print one landscape and one portrait postcard at a kiosk (dm or Rossmann). The stamp box measures 20 × 25 mm and a real stamp hides it; write in it with a fine permanent marker and with a ballpoint, and note which dries and which smears; post one glossy and, if the shop offers it, one matt card to yourself, and note whether the stamp held, how the postmark took on the coating and whether the photo arrived scuffed (RESULT). ✓ Partly done 2026-11-04: the owner's print test found Xanh Mono's regular at the medium size, about 0.25 mm of stroke, the thinnest still readable; every bundled postcard face is held to it at its smallest size (FR-076).
-10. Looks and presets (FR-079, FR-070, FR-089, v0.14.0): pick each built-in look and set its amount; *Import LUT…* a `.cube` from LUMIX Lab (its V-Log note) and a HaldCLUT; *Import presets…* an `.xmp`, an `.lrtemplate` and a `.zip` pack, and read the *not applied* lines in both languages; Dehaze and the Color Mixer; give a look to many photos from the gallery's Colour tab and undo it in one step.
+10. Looks and presets (FR-079, FR-070, FR-089, v0.14.0): pick each built-in look and set its amount; *Import LUT…* a `.cube` from LUMIX Lab (its V-Log note) and a HaldCLUT; *Import presets…* an `.xmp`, an `.lrtemplate` and a `.zip` pack, and read the *not applied* lines in every language; Dehaze and the Color Mixer; give a look to many photos from the gallery's Colour tab and undo it in one step.
 11. Hold to see the original (FR-096): press and hold the photo in the preview, and *Before* on a collage sheet; on Windows, the look drawn on the GPU while a slider moves (WebView2) and the photo exact when it stops.
 12. Moving computers (FR-082, FR-116): *Export settings* on one machine, *Import settings* on the other, once with **Merge** and once with **Replace** (macOS to Windows and back); a project with a LUT look opened there keeps its colour; *Remove unused LUTs*, *Forget recent addresses*, *Reset settings* and *Erase data* each do what they say and nothing more.
-13. Upgrade (DATABASE): install over the previous release with a project and settings of its own; settings v17 → v18 and project v11 → v12 load, nothing is lost, and the previous version refuses the newer project with its message.
+13. Upgrade (DATABASE): install over the previous release with a project and settings of its own; settings v20 → v21 and project v14 → v15 load, nothing is lost, and the previous version refuses the newer project with its message.

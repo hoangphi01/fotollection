@@ -1,6 +1,6 @@
 # Optimization — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-12
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-16
 >
 > Performance is the #1 product quality for Fotollection, which targets enthusiast and professional photographers.
 > This document holds the **budgets**, the **methodology** used to measure them, the **design techniques** that meet them, and a **log** of every measurement.
@@ -52,7 +52,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | Warm preview step (1600 px, from the cached 2048 px T2) | Time | Share |
 |----------------------------------------------------------|-----:|------:|
 | Crop + Lanczos resize (`fast_image_resize`) | 9.7 ms | 37 % |
-| Date stamp (`ab_glyph`) | ≈ 0.1 ms | ≈ 0 % |
+| Date stamp (`ab_glyph`; `skrifa` since FR-134, §5) | ≈ 0.1 ms | ≈ 0 % |
 | JPEG encode q85, 4:4:4, optimized Huffman (`jpeg-encoder`) | 16.2 ms | 62 % |
 
 - **Preview latency (done in Stage 2).** The encoder was the bottleneck. Previews and thumbnails now use `EncodeOptions::screen` (plain Huffman tables, 4:2:0), exports keep `EncodeOptions::print` (4:4:4; optimized tables until 2026-11-04, the standard ones since, §5). Encode went from 16.2 to 11.7 ms without the Huffman pass and to 7.0 ms with 4:2:0; the warm preview from 26.0 to 17.4 ms, below Chromium (18.5 ms). A CatmullRom resize filter was slower than Lanczos3 (12.5 vs 9.7 ms) and was not kept. `turbojpeg` is no longer needed for previews.
@@ -64,11 +64,11 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 |---------|---------------|---------------------|
 | JPEG decode | Fast: browsers use libjpeg-turbo internally | Same or faster, plus **DCT-domain downscaling** (1/2, 1/4, 1/8) for thumbnails |
 | Parallelism | Web Workers. Buffers are copied or transferred | `rayon` on all cores, shared memory with zero copies |
-| JPEG encode | `convertToBlob`: fast (§2.1), but quality is the only control; always 4:2:0 | turbojpeg/mozjpeg with full control (quality, 4:4:4, progressive) |
+| JPEG encode | `convertToBlob`: fast (§2.1), but quality is the only control; always 4:2:0 | `jpeg-encoder` with full control (quality, 4:4:4) |
 | Memory ceiling | About 2–4 GB per tab, so large batches crash | System RAM, explicitly bounded by back-pressure |
-| Colour management | Canvas usually converts to sRGB and drops the ICC profile | ICC preserved or converted exactly (`lcms2`) |
+| Colour management | Canvas usually converts to sRGB and drops the ICC profile | ICC preserved or converted exactly (`qcms`) |
 | Bit depth | 8-bit | 16-bit capable, needed for RAW in Phase 3 |
-| HEIC | Not supported in Chrome or Firefox | libheif |
+| HEIC | Not supported in Chrome or Firefox | The OS codecs (ImageIO, WIC; [ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | File output | ZIP download, or the File System Access API (Chromium only) | Direct folder writes with atomic renames |
 | **Measured: 95 × 16 MP export (§2.1)** | 18.7 photos/s at 4:2:0, blobs not written | 18.6 photos/s at 4:4:4, files written |
 
@@ -96,25 +96,27 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [FR-070](PRD.md#fr-070--looks-from-lut-files), [FR-079](PRD.md#fr-079--colour-adjustments) (v0.14.0, grain and vignette in v0.14.1; on the GPU while editing, the CPU for exports, [ADR-0039](adr/0039-gpu-for-editing-cpu-for-exports.md)) | Applying a look (33³ table, strength, every slider, grain and vignette) | ≤ 5 ms on the 1600 px preview; ≤ 60 ms on a 24 MP export | `examples/measure_look.rs` ([RESULT §21](RESULT.md#21-colour-looks-the-table-v0100-session-8)); the table alone today, sliders, grain and vignette as they land ([ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)) |
 | [FR-115](PRD.md#fr-115--local-contrast-clarity-texture-and-dehaze) (v0.14.0, Dehaze) | Dehaze on the photo before its look's table: the veil estimated on a copy at most 512 px across, then applied at full size | ≤ 8 ms on the 1600 px preview; ≤ 80 ms on a 24 MP export (REF-MAC) | `measure_dehaze` (median of 10): 6.2 ms and 30 ms, RESULT §39 |
 | [FR-079](PRD.md#fr-079--colour-adjustments) effects (v0.14.1, session 13) | The look's grain and vignette together, after its table (`effects::apply`) | ≤ 3 ms on the 1600 px preview; ≤ 40 ms on a 24 MP export (REF-MAC, 8 threads) | `measure_look` (`FX=grain` or `FX=vignette` for one alone): 2.6 ms and 38.2 ms, RESULT §40 |
-| [FR-070](PRD.md#fr-070--looks-from-lut-files) (v0.14.1) | Importing a LUT: parsing a 65³ `.cube` or a HaldCLUT, and its resampling into the 33³ table | Target, not yet measured: ≤ 200 ms a file; resampling ΔE2000 mean ≤ 1 | `measure_lut` to be written (v0.14.1) |
+| [FR-070](PRD.md#fr-070--looks-from-lut-files) (v0.14.1) | Importing a LUT: parsing a 65³ `.cube` or a HaldCLUT, and its resampling into the 33³ table | Target, not yet measured: ≤ 200 ms a file; resampling ΔE2000 mean ≤ 1 | `measure_lut` to be written (v0.14.4) |
 | [FR-098](PRD.md#fr-098--reading-the-photo-histogram-clipping-white-balance) | The develop view's histogram, from the 1600 px preview through its look | ≤ 3 ms p95 on REF-MAC | `measure_histogram` (1.03 ms at every second pixel of every second row), RESULT §32 |
-| [FR-100](PRD.md#fr-100--motion-that-feels-like-one-app) (M3 and this budget in v0.14.1, [ADR-0046](adr/0046-one-motion-system.md)) | Frames while a transition runs (a dialog, a fold, the strips, a photo from its tile, the next photo, a zoom by key) | ≥ 58 fps on average, no frame over 33 ms, on REF-MAC and Windows | Planned: `MOTION=1 node site/screenshots/shoot.mjs` logs `requestAnimationFrame` gaps per transition; WKWebView once with Web Inspector's timeline ([TRANS_ANIMATION.md §7](TRANS_ANIMATION.md#7-measuring)) |
+| [FR-100](PRD.md#fr-100--motion-that-feels-like-one-app) (M3 and this budget in v0.14.4, [ADR-0046](adr/0046-one-motion-system.md)) | Frames while a transition runs (a dialog, a fold, the strips, a photo from its tile, the next photo, a zoom by key) | ≥ 58 fps on average, no frame over 33 ms, on REF-MAC and Windows | Planned: `MOTION=1 node site/screenshots/shoot.mjs` logs `requestAnimationFrame` gaps per transition; WKWebView once with Web Inspector's timeline ([TRANS_ANIMATION.md §7](TRANS_ANIMATION.md#7-measuring)) |
 | [FR-114](PRD.md#fr-114--a-look-lut-or-preset-given-to-many-photos-at-once) (v0.14.0) | A look given to 10,000 photos: their edits set and one History step, under the library's write lock | ≤ 50 ms on REF-MAC | `measure_look_batch` (synthetic library, median of 10): 7.35 ms at 10,000, RESULT §36 |
 | [FR-114](PRD.md#fr-114--a-look-lut-or-preset-given-to-many-photos-at-once), [ADR-0047](adr/0047-thumbnails-show-the-look.md) | A thumbnail through its photo's look (decode the T1, the table, encode); a batch's 500 on the background pool | ≤ 5 ms p95; ≤ 2 s | `measure_look_thumbs` (a folder of JPEGs, 10 runs): 1.08 ms p50, 1.19 ms p95, 500 in 373 ms, RESULT §37 |
 | [FR-079](PRD.md#fr-079--colour-adjustments), [ADR-0039](adr/0039-gpu-for-editing-cpu-for-exports.md) | A slider step drawn on the GPU while dragging | ≤ 4 ms a step on REF-MAC; ΔE2000 to Rust's render mean and p99 ≤ 1 on the photo | `bench/gpu/run.mjs` (1–2 ms), `look_parity` + `bench/gpu/parity.mjs` + `bench/quality/look_parity.py` (0.13 / 0.77), RESULT §22 |
-| [FR-072](PRD.md#fr-072--our-own-develop-core) (planned v0.11.0, [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)) | Demosaic on the CPU: the Bayer chain (hot pixels, green balance, directional, false colour) on 24 MP; Markesteijn, one pass, on 26 MP; each better than the one it replaces on the charts | ≤ 400 ms (180 ms, RESULT §25); ≤ 700 ms; PSNR, false colour, edge error and maze no worse than Malvar / bilinear X-Trans, a regression stated | `raw_phases` on the nine CC0 samples; `crates/rawcore/examples/charts.rs` (`bench/results/raw-quality.json`) |
-| [FR-072](PRD.md#fr-072--our-own-develop-core), [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md) | The RAW develop on the GPU (`wgpu`), 24 MP, upload and read-back included; parity to the CPU twin | ≤ 80 ms; ΔE2000 mean and p99 ≤ 1 on the nine samples | Planned with session 19: a GPU `raw_phases` and a parity example |
+| [FR-072](PRD.md#fr-072--our-own-develop-core) (the Bayer chain measured; Markesteijn planned v1.1, 2027-Q1, [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)) | Demosaic on the CPU: the Bayer chain (hot pixels, green balance, directional, false colour) on 24 MP; Markesteijn, one pass, on 26 MP; each better than the one it replaces on the charts | ≤ 400 ms (180 ms, RESULT §25); ≤ 700 ms; PSNR, false colour, edge error and maze no worse than Malvar / bilinear X-Trans, a regression stated | `raw_phases` on the nine CC0 samples; `crates/rawcore/examples/charts.rs` (`bench/results/raw-quality.json`) |
+| [FR-072](PRD.md#fr-072--our-own-develop-core), [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md) | The RAW develop on the GPU (`wgpu`), 24 MP, upload and read-back included; parity to the CPU twin | ≤ 80 ms; ΔE2000 mean and p99 ≤ 1 on the nine samples | Planned with v1.1 (2027-Q1, session 19): a GPU `raw_phases` and a parity example |
 | [FR-079](PRD.md#fr-079--colour-adjustments) (v0.14.0) | The Looks card's tiles: one look's tile of a photo, cut from its kept small source, table applied, JPEG encoded | ≤ 3 ms a tile, ≤ 40 ms the card | `measure_look_tiles` (0.68 ms p50, 0.72 p95; 5.4 ms the eight), RESULT §34 |
 | [FR-112](PRD.md#fr-112--highlight-recovery-for-raw) (v0.14.1) | Highlight recovery inside the RAW develop, 24 MP | ≤ 5 ms when nothing is clipped, ≤ 60 ms at worst; ΔE2000 to the truth better than today's fade | `highlights_bench`: 3.0 ms, 54.9 ms half clipped; ΔE2000 after −2 EV 1.13 against the fade's 1.67 (RESULT §41) |
-| [FR-111](PRD.md#fr-111--lossless-export-16-bit-or-32-bit-float-tiff-pro) (planned v0.15.0) | Lossless export of one 24 MP photo to TIFF 16-bit or 32-bit float | Target, not yet measured: set before the work starts, with the file size and memory per photo in flight | Planned with FR-111 |
+| [FR-111](PRD.md#fr-111--lossless-export-16-bit-or-32-bit-float-tiff-pro) (planned v1.1, 2027-Q1) | Lossless export of one 24 MP photo to TIFF 16-bit or 32-bit float | Target, not yet measured: set before the work starts, with the file size and memory per photo in flight | Planned with FR-111 |
 | Website (FR-079, 2026-11-11) | The landing page's keynote video: what a visit downloads for it | Nothing until it scrolls into view, then one file only (the cut for the screen, AV1 or else H.264), each ≤ 1.5 MB, the poster ≤ 150 KB | Measured 2026-11-11: desktop 960 KB AV1 / 1.2 MB H.264, phone 699 / 884 KB, posters 59 / 58 KB; Playwright on Chromium and WebKit: no video byte at load, one file once seen |
+
+AddAssist (FR-133) and text through `skrifa` (FR-134) have no row of their own: both are measured in §5 (2026-11-15, 2026-11-16) and held to NFR-005 and NFR-003.
 
 ### Reference machines
 
 | ID | Machine | Notes |
 |----|---------|-------|
 | `REF-MAC` | MacBook, Apple M3, 8 cores, 16 GB | Primary development machine |
-| `REF-WIN` | Mid-range Windows laptop, 8 cores, 16 GB, NVMe | To be defined in Phase 0 |
+| `REF-WIN` | Mid-range Windows laptop, 8 cores, 16 GB, NVMe | To be defined before v1.0.0 (STATUS, Road to v1.0); candidate: the Lenovo 20U9 Windows laptop used in §5 |
 | `CI` | GitHub-hosted runners | Used for regression trends only, never for absolute budgets |
 
 ## 4. Design techniques
@@ -130,7 +132,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 
 The preview renders the same `RenderPlan` as the export ([ARCHITECTURE.md §4](ARCHITECTURE.md#4-processing-pipeline)), only at T2 scale.
 
-**Photo Style cost ([FR-039](PRD.md#fr-039--photo-style-looks)):** style parameters are baked into a 33³ 3D LUT (about 430 KB, built in about 1 ms when a parameter changes) plus a 1D tone curve. Applying the look is **one trilinear lookup per pixel**, done with SIMD across rayon threads. Estimated cost: about 2 ms on a 2 MP preview (within [NFR-002](PRD.md#nfr-002--preview-latency)) and about 15–25 ms per 24 MP export on 8 cores (to be checked against [NFR-003](PRD.md#nfr-003--export-throughput) in Phase 0/2 benchmarks). Grain uses a precomputed tiled noise texture with a per-photo seed, so it is deterministic and costs no extra RNG.
+**Photo Style cost ([FR-039](PRD.md#fr-039--photo-style-looks)):** style parameters are baked into a 33³ 3D LUT (about 430 KB, built in about 1 ms when a parameter changes) plus a 1D tone curve. Applying the look is **one tetrahedral lookup per pixel** in integers (`looks.rs`), across rayon threads. Estimated cost: about 2 ms on a 2 MP preview (within [NFR-002](PRD.md#nfr-002--preview-latency)) and about 15–25 ms per 24 MP export on 8 cores (to be checked against [NFR-003](PRD.md#nfr-003--export-throughput) in Phase 0/2 benchmarks). Grain uses a precomputed tiled noise texture with a per-photo seed, so it is deterministic and costs no extra RNG.
 
 **Instant previews ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well), [NFR-012](PRD.md#nfr-012--culling-navigation), [ADR-0041](adr/0041-instant-previews-disk-and-memory.md)):** after the thumbnails, every photo's T2 is made in the background and kept on disk (0.66 MB a photo), so a click on any photo opens it from there (27 ms p50, against 278 ms for a JPEG and 440 ms for a RAW decoded on demand). The preview keeps up to a quarter of the machine's RAM by bytes, and loads the next two photos in the direction of travel and the one behind once the photo on screen has landed. RAW develops for work the user does not wait for (standard previews, prefetch, the export's estimate, exports, analyses) wait at the develop gate while the photo on screen needs one (`raw::with_priority`); since v0.11.1 a develop is background unless the preview marks it, a photo browsed past stops going first (`raw::show`), a prefetch is kept below the photo on screen and runs on one worker, and work no longer wanted when its develop's turn comes is dropped (ADR-0041, amended). Since v0.12.0 the user sets the memory share (15 / 25 / 40 %) and the cache limit (2 / 5 / 10 / 20 GB) in the Settings window (FR-086), or lets *Auto* choose from the machine; and when the machine runs short of memory (under a tenth available, checked every 5 s), the previews keep a tenth of their budget until memory comes back, then the user's share again (`PreviewCache::follow_memory`).
 
@@ -154,7 +156,7 @@ In the first slice, protocol requests shared one pool with background T1 generat
 
 ### 4.4 SIMD and codecs
 
-- libjpeg-turbo and `fast_image_resize` use NEON on Apple Silicon and AVX2 on x86-64.
+- `fast_image_resize` uses NEON on Apple Silicon and AVX2 on x86-64. libjpeg-turbo is not used: JPEGs are decoded by `zune-jpeg` (`jpeg-decoder` as the reference) and encoded by `jpeg-encoder`.
 - Release builds use `lto = "fat"`, `codegen-units = 1` and `panic = "unwind"` (ADR-0029): a panic must stay where it happened, never take the app down (ADR-0048), so every pool has a panic handler (`pool::contained`), image routes answer a panic with 500 and commands with an error.
 - Do **not** enable `target-cpu=native` for distributed builds. Use runtime feature detection instead.
 

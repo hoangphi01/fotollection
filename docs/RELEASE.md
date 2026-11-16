@@ -1,6 +1,6 @@
 # Release & Distribution — Fotollection
 
-> **Status:** Accepted v0.2 · **Last reviewed:** 2026-11-09
+> **Status:** Accepted v0.2 · **Last reviewed:** 2026-11-16
 >
 > How Fotollection is versioned, built and shipped. No servers are involved: releases are hosted on GitHub Releases, and the website on GitHub Pages ([ADR-0021](adr/0021-versioning-and-automated-releases.md)).
 

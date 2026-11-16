@@ -1,6 +1,6 @@
 # ADR-0052: Japanese text top to bottom by the face's own vertical forms, no shaper
 
-- **Status:** Accepted
+- **Status:** Accepted. Amended by FR-134 (2026-11-16): GSUB read through read-fonts
 - **Date:** 2026-11-15
 - **Related:** FR-130, ADR-0044
 
