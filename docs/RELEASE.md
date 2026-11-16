@@ -7,13 +7,14 @@
 ## 1. Versioning
 
 - **One [Semantic Versioning](https://semver.org/) version** for the whole app. The workspace `Cargo.toml` is the source; `ui/package.json` and `Cargo.lock` follow it, and `tauri.conf.json` has none of its own. `scripts/check-docs.sh` fails when they disagree.
-- **0.x until the MVP is complete** ([ROADMAP.md](ROADMAP.md#phase-1--mvp)):
+- **0.x until v1.0.0** (December 2026, after v0.14.4; [ROADMAP.md](ROADMAP.md), 2026-Q4, and STATUS's *Road to v1.0*):
   - **MINOR** (`0.2.0`): new features. Each work stage ships as one minor release.
   - **PATCH** (`0.2.1`): fixes only.
 - **From 1.0.0:**
   - **MAJOR:** a change that breaks users, such as a project file that can no longer be migrated, a dropped operating system, or a workflow that changes meaning.
   - **MINOR:** new features, backwards compatible.
-  - **PATCH:** fixes only.
+  - **PATCH:** fixes only; no feature rides in a PATCH after 1.0.0 (the exceptions below are 0.x only).
+  - **The pace (ADR-0053):** one MINOR a month from v1.1.0 (2027-Q1), each with the theme its quarter names in ROADMAP; between them `1.0.1`, `1.0.2`… as fixes need; a security fix for an older line from `release/1.x`, with `minSafe` in `.github/update.json`.
 - **Pre-releases** are `X.Y.Z-beta.N` and are marked as pre-releases on GitHub. They ship the Windows `-setup.exe` only, because an MSI version cannot carry a pre-release tag.
 - **Exception (owner, 2026-11-03):** v0.9.3 (image facts, colour management), v0.9.4 (postcards) v0.9.6 (export folders, share fill) and v0.9.7 (postcard face and addresses, the photo at a glance) carry new features as PATCH releases, so v0.10.0 stays the name of the "Core" release in [ROADMAP.md](ROADMAP.md). v0.13.1 (copy, paste and reset, the histogram, `J`, `W`, the welcome screen) is a feature PATCH by the owner's naming too, so v0.14.0 stays *Looks* (owner, 2026-11-06). v0.14.1, v0.14.2 and v0.14.3 (Looks, part 2; 日本語 and 한국어; Postcards, part 2) are feature PATCHes as well, so v0.15.0 stays *Core 2* (owner, 2026-11-13 and 2026-11-15).
 - **Commits suggest the bump.** With no argument, `scripts/release.sh` proposes the next version from the [Conventional Commits](https://www.conventionalcommits.org/) since the last tag: a `feat` gives MINOR, otherwise PATCH. The owner decides.

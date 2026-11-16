@@ -116,7 +116,7 @@ AddAssist (FR-133) and text through `skrifa` (FR-134) have no row of their own: 
 | ID | Machine | Notes |
 |----|---------|-------|
 | `REF-MAC` | MacBook, Apple M3, 8 cores, 16 GB | Primary development machine |
-| `REF-WIN` | Mid-range Windows laptop, 8 cores, 16 GB, NVMe | To be defined before v1.0.0 (STATUS, Road to v1.0); candidate: the Lenovo 20U9 Windows laptop used in §5 |
+| `REF-WIN` | Mid-range Windows laptop | Lenovo ThinkPad X1 Carbon Gen 8 (20U9002NUS: Intel i7-10610U, 4 cores and 8 threads, 16 GB, a 2K display, Windows 10 IoT Enterprise), the laptop of §5's camera work (RESULT §13.1, cameras/sony.md); chosen by the owner 2026-11-16; its disk noted at its first measurement |
 | `CI` | GitHub-hosted runners | Used for regression trends only, never for absolute budgets |
 
 ## 4. Design techniques
