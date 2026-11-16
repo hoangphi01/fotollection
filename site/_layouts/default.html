@@ -100,6 +100,13 @@
         "description": {{ t.description | jsonify }}
       }
     </script>
+    {%- comment %} The site's name in Google's results (owner, 2026-11-16): WebSite on the domain's home page only, Google's rule. {% endcomment %}
+    {%- assign home_url = '/' | absolute_url %}
+    {%- if canonical == home_url %}
+    <script type="application/ld+json">
+      { "@context": "https://schema.org", "@type": "WebSite", "name": "Fotollection", "url": "{{ home_url }}" }
+    </script>
+    {%- endif %}
 
     <link rel="preload" href="{{ '/assets/fonts/bitter-latin-wght-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="{{ '/assets/css/site.css' | bust }}" />
