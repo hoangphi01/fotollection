@@ -63,9 +63,9 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | | Feature | Phase |
 |---|---------|-------|
 | 📅 | **Date and location stamps** from EXIF, in a film-camera LCD face. Places are resolved offline, with no API calls | 1 |
-| ✂️ | **Batch crop** to 11 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | 1 |
+| ✂️ | **Batch crop** to 21 shop print sizes grouped by market, Europe's (9×13 … 20×30, square, strip), Japan's (L判, 2L判, はがき) and Korea's (4 × 6 … 8 × 10 in), your own sizes or the photo's **original** ratio, with an adjustable crop per photo | 1 |
 | 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
-| ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each 10 × 15 print, a dashed stamp box and writing lines, the text typed in a typewriter or a handwriting face or written by hand, one address for the whole set; since v0.14.2 the Japanese はがき and the Korean 우편엽서 laid out as their posts ask, their addresses filled from the post's own data by **AddAssist**; since v0.14.3 an address book, a sender of its own on each card, and one recipient or message for many cards | 1 |
+| ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each print, a dashed stamp box and writing lines, the text typed in a typewriter or a handwriting face or written by hand; since v0.14.2 the Japanese はがき and the Korean 우편엽서 laid out as their posts ask, their addresses filled from the post's own data by **AddAssist**; since v0.14.3 an address book, a sender of its own on each card, and one recipient or message for many cards | 1 |
 | 🌈 | **Looks** (new in v0.14.0): one tap gives a photo a colour, eight looks of our own shown as your photo, with an **Amount**; **Save as look** keeps your own; a strip of looks under the photo in every mode, and in Simple mode a number key picks one | 2 |
 | 🎛️ | **Lightroom presets and LUTs** (new in v0.14.0): your own `.xmp`, `.lrtemplate` and `.zip` presets and `.cube`, HaldCLUT or LUMIX Lab LUTs become looks, read in Rust; a **Color Mixer** as Lightroom's HSL panel, **Dehaze**, and one look given to many photos at once from the gallery | 2 |
 | 💾 | **Settings → Data** (new in v0.14.0): move to another computer with one `.fotosettings` file, see what Fotollection keeps on this one, reset settings or erase data | 2 |
@@ -147,7 +147,7 @@ On raw export speed the browser is just as fast, because Chromium uses libjpeg-t
 - The browser can only encode JPEG with 4:2:0 chroma, which halves colour resolution. Fotollection exports prints in 4:4:4, with twice the chroma data, in the same time.
 - Fotollection uses 24 % less memory, and its export is bounded, as the large-batch test shows. A browser tab has a hard ceiling.
 - Fotollection writes the files with atomic renames and writes no EXIF, so GPS never leaves your machine. The browser only produced blobs and never wrote them.
-- Colour profiles (ICC), 16-bit RAW in Phase 3, and HEIC are out of reach in the browser.
+- Colour profiles (ICC), 16-bit RAW (v1.1, 2027-Q1), and HEIC are out of reach in the browser.
 
 ### Where the preview time goes
 

@@ -92,7 +92,7 @@ Klick in der Seitenleiste auf **Druckkorb** oder **Zurückgelegt**, um nur diese
 Wähl das Format, in dem du druckst; Fotollection schneidet jedes Foto darauf zu und sagt dir, ob es scharf genug ist.
 
 1. Lass in der Karte **Druck- / Exportformat** die Option **Druck** gewählt.
-2. Öffne die Formatliste: **Standard (CEWE / EU)** mit den Formaten der Fotoautomaten bei dm und Rossmann, **Original** für das eigene Seitenverhältnis des Fotos ohne Zuschnitt, oder **Eigene** für eigene Formate.
+2. Öffne die Formatliste: **Europa (dm, Rossmann, CEWE)** mit den Formaten der Fotoautomaten bei dm und Rossmann, **Japan (Convenience Stores)** und **Korea (Printing Box, Fotolabore)** mit denen Japans und Koreas, **Original** für das eigene Seitenverhältnis des Fotos ohne Zuschnitt, oder **Eigene** für eigene Formate.
 3. Jedes Format trägt ein Abzeichen für das gewählte Foto: **Scharf** (300 DPI oder mehr), **Annehmbar** (150–299 DPI) oder **Verpixelt** (unter 150 DPI).
 4. Jedes Foto wird mittig zugeschnitten; was bleibt, wählst du in der Vorschau (Kapitel 6). **Ausrichtung** unter der Liste legt das Format für das gezeigte oder die abgehakten Fotos **Hoch** oder **Quer**, egal wie das Foto steht, etwa ein Hochformat quer auf einen 15 × 5-Streifen; in der Vorschau und im Modus Einfach tut es die Taste **O**. Quadratische Formate, **Original** und **Ganzes Foto** des Info-Rahmens behalten ihre Form, Collage-Bögen drehen sich von selbst.
 5. **3-mm-Rand** legt einen weißen oder schwarzen Rand von 3 mm um den Abzug.

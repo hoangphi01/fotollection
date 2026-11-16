@@ -92,7 +92,7 @@ Cliquez sur **Print basket** ou **Set aside** dans la barre latérale pour ne vo
 Choisissez le format dans lequel vous imprimez ; Fotollection recadre chaque photo à ce format et vous dit si elle est assez nette.
 
 1. Dans la carte **Print / export size**, laissez l’option **Print** choisie.
-2. Ouvrez la liste des formats : **Standard (CEWE / EU)** avec les formats des bornes photo CEWE de E.Leclerc, Intermarché, U, Cora et Fnac et des bornes Kodak de Carrefour, **Original** pour les proportions propres à la photo sans recadrage, ou **Custom** pour vos propres formats.
+2. Ouvrez la liste des formats : **Europe (dm, Rossmann, CEWE)** avec les formats des bornes photo CEWE de E.Leclerc, Intermarché, U, Cora et Fnac et des bornes Kodak de Carrefour, **Japan (convenience stores)** et **Korea (Printing Box, labs)** avec ceux du Japon et de la Corée, **Original** pour les proportions propres à la photo sans recadrage, ou **Custom** pour vos propres formats.
 3. Chaque format porte un badge pour la photo choisie : **Sharp** (300 DPI ou plus), **Acceptable** (150–299 DPI) ou **Pixelated** (moins de 150 DPI).
 4. Chaque photo est recadrée au centre ; ce qui reste, vous le choisissez dans l’aperçu (chapitre 6). **Orientation**, sous la liste, place le format **Upright** ou **Flat** pour la photo affichée ou les photos cochées, quelle que soit l’orientation de la photo, par exemple une photo en hauteur posée en travers d’une bande 15 × 5 ; dans l’aperçu et en mode Simple, la touche **O** fait de même. Les formats carrés, **Original** et **Fit whole photo** du cadre d’infos gardent leur forme, les planches Collage pivotent d’elles-mêmes.
 5. **3 mm border** ajoute une bordure blanche ou noire de 3 mm autour du tirage.
@@ -336,7 +336,7 @@ Un tirage de borne devient une carte postale à envoyer : une photo sur une mo
 - Les **Looks** forment une bande sous la photo : chaque look est une vignette de votre photo dans ce look. Cliquez sur l’un d’eux pour le donner à la photo ; **Amount** règle son intensité. **Save as look** enregistre le look de la photo sous le nom de votre choix.
 - **Presets & LUTs**, à gauche, liste vos looks, LUT et presets Lightroom. **+** importe des presets (`.xmp`, `.lrtemplate` ou `.zip`) et des LUT (`.cube` ou HaldCLUT, par exemple de LUMIX Lab). Survolez une ligne pour voir le look sur la photo avant de cliquer.
 - **Plusieurs photos à la fois :** dans la galerie du mode Pro, choisissez dans l’onglet **Colour** un look, une LUT ou un preset, puis **Apply to … photos** le donne aux photos cochées ou à toutes celles affichées. **⌘Z** annule toute l’étape.
-- **Mode Collage :** le panneau du mode Collage a lui aussi les onglets **Colour** et **Print**. Dans l’aperçu d’une planche, **Presets & LUTs** est à gauche : **+** importe un look, une LUT ou un preset Lightroom, un clic le donne à la photo choisie ou, si aucune ne l’est, aux deux. Une fenêtre étroite replie la colonne ; **Tab** l’ouvre.
+- **Mode Collage :** le panneau du mode Collage a lui aussi les onglets **Colour** et **Print and export**. Dans l’aperçu d’une planche, **Presets & LUTs** est à gauche : **+** importe un look, une LUT ou un preset Lightroom, un clic le donne à la photo choisie ou, si aucune ne l’est, aux deux. Une fenêtre étroite replie la colonne ; **Tab** l’ouvre.
 
 Les cartes de couleur agissent dans l’aperçu d’une photo, et sur cette photo seule ; **Apply to all photos** donne son look à toutes.
 

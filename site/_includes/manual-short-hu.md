@@ -86,7 +86,7 @@ Kattints a **Nyomtatási kosár** vagy a **Félretett** elemre az oldalsávban, 
 Válaszd ki, mekkora méretben nyomtatsz, és a Fotollection minden fotót arra vág, és megmondja, mindegyik elég éles-e.
 
 1. A **Nyomat- / exportméret** kártyán hagyd kiválasztva a **Nyomtatás** lehetőséget.
-2. Nyisd meg a méretlistát: **Szabványos (CEWE / EU)** a dm és a Rossmann fotókioszkjainak méreteivel (például *10 × 15 cm · 2:3*), **Eredeti** a fotó saját arányával, vágás nélkül, vagy **Egyéni** a saját méreteiddel.
+2. Nyisd meg a méretlistát: **Európa (dm, Rossmann, CEWE)** a dm és a Rossmann fotókioszkjainak méreteivel (például *10 × 15 cm · 2:3*), **Japán (kisboltok)** és **Korea (Printing Box, fotólaborok)** Japán és Korea méreteivel, **Eredeti** a fotó saját arányával, vágás nélkül, vagy **Egyéni** a saját méreteiddel.
 3. Minden méret mellett egy jelzés áll a kiválasztott fotóhoz: **Éles** (300 DPI vagy több), **Elfogadható** (150–299 DPI) vagy **Pixeles** (150 DPI alatt).
 4. Minden fotó a méret arányára vágódik, alapból középre igazítva; hogy mi maradjon meg, azt az előnézetben választhatod meg. A lista alatti **Tájolás** a látott vagy a kipipált fotóknál, alakjuktól függetlenül **Álló** vagy **Fekvő** helyzetbe teszi a méretet, például egy álló fotót egy fekvő 15 × 5-ös csíkra; az előnézetben és az Egyszerű módban az **O** billentyű is ezt teszi. A négyzetes méretek, az **Eredeti** és az információs keret **Teljes fotó** beállítása megtartja az alakját, a kollázslapok maguktól fordulnak.
 5. A **3 mm-es szegély** minden oldalon 3 mm-es fehér vagy fekete szegélyt hagy, így a nyomat pontosan a kioszk méretét tartja.

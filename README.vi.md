@@ -64,9 +64,9 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | | Tính năng | Giai đoạn |
 |---|---------|-------|
 | 📅 | **Dấu ngày và nơi chụp** lấy từ EXIF, bằng kiểu chữ LCD như máy ảnh phim. Địa điểm tra offline, không gọi API nào | 1 |
-| ✂️ | **Crop hàng loạt** theo 11 khổ in châu Âu (9×13 … 20×30, vuông, dải), khổ của riêng bạn (ví dụ 4 × 6 in) hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | 1 |
+| ✂️ | **Crop hàng loạt** theo 21 khổ in của cửa hàng, xếp theo thị trường: châu Âu (9×13 … 20×30, vuông, dải), Nhật (L判, 2L判, はがき) và Hàn (4 × 6 … 8 × 10 in), khổ của riêng bạn hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | 1 |
 | 🎚️ | **Ba chế độ** (mới trong v0.9.0): **Đơn giản**, từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất; **Ghép ảnh**, hai ảnh trên một tấm in như máy half-frame (một tấm 10 × 15 chứa hai ảnh 10 × 7,5), có cỡ gợi ý, đường cắt và kéo-thả để đổi thứ tự; **Pro**, đủ mọi điều khiển | 1 |
-| ✉️ | **Bưu thiếp** (mới trong v0.9.4): trong chế độ Ghép ảnh, mỗi tấm 10 × 15 có một ảnh và mặt sau bưu thiếp, ô dán tem nét đứt và dòng kẻ, chữ gõ bằng font máy đánh chữ hoặc font viết tay, hay tự viết tay, một địa chỉ cho cả bộ; từ v0.14.2 có はがき của Nhật và 우편엽서 của Hàn theo đúng quy định bưu điện, địa chỉ điền từ chính dữ liệu bưu điện nhờ **AddAssist**; từ v0.14.3 có sổ địa chỉ, người gửi riêng cho từng tấm, và một người nhận hay lời nhắn cho nhiều tấm | 1 |
+| ✉️ | **Bưu thiếp** (mới trong v0.9.4): trong chế độ Ghép ảnh, mỗi tấm in có một ảnh và mặt sau bưu thiếp, ô dán tem nét đứt và dòng kẻ, chữ gõ bằng font máy đánh chữ hoặc font viết tay, hay tự viết tay; từ v0.14.2 có はがき của Nhật và 우편엽서 của Hàn theo đúng quy định bưu điện, địa chỉ điền từ chính dữ liệu bưu điện nhờ **AddAssist**; từ v0.14.3 có sổ địa chỉ, người gửi riêng cho từng tấm, và một người nhận hay lời nhắn cho nhiều tấm | 1 |
 | 🌈 | **Look** (mới trong v0.14.0): một chạm là ảnh có màu, tám look của Fotollection hiện ngay trên ảnh của bạn, có chỉnh **Mức độ**; **Lưu thành look** giữ màu của riêng bạn; dải look dưới ảnh ở mọi chế độ, và ở chế độ Đơn giản một phím số chọn một look | 2 |
 | 🎛️ | **Preset Lightroom và LUT** (mới trong v0.14.0): preset `.xmp`, `.lrtemplate`, `.zip` và LUT `.cube`, HaldCLUT hay LUMIX Lab của bạn thành look, đọc bằng Rust; **Color Mixer** như bảng HSL của Lightroom, **Khử sương**, và áp một look cho nhiều ảnh cùng lúc từ lưới ảnh | 2 |
 | 💾 | **Cài đặt → Dữ liệu** (mới trong v0.14.0): chuyển sang máy khác bằng một file `.fotosettings`, xem Fotollection giữ gì trên máy này, đặt lại cài đặt hoặc xóa dữ liệu | 2 |
@@ -148,7 +148,7 @@ Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dù
 - Trình duyệt chỉ mã hóa JPEG được ở chế độ màu 4:2:0, tức một nửa độ phân giải màu. Fotollection export ảnh in ở 4:4:4, gấp đôi dữ liệu màu, trong cùng thời gian.
 - Fotollection dùng ít hơn 24 % RAM, và việc export có giới hạn RAM, như bài thử batch lớn cho thấy. Một tab trình duyệt thì có trần cứng.
 - Fotollection ghi file ra đĩa với rename nguyên tử và không ghi EXIF, nên GPS không bao giờ rời khỏi máy bạn. Trình duyệt chỉ tạo blob trong RAM và không ghi file nào.
-- ICC profile, RAW 16-bit ở Phase 3, và HEIC nằm ngoài khả năng của trình duyệt.
+- ICC profile, RAW 16-bit (v1.1, quý 1/2027), và HEIC nằm ngoài khả năng của trình duyệt.
 
 ### Thời gian preview đi đâu
 

@@ -97,7 +97,7 @@ Klikni na **Print basket** nebo **Set aside** na postranním panelu a uvidíš j
 Vyber formát, ve kterém budeš tisknout, a Fotollection na něj ořízne každou fotku a řekne ti, zda je dost ostrá.
 
 1. V kartě **Print / export size** nech vybrané **Print**.
-2. Otevři seznam formátů: **Standard (CEWE / EU)** jsou formáty fotokiosků v dm a Rossmannu, třeba *10 × 15 cm · 2:3*; **Original** zachová vlastní poměr stran fotky bez ořezu; **Custom** jsou formáty, které sis přidal.
+2. Otevři seznam formátů: **Europe (dm, Rossmann, CEWE)** jsou formáty fotokiosků v dm a Rossmannu, třeba *10 × 15 cm · 2:3*; **Japan (convenience stores)** a **Korea (Printing Box, labs)** formáty Japonska a Koreje; **Original** zachová vlastní poměr stran fotky bez ořezu; **Custom** jsou formáty, které sis přidal.
 3. Každý formát má pro vybranou fotku odznak: **Sharp** (300 DPI a víc), **Acceptable** (150–299 DPI) nebo **Pixelated** (pod 150 DPI). Pod seznamem je řádek, jak velká se fotka vytiskne ostře.
 4. Každá fotka se ořízne na poměr formátu, ve výchozím stavu na střed. Co zůstane, zvolíš v náhledu (kapitola 6). **Orientation** pod seznamem položí formát **Upright** nebo **Flat** pro zobrazenou nebo zaškrtnuté fotky bez ohledu na jejich tvar, třeba svislou fotku na ležatý pruh 15 × 5; v náhledu a v režimu Simple stačí klávesa **O**. Čtvercové formáty, **Original** a **Fit whole photo** rámečku s údaji si tvar nechají, listy v Collage se otočí samy.
 5. **3 mm border** přidá na každou stranu okraj 3 mm, **White** nebo **Black**, a tisk si zachová přesný formát kiosku.
@@ -328,7 +328,7 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 5. **Postal use** v kartě *Postcard*, ve výchozím stavu zapnuté, nechá na ležaté pohlednici dole 15 mm volných pro třídicí kód pošty: fotka končí tenkou čarou, dole běží „postal use“ v sedmi jazycích a adresa končí 15 mm od pravého okraje. Na svislé pohlednici běží pruh podél pravého okraje a pole na známku je vlevo od něj. Pro pohlednici, kterou si necháš, ho vypni. Pohlednice se tiskne na bílý papír, její 3mm okraj je bílý.
 6. **Export** zapíše jeden soubor na pohlednici.
 
-<!-- shot: manual-postcard-apply | Karta Postcard text: napsaná adresa a pod ní poznámka s Use for them -->
+<!-- shot: manual-postcard-apply | Karta Recipient: napsaná adresa a pod ní poznámka s Use for them -->
 
 **Jedna adresa pro celou sadu:** napiš adresu na jednu pohlednici; **Use for them** ji dá na všechny ostatní bez adresy, v jednom kroku, který **Cmd/Ctrl+Z** vrátí. Totéž platí pro zprávu a pro japonského či korejského příjemce nebo odesílatele. **Address book** nahoře v kartě *Recipient* ukazuje příjemce uložené přes ☆ (až 100) a naposledy použité; kliknutím ho dáš na pohlednici, × ho zapomene.
 
@@ -346,8 +346,8 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 
 - **Looks** jsou pás pod fotkou: každý look je dlaždice tvé fotky v něm, takže barvu vidíš dřív, než vybereš. Klikni na jeden a fotka ho dostane; **Amount** nastaví, jak silně. **Save as look** uloží look fotky pod vlastním jménem.
 - **Presets & LUTs** vlevo, mezi Navigator a History jako v Lightroomu, vypisuje tvoje looky, LUTy a presety z Lightroomu ve skupinách. **+** uloží look fotky nebo importuje presety (`.xmp`, `.lrtemplate` nebo `.zip`) a LUTy (`.cube` nebo HaldCLUT).
-- **Hodně fotek najednou:** v galerii režimu Pro má pravý sloupec karty **Colour** a **Print**. V **Colour** vyber look, LUT nebo preset, nastav **Amount** a **Apply to … photos** ho dá zaškrtnutým fotkám, nebo všem zobrazeným. **⌘Z** vrátí celou dávku.
-- **Režim Collage:** panel režimu Collage má také karty **Colour** a **Print**. V náhledu archu je vlevo **Presets & LUTs**: **+** importuje look, LUT nebo preset z Lightroomu a kliknutím ho dáš vybrané fotce, nebo když žádná vybraná není, oběma. Úzké okno sloupec sbalí; **Tab** ho otevře.
+- **Hodně fotek najednou:** v galerii režimu Pro má pravý sloupec karty **Colour** a **Print and export**. V **Colour** vyber look, LUT nebo preset, nastav **Amount** a **Apply to … photos** ho dá zaškrtnutým fotkám, nebo všem zobrazeným. **⌘Z** vrátí celou dávku.
+- **Režim Collage:** panel režimu Collage má také karty **Colour** a **Print and export**. V náhledu archu je vlevo **Presets & LUTs**: **+** importuje look, LUT nebo preset z Lightroomu a kliknutím ho dáš vybrané fotce, nebo když žádná vybraná není, oběma. Úzké okno sloupec sbalí; **Tab** ho otevře.
 - **Faves** ukazuje čtyři posuvníky: **Brightness**, **Contrast**, **Warm / cool** a **Saturation**. **More** přidá **Highlights**, **Shadows**, **Tint** a **Vibrance**. Dvojklik posuvník vrátí na 0.
 - **Color mixer**: nahoře vyber **Hue**, **Sat**, **Lum** nebo **All** a posuň posuvník každé z osmi barev.
 - **Tools**: **Dehaze**, **Fade**, tónování stínů a světel a **Black and white**. **Grain** přidá filmové zrno, nejsilnější ve středních tónech; **Grain size** ho nastaví od jemného po hrubé v milimetrech na tisku, takže 10 × 15 i 20 × 30 ukážou stejné zrno. **Vignette** ztmaví (−) nebo zesvětlí (+) rohy oříznuté fotky. Zrno a vinětace z presetu Lightroomu přijdou sem.
