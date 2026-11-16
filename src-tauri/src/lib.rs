@@ -127,7 +127,6 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             collage::remember_recipient,
             collage::address_book,
             collage::save_address,
-            collage::rename_saved_address,
             collage::forget_saved_address,
             collage::forget_recent_recipient,
             addassist::addassist_countries,

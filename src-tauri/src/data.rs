@@ -177,16 +177,7 @@ pub async fn data_usage(app: AppHandle) -> Result<Vec<StoreUsage>, IpcError> {
             row(DataKind::Luts, (lut_bytes, n(luts.len())), n(unused)),
             row(DataKind::Fonts, folder_usage(&state.font_dir), 0),
             row(DataKind::Logos, folder_usage(&state.logo_dir), 0),
-            row(
-                DataKind::Addresses,
-                (
-                    0,
-                    n(stored.recent_addresses.len()
-                        + stored.saved_addresses.len()
-                        + stored.recent_recipients.len()),
-                ),
-                0,
-            ),
+            row(DataKind::Addresses, (0, n(stored.address_count())), 0),
             row(
                 DataKind::CameraSessions,
                 (folder_usage(camera.root()).0, n(sessions)),

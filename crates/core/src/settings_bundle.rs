@@ -89,9 +89,7 @@ impl SettingsBundle {
             logos: count(self.logos.len()),
             cameras: count(s.cameras.len()),
             sizes: count(s.render.custom_sizes.len()),
-            addresses: count(
-                s.recent_addresses.len() + s.saved_addresses.len() + s.recent_recipients.len(),
-            ),
+            addresses: count(s.address_count()),
         }
     }
 }
@@ -236,7 +234,7 @@ pub fn apply(
                 if !local
                     .saved_addresses
                     .iter()
-                    .any(|s| s.recipient == saved.recipient)
+                    .any(|s| s.recipient.same_as(&saved.recipient))
                 {
                     let _ = crate::addassist::book::save(
                         &mut local.saved_addresses,
@@ -432,6 +430,58 @@ mod tests {
         assert_eq!(local.saved_addresses.len(), 1);
         assert_eq!(local.saved_addresses[0].label, "My museum");
         assert_eq!(local.recent_recipients.len(), 1);
+    }
+
+    /// FR-133: a recipient both books hold keeps this machine's name on a merge, also when the
+    /// two differ only in the `AddAssist` version that filled it or in spaces.
+    #[test]
+    fn fr_133_a_merged_recipient_keeps_this_machines_name() {
+        use crate::addassist::book::{Recipient, SavedAddress, save};
+        let mut tower = crate::addassist::Address::new(crate::addassist::Country::Jp);
+        tower.code = "1050011".into();
+        tower.name = "山田太郎".into();
+        tower.filled_by = "1.1".into();
+        let mut local = StoredSettings::default();
+        assert!(
+            save(
+                &mut local.saved_addresses,
+                "Tokyo Tower",
+                &Recipient::Assisted(tower.clone())
+            )
+            .is_ok()
+        );
+        assert!(
+            save(
+                &mut local.saved_addresses,
+                "Museum",
+                &Recipient::Free("Národní muzeum".into())
+            )
+            .is_ok()
+        );
+        let mut theirs = sample();
+        let mut older = tower;
+        older.filled_by = "1.0".into();
+        theirs.settings.saved_addresses = vec![
+            SavedAddress {
+                id: 7,
+                label: "Tower".into(),
+                recipient: Recipient::Assisted(older),
+            },
+            SavedAddress {
+                id: 8,
+                label: "Muzeum".into(),
+                recipient: Recipient::Free(" Národní muzeum ".into()),
+            },
+        ];
+        let Ok(_) = apply(&mut local, &theirs, ImportMode::Merge, &|_| None) else {
+            panic!("merges");
+        };
+        let labels: Vec<&str> = local
+            .saved_addresses
+            .iter()
+            .map(|s| s.label.as_str())
+            .collect();
+        assert_eq!(labels, ["Tokyo Tower", "Museum"]);
     }
 
     /// The LUTs a machine's settings use: its saved looks' and its default look's.

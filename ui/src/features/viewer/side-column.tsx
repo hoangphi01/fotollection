@@ -6,21 +6,13 @@ import { PanelNote } from '@/components/layout/panel-note'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
-/** The toolbar's button that shows or hides the left column, first in the row, then a line. */
-export function SideToggle({ side, showLabel }: { side: { open: boolean; onToggle: () => void }; showLabel?: string }) {
+/** The toolbar's button that shows the left column a narrow window folded, first in the row. */
+export function SideToggle({ onShow, label }: { onShow: () => void; label?: string }) {
   const { t } = useTranslation()
-  const label = side.open ? t('viewer.sideHide') : (showLabel ?? t('viewer.sideShow'))
+  const text = label ?? t('viewer.sideShow')
   return (
     <>
-      <ToolbarButton
-        icon={side.open ? <PanelLeftClose /> : <PanelLeftOpen />}
-        label={label}
-        variant={side.open ? 'default' : 'outline'}
-        aria-pressed={side.open}
-        data-hint={label}
-        iconOnly
-        onClick={side.onToggle}
-      />
+      <ToolbarButton icon={<PanelLeftOpen />} label={text} variant="outline" data-hint={text} iconOnly onClick={onShow} />
       <Separator orientation="vertical" className="mx-1 h-5!" />
     </>
   )

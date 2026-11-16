@@ -17,6 +17,7 @@ import { Kbd } from '@/components/ui/kbd'
 import { Separator } from '@/components/ui/separator'
 import { HistoryButtons } from '@/features/history/history-buttons'
 import { StageSpinner } from '@/components/layout/stage-spinner'
+import { ToolbarRow } from '@/components/layout/toolbar-row'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
@@ -167,7 +168,7 @@ export function SheetPreviewDialog({
   const looks = useLookPicker(photo ?? sheet?.first, revision, photo === null ? sheetIds : undefined)
   // The photo preview's left column, the same block (owner, 2026-11-16: "learn from Pro"):
   // *Presets & LUTs*, to import and give a look to the picked photo or the whole sheet.
-  const { show: showSide, narrow, setOpen: setSideOpen, toggle: sideToggle } = useSideColumn(true)
+  const { show: showSide, narrow, setOpen: setSideOpen, folded } = useSideColumn(true)
   const info = useSheetInfo(open ? sheet : undefined, revision)
   const cell = info?.cells.find((c) => c.id === photo) ?? info?.cells[0]
   const geometry = useCellGeometry(cropping ? photo : null, sheet, revision)
@@ -276,8 +277,8 @@ export function SheetPreviewDialog({
       // preview's order (owner, 2026-11-07; STYLE_RULE §4): undo and redo, the chosen photo's
       // settings, then crop and turns, then zoom.
       toolbar={
-        <div className="@container flex h-header items-center gap-2 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
-          {sideToggle && <SideToggle side={sideToggle} showLabel={t('viewer.sideShowPresets')} />}
+        <ToolbarRow>
+          {folded && <SideToggle onShow={() => setSideOpen(true)} label={t('viewer.sideShowPresets')} />}
           <HistoryButtons canUndo={canUndo} canRedo={canRedo} />
           <SettingsButtons photo={photo ?? undefined} ticked={ticked} collage />
           <Separator orientation="vertical" className="mx-1 h-5!" />
@@ -337,7 +338,7 @@ export function SheetPreviewDialog({
                 keys is hard to read); the footer keeps the few used most. */}
             <KeysInfo lines={t('collage.sheetKeys', { mod: MOD }).split('\n')} />
           </div>
-        </div>
+        </ToolbarRow>
       }
       // A click on the ground around the sheet lets go of the chosen photo, like Esc.
       onStageGroundClick={() => !cropping && !picking && choose(null)}

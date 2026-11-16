@@ -25,7 +25,7 @@ export function useSideColumn(enabled: boolean, panels = true) {
     /** A narrow window folds it: the toolbar's button and the column's own ✕ show. */
     narrow,
     setOpen,
-    /** The toolbar's button, while a narrow window keeps the column folded. */
-    toggle: narrow && !open ? { open: false, onToggle: () => setOpen(true) } : undefined,
+    /** The toolbar's button shows, while a narrow window keeps the column folded. */
+    folded: narrow && !open,
   }
 }

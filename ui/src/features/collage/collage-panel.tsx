@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Palette, Printer } from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { InspectorTabs } from '@/components/layout/inspector-tabs'
 import { ApplyLookCard } from '@/features/look/apply-look-card'
+import { ColourPrintTabs } from '@/features/look/colour-print-tabs'
+import { useColourPrintTab } from '@/features/look/use-colour-print-tab'
 import { PanelFooter } from '@/features/about/panel-footer'
 import { SidePanel } from '@/components/layout/side-panel'
 import type { CellInfo, CullFilter, PhotoId, PhotoSummary, RenderSettings, SheetInfo } from '@/ipc/bindings'
@@ -35,9 +34,6 @@ type CollagePanelProps = {
   revision: number
 }
 
-type CollageTab = 'colour' | 'print'
-/** The tab open, kept while the app runs; Print first, the panel as it always opened. */
-let lastTab: CollageTab = 'print'
 
 /**
  * Collage mode's panel (FR-035, FR-048) in the Pro panel's two tabs (FR-137, owner
@@ -62,26 +58,12 @@ export function CollagePanel({
   revision,
 }: CollagePanelProps) {
   const { t } = useTranslation()
-  const [tab, setTab] = useState<CollageTab>(lastTab)
-  const openTab = (next: CollageTab) => {
-    lastTab = next
-    setTab(next)
-  }
+  const [tab, openTab] = useColourPrintTab('collage')
   return (
     <SidePanel
       title={tab === 'colour' ? t('inspector.colour') : t('collage.title')}
       tabs={
-        <InspectorTabs<CollageTab>
-          groups={[
-            [
-              { value: 'colour', icon: <Palette />, label: t('inspector.colour') },
-              { value: 'print', icon: <Printer />, label: t('inspector.print') },
-            ],
-          ]}
-          value={tab}
-          onChange={openTab}
-          ariaLabel={t('inspector.tabs')}
-        />
+        <ColourPrintTabs value={tab} onChange={openTab} />
       }
       footer={
         <>

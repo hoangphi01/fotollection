@@ -27,6 +27,7 @@ import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { commands, type PhotoId, type PhotoSummary } from '@/ipc/bindings'
 import { SideToggle } from './side-column'
+import { ToolbarRow } from '@/components/layout/toolbar-row'
 import { MOD, isMac } from '@/lib/platform'
 import type { Compare, CompareMode } from './compare-stage'
 import { ListRow } from '@/components/forms/list-row'
@@ -53,8 +54,8 @@ type PreviewToolbarProps = {
   /** The preview fills the app window (FR-095). */
   windowed: boolean
   onLayout: () => void
-  /** The left column a narrow window folds (FR-095): shown or hidden from here, as Tab does. */
-  side?: { open: boolean; onToggle: () => void }
+  /** The left column a narrow window folded (FR-095): shown from here, as Tab does. */
+  onShowSide?: () => void
 }
 
 /**
@@ -77,17 +78,15 @@ export function PreviewToolbar({
   onFilmstrip,
   windowed,
   onLayout,
-  side,
+  onShowSide,
 }: PreviewToolbarProps) {
   const { t } = useTranslation()
   const inBasket = photo?.queue === 'print'
   const rotate = (clockwise: boolean) => photo && void commands.rotatePhotos([photo.id], clockwise)
   const stripLabel = t(filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   return (
-    // Too narrow for every button (a narrow window with both columns open), the row scrolls
-    // sideways rather than cut its last buttons (owner, 2026-11-07).
-    <div className="@container flex h-header items-center gap-2 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
-      {side && <SideToggle side={side} />}
+    <ToolbarRow>
+      {onShowSide && <SideToggle onShow={onShowSide} />}
       {/* Undo and redo first, apart from the photo's own actions (owner, 2026-11-07: they were
           taken for the turn buttons), then copy, paste and reset beside them. */}
       <HistoryButtons canUndo={canUndo} canRedo={canRedo} />
@@ -179,7 +178,7 @@ export function PreviewToolbar({
         </ButtonGroup>
         <KeysInfo lines={t('viewer.keys', { mod: MOD }).split('\n')} />
       </div>
-    </div>
+    </ToolbarRow>
   )
 }
 

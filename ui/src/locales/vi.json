@@ -945,7 +945,6 @@
     "typewriter": "Máy đánh chữ",
     "handwriting": "Viết tay",
     "pens": "Viết tay trên giấy ảnh: dùng bút dạ dầu nét mảnh (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Thử ở ô tem trước và để khô khoảng một phút; bút bi và bút gel dễ lem hoặc không ăn mực trên lớp phủ. Hoặc gõ chữ ngay trong bản xem trước của bưu thiếp.",
-    "text": "Chữ trên bưu thiếp",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Mỗi tấm chứa một ảnh và mặt sau bưu thiếp, theo chiều cầm chọn ở thẻ Bưu thiếp.",
     "cardHint": "Một ảnh và mặt sau bưu thiếp trên mỗi tấm in",
@@ -988,7 +987,6 @@
       "korea": "In 「우편엽서」 và chừa dải 17 mm cho máy đọc."
     },
     "sender": "Người gửi",
-    "senderHint": "Một người gửi cho mọi thiệp.",
     "fontJapan": "In bằng font Klee One.",
     "nanumPenHint": "Nét bút hẹp",
     "gaeguHint": "Nét tròn"

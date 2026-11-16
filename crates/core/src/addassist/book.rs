@@ -42,7 +42,16 @@ impl Recipient {
 
     /// The same recipient, whatever filled it: the `AddAssist` version is not part of who
     /// the card goes to.
-    fn same_as(&self, other: &Self) -> bool {
+    /// As the book keeps it: a typed address trimmed, an assisted one sanitised, the same
+    /// whether it was just saved or read from a file.
+    fn cleaned(&self) -> Self {
+        match self {
+            Self::Free(text) => Self::Free(text.trim().to_owned()),
+            Self::Assisted(address) => Self::Assisted(address.sanitized()),
+        }
+    }
+
+    pub(crate) fn same_as(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Free(a), Self::Free(b)) => a.trim() == b.trim(),
             (Self::Assisted(a), Self::Assisted(b)) => same_address(a, b),
@@ -133,10 +142,7 @@ pub fn save(
     if !recipient.is_valid() {
         return Err(BookError::Address);
     }
-    let recipient = match recipient {
-        Recipient::Free(text) => Recipient::Free(text.trim().to_owned()),
-        Recipient::Assisted(address) => Recipient::Assisted(address.sanitized()),
-    };
+    let recipient = recipient.cleaned();
     if let Some(kept) = book.iter_mut().find(|s| s.recipient.same_as(&recipient)) {
         kept.label = label;
         return Ok(kept.id);
@@ -144,28 +150,20 @@ pub fn save(
     if book.len() >= MAX_SAVED {
         return Err(BookError::Full);
     }
-    let id = book
-        .iter()
-        .map(|s| s.id)
-        .max()
-        .map_or(1, |m| m.saturating_add(1));
+    // The next id; an edited file holding the last one gives the first free id instead.
+    let id = match book.iter().map(|s| s.id).max() {
+        None => 1,
+        Some(last) if last < u32::MAX => last + 1,
+        Some(_) => (1..=u32::MAX)
+            .find(|n| !book.iter().any(|s| s.id == *n))
+            .unwrap_or(1),
+    };
     book.push(SavedAddress {
         id,
         label,
         recipient,
     });
     Ok(id)
-}
-
-/// Gives a saved recipient a new name.
-pub fn rename(book: &mut [SavedAddress], id: u32, label: &str) -> Result<(), BookError> {
-    let label = checked_label(label)?;
-    let kept = book
-        .iter_mut()
-        .find(|s| s.id == id)
-        .ok_or(BookError::Unknown)?;
-    kept.label = label;
-    Ok(())
 }
 
 /// Takes a recipient out of the book.
@@ -196,7 +194,7 @@ pub fn sanitized_book(book: &[SavedAddress]) -> Vec<SavedAddress> {
         kept.push(SavedAddress {
             id: entry.id,
             label,
-            recipient: entry.recipient.clone(),
+            recipient: entry.recipient.cleaned(),
         });
         if kept.len() == MAX_SAVED {
             break;
@@ -290,7 +288,7 @@ mod tests {
     }
 
     #[test]
-    fn fr_133_saved_address_book_is_capped_renamed_and_forgotten() {
+    fn fr_133_saved_address_book_is_capped_and_forgotten() {
         let mut book = Vec::new();
         for n in 0..MAX_SAVED {
             assert!(
@@ -306,12 +304,42 @@ mod tests {
             save(&mut book, "One more", &Recipient::Free("Street x".into())),
             Err(BookError::Full)
         );
-        assert_eq!(rename(&mut book, 3, "Home"), Ok(()));
-        assert_eq!(book[2].label, "Home");
-        assert_eq!(rename(&mut book, 999, "Home"), Err(BookError::Unknown));
         assert_eq!(forget(&mut book, 3), Ok(()));
         assert_eq!(forget(&mut book, 3), Err(BookError::Unknown));
         assert_eq!(book.len(), MAX_SAVED - 1);
+    }
+
+    #[test]
+    fn fr_133_a_book_whose_ids_run_out_gives_a_free_one() {
+        // An edited file can hold the last id: the next one must still be new, never shared.
+        let mut book = vec![SavedAddress {
+            id: u32::MAX,
+            label: "Last".into(),
+            recipient: Recipient::Free("Street 1".into()),
+        }];
+        let Ok(id) = save(&mut book, "Next", &Recipient::Free("Street 2".into())) else {
+            panic!("saves");
+        };
+        assert_ne!(id, u32::MAX);
+        assert_eq!(book.iter().filter(|s| s.id == id).count(), 1);
+    }
+
+    #[test]
+    fn fr_133_a_book_read_from_disk_is_cleaned_as_one_saved() {
+        // What `save` stores and what a file holds compare the same: a typed address read
+        // back trimmed, as `save` keeps it, is found again rather than kept twice. (An assisted
+        // address is valid only once sanitised, so a file's is already as `save` keeps it.)
+        let mut book = sanitized_book(&[SavedAddress {
+            id: 1,
+            label: "Street".into(),
+            recipient: Recipient::Free("  Street 1  ".into()),
+        }]);
+        assert_eq!(book[0].recipient, Recipient::Free("Street 1".into()));
+        assert_eq!(
+            save(&mut book, "Home", &Recipient::Free("Street 1".into())),
+            Ok(1)
+        );
+        assert_eq!(book.len(), 1);
     }
 
     #[test]

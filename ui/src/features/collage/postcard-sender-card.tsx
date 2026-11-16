@@ -24,19 +24,7 @@ import { cardFor } from '@/lib/postcard-card'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { patchPostcard } from './postcard-defaults'
 import { PostcardReuseNote } from './postcard-reuse-note'
-
-const loadText = async (subject: string) => {
-  const result = await commands.getPostcardText(Number(subject))
-  return result.status === 'ok' ? result.data : null
-}
-
-type Subject = { filter: CullFilter; photo: PhotoId; country: 'jp' | 'kr'; ticked: readonly PhotoId[] }
-
-const loadGaps = async (subject: string) => {
-  const { filter, photo, country, ticked } = JSON.parse(subject) as Subject
-  const result = await commands.postcardRecipientGaps(filter, photo, country, 'sender', [...ticked])
-  return result.status === 'ok' ? result.data : null
-}
+import { applyParty, loadPartyGaps, loadPostcardText, type PartyCards } from './postcard-reuse'
 
 type PostcardSenderCardProps = {
   settings: RenderSettings | null
@@ -63,11 +51,11 @@ export function PostcardSenderCard({ settings, onChange, photo, revision, filter
   const [asking, setAsking] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const seen = revision + changed
-  const text = useLiveQuery(photo != null ? String(photo) : null, seen, loadText).data
+  const text = useLiveQuery(photo != null ? String(photo) : null, seen, loadPostcardText).data
   const own = text?.senders?.find((s) => s.country === country) ?? null
   const machine = postcard?.senders?.find((s) => s.country === country) ?? null
-  const subject = photo != null && filter && own ? JSON.stringify({ filter, photo, country, ticked } satisfies Subject) : null
-  const gaps = useLiveQuery(subject, seen, loadGaps).data
+  const cards: PartyCards | null = photo != null && filter ? { filter, photo, country, party: 'sender', ticked } : null
+  const gaps = useLiveQuery(cards && own ? JSON.stringify(cards) : null, seen, loadPartyGaps).data
   if (!postcard?.enabled || card === 'europe') return null
   const scope = ticked.length > 0 ? 'Ticked' : 'All'
   const save = (sender: Address) => {
@@ -114,10 +102,7 @@ export function PostcardSenderCard({ settings, onChange, photo, revision, filter
                 photo={photo}
                 gaps={own ? gaps : null}
                 ticked={ticked}
-                apply={async (overwrite) => {
-                  const result = await commands.applyPostcardRecipient(filter, photo, country, 'sender', overwrite, [...ticked])
-                  return result.status === 'ok' ? result.data : errorText(result.error)
-                }}
+                apply={applyParty({ filter, photo, country, party: 'sender', ticked })}
               />
             )}
           </>

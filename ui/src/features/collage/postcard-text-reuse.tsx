@@ -3,11 +3,10 @@ import { History, MapPin } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
-import { ListRow, ListRows } from '@/components/forms/list-row'
+import { ListRows, RemovableRow } from '@/components/forms/list-row'
 import { commands, type CullFilter, type PhotoId, type PostcardPart } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
-import { RemoveButton } from '@/components/forms/danger-button'
 import { PostcardReuseNote } from './postcard-reuse-note'
 
 type Subject = { filter: CullFilter; photo: PhotoId; part: PostcardPart; ticked: readonly PhotoId[] }
@@ -74,15 +73,17 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
     >
       <ListRows>
         {recent.map((address) => (
-          <div key={address} className="flex items-center gap-2">
-            {/* The row shows the address on one line; its hint, the whole of it. */}
-            <div className="min-w-0 flex-1" data-hint={address}>
-              <ListRow icon={<MapPin />} chosen={address === text.trim()} onClick={() => onPick(address)}>
-                {address.replaceAll('\n', ', ')}
-              </ListRow>
-            </div>
-            <RemoveButton iconOnly label={t('postcard.reuse.forget')} onClick={() => void forget(address)} />
-          </div>
+          <RemovableRow
+            key={address}
+            icon={<MapPin />}
+            hint={address}
+            chosen={address === text.trim()}
+            onClick={() => onPick(address)}
+            removeLabel={t('postcard.reuse.forget')}
+            onRemove={() => void forget(address)}
+          >
+            {address.replaceAll('\n', ', ')}
+          </RemovableRow>
         ))}
       </ListRows>
     </Field>

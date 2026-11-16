@@ -143,20 +143,67 @@ fn part_of(
         .unwrap_or_default()
 }
 
-/// The other postcards a card's text could go to (FR-077): the ticked ones among those
-/// shown when some are ticked, else every one shown; never the card itself.
+/// The postcards a batch covers (FR-077, FR-133): the ticked ones among those shown when
+/// some are ticked, else every one shown.
+fn chosen_cards(library: &Library, filter: &CullFilter, ticked: &[PhotoId]) -> Vec<PhotoId> {
+    let ticked: std::collections::HashSet<PhotoId> = ticked.iter().copied().collect();
+    library
+        .filtered_ids(filter)
+        .into_iter()
+        .filter(|id| ticked.is_empty() || ticked.contains(id))
+        .collect()
+}
+
+/// The other postcards a card's text could go to: the chosen ones, never the card itself.
 fn other_cards(
     library: &Library,
     filter: &CullFilter,
     source: PhotoId,
     ticked: &[PhotoId],
 ) -> Vec<PhotoId> {
-    let ticked: std::collections::HashSet<PhotoId> = ticked.iter().copied().collect();
-    library
-        .filtered_ids(filter)
+    let mut cards = chosen_cards(library, filter, ticked);
+    cards.retain(|id| *id != source);
+    cards
+}
+
+/// The counts on "Use for N postcards" (FR-077, FR-133): of the other cards, how many have
+/// none of this card's part (`None`) and how many another one.
+fn gaps_of<T: PartialEq>(mine: &T, others: impl Iterator<Item = Option<T>>) -> TextGaps {
+    let mut gaps = TextGaps::default();
+    for other in others {
+        match other {
+            None => gaps.blank += 1,
+            Some(other) if other != *mine => gaps.differ += 1,
+            Some(_) => {}
+        }
+    }
+    gaps
+}
+
+/// The other cards a part goes to: those without one, or with `overwrite` every one with
+/// another (FR-077, FR-133).
+fn targets_of<T: PartialEq>(
+    others: Vec<PhotoId>,
+    mine: Option<&T>,
+    overwrite: bool,
+    read: impl Fn(PhotoId) -> Option<T>,
+) -> Vec<PhotoId> {
+    others
         .into_iter()
-        .filter(|id| *id != source && (ticked.is_empty() || ticked.contains(id)))
+        .filter(|id| {
+            let other = read(*id);
+            other.as_ref() != mine && (overwrite || other.is_none())
+        })
         .collect()
+}
+
+/// A card's message or address, `None` while it has none.
+fn text_of(
+    library: &Library,
+    id: PhotoId,
+    part: fotollection_core::settings::PostcardPart,
+) -> Option<String> {
+    Some(part_of(library, id, part)).filter(|t| !t.is_empty())
 }
 
 /// How many other postcards lack this card's text, and how many have a different one: the
@@ -185,20 +232,14 @@ pub fn postcard_text_gaps(
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
-    let text = part_of(&library, source, part);
-    if text.is_empty() {
+    let Some(text) = text_of(&library, source, part) else {
         return Ok(TextGaps::default());
-    }
-    let mut gaps = TextGaps::default();
-    for id in other_cards(&library, &filter, source, &ticked) {
-        let other = part_of(&library, id, part);
-        if other.is_empty() {
-            gaps.blank += 1;
-        } else if other != text {
-            gaps.differ += 1;
-        }
-    }
-    Ok(gaps)
+    };
+    let others = other_cards(&library, &filter, source, &ticked);
+    Ok(gaps_of(
+        &text,
+        others.into_iter().map(|id| text_of(&library, id, part)),
+    ))
 }
 
 /// This card's message or address on the other postcards (FR-077): those still blank, or
@@ -220,22 +261,21 @@ pub fn apply_postcard_text(
             .library
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?;
-        let text = part_of(&library, source, part);
-        let ids: Vec<PhotoId> = other_cards(&library, &filter, source, &ticked)
-            .into_iter()
-            .filter(|id| {
-                let other = part_of(&library, *id, part);
-                other != text && (overwrite || other.is_empty())
-            })
-            .collect();
+        let text = text_of(&library, source, part);
+        let ids = targets_of(
+            other_cards(&library, &filter, source, &ticked),
+            text.as_ref(),
+            overwrite,
+            |id| text_of(&library, id, part),
+        );
         (text, ids)
     };
-    if text.is_empty() {
+    let Some(text) = text else {
         return Err(IpcError::new(
             "postcard.no_text",
             "This postcard has no text to use",
         ));
-    }
+    };
     if ids.is_empty() {
         return Ok(0);
     }
@@ -360,13 +400,12 @@ fn recipient_targets(
     ticked: &[PhotoId],
 ) -> (Option<fotollection_core::addassist::Address>, Vec<PhotoId>) {
     let recipient = party_of(library, source, country, party);
-    let ids = other_cards(library, filter, source, ticked)
-        .into_iter()
-        .filter(|id| {
-            let other = party_of(library, *id, country, party);
-            other != recipient && (overwrite || other.is_none())
-        })
-        .collect();
+    let ids = targets_of(
+        other_cards(library, filter, source, ticked),
+        recipient.as_ref(),
+        overwrite,
+        |id| party_of(library, id, country, party),
+    );
     (recipient, ids)
 }
 
@@ -393,15 +432,13 @@ pub fn postcard_recipient_gaps(
     let Some(recipient) = party_of(&library, source, country, party) else {
         return Ok(TextGaps::default());
     };
-    let mut gaps = TextGaps::default();
-    for id in other_cards(&library, &filter, source, &ticked) {
-        match party_of(&library, id, country, party) {
-            None => gaps.blank += 1,
-            Some(other) if other != recipient => gaps.differ += 1,
-            Some(_) => {}
-        }
-    }
-    Ok(gaps)
+    let others = other_cards(&library, &filter, source, &ticked);
+    Ok(gaps_of(
+        &recipient,
+        others
+            .into_iter()
+            .map(|id| party_of(&library, id, country, party)),
+    ))
 }
 
 /// This card's Japanese or Korean recipient (or its own sender) on the other postcards (FR-133):
@@ -466,15 +503,9 @@ pub fn clear_postcard_party(
             .library
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?;
-        let chosen: std::collections::HashSet<PhotoId> = ticked.iter().copied().collect();
-        library
-            .filtered_ids(&filter)
-            .into_iter()
-            .filter(|id| {
-                (chosen.is_empty() || chosen.contains(id))
-                    && party_of(&library, *id, country, party).is_some()
-            })
-            .collect()
+        let mut cards = chosen_cards(&library, &filter, &ticked);
+        cards.retain(|id| party_of(&library, *id, country, party).is_some());
+        cards
     };
     if !ids.is_empty() {
         edit_photos(&app, &state, &ids, |_, e| {
@@ -553,6 +584,25 @@ pub struct AddressBook {
     pub recent: Vec<fotollection_core::addassist::Address>,
 }
 
+/// Changes the address book or the recent recipients under their lock, saves the settings
+/// once it is let go, and returns the book as the menu shows it (FR-133).
+fn change_book(
+    state: &AppState,
+    change: impl FnOnce(
+        &mut crate::state::Recipients,
+    ) -> Result<(), fotollection_core::addassist::book::BookError>,
+) -> Result<AddressBook, IpcError> {
+    {
+        let mut r = state
+            .recipients
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        change(&mut r).map_err(address_error)?;
+    }
+    state.save_settings();
+    address_book_of(state)
+}
+
 fn address_book_of(state: &AppState) -> Result<AddressBook, IpcError> {
     state
         .recipients
@@ -579,51 +629,18 @@ pub fn save_address(
     label: String,
     recipient: fotollection_core::addassist::book::Recipient,
 ) -> Result<AddressBook, IpcError> {
-    {
-        let mut r = state
-            .recipients
-            .lock()
-            .map_err(|e| IpcError::internal(e.to_string()))?;
-        fotollection_core::addassist::book::save(&mut r.saved, &label, &recipient)
-            .map_err(address_error)?;
-    }
-    state.save_settings();
-    address_book_of(&state)
-}
-
-/// Gives a saved recipient a new name (FR-133). Returns the book.
-#[tauri::command]
-#[specta::specta]
-pub fn rename_saved_address(
-    state: State<'_, AppState>,
-    id: u32,
-    label: String,
-) -> Result<AddressBook, IpcError> {
-    {
-        let mut r = state
-            .recipients
-            .lock()
-            .map_err(|e| IpcError::internal(e.to_string()))?;
-        fotollection_core::addassist::book::rename(&mut r.saved, id, &label)
-            .map_err(address_error)?;
-    }
-    state.save_settings();
-    address_book_of(&state)
+    change_book(&state, |r| {
+        fotollection_core::addassist::book::save(&mut r.saved, &label, &recipient).map(|_| ())
+    })
 }
 
 /// Takes a recipient out of the book (FR-133). Returns the book.
 #[tauri::command]
 #[specta::specta]
 pub fn forget_saved_address(state: State<'_, AppState>, id: u32) -> Result<AddressBook, IpcError> {
-    {
-        let mut r = state
-            .recipients
-            .lock()
-            .map_err(|e| IpcError::internal(e.to_string()))?;
-        fotollection_core::addassist::book::forget(&mut r.saved, id).map_err(address_error)?;
-    }
-    state.save_settings();
-    address_book_of(&state)
+    change_book(&state, |r| {
+        fotollection_core::addassist::book::forget(&mut r.saved, id)
+    })
 }
 
 /// Forgets one recent Japanese or Korean recipient (FR-133). Returns the book.
@@ -633,11 +650,10 @@ pub fn forget_recent_recipient(
     state: State<'_, AppState>,
     address: fotollection_core::addassist::Address,
 ) -> Result<AddressBook, IpcError> {
-    if let Ok(mut r) = state.recipients.lock() {
+    change_book(&state, |r| {
         r.recent.retain(|a| *a != address);
-    }
-    state.save_settings();
-    address_book_of(&state)
+        Ok(())
+    })
 }
 
 /// Whether collage sheets are postcards (FR-073): one photo each. Read it before taking the

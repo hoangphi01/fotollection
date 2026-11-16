@@ -982,7 +982,6 @@
     "typewriter": "Írógép",
     "handwriting": "Kézírás",
     "pens": "Kézzel írva fotópapírra: használj vékony alkoholos filcet (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Előbb a bélyegkeretben próbáld ki, és hagyd egy percig száradni; a golyóstoll és a zseléstoll elkenődik vagy kihagy a bevonaton. Vagy gépeld be a szöveget a képeslap előnézetében.",
-    "text": "Szöveg a képeslapon",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Minden lapon egy fotó és egy képeslaphát van, úgy tájolva, ahogy a Képeslap kártya mondja.",
     "cardHint": "Egy fotó és egy képeslaphát minden nyomaton",
@@ -1025,7 +1024,6 @@
       "korea": "Kinyomtatja a 「우편엽서」 feliratot, és szabadon hagyja a 17 mm-es gépi sávot."
     },
     "sender": "Feladó",
-    "senderHint": "Egy feladó minden laphoz.",
     "fontJapan": "Klee One betűvel nyomtatva.",
     "nanumPenHint": "Keskeny tollírás",
     "gaeguHint": "Kerekebb kézírás"

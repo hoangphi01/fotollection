@@ -3,9 +3,8 @@ import { BookUser, History, Star } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
-import { RemoveButton } from '@/components/forms/danger-button'
 import { Field, FieldLabel, Hint } from '@/components/forms/field'
-import { ListRow } from '@/components/forms/list-row'
+import { RemovableRow } from '@/components/forms/list-row'
 import { MenuContent } from '@/components/forms/menu-content'
 import { PickerTrigger } from '@/components/forms/picker-trigger'
 import { Popover, PopoverTrigger } from '@/components/ui/popover'
@@ -85,27 +84,33 @@ export function AddressBookMenu({ country, current, onPick }: AddressBookMenuPro
             {saved.length === 0 && recent.length === 0 && <Hint>{t('postcard.book.empty')}</Hint>}
             {saved.length > 0 && <FieldLabel>{t('postcard.book.saved')}</FieldLabel>}
             {saved.map((s) => (
-              <div key={s.id} className="flex items-center gap-2">
-                <div className="min-w-0 flex-1" data-hint={rowText(s.recipient)}>
-                  <ListRow icon={<Star />} chosen={same(s.recipient)} onClick={() => onPick(s.recipient)}>
-                    {s.label}
-                  </ListRow>
-                </div>
-                <RemoveButton iconOnly label={t('postcard.book.forget')} onClick={() => void commands.forgetSavedAddress(s.id).then(answer)} />
-              </div>
+              <RemovableRow
+                key={s.id}
+                icon={<Star />}
+                hint={rowText(s.recipient)}
+                chosen={same(s.recipient)}
+                onClick={() => onPick(s.recipient)}
+                removeLabel={t('postcard.book.forget')}
+                onRemove={() => void commands.forgetSavedAddress(s.id).then(answer)}
+              >
+                {s.label}
+              </RemovableRow>
             ))}
             {recent.length > 0 && <FieldLabel>{t('postcard.book.recent')}</FieldLabel>}
             {recent.map((a) => {
               const r: Recipient = { kind: 'assisted', value: a }
               return (
-                <div key={rowText(r)} className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1" data-hint={rowText(r)}>
-                    <ListRow icon={<History />} chosen={same(r)} onClick={() => onPick(r)}>
-                      {rowText(r)}
-                    </ListRow>
-                  </div>
-                  <RemoveButton iconOnly label={t('postcard.reuse.forget')} onClick={() => void commands.forgetRecentRecipient(a).then(answer)} />
-                </div>
+                <RemovableRow
+                  key={rowText(r)}
+                  icon={<History />}
+                  hint={rowText(r)}
+                  chosen={same(r)}
+                  onClick={() => onPick(r)}
+                  removeLabel={t('postcard.reuse.forget')}
+                  onRemove={() => void commands.forgetRecentRecipient(a).then(answer)}
+                >
+                  {rowText(r)}
+                </RemovableRow>
               )
             })}
           </MenuContent>

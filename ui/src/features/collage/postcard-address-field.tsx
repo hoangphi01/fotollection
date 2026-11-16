@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AddAssist } from '@/components/forms/addassist'
 import { commands, type Address, type Country, type PhotoId } from '@/ipc/bindings'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
-
-const load = async (subject: string) => {
-  const result = await commands.getPostcardText(Number(subject))
-  return result.status === 'ok' ? result.data : null
-}
+import { loadPostcardText } from './postcard-reuse'
 
 type PostcardAddressFieldProps = {
   photo: PhotoId
@@ -25,7 +21,7 @@ export function PostcardAddressField({ photo, country, revision, assisted, onAss
   const { t } = useTranslation()
   // The last answer holds its place while the next loads (LESSONS).
   // This card's own record: the other country's and the European address are never read.
-  const recipient = useLiveQuery(String(photo), revision, load).data?.recipients?.find((r) => r.country === country) ?? null
+  const recipient = useLiveQuery(String(photo), revision, loadPostcardText).data?.recipients?.find((r) => r.country === country) ?? null
   // Saved on the photo as each field is left; offered on the next cards once it holds a code or
   // a name, its drafts giving way to the whole address in Rust (FR-133).
   const save = (address: Address) => {

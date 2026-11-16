@@ -2,6 +2,7 @@
 import type { MouseEventHandler, ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { RemoveButton } from './danger-button'
 import { FitText } from './fit-text'
 
 /**
@@ -67,6 +68,40 @@ export function ListRow({ icon, children, trailing, chosen = false, current = 't
       )}
       {trailing}
     </Button>
+  )
+}
+
+/**
+ * A `ListRow` with a red ✕ beside it that forgets the row (FR-077, FR-133: a saved or recent
+ * address): the words on one line, the whole of them in the hint; one block, so every list of
+ * things one may forget looks and spaces the same.
+ */
+export function RemovableRow({
+  icon,
+  children,
+  hint,
+  chosen = false,
+  onClick,
+  removeLabel,
+  onRemove,
+}: {
+  icon: ReactNode
+  children: ReactNode
+  hint: string
+  chosen?: boolean
+  onClick: () => void
+  removeLabel: string
+  onRemove: () => void
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="min-w-0 flex-1" data-hint={hint}>
+        <ListRow icon={icon} chosen={chosen} onClick={onClick}>
+          {children}
+        </ListRow>
+      </div>
+      <RemoveButton iconOnly label={removeLabel} onClick={onRemove} />
+    </div>
   )
 }
 

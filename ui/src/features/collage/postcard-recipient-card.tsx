@@ -6,28 +6,15 @@ import { useTranslation } from 'react-i18next'
 import { Hint } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
 import { commands, type Country, type CullFilter, type PhotoId, type Recipient, type RenderSettings } from '@/ipc/bindings'
-import { errorText } from '@/lib/errors'
 import { cardFor } from '@/lib/postcard-card'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { AddressBookMenu } from './address-book-menu'
 import { PostcardAddressField } from './postcard-address-field'
 import { patchPostcard } from './postcard-defaults'
 import { PostcardReuseNote } from './postcard-reuse-note'
+import { applyParty, loadPartyGaps, loadPostcardText, type PartyCards } from './postcard-reuse'
 import { PostcardTextField } from './postcard-text-field'
 import { usePostcardCuts } from './use-postcard-cuts'
-
-const loadText = async (subject: string) => {
-  const result = await commands.getPostcardText(Number(subject))
-  return result.status === 'ok' ? result.data : null
-}
-
-type Subject = { filter: CullFilter; photo: PhotoId; country: Country; ticked: readonly PhotoId[] }
-
-const loadGaps = async (subject: string) => {
-  const { filter, photo, country, ticked } = JSON.parse(subject) as Subject
-  const result = await commands.postcardRecipientGaps(filter, photo, country, 'recipient', [...ticked])
-  return result.status === 'ok' ? result.data : null
-}
 
 type PostcardRecipientCardProps = {
   settings: RenderSettings | null
@@ -53,12 +40,12 @@ export function PostcardRecipientCard({ settings, onChange, photo, revision, fil
   // A pick from the book changes the card: its own revision makes the fields read it again.
   const [picked, setPicked] = useState(0)
   const seen = revision + picked
-  const text = useLiveQuery(photo != null ? String(photo) : null, seen, loadText).data
+  const text = useLiveQuery(photo != null ? String(photo) : null, seen, loadPostcardText).data
   const recipientNow = country === null ? null : (text?.recipients?.find((r) => r.country === country) ?? null)
   const current: Recipient | null =
     country === null ? (text?.address?.trim() ? { kind: 'free', value: text.address } : null) : recipientNow ? { kind: 'assisted', value: recipientNow } : null
-  const subject = photo != null && country !== null && filter && recipientNow ? JSON.stringify({ filter, photo, country, ticked } satisfies Subject) : null
-  const gaps = useLiveQuery(subject, seen, loadGaps).data
+  const cards: PartyCards | null = photo != null && country !== null && filter ? { filter, photo, country, party: 'recipient', ticked } : null
+  const gaps = useLiveQuery(cards && recipientNow ? JSON.stringify(cards) : null, seen, loadPartyGaps).data
   if (!postcard?.enabled) return null
   const pick = async (recipient: Recipient) => {
     if (photo == null) return
@@ -96,10 +83,7 @@ export function PostcardRecipientCard({ settings, onChange, photo, revision, fil
                   photo={photo}
                   gaps={recipientNow ? gaps : null}
                   ticked={ticked}
-                  apply={async (overwrite) => {
-                    const result = await commands.applyPostcardRecipient(filter, photo, country, 'recipient', overwrite, [...ticked])
-                    return result.status === 'ok' ? result.data : errorText(result.error)
-                  }}
+                  apply={applyParty({ filter, photo, country, party: 'recipient', ticked })}
                 />
               )}
             </>

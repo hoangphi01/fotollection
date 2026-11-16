@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Palette, Printer } from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { InspectorTabs } from '@/components/layout/inspector-tabs'
 import { ApplyLookCard } from '@/features/look/apply-look-card'
+import { ColourPrintTabs } from '@/features/look/colour-print-tabs'
+import { useColourPrintTab } from '@/features/look/use-colour-print-tab'
 import { PanelFooter } from '@/features/about/panel-footer'
 import { CameraClocksCard } from '@/features/cameras/camera-clocks-card'
 import { PlacesCard } from '@/features/places/places-card'
@@ -46,9 +45,6 @@ type SettingsPanelProps = {
 }
 
 
-type GalleryTab = 'colour' | 'print'
-/** The tab open, kept while the app runs; Print first, the panel as it always opened. */
-let lastTab: GalleryTab = 'print'
 
 /**
  * Pro mode's gallery panel in two tabs as the photo preview's inspector (owner, 2026-11-08):
@@ -72,27 +68,13 @@ export function SettingsPanel({
   const { t } = useTranslation()
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const advice = usePrintAdvice(photo?.id, settings)
-  const [tab, setTab] = useState<GalleryTab>(lastTab)
-  const openTab = (next: GalleryTab) => {
-    lastTab = next
-    setTab(next)
-  }
+  const [tab, openTab] = useColourPrintTab('gallery')
 
   return (
     <SidePanel
       title={tab === 'colour' ? t('inspector.colour') : t('settings.title')}
       tabs={
-        <InspectorTabs<GalleryTab>
-          groups={[
-            [
-              { value: 'colour', icon: <Palette />, label: t('inspector.colour') },
-              { value: 'print', icon: <Printer />, label: t('inspector.print') },
-            ],
-          ]}
-          value={tab}
-          onChange={openTab}
-          ariaLabel={t('inspector.tabs')}
-        />
+        <ColourPrintTabs value={tab} onChange={openTab} />
       }
       footer={
         <>

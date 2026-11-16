@@ -982,7 +982,6 @@
     "typewriter": "Schreibmaschine",
     "handwriting": "Handschrift",
     "pens": "Von Hand auf Fotopapier schreiben: Nimm einen feinen Permanentmarker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Probier ihn zuerst im Briefmarkenfeld und lass ihn eine Minute trocknen; Kugelschreiber und Gelstifte verschmieren oder setzen auf der Beschichtung aus. Oder tipp den Text in der Vorschau der Postkarte.",
-    "text": "Text auf der Postkarte",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Jeder Bogen fasst ein Foto und eine Postkartenrückseite, so gehalten, wie es die Karte Postkarte sagt.",
     "cardHint": "Ein Foto und eine Postkartenrückseite auf jedem Abzug",
@@ -1025,7 +1024,6 @@
       "korea": "Druckt 「우편엽서」 und hält die 17-mm-Maschinenzone frei."
     },
     "sender": "Absender",
-    "senderHint": "Ein Absender für alle Karten.",
     "fontJapan": "Gedruckt in Klee One.",
     "nanumPenHint": "Eine schmale Federschrift",
     "gaeguHint": "Eine rundere Handschrift"

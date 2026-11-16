@@ -9,6 +9,7 @@ import { commands, type CullFilter, type PhotoId, type PostcardPart, type TextSt
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { PostcardCutBadge } from './postcard-cut-badge'
 import { PostcardTextReuse } from './postcard-text-reuse'
+import { loadPostcardText } from './postcard-reuse'
 
 /** The limits Rust checks for each part (`PostcardPart::limits`). */
 const LIMITS: Record<PostcardPart, { chars: number; lines: number }> = {
@@ -21,11 +22,6 @@ const STYLES = [
   { key: 'italic', icon: Italic },
   { key: 'underline', icon: Underline },
 ] as const
-
-const load = async (subject: string) => {
-  const result = await commands.getPostcardText(Number(subject))
-  return result.status === 'ok' ? result.data : null
-}
 
 type PostcardTextFieldProps = {
   photo: PhotoId
@@ -61,7 +57,7 @@ export function PostcardTextField({
   const { t } = useTranslation()
   const { chars, lines } = LIMITS[part]
   // The last answer holds its place while the next loads (LESSONS).
-  const text = useLiveQuery(String(photo), revision, load).data?.[part] ?? ''
+  const text = useLiveQuery(String(photo), revision, loadPostcardText).data?.[part] ?? ''
   return (
     <Field>
       {/* The label alone on its line, never squeezed (STYLE_RULE §4: a label is never cut). */}

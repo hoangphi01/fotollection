@@ -75,6 +75,15 @@ pub struct StoredSettings {
     pub recent_recipients: Vec<crate::addassist::Address>,
 }
 
+impl StoredSettings {
+    /// Every postcard address this machine keeps: the recent European ones, the saved ones and
+    /// the recent Japanese and Korean recipients (FR-077, FR-133); Settings → Data and a
+    /// settings file count them the same.
+    pub fn address_count(&self) -> usize {
+        self.recent_addresses.len() + self.saved_addresses.len() + self.recent_recipients.len()
+    }
+}
+
 /// A list read entry by entry: one that does not parse is dropped alone, never the list or the
 /// file (LESSONS, NFR-011).
 fn each_entry<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
@@ -1066,8 +1075,6 @@ mod tests {
         Ok(())
     }
 
-    /// FR-128: 日本語 is kept as `"ja"` and 한국어 as `"ko"`, in a v20 file, and read back; a v19
-    /// file still loads.
     /// FR-133, `AddAssist` 1.1: a v21 file keeps its address book and its recent Japanese and
     /// Korean recipients; an entry that does not parse or breaks a limit is dropped alone, and
     /// a v20 file loads with an empty book.
@@ -1097,6 +1104,8 @@ mod tests {
         Ok(())
     }
 
+    /// FR-128: 日本語 is kept as `"ja"` and 한국어 as `"ko"`, in a v20 file, and read back; a v19
+    /// file still loads.
     #[test]
     fn fr_128_japanese_survives_a_round_trip() -> std::io::Result<()> {
         let dir = tempfile::tempdir()?;

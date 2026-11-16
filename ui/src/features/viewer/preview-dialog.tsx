@@ -265,8 +265,8 @@ export function PreviewDialog({
   const toggleLayout = () => void updateUi({ previewLayout: windowed ? 'dialog' : 'window' })
   const [panels, setPanels] = useState(true)
   // Under 1400 px of window, three columns leave the photo too small: the left column hides,
-  // and Tab brings it over the stage instead of beside it (FR-095).
-  const { show: showSide, narrow, setOpen: setSideOpen, toggle: sideToggle } = useSideColumn(windowed, panels)
+  // and Tab or the toolbar brings it back beside the stage, the photo fitting between (FR-095).
+  const { show: showSide, narrow, setOpen: setSideOpen, folded } = useSideColumn(windowed, panels)
   // Export as the card's button does (FR-093): the dialog, or at once after *Don't ask again*.
   // The progress shows in the Print tab's card, so it opens and comes into view.
   const toExport = () => {
@@ -420,7 +420,7 @@ export function PreviewDialog({
           windowed={windowed}
           // Folded in a narrow window, the left column's button waits at the start of the row;
           // opened, it moves to the column's own head (owner, 2026-11-07).
-          side={sideToggle}
+          onShowSide={folded ? () => setSideOpen(true) : undefined}
           onLayout={toggleLayout}
         />
       }

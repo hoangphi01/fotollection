@@ -481,8 +481,6 @@ export const commands = {
 	 *  name. Returns the book.
 	 */
 	saveAddress: (label: string, recipient: Recipient) => typedError<AddressBook, IpcError>(__TAURI_INVOKE("save_address", { label, recipient })),
-	/**  Gives a saved recipient a new name (FR-133). Returns the book. */
-	renameSavedAddress: (id: number, label: string) => typedError<AddressBook, IpcError>(__TAURI_INVOKE("rename_saved_address", { id, label })),
 	/**  Takes a recipient out of the book (FR-133). Returns the book. */
 	forgetSavedAddress: (id: number) => typedError<AddressBook, IpcError>(__TAURI_INVOKE("forget_saved_address", { id })),
 	/**  Forgets one recent Japanese or Korean recipient (FR-133). Returns the book. */
