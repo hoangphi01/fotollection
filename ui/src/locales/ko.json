@@ -981,7 +981,7 @@
     "font": "입력한 텍스트",
     "typewriter": "타자기",
     "handwriting": "손글씨",
-    "pens": "사진 용지에 손으로 쓰려면 가는 유성 마커(Sharpie Ultra Fine, edding 400, Stabilo OHPen S)를 쓰세요. 먼저 우표 칸에 써 보고 1분쯤 말리세요. 볼펜과 젤펜은 코팅 위에서 번지거나 끊깁니다. 또는 엽서 미리 보기에서 텍스트를 입력하세요.",
+    "pens": "손글씨는 가는 유성 마커(Sharpie Ultra Fine, edding 400)로, 먼저 우표 칸에 써 보세요. 또는 미리 보기에서 입력하세요.",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "시트마다 사진 한 장과 엽서 뒷면이 엽서 카드에서 고른 방향으로 들어갑니다.",
     "cardHint": "프린트마다 사진 한 장과 엽서 뒷면",

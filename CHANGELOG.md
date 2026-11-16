@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - In a sheet's preview, the note that the narrow window folded *Presets & LUTs* shows on the Edit tab only, no longer taking room on the Postcard and Print tabs.
+- The hint on writing a postcard by hand is one sentence: a fine permanent marker, tried in the stamp box first, or the text typed in the preview.
 
 ## [0.14.3] - 2026-11-16 — Postcards, part 2
 

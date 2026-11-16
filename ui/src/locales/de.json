@@ -981,7 +981,7 @@
     "font": "Getippter Text",
     "typewriter": "Schreibmaschine",
     "handwriting": "Handschrift",
-    "pens": "Von Hand auf Fotopapier schreiben: Nimm einen feinen Permanentmarker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Probier ihn zuerst im Briefmarkenfeld und lass ihn eine Minute trocknen; Kugelschreiber und Gelstifte verschmieren oder setzen auf der Beschichtung aus. Oder tipp den Text in der Vorschau der Postkarte.",
+    "pens": "Von Hand: ein feiner Permanentmarker (Sharpie Ultra Fine, edding 400), zuerst im Briefmarkenfeld getestet; oder den Text in der Vorschau tippen.",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Jeder Bogen fasst ein Foto und eine Postkartenrückseite, so gehalten, wie es die Karte Postkarte sagt.",
     "cardHint": "Ein Foto und eine Postkartenrückseite auf jedem Abzug",

@@ -981,7 +981,7 @@
     "font": "Gépelt szöveg",
     "typewriter": "Írógép",
     "handwriting": "Kézírás",
-    "pens": "Kézzel írva fotópapírra: használj vékony alkoholos filcet (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Előbb a bélyegkeretben próbáld ki, és hagyd egy percig száradni; a golyóstoll és a zseléstoll elkenődik vagy kihagy a bevonaton. Vagy gépeld be a szöveget a képeslap előnézetében.",
+    "pens": "Kézzel: vékony alkoholos filc (Sharpie Ultra Fine, edding 400), előbb a bélyegkeretben kipróbálva; vagy gépeld be a szöveget az előnézetben.",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Minden lapon egy fotó és egy képeslaphát van, úgy tájolva, ahogy a Képeslap kártya mondja.",
     "cardHint": "Egy fotó és egy képeslaphát minden nyomaton",

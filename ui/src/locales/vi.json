@@ -944,7 +944,7 @@
     "font": "Chữ gõ",
     "typewriter": "Máy đánh chữ",
     "handwriting": "Viết tay",
-    "pens": "Viết tay trên giấy ảnh: dùng bút dạ dầu nét mảnh (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Thử ở ô tem trước và để khô khoảng một phút; bút bi và bút gel dễ lem hoặc không ăn mực trên lớp phủ. Hoặc gõ chữ ngay trong bản xem trước của bưu thiếp.",
+    "pens": "Viết tay: dùng bút dạ dầu nét mảnh (Sharpie Ultra Fine, edding 400), thử ở ô tem trước; hoặc gõ chữ trong bản xem trước.",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Mỗi tấm chứa một ảnh và mặt sau bưu thiếp, theo chiều cầm chọn ở thẻ Bưu thiếp.",
     "cardHint": "Một ảnh và mặt sau bưu thiếp trên mỗi tấm in",
