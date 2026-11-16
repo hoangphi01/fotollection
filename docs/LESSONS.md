@@ -100,6 +100,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - A code commit holds its doc; before a push, and after a cherry-pick, run `check-docs-with-code.sh <base>..HEAD`. Kept by: `scripts/check-docs-with-code.sh` in CI.
 - A fact lives in one doc and the others link to it; when a fact moves, grep every doc for its old value. Kept by: no machine check yet.
+- A heading renamed or removed is grepped as `#its-anchor` in every doc. Kept by: `check-docs` (links and their anchors, as CI's lychee).
 - When work moves to another release or quarter, grep every doc for the old version and change it in the same commit (ADR-0053; the audit of 2026-11-16 found about 110 stale lines). Kept by: `check-docs` (ROADMAP and STATUS quarters), no check for prose yet.
 - A released version's CHANGELOG section is frozen: new lines under `[Unreleased]`, found by its heading. Kept by: `check-docs-with-code.sh` (released sections).
 - Copy a link from its file name, keep markers out of headings, and say "planned" for what is not built. Kept by: `check-docs.sh` link check, CI's lychee.
@@ -153,6 +154,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Why:** each crop's place was picked where the window had the most legible text, a panel, and checked only for the size of its letters, never against the words beside it.
 - **Fix:** every crop read against its caption (the carousel's title and text, the Features page's `show_*` line) and placed on what they name: the photo with its looks strip and Drop and Keep, the left column of the develop view, the Settings sections, the chosen sheet, the sheet itself.
 - **Rule:** a crop of a picture shows what its caption says; read the caption first, then place the crop, then check its letters.
+
+### A removed heading broke a link only CI checked (docs)
+
+- **Area:** docs, checks
+- **Seen:** the roadmap by quarter removed `## Phase 1 — MVP`; RELEASE.md still linked `ROADMAP.md#phase-1--mvp`, `check-docs.sh` passed, and the `docs` workflow failed after the push.
+- **Why:** the local link check read only the file of a link, never its anchor; CI's lychee reads both.
+- **Fix:** the link pointed at the roadmap's quarter; `check-docs.sh` now checks anchors too (GitHub's heading slugs and explicit ids), shown failing on the old line first.
+- **Rule:** a heading renamed or removed is grepped as its anchor in every doc, and the local check reads what CI reads.
 
 ### A short manual's new letters were caught only at the push (check-i18n)
 

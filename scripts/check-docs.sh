@@ -128,22 +128,51 @@ for shot in $(sed -nE 's/.*file: ([a-z0-9.-]+),.*/\1/p' site/_data/timeline.yml)
   [ -f "site/assets/img/timeline/$shot.webp" ] || fail "site/_data/timeline.yml names $shot, missing in site/assets/img/timeline/"
 done
 
-echo "• Every relative link between the docs reaches a file (CI's link check, run here too)"
-# CI checks links and anchors with lychee; this catches a renamed file before the push.
-python3 -I - <<'PY' || fail "a relative link points at a file that does not exist (above)"
+echo "• Every relative link between the docs reaches a file and its anchor (CI's link check, run here too)"
+# CI checks links and anchors with lychee; this catches a renamed file or heading before the push
+# (LESSONS 2026-11-16: the roadmap's phases went and RELEASE.md still linked #phase-1--mvp).
+python3 -I - <<'PY' || fail "a relative link points at a file or an anchor that does not exist (above)"
 import pathlib, re, sys
+
+def slugs(path):
+    """GitHub's heading anchors of a Markdown file, plus explicit ids."""
+    out, seen = set(), {}
+    text = path.read_text(encoding="utf-8")
+    text = re.sub(r"```.*?```", "", text, flags=re.S)
+    for m in re.finditer(r"^#{1,6} +(.+?) *#*$", text, re.M):
+        h = re.sub(r"<[^>]+>", "", m.group(1))
+        h = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", h)
+        s = re.sub(r"[^\w\- ]", "", h.lower().replace("`", "")).replace(" ", "-")
+        n = seen.get(s, 0)
+        seen[s] = n + 1
+        out.add(s if n == 0 else f"{s}-{n}")
+    out.update(re.findall(r"<a (?:id|name)=\"([^\"]+)\"", text))
+    return out
+
 bad = 0
+cache = {}
 files = [pathlib.Path(p) for p in ("README.md", "README.vi.md", "CHANGELOG.md", "CONTRIBUTING.md")] + sorted(pathlib.Path("docs").rglob("*.md"))
 for f in files:
     if not f.exists():
         continue
-    for m in re.finditer(r"\]\(([^)#\s]+\.md)(?:#[^)]*)?\)", f.read_text(encoding="utf-8")):
-        target = m.group(1)
-        if "://" in target:
+    for m in re.finditer(r"\]\(([^)#\s]*\.md)?(?:#([^)\s]+))?\)", f.read_text(encoding="utf-8")):
+        target, anchor = m.group(1), m.group(2)
+        if not target and not anchor:
             continue
-        if not (f.parent / target).exists():
+        if target and "://" in target:
+            continue
+        path = (f.parent / target) if target else f
+        if not path.exists():
             print(f"  {f}: {target}")
             bad += 1
+            continue
+        if anchor and not re.fullmatch(r"L\d+(-L\d+)?", anchor):
+            key = path.resolve()
+            if key not in cache:
+                cache[key] = slugs(path)
+            if anchor.lower() not in cache[key]:
+                print(f"  {f}: {target or ''}#{anchor}")
+                bad += 1
 sys.exit(1 if bad else 0)
 PY
 
