@@ -192,16 +192,19 @@ echo "• The website's languages: none named in a template, words and placehold
 if [ -d node_modules/@11ty/eleventy ]; then i18n_mode=--build; else i18n_mode=; fi
 node scripts/check-site-i18n.mjs $i18n_mode || fail "site languages: see the lines above (site/README.md, site/_data/languages.yml)"
 
-echo "• ROADMAP and STATUS give every FR the same phase"
+echo "• ROADMAP and STATUS give every FR the same quarter (ADR-0053)"
 awk '
   FNR == 1 { file++ }
-  file == 1 && /^## Phase [0-9]/ { phase = $3; next }
-  file == 1 && /^## / { phase = "" }
-  file == 1 && phase != "" && match($0, /^\| FR-[0-9][0-9][0-9] \|/) { id = substr($0, 3, 6); if (!(id in road)) road[id] = phase }
-  file == 2 && match($0, /^\| FR-[0-9][0-9][0-9] \| [^|]+ \| [0-9] \|/) { split($0, f, "|"); gsub(/ /, "", f[2]); gsub(/ /, "", f[4]); st[f[2]] = f[4] }
-  END { for (id in road) if (id in st && st[id] != road[id]) print id " is Phase " road[id] " in ROADMAP but " st[id] " in STATUS" }
+  file == 1 && /^## (20[0-9][0-9]-Q[1-4]|Shipped)( |$)/ { when = $2; next }
+  file == 1 && /^## / { when = "" }
+  file == 1 && when != "" && match($0, /^\| FR-[0-9][0-9][0-9] \|/) { id = substr($0, 3, 6); if (!(id in road)) road[id] = when }
+  file == 2 && match($0, /^\| FR-[0-9][0-9][0-9] \|/) { split($0, f, "|"); gsub(/ /, "", f[2]); gsub(/ /, "", f[4]); st[f[2]] = f[4] }
+  END {
+    for (id in road) if (!(id in st)) print id " has no row in STATUS"; else if (st[id] != road[id]) print id " is " road[id] " in ROADMAP but " st[id] " in STATUS"
+    for (id in st) if (!(id in road)) print id " has no quarter in ROADMAP"
+  }
 ' "$ROADMAP" "$STATUS" | while read -r line; do echo "  ✗ $line"; done | tee /tmp/check-docs-phase.$$
-[ -s /tmp/check-docs-phase.$$ ] && fail "phases differ between ROADMAP and STATUS"
+[ -s /tmp/check-docs-phase.$$ ] && fail "quarters differ between ROADMAP and STATUS"
 rm -f /tmp/check-docs-phase.$$
 
 echo "• Every lesson has an Area that the Rules table of LESSONS.md lists (the process review, 2026-11-12)"

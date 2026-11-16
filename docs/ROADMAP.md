@@ -1,31 +1,56 @@
 # Roadmap — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
+> **Status:** v0.2, by quarter ([ADR-0053](adr/0053-roadmap-by-quarter.md)) · **Last reviewed:** 2026-11-16
 >
-> This file defines **when**: it assigns requirements to phases. What each requirement means is defined in [PRD.md](PRD.md). Progress is tracked in [STATUS.md](STATUS.md).
-> Every FR in the PRD appears in exactly one phase below. `scripts/check-docs.sh` enforces this.
+> This file defines **when**: every requirement has one quarter, or *Shipped*. What each requirement means is defined in [PRD.md](PRD.md); its priority (P0–P3) stays there. Progress is tracked in [STATUS.md](STATUS.md), whose *When* column matches the quarter here. `scripts/check-docs.sh` enforces both.
 
-## Phase 0 — Foundation
+## The goal: two years at least
 
-**Goal:** a running empty app on macOS and Windows, a benchmark harness, and crate choices confirmed by data.
+Fotollection is kept alive as open source for at least two years, to 2028-11 (owner, 2026-11-16). It is built by one person at about 20 hours a week, so the plan is paced for that:
 
-- Cargo workspace (`crates/core`, `src-tauri`, `ui/`) and Tauri 2 scaffold
-- UI scaffold: Vite + React + TS, Tailwind, shadcn/ui init (theme tokens, base components), `lucide-react`
-- CI: fmt, clippy, tests and docs checks on the macOS and Windows matrix
-- `tauri-specta` binding generation, with a staleness check in CI
-- Benchmark harness (`criterion`) and the `bench` corpus ([TESTING.md §3](TESTING.md#3-sample-corpus))
-- Spikes, each logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log): turbojpeg vs `zune-jpeg` decode, `nom-exif` vs `kamadak-exif`, libheif build on Windows
-- Release workflow producing unsigned installers ([RELEASE.md](RELEASE.md))
+- **Maintenance before features.** The monthly maintenance below comes first; a month without it ships no feature.
+- **One release at a time** ([RELEASE.md](RELEASE.md)), one theme per MINOR. After v1.0.0, one MINOR a month and PATCH releases when needed, security fixes from `release/1.x` with `minSafe` (`.github/update.json`).
+- **A week of freeze before each MINOR**: fixes, docs, the screenshots and the owner's checks by hand.
+- **Tired means fewer releases, never faster ones.** A quarter that slips moves its last release to the next quarter, written here the same day.
+- **Every requirement stays** (owner, 2026-11-16): none is dropped, each has its quarter. A requirement added later goes to the end of a quarter, or to the next one.
 
-**Exit criteria:** the empty app builds and launches on both platforms from CI artifacts, and baseline benchmarks are recorded.
+## Maintenance, on a calendar
 
-## Phase 1 — MVP
+| When | What |
+|------|------|
+| Every month | `cargo update` and the npm lockfile, `cargo deny check`, `npm audit --omit=dev`, Tauri's patch releases, CI green on all three systems; the issues triaged (CONTRIBUTING §7) |
+| Every Rust release (six weeks) | `rust-toolchain.toml` raised, clippy's new lints fixed |
+| Every September | the new macOS (and its Xcode), WebView2 and WebKitGTK on the supported systems, GitHub's runner images (Ubuntu, Windows, macOS) before the old ones are removed |
+| Every year | the domain fotollection.org renewed; the APT repository's signing key checked before it expires; the dependencies' licences reviewed (`cargo deny`, ADR-0008); this roadmap reviewed |
+| Every release | RELEASE.md §6, the docs of DOCS_GUIDE.md |
 
-**Goal:** go from a folder to a culled, correctly dated, colour-correct, print-ready export, fast and private.
+## Quarters at a glance
+
+| Quarter | Releases | Requirements |
+|---------|----------|--------------|
+| 2026-Q4 | v0.14.4 "Looks, part 3" (November) and v1.0.0 (December) | 36 |
+| 2027-Q1 | v1.1 "Core 2" and v1.2 "Smart culling" | 11 |
+| 2027-Q2 | v1.3 "The print run" and v1.4 "Cards and sheets" | 12 |
+| 2027-Q3 | v1.5 "Places and trips" and v1.6 "Looks, part 4" | 8 |
+| 2027-Q4 | v1.7 "Pro" | 4 |
+| 2028-Q1 | v1.8 "Retouch" | 3 |
+| 2028-Q2 | v1.9 "Community and platforms" | 6 |
+| 2028-Q3 | v1.10 "Capture" | 3 |
+| 2028-Q4 | v1.11 "Sharing and print services", and the two-year review | 3 |
+
+## 2026-Q4 — v0.14.4 "Looks, part 3" (November) and v1.0.0 (December)
+
+v0.14.4 finishes the looks: FR-112 closer to RawTherapee, FR-118 every preset setting, the measurements left from v0.14.0, FR-100's M3. **v1.0.0** closes the old Phase 1: every P0 FR Done and NFR-001 to NFR-013 within budget on `REF-MAC` and `REF-WIN` (STATUS, *Road to v1.0*), the owner's checks by hand, the real cards posted in Japan and Korea, fuzzing (S5) and the panic hook (S7).
 
 | ID | Requirement |
 |----|-------------|
-| FR-001 | Import photos |
+| FR-112 | Highlight recovery for RAW, chosen and tuned by measurement against the current fade; v0.14.1 (moved from v0.14.0, owner, 2026-11-09), the gap to RawTherapee in v0.14.4 (moved from v0.14.3, 2026-11-15) |
+| FR-118 | Every preset setting applied: clarity and texture (FR-115), local highlights, the parametric curve, white balance in kelvins against each photo's as shot, grain and vignette, sharpening and noise reduction, older presets; each tuned against Lightroom's exports; lens corrections stay with FR-085; v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-09 and 13) |
+| FR-114 | A look, LUT or preset given to many photos at once from Pro mode's gallery (a Colour tab beside Print): the ticked photos or every photo shown, an amount, photos with their own colour asked about once, one undo step; v0.14.0 (owner, 2026-11-08) |
+| FR-115 | Local contrast in Pro mode: clarity, texture and dehaze, the spatial tools a colour table cannot hold, before FR-102's masks (a linear gradient first); Dehaze in v0.14.0 (2026-11-09, before the table); Rust after the table, GPU preview, chosen and tuned against Lightroom's renders; clarity and texture in v0.14.4 with FR-118 (owner, 2026-11-09 and 13) (owner, 2026-11-08: where Pro mode is heading) |
+| FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.14.0, the highlight of Simple mode, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
+| FR-089 | Lightroom presets: a user's own `.xmp` or `.lrtemplate` imported into a look, parsed safely, unsupported settings listed; v0.14.0, the rest in v0.14.4 (moved from v0.14.3, 2026-11-15) (FR-118) |
+| FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected with a setting, 60 fps; M1–M2 in v0.14.0, M3 in v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-08, 09 and 13, [ADR-0046](adr/0046-one-motion-system.md)) |
 | FR-002 | Read photo metadata |
 | FR-003 | Library grid |
 | FR-004 | Date stamp |
@@ -33,11 +58,7 @@
 | FR-006 | Crop to print ratio |
 | FR-007 | Live preview |
 | FR-008 | Original-quality export |
-| FR-009 | Export by date |
-| FR-010 | Metadata privacy on export |
-| FR-011 | Batch progress, cancel and recovery |
 | FR-022 | Culling (rate, flag, filter) |
-| FR-023 | Projects, autosave and undo |
 | FR-025 | Mixed print sizes per order |
 | FR-026 | Resolution warning |
 | FR-027 | sRGB conversion for labs |
@@ -47,59 +68,130 @@
 | FR-033 | Retro film date stamp and stamp presets |
 | FR-040 | EXIF info frame |
 | FR-041 | Best-shot suggestions |
-| FR-042 | Custom fonts |
-| FR-043 | Custom print sizes |
-| FR-045 | Original aspect ratio |
 | FR-048 | Simple, Collage and Professional modes |
 | FR-050 | Print basket: the photos that will really be printed, exported to an extra folder |
-| FR-020 | Localization (English and Vietnamese; German later) |
 | FR-052 | Appearance: System / Light / Dark theme, Windows title bar in the app's colours, app-drawn hover hints |
-| FR-053 | Export for social media: Original / Facebook / Instagram / custom sizes, sRGB, EXIF with the app's name and never GPS |
-| FR-055 | Export the photo open in the preview, with the same export controls as the panel |
-| FR-056 | Folders as tabs: All photos, one folder or several ticked, exported together or separately |
 | FR-057 | Zoom in the preview: two-finger scroll, pinch, Ctrl/⌘ + − 0, drag to move, double-click for 200 % |
 | FR-059 | Quick-preview: hold Space in select mode to look at a photo as it will print |
 | FR-060 | Start-up screen: the logo and a loading bar until the last session is back |
-| FR-062 | Live view from a camera plugged in by cable (own PTP driver, UVC webcam or HDMI capture card), with the print ratio drawn over it |
 | FR-065 | Border in Crop to fill: 3 mm in the frame colour inside the print size, instant-photo look at the exact kiosk size |
 | FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
-| FR-069 | Report a problem: a red button in the app (*Settings → Report a problem* since v0.12.0) and the website's footer, to the GitHub issue forms (v0.8.3) |
-| FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; shipped in v0.9.3, [ADR-0037](adr/0037-our-own-develop-core.md) |
-| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; Bayer develop, neutral colour and the RAW sliders shipped in v0.10.0, X-Trans, GPU and DNG kinds in v0.15.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
-| FR-073 | Postcard sheets in Collage mode: one photo and a postcard back (stamp box, writing lines, typed text); v0.9.4 |
+| FR-135 | A short landing page (six sections, results at full size, legible on a phone) and a `/features/` page; the makeover slider to the Wiki; v0.14.3 (owner, 2026-11-15) |
+| FR-130 | The Japanese postcard: a はがき (100 × 148 mm, 「郵便はがき」 at the top, Japan Post's address side with its vermilion 3 + 4 code boxes) in Collage mode, the only card in Japanese and a switch in English and Vietnamese for a card sent to Japan, its layout on the style board first; v0.14.2 (owner, 2026-11-14) |
+| FR-132 | The Korean postcard's address side (five code boxes, the 17 mm machine strip) on the 10 × 15 card, and Korea's print sizes (6 × 8, 5 × 7, 3 × 5, 8 × 10, 4 × 4 in); v0.14.2 (owner, 2026-11-15) |
+| FR-133 | AddAssist, assisted address entry: a switch between typing by hand and the postal code filling what the country's bundled data knows (Japan, Korea, Hungary, the Czech Republic, Germany researched), name, street, number and an optional phone typed; shown on the website once it ships; v0.14.2 with FR-130 or later (owner, 2026-11-15) |
 
-**Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v1.0.0 is released. Until then, each work stage ships as a 0.y.0 preview release, starting with v0.1.0 ([RELEASE.md](RELEASE.md#1-versioning)).
+## 2027-Q1 — v1.1 "Core 2" and v1.2 "Smart culling"
 
-### Phase 1 work order (2026-10-23)
+v1.1 is the release once called v0.15.0: X-Trans, the GPU develop, the DNG kinds, a linear Rec.2020 working space, lens correction, the 32-bit lossless path and right-click menus; with it the distribution steps deferred on 2026-11-11 (notarization, SignPath, Flathub). v1.2 groups a trip and finds duplicates.
 
-The open Phase 1 work is split into three stages, from easiest to hardest. Each stage ships on its own: tests and docs in the same commits, and CI green on macOS and Windows. The stages order work *inside* Phase 1; they are not new phases.
+| ID | Requirement |
+|----|-------------|
+| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; Bayer develop, neutral colour and the RAW sliders shipped in v0.10.0, X-Trans, GPU and DNG kinds in v1.1, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-016 | RAW input |
+| FR-085 | Lens distortion correction in our own develop (Panasonic and Olympus maker data, DNG `WarpRectilinear`), so ImageIO is no longer first for RW2 and ORF on macOS |
+| FR-119 | Smooth on ARM, RISC-V tried: a Windows ARM64 build first (today emulated), every budget measured on a Raspberry Pi 5, an M-series Mac and a Snapdragon laptop, SIMD only where measured; riscv64 Linux cross-built and smoke-tested, experimental until a real board meets the budgets; v1.1, RISC-V later (owner, 2026-11-09) |
+| FR-111 | Lossless export in Pro mode: TIFF 16-bit by default or 32-bit float, through a 32-bit float path; v1.1 (owner, 2026-11-09) |
+| FR-117 | Right-click menus in more places (folders, photos, the filmstrip, collage slots, export presets), each holding only actions found elsewhere too, groups split by hairlines as Lightroom's; `MenuContent` and the style rules; v1.1 (owner, 2026-11-09) |
+| FR-012 | Trip auto-grouping |
+| FR-014 | Export by trip |
+| FR-015 | Duplicate detection |
+| FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
+| FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 
-**Stage 1 — Small, low-risk**
+## 2027-Q2 — v1.3 "The print run" and v1.4 "Cards and sheets"
 
-| Work | Requirement | Why it is easy |
-|------|-------------|----------------|
-| `docs/EXTENSION.md`: registry of every Fotollection file format (`.fotollection`, `.fotopreset`, `settings.json`, fonts, logos, cache), with MIME/UTI, versioning rules and limits | FR-023, FR-038 | Documents formats that already exist |
-| PNG input: decode with the `png` crate (already a dependency for logos), 8- and 16-bit to RGB8, alpha flattened on white | FR-001 | Pure Rust, no new dependency |
-| Basic culling: stars `0`–`5`, flags `P`/`X`/`U`, filter Picks / Rejects / Unflagged; stored in the existing `PhotoEdits` | FR-022 | Data model and project file already hold rating and flag |
-| Profile the preview path (resize and encode), and try 8 exports in flight instead of 6 | NFR-002, NFR-003 | Measurement only ([OPTIMIZATION.md §2.1](OPTIMIZATION.md#21-measured-the-same-job-in-chromium)) |
+v1.3: copies, lab and print presets, contact sheets, ID photos, output sharpening. v1.4: the Polaroid frame, the calendar, the occasions' greetings, postcard backs, more layouts.
 
-**Stage 2 — Medium, a new file format**
+| ID | Requirement |
+|----|-------------|
+| FR-024 | Copies and order summary |
+| FR-034 | Lab presets |
+| FR-038 | Print presets |
+| FR-037 | Contact sheet |
+| FR-113 | ID photos: one photo cut to a document's size (35 × 45, 30 × 40, 2 × 2 in…) and repeated on one print with cut marks, at true size; v1.3 (2027-Q2), after the colour engine (looks, LUTs, Lightroom presets) and v1.1's 32-bit export (owner, 2026-11-07; moved with FR-111, 2026-11-09) |
+| FR-029 | Output sharpening |
+| FR-106 | Output sharpening for screen, matte or glossy paper, measured first |
+| FR-126 | A Polaroid frame for two-photo collage sheets: a white instant-film frame, its deeper bottom strip for a typed note or one written by hand; never on a postcard; reuses the info frame and the postcard's text; v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-12 and 13) |
+| FR-083 | A personal photo calendar: a built-in calendar engine for any year, important days marked, a photo a month, PDF or PNG pages; on the collage sheet first, two months to a print; v0.14.4 (moved from v0.14.3, 2026-11-15) (moved from v0.14.2, 2026-11-15; owner, 2026-11-14) |
+| FR-131 | Greetings for the occasion on one postcard frame: 年賀, 寒中, 暑中, 残暑, 喪中 in Japanese, 설날, 어버이날, 스승의 날, the year's end in Korean, each its words and a rule, never a template of its own; v0.14.4 (moved from v0.14.3, 2026-11-15) after FR-130 or later (owner, 2026-11-15) |
+| FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines |
+| FR-035 | Multi-photo layouts (2-up collage in v0.9.0; 4-up and strips later) |
 
-| Work | Requirement | Main risk |
-|------|-------------|-----------|
-| ✓ `.fotollection` as a self-contained ZIP bundle, like `.docx`: `manifest.json` with BLAKE3 sums, `project.json` (v2), `settings.json`, the fonts and logos in use. Photos are not embedded; presets join when FR-038 lands ([ADR-0016](adr/0016-self-contained-project-bundle.md)) | FR-023 | Done |
-| ✓ Save / Save As / Open / New, installing embedded fonts and logos after validation, the **Relink folder** dialog, native File menu and file association | FR-023 | Done; file association checked by hand in a release build |
-| ✓ App localization: English (default) and Vietnamese through `i18next` + `react-i18next` (MIT), bundled locale files and typed keys; language stored in `settings.json` v3; Rust errors translated by `code` ([ADR-0015](adr/0015-ui-localization-i18next.md)) | FR-020 | Done |
-| ✓ Faster previews: plain Huffman tables and 4:2:0 for screen-only JPEGs took the warm preview from 26 to 17 ms, below Chromium; `turbojpeg` was not needed ([OPTIMIZATION.md §2.1](OPTIMIZATION.md#21-measured-the-same-job-in-chromium)) | NFR-002 | Done |
+## 2027-Q3 — v1.5 "Places and trips" and v1.6 "Looks, part 4"
 
-**Stage 3 — Hard, research and native code**
+v1.5: places from a phone or a GPX track, the trip journal, landmarks. v1.6: film looks and what remains of the colour cards.
 
-| Work | Requirement | Main risk |
-|------|-------------|-----------|
-| ✓ Best-shot suggestions: grouping, sharpness/shake/exposure/noise metrics, face and eye models, explained "Best of N", Keep best | FR-041, NFR-014 | Done: YuNet + FaceMesh on `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)); grouping on a layout and colour signature, scored on hand-labelled photos ([ADR-0019](adr/0019-grouping-by-visual-signature.md)) |
-| ✓ HEIC/HEIF input (iPhone) | FR-001 | Done through the OS codecs, no LGPL library ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
+| ID | Requirement |
+|----|-------------|
+| FR-031 | Borrow GPS from a phone or GPX track |
+| FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
+| FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
+| FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
+| FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
+| FR-039 | Photo Style looks (merged into FR-079, 2026-11-05) |
+| FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; Faves and Tools shipped in v0.9.9, the Looks card in v0.14.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
+| FR-036 | Custom captions |
 
-### Release plan (2026-10-25)
+## 2027-Q4 — v1.7 "Pro"
+
+Project history, XMP written back, per-photo overrides, cards in one's own order.
+
+| ID | Requirement |
+|----|-------------|
+| FR-094 | Project history without nagging: dated copies of each project and of the settings kept automatically (seven days, four weeks), restored from the Settings window as a new document; version to be chosen |
+| FR-058 | Lightroom compatibility: read XMP sidecars on import, write `.xmp` as an opt-in, photos never touched |
+| FR-044 | Per-photo overrides |
+| FR-080 | The panel's cards in an order of one's own, the same in the gallery and the previews, with *Reset order* |
+
+## 2028-Q1 — v1.8 "Retouch"
+
+Healing, masks, a face-aware crop.
+
+| ID | Requirement |
+|----|-------------|
+| FR-101 | Healing: spot removal, heal and clone, as Lightroom's Remove tool; a hidden tab of the inspector until built |
+| FR-102 | Masking: linear, radial and brush masks with their own sliders, later on-device subject and sky, after FR-115 and the linear gradient first; needs a local layer beside the look's table (ADR-0038 amended) |
+| FR-013 | Face-aware smart crop |
+
+## 2028-Q2 — v1.9 "Community and platforms"
+
+Language packs anyone can add, HEIC on Linux, the welcome's card picker, Open with and updates finished.
+
+| ID | Requirement |
+|----|-------------|
+| FR-084 | Language packs anyone can add: a `.fotolang` file in the app's i18next layout, checked in Rust and by `check-i18n`, loaded from the Settings window or shipped through a pull request; carried by `.fotosettings` |
+| FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
+| FR-054 | Open photos with Fotollection from the system's "Open with" menu, as a photo viewer |
+| FR-061 | Check for updates: a button that asks GitHub once, then opens the installer in the browser |
+| FR-021 | Manual updates (no in-app updater, ADR-0021) |
+| FR-081 | A welcome screen on the first launch: the welcome shipped as FR-109 (v0.13.1); left, a page to pick the cards one likes, Pinterest style, they come first (with FR-080); *Skip* |
+
+## 2028-Q3 — v1.10 "Capture"
+
+Live view and tethered capture on more cameras and on macOS, the photobooth.
+
+| ID | Requirement |
+|----|-------------|
+| FR-062 | Live view from a camera plugged in by cable (own PTP driver, UVC webcam or HDMI capture card), with the print ratio drawn over it |
+| FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
+| FR-108 | Photobooth with the computer's own camera (the Mac's webcam): countdown, a strip or sheet to print, offline |
+
+## 2028-Q4 — v1.11 "Sharing and print services", and the two-year review
+
+A photo book preview, a QR code on the back, upload to a print service (checked against the privacy rule first: nothing leaves the computer unless the user sends it). Then the roadmap is reviewed for the next two years.
+
+| ID | Requirement |
+|----|-------------|
+| FR-017 | Photo book layout preview |
+| FR-018 | QR code on photo back |
+| FR-019 | Print service upload |
+
+## Shipped
+
+Built before 2026-11-16, from v0.1.0 to v0.14.3 ([CHANGELOG.md](../CHANGELOG.md)). Until then the roadmap ran in phases: Phase 0, the foundation (the workspace, CI, the benchmark harness, unsigned releases); Phase 1, the MVP; Phase 2, smart features; Phase 3, pro and growth. The open requirements of every phase are now in the quarters above.
+
+### Release history (2026-10-24 to 2026-11-16)
 
 After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewer work alone, so "Open with" and RAW moved to v0.7.0 and the later releases moved by one. The order puts the biggest everyday win first: opening photos in Fotollection makes it a daily tool, not only a print tool.
 
@@ -135,126 +227,69 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.14.1 | Looks, part 2 (owner 2026-11-09: "cover and complete what the app reports missing from presets"; 2026-11-13: ships what is built, with Deutsch and Magyar, the rest in v0.14.2) | FR-127 and FR-123 (the app in Deutsch and Magyar), FR-124 (the language first on the welcome, the machine's language on the first launch), FR-125 (long words fit), FR-112 (highlight recovery for RAW, measured against the current fade), grain and vignette in millimetres on the print (session 13), FR-120 (turn the print size), FR-121 (a small "fotollection.org" on each print), FR-073's Postal use, FR-122 (the warm chrome), the Flatpak's metainfo to Flathub's quality guidelines (ADR-0050) | Each tool within OPTIMIZATION §3; every word fits in German and Hungarian (MEASURE) |
 | v0.14.2 | 日本語 and 한국어 (owner, 2026-11-15: releases what is built) | FR-128 (the app in Japanese and Korean), FR-129 and FR-132's sizes (Japan's and Korea's print sizes), FR-130 (the はがき), FR-132 (the 우편엽서), FR-133 (AddAssist 1.0, Japan and Korea), the Japanese and Korean pages of the website with their own screenshots on their country's photos (PRD FR-130) | Japan Post's and Korea Post's rules each tested (FR-130, FR-132); a real card posted in each country before FR-130 and FR-132 are done |
 | v0.14.3 | Postcards, part 2 (planned; owner, 2026-11-15: v0.14.3 releases what is built, the Looks items move to v0.14.4) | FR-133's AddAssist 1.1 (the address book, recent recipients, a sender per card, one recipient or message for many cards), FR-136 (the Postcard tab in three blocks), FR-137 (Looks in Collage mode), FR-124's flags and backdrop on the welcome, FR-135 (the short landing page and `/features/`, legible on a phone), FR-134 (text drawn through `skrifa`, the ttf-parser advisory closed) | The real cards posted in Japan and Korea; `check-lego` and `MEASURE=1`; the phone crops' text at least 11 px |
-| v0.14.4 | Looks, part 3 (planned; owner, 2026-11-13, moved from v0.14.2 and v0.14.3 on 2026-11-15) | FR-112 closing the gap to RawTherapee's Color Propagation, measured with `bench/rawtherapee/compare.sh` (the comparison on the landing page), FR-118 (every preset setting applied: clarity and texture of FR-115, local highlights, the parametric curve, white balance against each photo's as shot, sharpening and noise reduction, older presets), the measurements and fuzzing left from v0.14.0 (FR-070, FR-089), FR-100's M3 (motion between views, 60 fps measured), FR-126 (the Polaroid frame), FR-083 (the calendar), FR-131 (the occasions' greetings), Fotollection on winget, the website's screenshots in German, Hungarian, French, Czech and Polish, the manual's phone crops (FR-135) | Each tool within OPTIMIZATION §3 and measured against Lightroom's exports or RawTherapee (RESULT) |
-| v0.15.0 | Core 2 (planned) | FR-072 (X-Trans with Markesteijn, the develop on the GPU with `wgpu`, the DNG kinds of `raw/dng.md`, a linear Rec.2020 working space; highlight reconstruction moved to FR-112, now v0.14.1), FR-085 (lens distortion correction), FR-117 (right-click menus in more places), FR-111 (lossless export through a 32-bit float path, moved from v0.16.0 by the owner, 2026-11-09, [ADR-0043](adr/0043-lossless-export-f32-path-tiff.md)) | Markesteijn ≤ 700 ms on 26 MP; GPU develop ≤ 80 ms on 24 MP, ΔE ≤ 1 to the CPU |
-| After v0.15.0 | Film looks as built-in recipes on the looks engine | FR-047 (FR-039 merged into FR-079) | — |
-| Later | Presets, trips, journal | FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
-
-## Phase 2 — Smart features
-
-**Goal:** the app organizes photos and avoids bad crops automatically.
 
 | ID | Requirement |
 |----|-------------|
-| FR-012 | Trip auto-grouping |
-| FR-013 | Face-aware smart crop |
-| FR-014 | Export by trip |
-| FR-015 | Duplicate detection |
-| FR-024 | Copies and order summary |
-| FR-031 | Borrow GPS from a phone or GPX track |
-| FR-034 | Lab presets |
-| FR-036 | Custom captions |
-| FR-038 | Print presets |
-| FR-039 | Photo Style looks (merged into FR-079, 2026-11-05) |
-| FR-044 | Per-photo overrides |
-| FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
-| FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
-| FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
-| FR-054 | Open photos with Fotollection from the system's "Open with" menu, as a photo viewer |
-| FR-058 | Lightroom compatibility: read XMP sidecars on import, write `.xmp` as an opt-in, photos never touched |
-| FR-061 | Check for updates: a button that asks GitHub once, then opens the installer in the browser |
-| FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
-| FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
-| FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
-| FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.14.0, the highlight of Simple mode, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
-| FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines; planned, not scheduled |
+| FR-001 | Import photos |
+| FR-009 | Export by date |
+| FR-010 | Metadata privacy on export |
+| FR-011 | Batch progress, cancel and recovery |
+| FR-020 | Localization (English and Vietnamese; German later) |
+| FR-023 | Projects, autosave and undo |
+| FR-042 | Custom fonts |
+| FR-043 | Custom print sizes |
+| FR-045 | Original aspect ratio |
+| FR-053 | Export for social media: Original / Facebook / Instagram / custom sizes, sRGB, EXIF with the app's name and never GPS |
+| FR-055 | Export the photo open in the preview, with the same export controls as the panel |
+| FR-056 | Folders as tabs: All photos, one folder or several ticked, exported together or separately |
+| FR-069 | Report a problem: a red button in the app (*Settings → Report a problem* since v0.12.0) and the website's footer, to the GitHub issue forms (v0.8.3) |
+| FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; shipped in v0.9.3, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-073 | Postcard sheets in Collage mode: one photo and a postcard back (stamp box, writing lines, typed text); v0.9.4 |
 | FR-075 | Share exports fitted whole into a ratio (1:1, 4:5, 3:2… or custom), the rest filled with white, black or a colour of one's own; v0.9.6 |
 | FR-076 | A bundled handwriting face for postcards (Patrick Hand), strokes as thick as the print test asks; v0.9.7 |
 | FR-077 | One address for many postcards: Use for N postcards, and the recent addresses of this machine; v0.9.7 |
 | FR-078 | The photo at a glance at the top of the preview: camera, lens, exposure, place, date, size; v0.9.7 |
-| FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; Faves and Tools shipped in v0.9.9, the Looks card in v0.14.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
-| FR-080 | The panel's cards in an order of one's own, the same in the gallery and the previews, with *Reset order*; v0.14.0, with FR-116 (2026-11-09) |
-| FR-081 | A welcome screen on the first launch: the welcome shipped as FR-109 (v0.13.1); left, a page to pick the cards one likes, Pinterest style, they come first (with FR-080); *Skip*; later, not scheduled |
-| FR-082 | The app's brain in one file: *Export / Import settings* as `.fotosettings` (every setting, the card order, looks and LUTs, fonts, logos, postcard addresses), to move to another computer; later, not scheduled |
-| FR-083 | A personal photo calendar: a built-in calendar engine for any year, important days marked, a photo a month, PDF or PNG pages; on the collage sheet first, two months to a print; v0.14.4 (moved from v0.14.3, 2026-11-15) (moved from v0.14.2, 2026-11-15; owner, 2026-11-14) |
-| FR-084 | Language packs anyone can add: a `.fotolang` file in the app's i18next layout, checked in Rust and by `check-i18n`, loaded from the Settings window or shipped through a pull request; carried by `.fotosettings`; later, not scheduled |
-| FR-085 | Lens distortion correction in our own develop (Panasonic and Olympus maker data, DNG `WarpRectilinear`), so ImageIO is no longer first for RW2 and ORF on macOS; after v0.11.0 |
+| FR-082 | The app's brain in one file: *Export / Import settings* as `.fotosettings` (every setting, the card order, looks and LUTs, fonts, logos, postcard addresses), to move to another computer; v0.14.0, with FR-116 |
 | FR-086 | One Settings window: a gear beside the author's name opens every app setting in two columns as on an iPad (language, theme, `.fotosettings`, language packs, cache, updates, version and changelog), the preview's layout reused |
 | FR-087 | How large a collage sheet prints: the sheet's pixels and a sharp / acceptable / soft verdict for the chosen size in Collage's *Print size* card |
 | FR-088 | RAW edited in linear light: exposure, highlights, shadows, warmth and tint on the RAW's own data before its tone, with headroom above white; v0.10.0 |
-| FR-089 | Lightroom presets: a user's own `.xmp` or `.lrtemplate` imported into a look, parsed safely, unsupported settings listed; v0.14.0, the rest in v0.14.4 (moved from v0.14.3, 2026-11-15) (FR-118) |
 | FR-090 | A filmstrip in the photo's preview (Pro mode), as Lightroom's: the view's thumbnails under the photo, skim and pick with one click |
 | FR-091 | Instant previews like Lightroom: standard previews on disk after the thumbnails, a quarter of the machine's RAM for the preview, prefetch around the photo on screen, which always develops first |
 | FR-092 | Export quality on a slider, as Lightroom's: the size estimate follows the thumb, and badges say whether the setting prints well; v0.13.0 |
 | FR-093 | The export's options in one small dialog: a press on *Export* opens it, with *Don't ask again* after which *Export* exports at once with the saved choices, changed later in Settings; the same dialog in every mode and preview, the Settings window's size with Lightroom's presets; v0.13.0 |
-| FR-094 | Project history without nagging: dated copies of each project and of the settings kept automatically (seven days, four weeks), restored from the Settings window as a new document; version to be chosen |
 | FR-095 | A develop view a Lightroom user can read: a full-window layout chosen in Settings (`F`), Navigator and History on the left, one toolbar above the photo, Lightroom's keys, zoom in real pixels, the inspector develop first; shipped in v0.12.0 |
 | FR-096 | Before and after: `\` toggles, `Y` side by side, `⇧Y` split, zoomed together; shipped in v0.12.0; press and hold for the original in v0.14.0 |
 | FR-097 | Copy and paste settings (⇧⌘C / ⇧⌘V) to the photo shown or every ticked photo, Reset (⇧⌘R), undo and redo buttons; v0.13.1 |
 | FR-098 | Histogram, clipping warnings (`J`) and a white-balance picker (`W`); v0.13.1 |
 | FR-099 | Controls with depth, as Sentry's: raised buttons with a lip, inputs set in, lifted cards; v0.13.0 (owner moved it forward, 2026-11-06) |
-| FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected with a setting, 60 fps; M1–M2 in v0.14.0, M3 in v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-08, 09 and 13, [ADR-0046](adr/0046-one-motion-system.md)) |
-| FR-101 | Healing: spot removal, heal and clone, as Lightroom's Remove tool; a hidden tab of the inspector until built; about v0.16 |
-| FR-102 | Masking: linear, radial and brush masks with their own sliders, later on-device subject and sky, after FR-115 and the linear gradient first; needs a local layer beside the look's table (ADR-0038 amended); about v0.16 |
 | FR-103 | Check for updates at start, on by default and turned off in Settings; check only, the user downloads; a popup, with a red warning below the minimum safe version carried in the release notes (`.github/update.json`); v0.13.0 |
 | FR-104 | File names as Lightroom's templates (original, date, custom text and sequence) with a live example; v0.13.0 |
 | FR-105 | Limit the file size, by bisection of the quality, measured first; v0.13.0 |
-| FR-106 | Output sharpening for screen, matte or glossy paper, measured first; later |
 | FR-107 | Folder tabs reordered by dragging, as Chrome's tabs, kept with the project; v0.13.0 |
+| FR-109 | A welcome screen on the first launch: five pages (welcome, modes, choose, make it yours, print), Next, a *Show at every start* tick and Start; v0.13.1 |
 | FR-110 | The manual inside the app, offline, from the same USER_GUIDE as the site, in Settings and the Help menu; v0.13.2 |
-| FR-111 | Lossless export in Pro mode: TIFF 16-bit by default or 32-bit float, through a 32-bit float path; v0.15.0 (owner, 2026-11-09) |
-| FR-112 | Highlight recovery for RAW, chosen and tuned by measurement against the current fade; v0.14.1 (moved from v0.14.0, owner, 2026-11-09), the gap to RawTherapee in v0.14.4 (moved from v0.14.3, 2026-11-15) |
-| FR-113 | ID photos: one photo cut to a document's size (35 × 45, 30 × 40, 2 × 2 in…) and repeated on one print with cut marks, at true size; v0.15.x, after the colour engine (looks, LUTs, Lightroom presets) and v0.15.0's 32-bit export (owner, 2026-11-07; moved with FR-111, 2026-11-09) |
-| FR-114 | A look, LUT or preset given to many photos at once from Pro mode's gallery (a Colour tab beside Print): the ticked photos or every photo shown, an amount, photos with their own colour asked about once, one undo step; v0.14.0 (owner, 2026-11-08) |
-| FR-115 | Local contrast in Pro mode: clarity, texture and dehaze, the spatial tools a colour table cannot hold, before FR-102's masks (a linear gradient first); Dehaze in v0.14.0 (2026-11-09, before the table); Rust after the table, GPU preview, chosen and tuned against Lightroom's renders; clarity and texture in v0.14.2 with FR-118 (owner, 2026-11-09 and 13) (owner, 2026-11-08: where Pro mode is heading) |
 | FR-116 | Data on this computer, in Settings: export and import settings (FR-082), what each store holds with its size and *Open folder*, clear what can be made again, reset settings, erase data; each row asks its store's owner (ADR-0048); v0.14.0 |
-| FR-117 | Right-click menus in more places (folders, photos, the filmstrip, collage slots, export presets), each holding only actions found elsewhere too, groups split by hairlines as Lightroom's; `MenuContent` and the style rules; v0.15.0 (owner, 2026-11-09) |
-| FR-118 | Every preset setting applied: clarity and texture (FR-115), local highlights, the parametric curve, white balance in kelvins against each photo's as shot, grain and vignette, sharpening and noise reduction, older presets; each tuned against Lightroom's exports; lens corrections stay with FR-085; v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-09 and 13) |
-| FR-119 | Smooth on ARM, RISC-V tried: a Windows ARM64 build first (today emulated), every budget measured on a Raspberry Pi 5, an M-series Mac and a Snapdragon laptop, SIMD only where measured; riscv64 Linux cross-built and smoke-tested, experimental until a real board meets the budgets; v0.15.x, RISC-V later (owner, 2026-11-09) |
 | FR-120 | Turn the print size: a button and a key lay a print size flat or upright for a photo, so a portrait photo can be cropped across a 15 × 5 strip; kept per photo, in every place the size shows; v0.14.1 (owner, 2026-11-10) |
 | FR-121 | A small "fotollection.org" on each print, on by default, off with one switch in Settings; measured in millimetres, in the border, frame or a postcard's back first; never on shared exports; v0.14.1 (owner, 2026-11-10) |
 | FR-122 | A warm gradient of the logo's wood behind the app's chrome (sidebar, panels, title bar), dark theme first, photos kept on neutral ground; variants on the style board first; v0.14.1 (owner, 2026-11-11) |
 | FR-123 | Hungarian interface: every string, the menu and the errors in Magyar, the website's short manual, AI-translated with the website's words; LOCALIZATION.md the single source of truth; v0.14.1 (owner, 2026-11-12) |
 | FR-124 | The welcome opens on a language page (a greeting through every language, the languages by their own names), and the first launch speaks the machine's language; v0.14.1 (owner, 2026-11-12) |
 | FR-125 | Long words fit: a step smaller, then cut with the whole in a hint (`FitText` in every button); English always whole; dry checks of translations' widths and a German-length pseudo-locale; v0.14.1 (owner, 2026-11-12) |
-| FR-126 | A Polaroid frame for two-photo collage sheets: a white instant-film frame, its deeper bottom strip for a typed note or one written by hand; never on a postcard; reuses the info frame and the postcard's text; v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-12 and 13) |
 | FR-127 | German interface: every string, the menu and the errors in Deutsch, the website's short manual with the app's labels, translated with the German website's words; v0.14.1 (owner, 2026-11-13) |
 | FR-128 | Japanese and Korean interface: every string, the menu, the errors and a short manual in 日本語 and 한국어, each with a bundled Noto Sans JP or KR cut to its characters (built 2026-11-15); both in v0.14.2 with FR-130 (owner, 2026-11-14 and 15) |
 | FR-129 | The print sizes of Japan's convenience-store kiosks (7-Eleven, Lawson, FamilyMart), L判, 2L判 and each chain's square (89 or 127 mm), as lab presets from each chain's own pages; v0.14.2 (owner, 2026-11-14) |
-| FR-130 | The Japanese postcard: a はがき (100 × 148 mm, 「郵便はがき」 at the top, Japan Post's address side with its vermilion 3 + 4 code boxes) in Collage mode, the only card in Japanese and a switch in English and Vietnamese for a card sent to Japan, its layout on the style board first; v0.14.2 (owner, 2026-11-14) |
-| FR-131 | Greetings for the occasion on one postcard frame: 年賀, 寒中, 暑中, 残暑, 喪中 in Japanese, 설날, 어버이날, 스승의 날, the year's end in Korean, each its words and a rule, never a template of its own; v0.14.4 (moved from v0.14.3, 2026-11-15) after FR-130 or later (owner, 2026-11-15) |
-| FR-137 | Looks, LUTs and presets in Collage mode: the Pro panel's Colour tab (`ApplyLookCard`) beside Print in the Collage panel, on the chosen or the ticked photos; v0.14.3 (owner, 2026-11-15) |
-| FR-136 | The Postcard tab in three blocks: Sender (optional, folded), Recipient, Message; v0.14.3 (owner, 2026-11-15) |
-| FR-135 | A short landing page (six sections, results at full size, legible on a phone) and a `/features/` page; the makeover slider to the Wiki; v0.14.3 (owner, 2026-11-15) |
 | FR-134 | Text drawn without an unmaintained font parser: `skrifa` in place of `ttf-parser` and `ab_glyph`, the same pixels, the RUSTSEC-2026-0192 ignore removed; v0.14.3 (owner, 2026-11-15) |
-| FR-133 | AddAssist, assisted address entry: a switch between typing by hand and the postal code filling what the country's bundled data knows (Japan, Korea, Hungary, the Czech Republic, Germany researched), name, street, number and an optional phone typed; shown on the website once it ships; v0.14.2 with FR-130 or later (owner, 2026-11-15) |
-| FR-132 | The Korean postcard's address side (five code boxes, the 17 mm machine strip) on the 10 × 15 card, and Korea's print sizes (6 × 8, 5 × 7, 3 × 5, 8 × 10, 4 × 4 in); v0.14.2 after FR-130 or later (owner, 2026-11-15) |
-| FR-109 | A welcome screen on the first launch: five pages (welcome, modes, choose, make it yours, print), Next, a *Show at every start* tick and Start; v0.13.1 |
-| FR-108 | Photobooth with the computer's own camera (the Mac's webcam): countdown, a strip or sheet to print, offline; later |
-| FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
-| FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
+| FR-136 | The Postcard tab in three blocks: Sender (optional, folded), Recipient, Message; v0.14.3 (owner, 2026-11-15) |
+| FR-137 | Looks, LUTs and presets in Collage mode: the Pro panel's Colour tab (`ApplyLookCard`) beside Print in the Collage panel, on the chosen or the ticked photos; v0.14.3 (owner, 2026-11-15) |
 
-## Phase 3 — Pro & growth
-
-| ID | Requirement |
-|----|-------------|
-| FR-016 | RAW input |
-| FR-017 | Photo book layout preview |
-| FR-018 | QR code on photo back |
-| FR-019 | Print service upload |
-| FR-021 | Manual updates (no in-app updater, ADR-0021) |
-| FR-029 | Output sharpening |
-| FR-035 | Multi-photo layouts (2-up collage in v0.9.0; 4-up and strips later) |
-| FR-037 | Contact sheet |
-
-## Ideas backlog (not yet requirements)
+## Ideas (not yet requirements)
 
 These ideas have no ID yet. Promote one to a PRD requirement before scheduling it.
 
 - **Germany and Austria, the Czech Republic and Slovakia apart (owner, 2026-11-15; near future).** The website's Deutsch page serves DE/AT and its Čeština page CZ/SK (`regions`, `also` in `site/_data/languages.yml`); each country gets its own page, as each has its own AddAssist data, post and shops (FR-133), and Slovak its own words, a little different from Czech.
 - **France as a market (owner, 2026-11-15; researched the same day).** No dm or Rossmann there: the website in French would name CEWE's kiosks (about 3,500, at E.Leclerc, Intermarché, U, Cora, Fnac), Kodak's at Carrefour, Fnac's own and Photomaton; the presets 10 × 15 (the everyday size on every chain's page; 11 × 15 not confirmed), 13 × 18, 11 × 17, 15 × 20, 20 × 30 and the squares, most already built in; AddAssist from La Poste's open postal data (FR-133); the postcard within La Poste's rules (FR-073). The website in French is done (2026-11-15); a French interface comes next.
 
-- **Light leaks (owner, 2026-11-12; maybe).** A film camera's light leak as a look's last touch: a warm glow from one edge, of a few shapes, at an amount, never the same twice on a roll unless asked. Drawn in Rust at the print's millimetres, as grain and vignette are (session 13 of v0.14.1), so the preview and the print agree; a candidate for the looks once grain and vignette land.
+- **Light leaks (owner, 2026-11-12; maybe).** A film camera's light leak as a look's last touch: a warm glow from one edge, of a few shapes, at an amount, never the same twice on a roll unless asked. Drawn in Rust at the print's millimetres, as grain and vignette are (session 13 of v0.14.1), so the preview and the print agree; a candidate for the looks, now that grain and vignette have shipped (v0.14.1).
 - **A store of looks and frames, online (owner, 2026-11-10; later).** Looks and info frames by theme and by occasion (Christmas, Tết, a summer, a city), some free, some exclusive to a season, some sold; imported into Fotollection as a look or a frame is today (FR-079, FR-089, `.fotosettings` parts). Privacy first (NFR-006, CLAUDE.md rule 4): the core never goes online; the store is a page on the website, or a window in Fotollection that connects only when the user opens it, never in the background, nothing sent about the photos. Each item checked as an import is (bounded, in Rust); payment by a processor on the web (as Ko-fi, never in the core), the licence of each look stated (the creator's, no Adobe preset). Needs a decision on what is sold and by whom, and the relicensing question (ADR-0008) settled first.
 - **Growth, without telemetry (owner, 2026-11-10, ideas kept from advice; each one the owner's choice before it is built):**
   - *Where we stand (2026-11-11, the numbers we have):* 201 visits to the website since counting began; 369 downloads in all (Windows 141, Linux 122, macOS 102); 5 stars; 8 people on the repository's page in 14 days, 3 of them sent by fotollection.org, 1 by Unikorn. Most releases show 7 or 8 downloads, about what the owner's own smoke tests and checks make; the peaks are v0.9.4 and v0.9.5 (about 80, when the VNLF App Explorer listed it) and v0.14.0 (37). So the real users are some tens, and **the problem is being found, not being kept**. Linux at a third of the downloads, far above its share of desktops, says the Vietnamese Linux community (VNLF, CaramOS) is the strongest channel we have. 30 releases in 18 days spread the few visitors thin: each MINOR release from now is also an announcement.
@@ -272,11 +307,11 @@ These ideas have no ID yet. Promote one to a PRD requirement before scheduling i
     - *The Japanese press, later (owner, 2026-11-16: "once we are trusted and steady"; the /ja/ pages carry search meanwhile):* one email each, in Japanese, with a release as the news, never twice. Before it: a native speaker's review of the Japanese interface, of /ja/ and of the email (LOCALIZATION §1 still says AI); a real L判 print at a convenience-store kiosk and a はがき posted in Japan, or the email describes the layout without claiming it was proven. 窓の杜 (`mado-no-mori-info@impress.co.jp`): the Windows angle, the kiosk sizes, the date stamp, the はがき; デジカメWatch (`dc-watch@impress.co.jp`): the photographer's angle, LUMIX Lab LUTs on the desktop, RAW, L判 at the kiosk. Links only, no file attached; Japanese screenshots (`grid-ja`). The download page's first-launch steps (SmartScreen, Gatekeeper) are already in /ja/.
     - *Local catalogues, to submit later (owner, 2026-11-14; checked the same day), the download link always fotollection.org/download or GitHub Releases, never a file they host:* Germany: heise download (free developer account, form "Programm hochladen", weeks of review; CHIP has no public form and wraps downloads in its own installer, so skipped). Czechia: Slunečnice.cz and Stahuj.cz ("Přidat program", /pridani-programu/). Japan: Vector (author account, then the software; free software accepted, about a week of checks) and Mado no Mori (an email to the editors, `mado-no-mori-info@impress.co.jp`, once a Japanese reader has read /ja/). Hungary: no catalogue with a submission form found (szoftverbazis.hu is gone; letoltokozpont.hu has only an editors' contact); its large tech forums (Prohardver, Mobilarena) instead, rules to read first.
     - *Flathub, researched 2026-11-11 ([requirements](https://docs.flathub.org/docs/for-app-authors/requirements)):* built entirely from source with no network during the build (the Cargo and npm dependencies vendored with flatpak-builder-tools, Tauri on the GNOME runtime, which carries WebKitGTK 4.1); an ID on a domain the project controls, `org.fotollection.Fotollection`, verified by a token at `fotollection.org/.well-known/org.flathub.VerifiedApps.txt` (check that the Pages upload serves a dot-folder); static permissions minimal, portals for files; no self-update (the update check off when `FLATPAK_ID` is set). **Its generative-AI rule:** AI-written code in the app must be disclosed with its extent, reviewers may reject on it, the Flathub manifest must contain no AI-written or AI-assisted content, and the pull request, its messages and replies are written by the person, never by an agent. So the app side (metainfo, update check, portals) can be prepared here; the manifest and the submission are the owner's own work.
-    - *Homebrew:* casks that fail Gatekeeper are disabled since September 2026 ([Homebrew 6.0.0](https://brew.sh/2026/06/11/homebrew-6.0.0/)); a cask waits for a notarized build (Apple Developer Program). *winget:* next (owner, 2026-11-15, STATUS 7b), to check first that its validation takes an unsigned installer; SmartScreen warns either way; free code signing for open source (SignPath Foundation, the policy page `fotollection.org/code-signing/` exists for it) opens winget and quiets SmartScreen.
+    - *Homebrew:* casks that fail Gatekeeper are disabled since September 2026 ([Homebrew 6.0.0](https://brew.sh/2026/06/11/homebrew-6.0.0/)); a cask waits for a notarized build (Apple Developer Program). *winget:* submitted 2026-11-16 (STATUS 6b), its validation passed with the unsigned installer; SmartScreen warns either way; free code signing for open source (SignPath Foundation, the policy page `fotollection.org/code-signing/` exists for it) opens winget and quiets SmartScreen.
   - *Communities by feature:* LUMIX owners (LUMIX Lab LUTs read on the desktop, free), Show HN and r/opensource (offline, GPL, no tracking), Vietnamese travel and printing groups; each release a short post with a before and after, not the changelog.
   - *Support by audience (2026-11-11, from advice):* more support follows more users, not a change of culture, so Flathub and the German pages come first. Each audience sees the channel it already uses: English and German readers Ko-fi (PayPal and cards) or GitHub Sponsors, Vietnamese readers VietQR (a bank app's QR is quicker for them than Ko-fi), Vietnamese in Europe being a group worth speaking to (EU incomes, a Vietnamese maker, Vietnamese bank apps). On Ko-fi, fixed amounts in euros named as coffees ("one coffee = 3 €") rather than a free amount. Fotollection's one quiet support line, if built, picks the channel by the interface's language.
   - *Support that gives back:* a postcard printed with Fotollection and a handwritten thank-you above an amount, a look named after a supporter (with their consent), supporters voting on the next feature; in Fotollection, one quiet line after a good moment ("Fotollection helped you print 100 photos ☕"), off for good with one click; what the money pays for said plainly (the domain, code signing). Never an advert, never a nag, never counted (no telemetry).
-- **The website in German, Czech and Polish (owner, 2026-11-10: "later, how hard?").** Where dm and Rossmann print (Germany, Austria, Czechia, Poland, Hungary), pages for the searches people make ("dm Fotodruck richtig zuschneiden", "Datum auf Fotos drucken"). The effort, from today's site: (1) ✓ done 2026-11-11 ([ADR-0049](adr/0049-website-on-eleventy.md)): the site is built by Eleventy from one list of languages (`site/_data/languages.yml`, with Hungarian too, owner 2026-11-11), each page one template, the language button a menu, `scripts/check-site-i18n.mjs` refusing a published language that shows English; ✓ the sitemap with `hreflang`, `robots.txt`, the `latin-ext` fonts and the link previews per language; ✓ the landing and Download pages in Hungarian, German, Polish and Czech (2026-11-11, written by the maintainer's tools, a native reader welcome); ✓ the first-visit redirect by the browser's language or the menu's choice; ✓ the Performance page, Wiki, code signing policy and a short manual in those four languages, the story staying English and Vietnamese (owner, 2026-11-11); ✓ the keynote video under the hero, in every language (2026-11-11) by the browser's language; (2) each language is a block of about 440 strings in `i18n/<code>.yml`, its footnote lists and its pages under `/de/`, `/cs/`, `/pl/`: the translation is the real cost, done by a fluent speaker or checked by one, never machine-translated unread; (3) the manual (`USER_GUIDE`) stays English for a new language until it is translated, as `site-manual.sh` allows; (4) the app's own interface is FR-084's language packs, separate. Hungarian is a candidate too (the owner lives there).
+- **The website in German, Czech and Polish (owner, 2026-11-10: "later, how hard?").** Where dm and Rossmann print (Germany, Austria, Czechia, Poland, Hungary), pages for the searches people make ("dm Fotodruck richtig zuschneiden", "Datum auf Fotos drucken"). The effort, from today's site: (1) ✓ done 2026-11-11 ([ADR-0049](adr/0049-website-on-eleventy.md)): the site is built by Eleventy from one list of languages (`site/_data/languages.yml`, with Hungarian too, owner 2026-11-11), each page one template, the language button a menu, `scripts/check-site-i18n.mjs` refusing a published language that shows English; ✓ the sitemap with `hreflang`, `robots.txt`, the `latin-ext` fonts and the link previews per language; ✓ the landing and Download pages in Hungarian, German, Polish and Czech (2026-11-11, written by the maintainer's tools, a native reader welcome); ✓ the first-visit redirect by the browser's language or the menu's choice; ✓ the Performance page, Wiki, code signing policy and a short manual in those four languages, the story staying English and Vietnamese (owner, 2026-11-11); ✓ the keynote video under the hero, in every language (2026-11-11) by the browser's language; (2) each language is a block of about 440 strings in `i18n/<code>.yml`, its footnote lists and its pages under `/de/`, `/cs/`, `/pl/`: the translation is the real cost, done by a fluent speaker or checked by one, never machine-translated unread; (3) the manual (`USER_GUIDE`) stays English for a new language until it is translated, as `site-manual.sh` allows; (4) the app's own interface is separate: Magyar and Deutsch are built in since v0.14.1 (FR-123, FR-127), the Hungarian website since 2026-11-11, other languages later as FR-084's language packs.
 
 - **Look back one trip at a time from the Photos library (macOS, PhotoKit, read-only).** Pick a trip by date or place; the app groups it, suggests the best shots, and puts the rejects in a "To delete" album the user empties in Photos. With iCloud Photos this frees space on the iPhone too, without the app ever deleting anything. Prompted by the owner's own library: about 70,000 photos on a 512 GB iPhone. Measure a 70,000-photo library first (NFR-001, NFR-014).
 - **iPhone companion app**, only if the Mac flow proves itself: swipe culling on the way home and real deletion behind iOS's own confirmation. Needs the Apple Developer Program (99 USD/year, which would also notarize the Mac app), a native SwiftUI interface over the Rust core (UniFFI), and Core ML for the face models.

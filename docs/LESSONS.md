@@ -100,6 +100,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - A code commit holds its doc; before a push, and after a cherry-pick, run `check-docs-with-code.sh <base>..HEAD`. Kept by: `scripts/check-docs-with-code.sh` in CI.
 - A fact lives in one doc and the others link to it; when a fact moves, grep every doc for its old value. Kept by: no machine check yet.
+- When work moves to another release or quarter, grep every doc for the old version and change it in the same commit (ADR-0053; the audit of 2026-11-16 found about 110 stale lines). Kept by: `check-docs` (ROADMAP and STATUS quarters), no check for prose yet.
 - A released version's CHANGELOG section is frozen: new lines under `[Unreleased]`, found by its heading. Kept by: `check-docs-with-code.sh` (released sections).
 - Copy a link from its file name, keep markers out of headings, and say "planned" for what is not built. Kept by: `check-docs.sh` link check, CI's lychee.
 

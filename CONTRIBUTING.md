@@ -1,6 +1,6 @@
 # Contributing to Fotollection
 
-> **Last reviewed:** 2026-11-04
+> **Last reviewed:** 2026-11-16
 >
 > How to work on this repository without making a mess of it, for people and for AI agents alike. It explains the rules; the facts themselves live in the files it links to. Read it once before your first issue or pull request, and come back to §4 before every commit.
 
@@ -29,7 +29,7 @@ Each fact is written in exactly one file, its *single source of truth* (SSOT). E
   |------|----------|
   | What the app does, and the `FR-`/`NFR-` IDs | [docs/PRD.md](docs/PRD.md) |
   | Whether something is done, and what comes next | [docs/STATUS.md](docs/STATUS.md) |
-  | Which phase a requirement belongs to | [docs/ROADMAP.md](docs/ROADMAP.md) |
+  | Which quarter a requirement is planned for | [docs/ROADMAP.md](docs/ROADMAP.md) |
   | Why a decision was made | [docs/adr/](docs/adr/README.md) |
   | What is saved to disk, and its schema versions | [docs/DATABASE.md](docs/DATABASE.md) |
   | Every error code | [docs/ERROR_CONTROL.md](docs/ERROR_CONTROL.md) |
@@ -39,7 +39,7 @@ Each fact is written in exactly one file, its *single source of truth* (SSOT). E
 - **Reading order** by task (new to the project, writing code, debugging, performance, security, releases) is the first table of [docs/README.md](docs/README.md).
 - **Generated files are not sources.** `ui/src/ipc/bindings.ts` is generated from Rust by `cargo test`; the website's manual is generated from the user guide; the charts are generated from `bench/results/`. Change the source, then regenerate.
 - **When you find a fact in two places**, keep it in its home, replace the other copy with a link, and mention it in your pull request.
-- **Language.** Docs and code are in English. The Vietnamese files ([README.vi.md](README.vi.md), [docs/USER_GUIDE.vi.md](docs/USER_GUIDE.vi.md), `ui/src/locales/vi.json`, the website's `vi` strings) mirror their English file and change in the same commit. The website's other languages (Czech, German, Hungarian, Polish) follow English too: their words in `site/_data/i18n/<code>.yml`, the Performance texts in `site/_includes/perf/<part>-<code>.md` and a short guide in `site/_includes/manual-short-<code>.md`; a correction from a native speaker is welcome as a pull request, and `node scripts/check-site-i18n.mjs --build` tells what a language still shows in English. A new language starts with one block in `site/_data/languages.yml` ([site/README.md](site/README.md)).
+- **Language.** Docs and code are in English. The Vietnamese files ([README.vi.md](README.vi.md), [docs/USER_GUIDE.vi.md](docs/USER_GUIDE.vi.md), `ui/src/locales/vi.json`, the website's `vi` strings) mirror their English file and change in the same commit. The website's other languages (Czech, German, French, Hungarian, Polish, Korean, Japanese) follow English too: their words in `site/_data/i18n/<code>.yml`, the Performance texts in `site/_includes/perf/<part>-<code>.md` and a short guide in `site/_includes/manual-short-<code>.md`; a correction from a native speaker is welcome as a pull request, and `node scripts/check-site-i18n.mjs --build` tells what a language still shows in English. A new language starts with one block in `site/_data/languages.yml` ([site/README.md](site/README.md)).
 
 ## 3. IDs: requirements, decisions, errors
 
@@ -67,9 +67,9 @@ The rows people miss most:
 |-------------|--------------|
 | Something a user can see | [CHANGELOG.md](CHANGELOG.md) under `Unreleased`, in user terms, and its **Highlights** (3–6 one-line points that become the release page) |
 | How the user does something | Both user guides, with the app's own labels from `ui/src/locales/{en,vi}.json`, and the screenshots if the screen changed |
-| Interface text | Every `ui/src/locales/<code>.json` (en, hu, vi), the same keys and placeholders (`npm run lint` checks; [docs/LOCALIZATION.md](docs/LOCALIZATION.md)) |
+| Interface text | Every `ui/src/locales/<code>.json` (de, en, hu, ja, ko, vi), the same keys and placeholders (`npm run lint` checks; [docs/LOCALIZATION.md](docs/LOCALIZATION.md)) |
 | Anything saved to disk | [DATABASE.md](docs/DATABASE.md): the version table, a `schema_version` bump, a migration, a fixture and a test |
-| A new error | Its `ERR-` row, the Rust code, and the text in both locales under `errors.<code>` |
+| A new error | Its `ERR-` row, the Rust code, and the text in every locale under `errors.<code>` |
 | A bug that took more than one look | An entry at the top of [docs/LESSONS.md](docs/LESSONS.md) |
 | `README.md` | `README.vi.md` in the same commit: same sections, same charts |
 
@@ -84,7 +84,7 @@ cargo test --workspace                     # also regenerates ui/src/ipc/binding
 scripts/check-docs.sh                      # run on its own; it must pass
 ```
 
-**The pre-push hook runs the gate for you** (`scripts/hooks/pre-push`, installed by `scripts/bootstrap.sh` as `core.hooksPath`; the process review of 2026-11-12). On every push: no tracked file changed but left uncommitted, `cargo fmt`, clippy when Rust changed, `cargo deny check licenses bans sources` when a manifest or `deny.toml` changed, the UI lint when `ui/` changed, `check-docs` and `check-docs-with-code` over what is pushed, about 10 s. When the push changes the interface (`ui/src/`, the screenshot scripts, or `sheet`, `postcard`, `render`, `credit`, `frame` in the core) it also runs `QUICK=2 scripts/ui-check.sh`, every machine-judged UI case in English and Hungarian, about 5 minutes ([docs/UI_TESTS.md §1](docs/UI_TESTS.md#1-how-to-run)). `git push --no-verify` skips it only when meant, and the reason goes into STATUS.
+**The pre-push hook runs the gate for you** (`scripts/hooks/pre-push`, installed by `scripts/bootstrap.sh` as `core.hooksPath`; the process review of 2026-11-12). On every push: no tracked file changed but left uncommitted, `cargo fmt`, clippy when Rust changed, `cargo deny check licenses bans sources` when a manifest or `deny.toml` changed, the UI lint when `ui/` or a short manual (`site/_includes/manual-short-*`) changed, `check-docs` and `check-docs-with-code` over what is pushed, about 10 s. When the push changes the interface (`ui/src/`, the screenshot scripts, or `sheet`, `postcard`, `render`, `credit`, `frame` in the core) it also runs `QUICK=2 scripts/ui-check.sh`, every machine-judged UI case in English and Hungarian, about 5 minutes ([docs/UI_TESTS.md §1](docs/UI_TESTS.md#1-how-to-run)). `git push --no-verify` skips it only when meant, and the reason goes into STATUS.
 
 The build files of a Rust project grow fast. Free disk with `scripts/clean.sh`, never by deleting parts of `target/` by hand ([docs/DEVELOPMENT.md §4](docs/DEVELOPMENT.md#4-build-disk-hygiene)).
 
@@ -107,6 +107,7 @@ The app is offline and sends nothing, so there is no crash reporter. **The code 
 | `EXP` | Export |
 | `NET` | The network (*Check for updates* only) |
 | `IPC` | Invalid input from the interface |
+| `UI` | The interface itself: a part that failed to render, an error no code handled |
 
 To debug a code:
 
@@ -114,7 +115,7 @@ To debug a code:
 2. Read the user's **Copy diagnostics** text (version, system, the last 20 error lines). The log is `errors.log` in the app's Logs folder ([DATABASE.md](docs/DATABASE.md), "Directories per platform"). It never holds photos, places, paths or file names; a photo's facts come in brackets, such as `[4:2:0 progressive 8-bit displayP3 zune]`.
 3. Search [docs/LESSONS.md](docs/LESSONS.md) for the code or the symptom: it may have happened before.
 
-**Adding an error.** Take the next free number of its kind (never reuse one); one code means one cause with one fix. Add the row in ERROR_CONTROL, the Rust code, and the English and Vietnamese text under `errors.<code>` in `ui/src/locales`. The tests in `crates/core/src/errors.rs` fail when a code and its row disagree, or when an error raised in the source has no row.
+**Adding an error.** Take the next free number of its kind (never reuse one); one code means one cause with one fix. Add the row in ERROR_CONTROL, the Rust code, and the text of every locale under `errors.<code>` in `ui/src/locales`. The tests in `crates/core/src/errors.rs` fail when a code and its row disagree, or when an error raised in the source has no row.
 
 ## 6. Debugging
 
@@ -166,7 +167,7 @@ The full rules are in [docs/STYLE_RULE.md](docs/STYLE_RULE.md); these catch most
 
 - **Rust:** no `unwrap()` or `expect()` outside tests, except on a proven invariant with a `// INVARIANT:` comment; errors with `thiserror` in the core; `clippy -D warnings` clean.
 - **Locks:** never hold a lock while rayon work runs, and read what you need from one lock before taking the next ([STYLE_RULE.md §2](docs/STYLE_RULE.md#errors), [LESSONS.md](docs/LESSONS.md)).
-- **Interface:** shadcn/ui components and Lucide icons only; panel cards built only from the lego blocks of [STYLE_RULE §4](docs/STYLE_RULE.md#4-uiux) (`npm run lint` runs `check-lego`); the same control in the same order everywhere; every string in both locales. The steps to check a UI change are in [`.claude/skills/style-audit/SKILL.md`](.claude/skills/style-audit/SKILL.md), for people and agents alike.
+- **Interface:** shadcn/ui components and Lucide icons only; panel cards built only from the lego blocks of [STYLE_RULE §4](docs/STYLE_RULE.md#4-uiux) (`npm run lint` runs `check-lego`); the same control in the same order everywhere; every string in every locale. The steps to check a UI change are in [`.claude/skills/style-audit/SKILL.md`](.claude/skills/style-audit/SKILL.md), for people and agents alike.
 - **Untrusted input:** photos, metadata and IPC arguments are untrusted. Validate in Rust, never render metadata as HTML.
 - **Performance:** respect the budgets; an optimization comes with its benchmark and a row in [OPTIMIZATION.md §5](docs/OPTIMIZATION.md#5-benchmark-log).
 
