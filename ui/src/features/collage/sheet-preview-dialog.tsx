@@ -250,7 +250,7 @@ export function SheetPreviewDialog({
       sideTitle={t('viewer.sideTitle')}
       sideAction={narrow ? <SideHide onHide={() => setSideOpen(false)} /> : undefined}
       // Folded, the inspector says what the left column holds, as the photo preview does.
-      inspectorTop={sheet && narrow && !showSide ? <SideFoldedNote text={t('viewer.sideFoldedPresets')} onOpen={() => setSideOpen(true)} /> : undefined}
+      inspectorTop={sheet && narrow && !showSide && shownTab === 'edit' ? <SideFoldedNote text={t('viewer.sideFoldedPresets')} onOpen={() => setSideOpen(true)} /> : undefined}
       side={
         showSide && sheet ? (
           <PresetsCard photoId={photo ?? sheet.first} sheet={photo === null ? sheetIds : undefined} revision={revision} />
