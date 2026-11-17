@@ -57,6 +57,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0051](0051-addassist-bundled-postal-data.md) | AddAssist: each post's own postal data packed by a build-time crate, compiled in, checked by BLAKE3 and looked up offline in Rust behind one versioned interface (1.0: Japan and Korea; 1.1: the address book); no online address API | Accepted | 2026-11-15 |
 | [0052](0052-vertical-text-by-the-fonts-own-forms.md) | Japanese text top to bottom by the face's own GSUB `vert`/`vrt2` forms read with read-fonts (skrifa's tables) since FR-134, ttf-parser before, on an em grid with 禁則; no shaper | Accepted, amended by FR-134 | 2026-11-15 |
 | [0053](0053-roadmap-by-quarter.md) | The roadmap by quarter, two years ahead: ROADMAP lists 2026-Q4 to 2028-Q4, STATUS's *When* the same per FR; v1.0.0 in December 2026 with the Phase 1 exit criteria; v0.15.0 "Core 2" becomes v1.1 (2027-Q1) | Accepted | 2026-11-16 |
+| [0054](0054-sorting-metadata-first-then-pixels.md) | Sorting a camera roll: metadata first (Apple's MakerNote, PNG, QuickTime), names next, CLIP ViT-B/32 (MIT) only for the undecided; events by PhotoTOC; files never changed | Accepted | 2026-11-17 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

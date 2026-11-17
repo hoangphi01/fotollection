@@ -7,7 +7,7 @@
 ## 1. Versioning
 
 - **One [Semantic Versioning](https://semver.org/) version** for the whole app. The workspace `Cargo.toml` is the source; `ui/package.json` and `Cargo.lock` follow it, and `tauri.conf.json` has none of its own. `scripts/check-docs.sh` fails when they disagree.
-- **0.x until v1.0.0** (December 2026, after v0.14.4; [ROADMAP.md](ROADMAP.md), 2026-Q4, and STATUS's *Road to v1.0*):
+- **0.x until v1.0.0** (December 2026, after v0.14.5; [ROADMAP.md](ROADMAP.md), 2026-Q4, and STATUS's *Road to v1.0*):
   - **MINOR** (`0.2.0`): new features. Each work stage ships as one minor release.
   - **PATCH** (`0.2.1`): fixes only.
 - **From 1.0.0:**

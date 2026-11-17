@@ -90,7 +90,7 @@ Giao diện tiếng Anh, tiếng Việt, tiếng Đức, tiếng Hung, 日本語
 
 ![Lộ trình: Fotollection đã dùng trọn vẹn hôm nay; v1.0.0, bản ổn định, là mốc tiếp theo, rồi các bản dự kiến cho từng quý tới quý 4/2028.](docs/images/roadmap-vi.svg)
 
-Fotollection đã dùng trọn vẹn hôm nay; **v1.0.0** vào tháng 12/2026 là lời hứa ổn định. Trước đó là v0.14.4 vào tháng 11; sau đó mỗi tháng một bản với chủ đề riêng, bảo trì đi trước, kế hoạch tới 11/2028. Sắp tới: nhóm ảnh theo chuyến đi, tìm ảnh trùng và crop theo khuôn mặt, xem trước photobook và mã QR sau lưng ảnh in. Mọi yêu cầu và quý của nó: [docs/ROADMAP.md](docs/ROADMAP.md); các hạng mục còn lại trước v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+Fotollection đã dùng trọn vẹn hôm nay; **v1.0.0** vào tháng 12/2026 là lời hứa ổn định. Trước đó có hai bản: v0.14.4 vào tháng 11, lọc cả kho ảnh điện thoại (ảnh chụp, ảnh chụp màn hình, ảnh đã lưu, Live Photo, ảnh trùng, sự kiện), và v0.14.5 thêm look; sau đó mỗi tháng một bản với chủ đề riêng, bảo trì đi trước, kế hoạch tới 11/2028. Sắp tới: crop theo khuôn mặt, xem trước photobook và mã QR sau lưng ảnh in. Mọi yêu cầu và quý của nó: [docs/ROADMAP.md](docs/ROADMAP.md); các hạng mục còn lại trước v1.0.0: [docs/STATUS.md](docs/STATUS.md).
 
 ## Tải về
 

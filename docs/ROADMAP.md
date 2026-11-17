@@ -30,7 +30,7 @@ Fotollection is kept alive as open source for at least two years, to 2028-11 (ow
 
 | Quarter | Releases | Requirements |
 |---------|----------|--------------|
-| 2026-Q4 | v0.14.4 "Looks, part 3" (November) and v1.0.0 (December) | 36 |
+| 2026-Q4 | v0.14.5 "Looks, part 3" (November) and v1.0.0 (December) | 36 |
 | 2027-Q1 | v1.1 "Core 2" and v1.2 "Smart culling" | 11 |
 | 2027-Q2 | v1.3 "The print run" and v1.4 "Cards and sheets" | 12 |
 | 2027-Q3 | v1.5 "Places and trips" and v1.6 "Looks, part 4" | 8 |
@@ -40,19 +40,19 @@ Fotollection is kept alive as open source for at least two years, to 2028-11 (ow
 | 2028-Q3 | v1.10 "Capture" | 3 |
 | 2028-Q4 | v1.11 "Sharing and print services", and the two-year review | 3 |
 
-## 2026-Q4 — v0.14.4 "Looks, part 3" (November) and v1.0.0 (December)
+## 2026-Q4 — v0.14.4 "Sorting" (November), v0.14.5 "Looks, part 3" and v1.0.0 (December)
 
-v0.14.4 finishes the looks: FR-112 closer to RawTherapee, FR-118 every preset setting, the measurements left from v0.14.0, FR-100's M3. **v1.0.0** closes the old Phase 1: every P0 FR Done and NFR-001 to NFR-013 within budget on `REF-MAC` and `REF-WIN` (STATUS, *Road to v1.0*), the owner's checks by hand, the real cards posted in Japan and Korea, fuzzing (S5) and the panic hook (S7).
+v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md); owner, 2026-11-17: urgent): sources, stacks, events and trips (FR-012), duplicates (FR-015), on the owner's 14,639 files. v0.14.5 finishes the looks: FR-112 closer to RawTherapee, FR-118 every preset setting, the measurements left from v0.14.0, FR-100's M3. **v1.0.0** closes the old Phase 1: every P0 FR Done and NFR-001 to NFR-013 within budget on `REF-MAC` and `REF-WIN` (STATUS, *Road to v1.0*), the owner's checks by hand, the real cards posted in Japan and Korea, fuzzing (S5) and the panic hook (S7).
 
 | ID | Requirement |
 |----|-------------|
-| FR-112 | Highlight recovery for RAW, chosen and tuned by measurement against the current fade; v0.14.1 (moved from v0.14.0, owner, 2026-11-09), the gap to RawTherapee in v0.14.4 (moved from v0.14.3, 2026-11-15) |
-| FR-118 | Every preset setting applied: clarity and texture (FR-115), local highlights, the parametric curve, white balance in kelvins against each photo's as shot, grain and vignette, sharpening and noise reduction, older presets; each tuned against Lightroom's exports; lens corrections stay with FR-085; v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-09 and 13) |
+| FR-112 | Highlight recovery for RAW, chosen and tuned by measurement against the current fade; v0.14.1 (moved from v0.14.0, owner, 2026-11-09), the gap to RawTherapee in v0.14.5 (moved from v0.14.3, 2026-11-15) |
+| FR-118 | Every preset setting applied: clarity and texture (FR-115), local highlights, the parametric curve, white balance in kelvins against each photo's as shot, grain and vignette, sharpening and noise reduction, older presets; each tuned against Lightroom's exports; lens corrections stay with FR-085; v0.14.5 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-09 and 13) |
 | FR-114 | A look, LUT or preset given to many photos at once from Pro mode's gallery (a Colour tab beside Print): the ticked photos or every photo shown, an amount, photos with their own colour asked about once, one undo step; v0.14.0 (owner, 2026-11-08) |
-| FR-115 | Local contrast in Pro mode: clarity, texture and dehaze, the spatial tools a colour table cannot hold, before FR-102's masks (a linear gradient first); Dehaze in v0.14.0 (2026-11-09, before the table); Rust after the table, GPU preview, chosen and tuned against Lightroom's renders; clarity and texture in v0.14.4 with FR-118 (owner, 2026-11-09 and 13) (owner, 2026-11-08: where Pro mode is heading) |
+| FR-115 | Local contrast in Pro mode: clarity, texture and dehaze, the spatial tools a colour table cannot hold, before FR-102's masks (a linear gradient first); Dehaze in v0.14.0 (2026-11-09, before the table); Rust after the table, GPU preview, chosen and tuned against Lightroom's renders; clarity and texture in v0.14.5 with FR-118 (owner, 2026-11-09 and 13) (owner, 2026-11-08: where Pro mode is heading) |
 | FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.14.0, the highlight of Simple mode, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
-| FR-089 | Lightroom presets: a user's own `.xmp` or `.lrtemplate` imported into a look, parsed safely, unsupported settings listed; v0.14.0, the rest in v0.14.4 (moved from v0.14.3, 2026-11-15) (FR-118) |
-| FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected with a setting, 60 fps; M1–M2 in v0.14.0, M3 in v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-08, 09 and 13, [ADR-0046](adr/0046-one-motion-system.md)) |
+| FR-089 | Lightroom presets: a user's own `.xmp` or `.lrtemplate` imported into a look, parsed safely, unsupported settings listed; v0.14.0, the rest in v0.14.5 (moved from v0.14.3, 2026-11-15) (FR-118) |
+| FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected with a setting, 60 fps; M1–M2 in v0.14.0, M3 in v0.14.5 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-08, 09 and 13, [ADR-0046](adr/0046-one-motion-system.md)) |
 | FR-002 | Read photo metadata |
 | FR-003 | Library grid |
 | FR-004 | Date stamp |
@@ -82,11 +82,14 @@ v0.14.4 finishes the looks: FR-112 closer to RawTherapee, FR-118 every preset se
 | FR-130 | The Japanese postcard: a はがき (100 × 148 mm, 「郵便はがき」 at the top, Japan Post's address side with its vermilion 3 + 4 code boxes) in Collage mode, the only card in Japanese and a switch in English and Vietnamese for a card sent to Japan, its layout on the style board first; v0.14.2 (owner, 2026-11-14) |
 | FR-132 | The Korean postcard's address side (five code boxes, the 17 mm machine strip) on the 10 × 15 card, and Korea's print sizes (6 × 8, 5 × 7, 3 × 5, 8 × 10, 4 × 4 in); v0.14.2 (owner, 2026-11-15) |
 | FR-133 | AddAssist, assisted address entry: a switch between typing by hand and the postal code filling what the country's bundled data knows (Japan, Korea, Hungary, the Czech Republic, Germany researched), name, street, number and an optional phone typed; shown on the website once it ships; v0.14.2 with FR-130 or later (owner, 2026-11-15) |
+| FR-141 | Sorting a phone's camera roll: camera, app, screenshot, saved or received, edited, by metadata first and CLIP ViT-B/32 for the rest; Live Photo, burst and HEIC/JPG stacks; time with its source; events ([ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md)) |
+| FR-012 | Trip auto-grouping |
+| FR-015 | Duplicate detection |
 | FR-138 | Code health, part 1: no source file over 1,500 production lines when v1.0.0 ships, in stages (shared shell helpers, `commands.rs` by concern, logic to the core, `preview.rs` to a folder, the tooling scripts) ([CODE_HEALTH.md](CODE_HEALTH.md)) |
 
 ## 2027-Q1 — v1.1 "Core 2" and v1.2 "Smart culling"
 
-v1.1 is the release once called v0.15.0: X-Trans, the GPU develop, the DNG kinds, a linear Rec.2020 working space, lens correction, the 32-bit lossless path and right-click menus; with it the distribution steps deferred on 2026-11-11 (notarization, SignPath, Flathub). v1.2 groups a trip and finds duplicates.
+v1.1 is the release once called v0.15.0: X-Trans, the GPU develop, the DNG kinds, a linear Rec.2020 working space, lens correction, the 32-bit lossless path and right-click menus; with it the distribution steps deferred on 2026-11-11 (notarization, SignPath, Flathub). v1.2 exports by trip, swipes through photos and watches a folder (trips and duplicates moved to v0.14.4).
 
 | ID | Requirement |
 |----|-------------|
@@ -96,9 +99,7 @@ v1.1 is the release once called v0.15.0: X-Trans, the GPU develop, the DNG kinds
 | FR-119 | Smooth on ARM, RISC-V tried: a Windows ARM64 build first (today emulated), every budget measured on a Raspberry Pi 5, an M-series Mac and a Snapdragon laptop, SIMD only where measured; riscv64 Linux cross-built and smoke-tested, experimental until a real board meets the budgets; v1.1, RISC-V later (owner, 2026-11-09) |
 | FR-111 | Lossless export in Pro mode: TIFF 16-bit by default or 32-bit float, through a 32-bit float path; v1.1 (owner, 2026-11-09) |
 | FR-117 | Right-click menus in more places (folders, photos, the filmstrip, collage slots, export presets), each holding only actions found elsewhere too, groups split by hairlines as Lightroom's; `MenuContent` and the style rules; v1.1 (owner, 2026-11-09) |
-| FR-012 | Trip auto-grouping |
 | FR-014 | Export by trip |
-| FR-015 | Duplicate detection |
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-139 | Code health, part 2: the orange files split or shared in stages (camera to `oscamera`, one text engine for the cards, `sheet`, `postcard`, `library`, the rest), the `too_many_lines` allows at most 10 ([CODE_HEALTH.md](CODE_HEALTH.md)) |
@@ -116,9 +117,9 @@ v1.3: copies, lab and print presets, contact sheets, ID photos, output sharpenin
 | FR-113 | ID photos: one photo cut to a document's size (35 × 45, 30 × 40, 2 × 2 in…) and repeated on one print with cut marks, at true size; v1.3 (2027-Q2), after the colour engine (looks, LUTs, Lightroom presets) and v1.1's 32-bit export (owner, 2026-11-07; moved with FR-111, 2026-11-09) |
 | FR-029 | Output sharpening |
 | FR-106 | Output sharpening for screen, matte or glossy paper, measured first |
-| FR-126 | A Polaroid frame for two-photo collage sheets: a white instant-film frame, its deeper bottom strip for a typed note or one written by hand; never on a postcard; reuses the info frame and the postcard's text; v0.14.4 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-12 and 13) |
-| FR-083 | A personal photo calendar: a built-in calendar engine for any year, important days marked, a photo a month, PDF or PNG pages; on the collage sheet first, two months to a print; v0.14.4 (moved from v0.14.3, 2026-11-15) (moved from v0.14.2, 2026-11-15; owner, 2026-11-14) |
-| FR-131 | Greetings for the occasion on one postcard frame: 年賀, 寒中, 暑中, 残暑, 喪中 in Japanese, 설날, 어버이날, 스승의 날, the year's end in Korean, each its words and a rule, never a template of its own; v0.14.4 (moved from v0.14.3, 2026-11-15) after FR-130 or later (owner, 2026-11-15) |
+| FR-126 | A Polaroid frame for two-photo collage sheets: a white instant-film frame, its deeper bottom strip for a typed note or one written by hand; never on a postcard; reuses the info frame and the postcard's text; v0.14.5 (moved from v0.14.3, 2026-11-15) (owner, 2026-11-12 and 13) |
+| FR-083 | A personal photo calendar: a built-in calendar engine for any year, important days marked, a photo a month, PDF or PNG pages; on the collage sheet first, two months to a print; v0.14.5 (moved from v0.14.3, 2026-11-15) (moved from v0.14.2, 2026-11-15; owner, 2026-11-14) |
+| FR-131 | Greetings for the occasion on one postcard frame: 年賀, 寒中, 暑中, 残暑, 喪中 in Japanese, 설날, 어버이날, 스승의 날, the year's end in Korean, each its words and a rule, never a template of its own; v0.14.5 (moved from v0.14.3, 2026-11-15) after FR-130 or later (owner, 2026-11-15) |
 | FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines |
 | FR-035 | Multi-photo layouts (2-up collage in v0.9.0; 4-up and strips later) |
 
@@ -231,7 +232,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.14.0 | Looks (shipped 2026-11-09) | FR-079 (the Looks card, built-in looks of our own, the Color Mixer), FR-070 (looks from `.cube` and HaldCLUT LUTs, the highlight of Simple mode: look, choose a colour, print), FR-089 (Lightroom presets, measured against Lightroom's renders), FR-114 (a look for many photos), FR-115's Dehaze, FR-096's press and hold for the original, FR-023's project settings of its own, NFR-011's containment, FR-116 and FR-082 (data on this computer, `.fotosettings`), *Presets & LUTs* in the develop view's left column, FR-100's motion tokens (M1–M2), [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md), [ADR-0048](adr/0048-one-owner-per-service-failures-stay-local.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export whatever is set (`measure_look`) |
 | v0.14.1 | Looks, part 2 (owner 2026-11-09: "cover and complete what the app reports missing from presets"; 2026-11-13: ships what is built, with Deutsch and Magyar, the rest in v0.14.2) | FR-127 and FR-123 (the app in Deutsch and Magyar), FR-124 (the language first on the welcome, the machine's language on the first launch), FR-125 (long words fit), FR-112 (highlight recovery for RAW, measured against the current fade), grain and vignette in millimetres on the print (session 13), FR-120 (turn the print size), FR-121 (a small "fotollection.org" on each print), FR-073's Postal use, FR-122 (the warm chrome), the Flatpak's metainfo to Flathub's quality guidelines (ADR-0050) | Each tool within OPTIMIZATION §3; every word fits in German and Hungarian (MEASURE) |
 | v0.14.2 | 日本語 and 한국어 (owner, 2026-11-15: releases what is built) | FR-128 (the app in Japanese and Korean), FR-129 and FR-132's sizes (Japan's and Korea's print sizes), FR-130 (the はがき), FR-132 (the 우편엽서), FR-133 (AddAssist 1.0, Japan and Korea), the Japanese and Korean pages of the website with their own screenshots on their country's photos (PRD FR-130) | Japan Post's and Korea Post's rules each tested (FR-130, FR-132); a real card posted in each country before FR-130 and FR-132 are done |
-| v0.14.3 | Postcards, part 2 (planned; owner, 2026-11-15: v0.14.3 releases what is built, the Looks items move to v0.14.4) | FR-133's AddAssist 1.1 (the address book, recent recipients, a sender per card, one recipient or message for many cards), FR-136 (the Postcard tab in three blocks), FR-137 (Looks in Collage mode), FR-124's flags and backdrop on the welcome, FR-135 (the short landing page and `/features/`, legible on a phone), FR-134 (text drawn through `skrifa`, the ttf-parser advisory closed) | The real cards posted in Japan and Korea; `check-lego` and `MEASURE=1`; the phone crops' text at least 11 px |
+| v0.14.3 | Postcards, part 2 (planned; owner, 2026-11-15: v0.14.3 releases what is built, the Looks items move to v0.14.5) | FR-133's AddAssist 1.1 (the address book, recent recipients, a sender per card, one recipient or message for many cards), FR-136 (the Postcard tab in three blocks), FR-137 (Looks in Collage mode), FR-124's flags and backdrop on the welcome, FR-135 (the short landing page and `/features/`, legible on a phone), FR-134 (text drawn through `skrifa`, the ttf-parser advisory closed) | The real cards posted in Japan and Korea; `check-lego` and `MEASURE=1`; the phone crops' text at least 11 px |
 
 | ID | Requirement |
 |----|-------------|

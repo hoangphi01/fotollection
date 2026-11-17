@@ -89,7 +89,7 @@ Interface in English, Tiếng Việt, Deutsch, Magyar, 日本語 and 한국어. 
 
 ![Roadmap: Fotollection works end to end today; v1.0.0, the stable release, is the next milestone, then the releases planned for each quarter to 2028-Q4.](docs/images/roadmap.svg)
 
-Fotollection works end to end today; **v1.0.0** in December 2026 is its promise of stability. Before it comes v0.14.4 in November; after it, one release a month, each with its theme, and maintenance first, planned to 2028-11. Coming later: trip grouping, duplicate detection and a face-aware crop, a photo-book preview and QR codes on the back of prints. Every requirement and its quarter: [docs/ROADMAP.md](docs/ROADMAP.md); the checks left before v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+Fotollection works end to end today; **v1.0.0** in December 2026 is its promise of stability. Two releases come first: v0.14.4 in November, which sorts a phone's whole camera roll (camera shots, screenshots, saved images, Live Photos, duplicates, events), and v0.14.5 with more looks; after it, one release a month, each with its theme, and maintenance first, planned to 2028-11. Coming later: a face-aware crop, a photo-book preview and QR codes on the back of prints. Every requirement and its quarter: [docs/ROADMAP.md](docs/ROADMAP.md); the checks left before v1.0.0: [docs/STATUS.md](docs/STATUS.md).
 
 ## Download
 
