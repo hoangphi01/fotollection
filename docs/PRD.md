@@ -1408,6 +1408,15 @@ Done when `scripts/code-health.mjs` reports no red file and the watch list (`scr
 
 Done when the watch list holds no file and the allows are at most 10, by `scripts/code-health.mjs`.
 
+### FR-140 — Film scans recognised, the shot date asked for
+
+**P2 (v1.6, 2027-Q3, with the film looks of [FR-047](#fr-047--film-looks); owner, 2026-11-17, from a Noritsu scan of a film photo).** A lab's film scanner writes its scan time into EXIF's *Date and Time (original)*, the field a camera fills with the moment of the shot, so today a scan is stamped with the day it was scanned. The gap is usually small (weeks or months), so the stamp **keeps printing that date** (owner); Fotollection only makes the case visible and the real date easy to give:
+
+- **The scanners, as data:** a bundled list of film scanners by EXIF *Make* and *Model* (Noritsu, as `NORITSU KOKI` / `EZ Controller`; Fujifilm Frontier; Nikon Coolscan; Hasselblad and Imacon Flextight; Pakon; Plustek; the Epson and Canon flatbeds' film modes), read in Rust like the camera brands of `brands.rs`, each entry with what the scanner writes (which date fields, its software name); a scan is never guessed from the pixels.
+- **What the user sees:** in the inspector, *Film scan (Noritsu EZ Controller) · the date is the scan's*, and beside it a date field to type the shot's date, prefilled with the scan date; giving it to the ticked photos at once uses [FR-032](#fr-032--manual-date-and-place)'s dates by hand (one undo step), so a whole roll takes one entry.
+- **What prints:** the stamp prints the scan date until a date is typed, then the typed one; the info frame keeps the scanner's logo ([ADR-0020](adr/0020-bundled-brand-logos.md)).
+- **Measured and tested:** the list's lookup within the import budget (NFR-001), a test per scanner entry with its EXIF *Make* and *Model*, files never changed.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

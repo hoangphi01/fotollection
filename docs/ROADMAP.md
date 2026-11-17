@@ -131,6 +131,7 @@ v1.5: places from a phone or a GPX track, the trip journal, landmarks. v1.6: fil
 | FR-031 | Borrow GPS from a phone or GPX track |
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
+| FR-140 | Film scans recognised from a bundled list of scanners (Noritsu, Frontier, Coolscan, Flextight…): the date is marked as the scan's and still printed, a field to type the shot's date for the roll (FR-032) |
 | FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
 | FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
 | FR-039 | Photo Style looks (merged into FR-079, 2026-11-05) |
