@@ -42,7 +42,7 @@ Fotollection is kept alive as open source for at least two years, to 2028-11 (ow
 
 ## 2026-Q4 — v0.14.4 "Sorting" (November), v0.14.5 "Looks, part 3" and v1.0.0 (December)
 
-v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md); owner, 2026-11-17: urgent): sources, stacks, events and trips (FR-012), duplicates (FR-015), on the owner's 14,639 files. v0.14.5 finishes the looks: FR-112 closer to RawTherapee, FR-118 every preset setting, the measurements left from v0.14.0, FR-100's M3. **v1.0.0** closes the old Phase 1: every P0 FR Done and NFR-001 to NFR-013 within budget on `REF-MAC` and `REF-WIN` (STATUS, *Road to v1.0*), the owner's checks by hand, the real cards posted in Japan and Korea, fuzzing (S5) and the panic hook (S7).
+v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md); owner, 2026-11-17: urgent): sources, stacks, events and trips (FR-012), duplicates (FR-015), suggested deletions after CLIP (FR-143, [ADR-0055](adr/0055-deleting-to-the-trash-on-the-users-word.md)), on the owner's 14,639 files. v0.14.5 finishes the looks: FR-112 closer to RawTherapee, FR-118 every preset setting, the measurements left from v0.14.0, FR-100's M3. **v1.0.0** closes the old Phase 1: every P0 FR Done and NFR-001 to NFR-013 within budget on `REF-MAC` and `REF-WIN` (STATUS, *Road to v1.0*), the owner's checks by hand, the real cards posted in Japan and Korea, fuzzing (S5) and the panic hook (S7).
 
 | ID | Requirement |
 |----|-------------|
@@ -85,6 +85,7 @@ v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadat
 | FR-141 | Sorting a phone's camera roll: camera, app, screenshot, saved or received, edited, by metadata first and CLIP ViT-B/32 for the rest; Live Photo, burst and HEIC/JPG stacks; time with its source; events ([ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md)) |
 | FR-012 | Trip auto-grouping |
 | FR-015 | Duplicate detection |
+| FR-143 | Suggested deletions after sorting: too soft, enlarged from a small image (its real resolution measured), saved from the web, memes; each with its reasons, to the system's Trash on the user's word ([ADR-0055](adr/0055-deleting-to-the-trash-on-the-users-word.md)) |
 | FR-138 | Code health, part 1: no source file over 1,500 production lines when v1.0.0 ships, in stages (shared shell helpers, `commands.rs` by concern, logic to the core, `preview.rs` to a folder, the tooling scripts) ([CODE_HEALTH.md](CODE_HEALTH.md)) |
 
 ## 2027-Q1 — v1.1 "Core 2" and v1.2 "Smart culling"

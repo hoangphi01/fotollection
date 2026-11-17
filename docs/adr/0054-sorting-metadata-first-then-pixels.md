@@ -1,6 +1,6 @@
 # ADR-0054: Sorting a camera roll by its metadata first, the pixels for the rest
 
-- **Status:** Accepted
+- **Status:** Accepted; amended by [ADR-0055](0055-deleting-to-the-trash-on-the-users-word.md) (deleting to the Trash on the user's word)
 - **Date:** 2026-11-17
 - **Related:** FR-141, FR-012, FR-015, FR-022, NFR-022, ADR-0018, ADR-0019, ADR-0044
 
