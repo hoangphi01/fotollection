@@ -63,7 +63,7 @@ crates/
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002); one 128 KB head read gives the EXIF and the facts; `Software`, sub-seconds, the pixel size (EXIF, else the JPEG SOF, PNG IHDR or HEIF `ispe`), `UserComment` as a kind only and Apple's MakerNote (FR-141)
       apple_note.rs      † # Apple's MakerNote, bounded: Live Photo content identifier, burst, capture type, photo identifier (FR-141)
       quicktime.rs       † # a MOV/MP4's metadata by seeking to `moov`: creation time, duration, Apple's content identifier, make, model (FR-141)
-      sorting/           † # where each photo came from (FR-141, ADR-0054): `classify` from the metadata, rules as data in `assets/sorting/rules.json`, `my_phones` and `refine` for another phone's shots; `Library::source`; `stacks.rs` gathers bursts, twins and edited copies (Apple's identifiers, else name, folder and second), `live_video` finds a Live Photo's video beside its still; `Library::stacks`, `stack_of` (S3)
+      sorting/           † # where each photo came from (FR-141, ADR-0054): `classify` from the metadata, rules as data in `assets/sorting/rules.json`, `my_phones` and `refine` for another phone's shots; `Library::source`; `stacks.rs` gathers bursts, twins and edited copies (Apple's identifiers, else name, folder and second), `live_video` finds a Live Photo's video beside its still; `Library::stacks`, `stack_of` (S3); `time.rs` (the date in a file's name, the file time confirmed by the library), `events.rs` (PhotoTOC), `trips.rs` (FR-012), `locations.rs` (by place, map clusters, a place borrowed within an event); `Library::roll`, `time_source` (S4)
       facts.rs           † # what each file is (FR-071): chroma subsampling, coding, bits, colour space by ICC name, sensor filter, DNG kind, decoder; `unusual()` for the grid badge
       settings.rs        † # RenderSettings and the UI settings, the recent postcard addresses (`remember_address`)
       plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan, 3 mm border (FR-004/006/040/067), a shared photo's fill round it all (`pad`, FR-075)
@@ -99,6 +99,7 @@ crates/
       places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places; borrowing from another device's photo of the same scene (FR-005/031/032). GPX tracks are planned (FR-066)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag, date set by hand); the effective time with each body's clock offset (FR-030, ADR-0027)
+      library/sorted.rs  † # the library's sorting (FR-141): `source`, `stacks`, `stack_of`, `roll` (events, trips, places), `time_source`, worked out when first asked
       project.rs         † # project tables v15: snapshot/restore by folder+path, FK validation, relocate/resolve folders
       bundle.rs          † # .fotollection ZIP bundle: its allowlist and parts' readers (ADR-0016), on zip_parts.rs
       zip_parts.rs       † # the ZIP both bundles share: manifest + BLAKE3, two-pass read under each part's limit, zip-bomb caps, deterministic write

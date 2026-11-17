@@ -21,9 +21,11 @@ use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
+use fotollection_core::import::ImportedFile;
+use fotollection_core::library::Library;
 use fotollection_core::sorting::stacks::{self, StackKey};
 use fotollection_core::sorting::{self, Source, SourceClass};
-use fotollection_core::{metadata, quicktime};
+use fotollection_core::{geocode, metadata, quicktime};
 use rayon::prelude::*;
 use serde_json::json;
 
@@ -49,6 +51,8 @@ struct Row {
     content_id: Option<String>,
     video_content_id: Option<String>,
     stack_key: Option<StackKey>,
+    /// A still as the app imports it, for the library's events, trips and places.
+    file: Option<(ImportedFile, metadata::PhotoMeta)>,
     ms: f64,
 }
 
@@ -151,6 +155,7 @@ fn main() {
         .map(|p| labels(Path::new(p)))
         .unwrap_or_default();
     println!("{}", stack_report(&rows, &folder, &truth));
+    println!("{}", roll_report(&rows, &folder));
     score(&rows, &sources, &truth);
 }
 
@@ -170,6 +175,7 @@ fn read(path: &Path) -> Row {
         content_id: None,
         video_content_id: None,
         stack_key: None,
+        file: None,
         ms: 0.0,
     };
     if matches!(ext.as_str(), "mov" | "mp4" | "m4v") {
@@ -182,10 +188,81 @@ fn read(path: &Path) -> Row {
         let mut key = StackKey::new(0, &row.name, capture, meta.apple.as_ref());
         key.derived = row.source.as_ref().is_some_and(|s| s.class.is_derived());
         row.stack_key = Some(key);
-        row.content_id = meta.apple.and_then(|n| n.content_id);
+        row.content_id = meta.apple.as_ref().and_then(|n| n.content_id.clone());
+        let md = std::fs::metadata(path).ok();
+        let mtime = md
+            .as_ref()
+            .and_then(|m| m.modified().ok())
+            .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+            .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(0));
+        let size = md.map_or(0, |m| m.len());
+        let file = ImportedFile {
+            path: path.to_path_buf(),
+            size,
+            mtime,
+        };
+        row.file = Some((file, meta));
     }
     row.ms = a.elapsed().as_secs_f64() * 1000.0;
     row
+}
+
+/// The roll through the app's own library (FR-141 S4): where each time came from, the events,
+/// the trips with their suggested names, the places with the most photos (the first, most
+/// likely home, left out), each step timed.
+fn roll_report(rows: &[Row], folder: &Path) -> serde_json::Value {
+    let mut lib = Library::new();
+    let f = lib.add_folder(folder);
+    for (file, meta) in rows.iter().filter_map(|r| r.file.as_ref()) {
+        lib.push(f, file, meta);
+    }
+    let t = Instant::now();
+    let roll = lib.roll();
+    let roll_ms = t.elapsed().as_secs_f64() * 1000.0;
+    let mut sources: BTreeMap<String, usize> = BTreeMap::new();
+    for i in 0..lib.len() {
+        let id = fotollection_core::library::PhotoId(u32::try_from(i).unwrap());
+        *sources
+            .entry(format!("{:?}", lib.time_source(id)))
+            .or_default() += 1;
+    }
+    let ids: Vec<Option<u32>> = roll.places.iter().map(|p| p.map(|p| p.place_id)).collect();
+    let name = |id: Option<u32>| {
+        id.and_then(|id| geocode::by_id(id).ok().flatten())
+            .map(|p| format!("{}, {}", p.name, p.country))
+    };
+    let day = |d: i64| {
+        chrono::DateTime::from_timestamp(d * 86_400, 0).map(|t| t.format("%Y-%m-%d").to_string())
+    };
+    let trips: Vec<serde_json::Value> = roll
+        .trips
+        .iter()
+        .map(|t| {
+            let place = name(sorting::trips::main_place(t, &ids));
+            json!([day(t.first_day), day(t.last_day), t.members.len(), place])
+        })
+        .collect();
+    let places: Vec<serde_json::Value> = sorting::locations::by_place(&roll.places)
+        .iter()
+        .skip(1)
+        .take(15)
+        .map(|g| {
+            let borrowed = g
+                .members
+                .iter()
+                .filter(|&&i| roll.places[i].is_some_and(|p| p.borrowed))
+                .count();
+            json!([name(Some(g.place_id)), g.members.len(), borrowed])
+        })
+        .collect();
+    let sizes: Vec<usize> = roll.events.iter().map(Vec::len).collect();
+    json!({
+        "roll_ms": roll_ms, "time_sources": sources, "file_time_confirmed": roll.file_time_confirmed,
+        "events": roll.events.len(), "photos_in_events": sizes.iter().sum::<usize>(),
+        "located": roll.places.iter().filter(|p| p.is_some()).count(),
+        "borrowed": roll.places.iter().filter(|p| p.is_some_and(|p| p.borrowed)).count(),
+        "trips": trips, "places_after_the_first": places,
+    })
 }
 
 /// The library's own phones, from its camera shots.

@@ -5,7 +5,11 @@
 //! are data (`assets/sorting/rules.json`), measured on the owner's labelled roll; what no rule
 //! decides is `Unknown`, for the pixels to settle later (S6).
 
+pub mod events;
+pub mod locations;
 pub mod stacks;
+pub mod time;
+pub mod trips;
 
 use std::collections::HashMap;
 use std::sync::OnceLock;
@@ -79,6 +83,12 @@ struct Panorama {
 }
 
 #[derive(Deserialize)]
+struct FileTime {
+    window_h: i64,
+    share: f32,
+}
+
+#[derive(Deserialize)]
 struct Rules {
     apps: Vec<App>,
     editors: Vec<String>,
@@ -87,6 +97,9 @@ struct Rules {
     screen_widths: Vec<u32>,
     panorama: Panorama,
     my_phone_share: f32,
+    file_time: FileTime,
+    events: events::EventRules,
+    trips: trips::TripRules,
 }
 
 fn rules() -> &'static Rules {
@@ -96,6 +109,63 @@ fn rules() -> &'static Rules {
             unreachable!("assets/sorting/rules.json is checked by its test: {e}")
         })
     })
+}
+
+/// Whether the library's file times can be trusted, by the rules' window and share
+/// ([`time::file_time_confirmed`]).
+pub fn file_time_confirmed(pairs: impl Iterator<Item = (i64, i64)>) -> bool {
+    let r = &rules().file_time;
+    time::file_time_confirmed(pairs, r.window_h * 3600, r.share)
+}
+
+/// The roll's events, by the rules ([`events::events`]).
+pub fn events_of(moments: &[events::Moment]) -> Vec<Vec<usize>> {
+    events::events(moments, &rules().events)
+}
+
+/// The roll's trips, by the rules ([`trips::trips`]).
+pub fn trips_of(moments: &[events::Moment]) -> Vec<trips::Trip> {
+    trips::trips(moments, &rules().trips)
+}
+
+/// A roll's events, trips and places (S4), indexes into the photos given to [`roll`].
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct Roll {
+    pub events: Vec<Vec<usize>>,
+    pub trips: Vec<trips::Trip>,
+    /// Each photo's place, its own or borrowed from its event.
+    pub places: Vec<Option<locations::Located>>,
+    pub file_time_confirmed: bool,
+}
+
+/// Events and trips over the photos whose time is `firm` (an unconfirmed file time cuts no
+/// event), then places lent within events.
+pub fn roll(
+    moments: &[events::Moment],
+    firm: &[bool],
+    mut places: Vec<Option<locations::Located>>,
+    file_time_confirmed: bool,
+) -> Roll {
+    let kept: Vec<usize> = (0..moments.len())
+        .filter(|&i| firm.get(i).copied().unwrap_or(false))
+        .collect();
+    let sub: Vec<events::Moment> = kept.iter().map(|&i| moments[i]).collect();
+    let back = |v: Vec<usize>| v.into_iter().map(|j| kept[j]).collect::<Vec<_>>();
+    let events: Vec<Vec<usize>> = events_of(&sub).into_iter().map(back).collect();
+    let trips = trips_of(&sub)
+        .into_iter()
+        .map(|t| trips::Trip {
+            members: back(t.members),
+            ..t
+        })
+        .collect();
+    locations::borrow_from_events(&mut places, &events);
+    Roll {
+        events,
+        trips,
+        places,
+        file_time_confirmed,
+    }
 }
 
 /// The first of `needles` found in `haystack`, ignoring case; the rules are `'static`, so

@@ -15,5 +15,8 @@
   ],
   "screen_widths": [640, 750, 828, 1125, 1170, 1179, 1242, 1284, 1290],
   "panorama": { "min_long_side": 4100, "min_ratio": 1.8 },
-  "my_phone_share": 0.02
+  "my_phone_share": 0.02,
+  "file_time": { "window_h": 14, "share": 0.95 },
+  "events": { "d": 10, "k": 17.0, "split_km": 50.0, "always_cut_h": 24 },
+  "trips": { "home_cell_deg": 0.1, "away_km": 50.0, "max_gap_days": 3, "min_photos": 10, "home_min_months": 6 }
 }

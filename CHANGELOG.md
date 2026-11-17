@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- A photo with no date of its own takes the date written in its file name (`2020-06-18 21-51-22.jpg`, `PXL_20230105_093012.jpg`, `IMG-20220127-WA0001.jpg`) before the file's time.
+
 ### Changed
 
 - In a sheet's preview, the note that the narrow window folded *Presets & LUTs* shows on the Edit tab only, no longer taking room on the Postcard and Print tabs.

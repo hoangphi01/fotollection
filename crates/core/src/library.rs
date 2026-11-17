@@ -4,6 +4,8 @@
 //! about a megabyte and leave RAM for pixels (NFR-004).
 
 use std::collections::HashMap;
+
+mod sorted;
 use std::path::{Path, PathBuf};
 
 use chrono::{DateTime, NaiveDateTime};
@@ -436,6 +438,8 @@ pub mod flags {
     /// No EXIF capture time: the date comes from the file's modification time.
     pub const DATE_FROM_FILE: u16 = 1 << 1;
     pub const HAS_EMBEDDED_THUMB: u16 = 1 << 2;
+    /// No EXIF capture time: the date comes from the file's name (FR-141).
+    pub const DATE_FROM_NAME: u16 = 1 << 3;
 }
 
 const NO_OFFSET: i16 = i16::MIN;
@@ -622,6 +626,8 @@ pub struct Library {
     stack_keys: Vec<crate::sorting::stacks::StackKey>,
     /// The stacks and each photo's, worked out once after a change.
     stacks: std::sync::OnceLock<(Vec<crate::sorting::stacks::Stack>, HashMap<u32, usize>)>,
+    /// Events, trips and places (FR-141 S4), worked out once after a change.
+    roll: std::sync::OnceLock<crate::sorting::Roll>,
 }
 
 const NONE_U16: u16 = u16::MAX;
@@ -951,6 +957,13 @@ impl Library {
                 dt.and_utc().timestamp(),
                 meta.offset_minutes.unwrap_or(NO_OFFSET),
             )
+        } else if let Some(dt) = file
+            .path
+            .file_name()
+            .and_then(|n| crate::sorting::time::name_date(&n.to_string_lossy()))
+        {
+            f |= flags::DATE_FROM_NAME;
+            (dt.and_utc().timestamp(), NO_OFFSET)
         } else {
             f |= flags::DATE_FROM_FILE;
             (file.mtime, NO_OFFSET)
@@ -1007,48 +1020,8 @@ impl Library {
         self.sources.push(source);
         self.my_phones = std::sync::OnceLock::new();
         self.stacks = std::sync::OnceLock::new();
+        self.roll = std::sync::OnceLock::new();
         Some(id)
-    }
-
-    /// Where a photo came from (FR-141): its class at import, a camera shot from a model this
-    /// library rarely holds told apart as another phone's.
-    pub fn source(&self, id: PhotoId) -> Option<crate::sorting::Source> {
-        let i = self.index(id)?;
-        let mine = self.my_phones.get_or_init(|| {
-            let models = (0..self.len())
-                .filter(|&j| self.sources[j].class == crate::sorting::SourceClass::Camera)
-                .filter_map(|j| self.cameras.get(usize::from(self.camera[j]))?.1.as_deref());
-            crate::sorting::my_phones(models)
-        });
-        let model = self
-            .cameras
-            .get(usize::from(self.camera[i]))
-            .and_then(|c| c.1.as_deref());
-        Some(crate::sorting::refine(self.sources[i].clone(), model, mine))
-    }
-
-    /// The library's stacks (FR-141 S3) and each photo's, worked out once after a change.
-    fn stack_table(&self) -> &(Vec<crate::sorting::stacks::Stack>, HashMap<u32, usize>) {
-        self.stacks.get_or_init(|| {
-            let stacks = crate::sorting::stacks::stacks(&self.stack_keys);
-            let of = stacks
-                .iter()
-                .enumerate()
-                .flat_map(|(s, st)| st.members.iter().map(move |&m| (m, s)))
-                .collect();
-            (stacks, of)
-        })
-    }
-
-    /// Every stack of two photos or more; members are photo ids.
-    pub fn stacks(&self) -> &[crate::sorting::stacks::Stack] {
-        &self.stack_table().0
-    }
-
-    /// The stack a photo belongs to, if any.
-    pub fn stack_of(&self, id: PhotoId) -> Option<&crate::sorting::stacks::Stack> {
-        let (stacks, of) = self.stack_table();
-        stacks.get(*of.get(&id.0)?)
     }
 
     fn index(&self, id: PhotoId) -> Option<usize> {
@@ -1118,6 +1091,9 @@ impl Library {
     /// Replaces a photo's edits, returning the previous ones (for undo).
     pub fn set_edits(&mut self, id: PhotoId, edits: PhotoEdits) -> PhotoEdits {
         let old = self.edits(id);
+        if old.date != edits.date || old.place != edits.place {
+            self.roll = std::sync::OnceLock::new();
+        }
         if let Some(i) = self.index(id) {
             self.manual_date[i] = edits
                 .date
