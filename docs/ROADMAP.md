@@ -103,6 +103,7 @@ v1.1 is the release once called v0.15.0: X-Trans, the GPU develop, the DNG kinds
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-139 | Code health, part 2: the orange files split or shared in stages (camera to `oscamera`, one text engine for the cards, `sheet`, `postcard`, `library`, the rest), the `too_many_lines` allows at most 10 ([CODE_HEALTH.md](CODE_HEALTH.md)) |
+| FR-142 | Screenshots told apart by what they show (transfer confirmations, orders, chats, posts), CLIP first then text read on the device and never stored |
 
 ## 2027-Q2 — v1.3 "The print run" and v1.4 "Cards and sheets"
 
