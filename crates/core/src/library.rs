@@ -618,6 +618,10 @@ pub struct Library {
     sources: Vec<crate::sorting::Source>,
     /// The library's own phone models (FR-141), worked out once after a change.
     my_phones: std::sync::OnceLock<Vec<String>>,
+    /// What ties photos into stacks (FR-141 S3): read at import, never saved.
+    stack_keys: Vec<crate::sorting::stacks::StackKey>,
+    /// The stacks and each photo's, worked out once after a change.
+    stacks: std::sync::OnceLock<(Vec<crate::sorting::stacks::Stack>, HashMap<u32, usize>)>,
 }
 
 const NONE_U16: u16 = u16::MAX;
@@ -989,8 +993,20 @@ impl Library {
             .extension()
             .map(|e| e.to_string_lossy().to_lowercase())
             .unwrap_or_default();
-        self.sources.push(crate::sorting::classify(meta, &ext));
+        let source = crate::sorting::classify(meta, &ext);
+        let name = file.path.file_name().map(|n| n.to_string_lossy());
+        let dated = meta.capture.map(|_| capture);
+        let mut key = crate::sorting::stacks::StackKey::new(
+            folder,
+            name.as_deref().unwrap_or_default(),
+            dated,
+            meta.apple.as_ref(),
+        );
+        key.derived = source.class.is_derived();
+        self.stack_keys.push(key);
+        self.sources.push(source);
         self.my_phones = std::sync::OnceLock::new();
+        self.stacks = std::sync::OnceLock::new();
         Some(id)
     }
 
@@ -1009,6 +1025,30 @@ impl Library {
             .get(usize::from(self.camera[i]))
             .and_then(|c| c.1.as_deref());
         Some(crate::sorting::refine(self.sources[i].clone(), model, mine))
+    }
+
+    /// The library's stacks (FR-141 S3) and each photo's, worked out once after a change.
+    fn stack_table(&self) -> &(Vec<crate::sorting::stacks::Stack>, HashMap<u32, usize>) {
+        self.stacks.get_or_init(|| {
+            let stacks = crate::sorting::stacks::stacks(&self.stack_keys);
+            let of = stacks
+                .iter()
+                .enumerate()
+                .flat_map(|(s, st)| st.members.iter().map(move |&m| (m, s)))
+                .collect();
+            (stacks, of)
+        })
+    }
+
+    /// Every stack of two photos or more; members are photo ids.
+    pub fn stacks(&self) -> &[crate::sorting::stacks::Stack] {
+        &self.stack_table().0
+    }
+
+    /// The stack a photo belongs to, if any.
+    pub fn stack_of(&self, id: PhotoId) -> Option<&crate::sorting::stacks::Stack> {
+        let (stacks, of) = self.stack_table();
+        stacks.get(*of.get(&id.0)?)
     }
 
     fn index(&self, id: PhotoId) -> Option<usize> {

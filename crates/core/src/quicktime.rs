@@ -315,6 +315,17 @@ mod tests {
     }
 
     #[test]
+    fn fr_141_a_live_photos_video_is_found_beside_its_still() {
+        let dir = tempfile::tempdir().unwrap();
+        let still = dir.path().join("IMG_8166.HEIC");
+        std::fs::write(&still, b"").unwrap();
+        std::fs::write(dir.path().join("IMG_8166.MOV"), video("LIVE-1")).unwrap();
+        let found = crate::sorting::stacks::live_video(&still, "LIVE-1");
+        assert_eq!(found, Some(dir.path().join("IMG_8166.MOV")));
+        assert_eq!(crate::sorting::stacks::live_video(&still, "OTHER"), None);
+    }
+
+    #[test]
     fn fr_141_a_broken_video_never_panics() {
         let whole = video("ID");
         let dir = tempfile::tempdir().unwrap();

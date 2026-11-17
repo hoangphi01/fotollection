@@ -5,6 +5,8 @@
 //! are data (`assets/sorting/rules.json`), measured on the owner's labelled roll; what no rule
 //! decides is `Unknown`, for the pixels to settle later (S6).
 
+pub mod stacks;
+
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
@@ -44,6 +46,11 @@ impl SourceClass {
     /// otherwise it is a guess or undecided, for the pixels (S6).
     pub const fn is_certain(self) -> bool {
         !matches!(self, Self::ScreenshotCropped | Self::Unknown)
+    }
+
+    /// Written by an app or an editor: a copy, never a capture's original (S3's stacks).
+    pub const fn is_derived(self) -> bool {
+        matches!(self, Self::App | Self::Edited)
     }
 }
 

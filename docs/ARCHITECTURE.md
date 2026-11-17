@@ -63,7 +63,7 @@ crates/
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002); one 128 KB head read gives the EXIF and the facts; `Software`, sub-seconds, the pixel size (EXIF, else the JPEG SOF, PNG IHDR or HEIF `ispe`), `UserComment` as a kind only and Apple's MakerNote (FR-141)
       apple_note.rs      † # Apple's MakerNote, bounded: Live Photo content identifier, burst, capture type, photo identifier (FR-141)
       quicktime.rs       † # a MOV/MP4's metadata by seeking to `moov`: creation time, duration, Apple's content identifier, make, model (FR-141)
-      sorting/           † # where each photo came from (FR-141, ADR-0054): `classify` from the metadata, rules as data in `assets/sorting/rules.json`, `my_phones` and `refine` for another phone's shots; `Library::source`
+      sorting/           † # where each photo came from (FR-141, ADR-0054): `classify` from the metadata, rules as data in `assets/sorting/rules.json`, `my_phones` and `refine` for another phone's shots; `Library::source`; `stacks.rs` gathers bursts, twins and edited copies (Apple's identifiers, else name, folder and second), `live_video` finds a Live Photo's video beside its still; `Library::stacks`, `stack_of` (S3)
       facts.rs           † # what each file is (FR-071): chroma subsampling, coding, bits, colour space by ICC name, sensor filter, DNG kind, decoder; `unusual()` for the grid badge
       settings.rs        † # RenderSettings and the UI settings, the recent postcard addresses (`remember_address`)
       plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan, 3 mm border (FR-004/006/040/067), a shared photo's fill round it all (`pad`, FR-075)
