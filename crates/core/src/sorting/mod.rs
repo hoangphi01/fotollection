@@ -9,6 +9,7 @@ pub mod clip;
 pub mod dupes;
 pub mod events;
 pub mod locations;
+pub mod pass;
 pub mod stacks;
 pub mod time;
 pub mod trips;

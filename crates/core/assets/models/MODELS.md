@@ -1,10 +1,12 @@
 # Bundled models
 
-The models used by best-shot suggestions ([FR-041](../../../../docs/PRD.md#fr-041--best-shot-suggestions), [ADR-0018](../../../../docs/adr/0018-face-models-and-runtime.md)). They are compiled into the app, are checked against the BLAKE3 sums below when loaded, and are **never downloaded at runtime**. `scripts/models/fetch-and-convert.sh` rebuilds them from upstream.
+The models used by best-shot suggestions and by sorting ([FR-041](../../../../docs/PRD.md#fr-041--best-shot-suggestions), [ADR-0018](../../../../docs/adr/0018-face-models-and-runtime.md)). They are compiled into the app, are checked against the BLAKE3 sums below when loaded, and are **never downloaded at runtime**. `scripts/models/fetch-and-convert.sh` rebuilds them from upstream.
 
 | File | What it does | Source | Licence |
 |------|--------------|--------|---------|
 | `yunet.onnx` | Face detector with 5 landmarks, input 1×3×640×640 | OpenCV Zoo, `models/face_detection_yunet/face_detection_yunet_2023mar.onnx`, used as published | MIT, © 2020 Shiqi Yu (`LICENSE-YuNet.txt`) |
+| `tinyclip-39m.w8.onnx` | CLIP image tower: a 224 × 224 photo to a 512-float embedding, for sorting (FR-141, ADR-0056); its weights int8 behind `DequantizeLinear` | `wkcn/TinyCLIP-ViT-39M-16-Text-19M-YFCC15M` (commit `07a4b0bc`), exported by `scripts/models/clip-export.sh` | MIT, © Microsoft (`LICENSE-TinyCLIP.txt`) |
+| `tinyclip-39m.labels.json` | The labels' text embeddings (prompt ensembles), the model's mean, spread and scale | Computed by the same export | MIT, as above |
 | `facemesh.onnx` | 478 3D face landmarks from a 256×256 face crop, used to measure eye openness | MediaPipe Face Landmarker bundle (`face_landmarker.task`, float16), file `face_landmarks_detector.tflite` (FaceMesh V2), converted to ONNX | Apache-2.0, © Google (`LICENSE-MediaPipe.txt`; model card "MediaPipe FaceMesh", licensed under Apache License 2.0) |
 
 ## Checksums
@@ -13,6 +15,8 @@ The models used by best-shot suggestions ([FR-041](../../../../docs/PRD.md#fr-04
 |------|--------------------------|---------|
 | `yunet.onnx` | `3d5938c4cd5a02dc416f1cd1f7fc1f662a22adc370477112c871954587e63431` | `8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4` |
 | `facemesh.onnx` | `e01c5f5c50e4dc2020947037d2a08cada1df73a9dc7f14f0c9d464c4ba2c23fa` | `1ff6e0d1e52d4e2c29bb7d138020374b1db2c24f47e69e72fb8f9a10728d3738` |
+| `tinyclip-39m.w8.onnx` | `f036302b86db489db3837c693dd46aea77ec946dd63e75808f5e77f2fe497dbc` | `95f0808c9f1dab521e3c3155abcf128bf2cb10ae9b7973736acde714a6349394` |
+| `tinyclip-39m.labels.json` | `b76383651287c5053f7cf67e0c44f8dc98f6a955959fa495c7a8c601289ccf98` | `df1720f6f7623c7a48fa4d44f10e70a6a161034d1dc518c9f9b1c635a2ff3e33` |
 
 Upstream downloads used on 2026-10-24:
 
@@ -40,7 +44,7 @@ The script checks every conversion against the TFLite interpreter on a fixed ran
 
 Each export is checked against PyTorch on random inputs (fp32 cosine 0.9999998; int8 0.989 for B/32, 0.998 for the TinyCLIPs). SHA-256 prefixes; the full sums are in the export's report.
 
-**Weights only in int8 (`<name>.w8.onnx`, chosen for the app):** each MatMul and Gemm weight stored as int8 per output channel behind a `DequantizeLinear`, which tract folds back to f32 once at load: `tinyclip-39m.w8.onnx` 40.8 MB (`95f0808c…`), `tinyclip-8m.w8.onnx` 9.4 MB (`d957aae2…`), cosine 0.9999 against PyTorch, at f32's speed. The dynamic int8 copies above run slower in tract (no int8 kernel for the activations). The owner chose TinyCLIP-39M (FR-141 S6b-1); it is bundled with S6b-2.
+**Weights only in int8 (`<name>.w8.onnx`, chosen for the app):** each MatMul and Gemm weight stored as int8 per output channel behind a `DequantizeLinear`, which tract folds back to f32 once at load: `tinyclip-39m.w8.onnx` 40.8 MB (`95f0808c…`), `tinyclip-8m.w8.onnx` 9.4 MB (`d957aae2…`), cosine 0.9999 against PyTorch, at f32's speed. The dynamic int8 copies above run slower in tract (no int8 kernel for the activations). The owner chose TinyCLIP-39M (FR-141 S6b-1, ADR-0056).
 
 ## Use limits from the model cards
 
