@@ -1384,6 +1384,30 @@ Each block is built from the shared blocks (STYLE_RULE §4) and checked by `chec
 
 **P2 (v0.14.3; owner, 2026-11-15: "the photos in Collage mode take Looks, LUTs and presets as in Pro; reuse the code").** The Collage panel gets the Pro panel's tabs, one joined group: **Colour**, the same `ApplyLookCard` as Pro (a built-in look, a saved one, a Lightroom preset or a LUMIX Lab LUT, with its strength), on the chosen sheet's photo or on every ticked photo, in one undo step; and **Print**, the sheet, postcard, cells and stamp cards it shows today. No new colour code: the card, its IPC and its batch are Pro's (FR-079, FR-114). **Built (2026-11-15):** `CollagePanel` holds the same `InspectorTabs` and `ApplyLookCard` as `SettingsPanel`, the chosen sheet's photo passed as `cellPhoto`. **A sheet's preview too (owner, 2026-11-16: "import looks there as in the gallery, learn from Pro"):** the photo preview's left column, the same blocks (`useSideColumn`, `SideToggle`, `SideHide`, `SideFoldedNote`, `PresetsCard` with the sheet's photos): *Presets & LUTs* to import a look, a LUT or a Lightroom preset, see it on the sheet on hover and give it to the picked photo or, none picked, to both; folded under 1400 px of window, its button first in the toolbar, a note at the head of the inspector's Edit tab (owner, 2026-11-16: not on the Postcard and Print tabs, where it only takes room) and Tab bringing it back. Checked by UI-MODE-013.
 
+### FR-138 — Code health, part 1: no red file before v1.0
+
+**P1 (v1.0.0, 2026-Q4; owner, 2026-11-17: "a major operation, done in stages: nobody replaces both arms and both legs at once").** No source file holds more than 1,500 production lines when v1.0.0 ships ([CODE_HEALTH.md](CODE_HEALTH.md), STYLE_RULE §1 *Quality is a number*). Four files are red today: `src-tauri/src/commands.rs` (3,246), `crates/core/src/preview.rs` (1,704), `site/screenshots/shoot.mjs` (1,550) and `bench/chart.mjs` (1,538). The work goes in stages, each one commit or a few, each leaving the app as it was (no behaviour change, every test and UI case green, `scripts/code-health.mjs` better than before, the benchmarks no slower), so a new feature never waits on a half-done move:
+
+1. **S1, shared helpers in the shell:** one `poisoned`, `AppState::record`, `settings_snapshot` and `frame_snapshot`, `edit_photos_as` with an *amend* flag; the 75 lock-error mappings and the three copied edit frames go (about 200 lines).
+2. **S2, `commands.rs` split by concern, moves only:** `history.rs`, `crop.rs`, `clocks.rs`, `details.rs`, the frame and font commands, settings, import, export, develop; the postcard commands to `collage.rs`, `restore_session` to `document.rs`; one module per commit, none over 400 lines.
+3. **S3, logic to the core (Rust first):** export scopes and folder groups, histogram scaling, white balance, centimetre maths, clock rules, profile merges, font naming, the XMP rule of import (about 380 lines), each with its test in `crates/core`.
+4. **S4, `preview.rs` to `preview/`:** budget, standard previews, look tiles, regions, the sheet front end; one `preview_plan` helper for the six copies.
+5. **S5, the tooling:** `bench/chart.mjs`'s words to data files (`{n}` placeholders), `site/screenshots/shoot.mjs` split into the IPC fake, profiles, checks and stress views.
+
+Done when `scripts/code-health.mjs` reports no red file and the watch list (`scripts/code-health.json`) names none. Measured by `scripts/code-health.mjs`; a test is not the proof, the numbers are (TESTING §2's exemption list names it).
+
+### FR-139 — Code health, part 2: the orange files
+
+**P2 (2027-Q1, with v1.1; owner, 2026-11-17).** The orange files of the watch list (over 800 production lines, or 1,500 with their tests) are split or shared by the same staged rule as FR-138, each stage one concern:
+
+1. **S1, the camera:** the Sony driver and `CameraLink` to `crates/oscamera`, the session files to the core, `src-tauri/src/camera/` for state, commands and the thread; `write_shot` through `write_durable`.
+2. **S2, one text engine for the cards:** `vertical::across` with a fallback face, `fit_em` and `draw_centred` in `vertical.rs`; the message band, message box, code digits and an `Mm` type shared by `hagaki.rs` and `korea.rs`; the three draw functions over 200 lines broken up.
+3. **S3, `sheet.rs` to `sheet/`:** layout, render, card (one `CardKind`), credit, order; `fill_rect` to `render.rs`; a test fixtures module.
+4. **S4, `postcard.rs` and `library.rs` to their folders:** faces, the European card, the tape, the shared parts; edits, clocks and the store, brand naming to `brands.rs`.
+5. **S5, the rest:** `settings.rs`, `collage.rs`, `looks.rs`, `export.rs`, `plan.rs`, `glyph.rs`, `raw.rs` read again against the checklist; `crates/core/tests/pipeline.rs` with an `options()` test helper; the `too_many_lines` allows from 17 to at most 10.
+
+Done when the watch list holds no file and the allows are at most 10, by `scripts/code-health.mjs`.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

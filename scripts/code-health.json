@@ -1,0 +1,124 @@
+{
+  "allowTooManyLines": 17,
+  "files": {
+    "src-tauri/src/commands.rs": {
+      "level": "red",
+      "production": 3246,
+      "total": 3299,
+      "due": "FR-138, before v1.0.0",
+      "cause": "17 concerns in one file and the shell's helper hub; ~380 lines of logic that belongs in the core; ~330 lines repeated (lock errors 75 times, the edit frame 3 times)"
+    },
+    "crates/core/src/preview.rs": {
+      "level": "red",
+      "production": 1704,
+      "total": 2610,
+      "due": "FR-138, before v1.0.0",
+      "cause": "memory budget, standard previews, look tiles, regions and the sheet front end in one file; the render plan repeated 6 times"
+    },
+    "site/screenshots/shoot.mjs": {
+      "level": "red",
+      "production": 1550,
+      "total": 1550,
+      "due": "FR-138, before v1.0.0",
+      "cause": "the IPC fake, the profiles, the checks, the stress views and the shot loop in one file; zoom and open-preview blocks repeated"
+    },
+    "bench/chart.mjs": {
+      "level": "red",
+      "production": 1538,
+      "total": 1538,
+      "due": "FR-138, before v1.0.0",
+      "cause": "55 % is the charts' words in 9 languages, data inside code; each chart repeats its ending"
+    },
+    "src-tauri/src/camera.rs": {
+      "level": "orange",
+      "production": 1469,
+      "total": 1865,
+      "due": "FR-139, 2027-Q1",
+      "cause": "the Sony driver, session files, state, IPC and the thread in one file; ~500 lines belong in oscamera and the core; write_shot re-implemented write_durable"
+    },
+    "crates/core/src/sheet.rs": {
+      "level": "orange",
+      "production": 1343,
+      "total": 2689,
+      "due": "FR-139, 2027-Q1",
+      "cause": "layout, rendering, card choice (4 times), credit spots (3 times) in one file; test setup repeated (CellSource 11 times)"
+    },
+    "crates/core/src/library.rs": {
+      "level": "orange",
+      "production": 1270,
+      "total": 1754,
+      "due": "FR-139, 2027-Q1",
+      "cause": "edit and filter types, camera clocks, brand naming and the store in one file"
+    },
+    "crates/core/src/postcard.rs": {
+      "level": "orange",
+      "production": 1158,
+      "total": 1752,
+      "due": "FR-139, 2027-Q1",
+      "cause": "faces, the European card, the postal tape and the shared parts in one file; code boxes twice, mm to px 8 times"
+    },
+    "crates/core/src/settings.rs": {
+      "level": "orange",
+      "production": 1158,
+      "total": 1385,
+      "due": "FR-139, 2027-Q1",
+      "cause": "every settings section and its sanitising in one file"
+    },
+    "src-tauri/src/collage.rs": {
+      "level": "orange",
+      "production": 1149,
+      "total": 1284,
+      "due": "FR-139, 2027-Q1",
+      "cause": "the collage and postcard commands, grown with AddAssist 1.1"
+    },
+    "crates/core/src/hagaki.rs": {
+      "level": "orange",
+      "production": 1084,
+      "total": 1855,
+      "due": "FR-139, 2027-Q1",
+      "cause": "copies of korea's message and code digits; three draw functions over 200 lines; address text mixed in"
+    },
+    "crates/core/src/looks.rs": {
+      "level": "orange",
+      "production": 865,
+      "total": 1344,
+      "due": "FR-139, 2027-Q1",
+      "cause": "the look engine and its sliders; to read again"
+    },
+    "crates/core/src/export.rs": {
+      "level": "orange",
+      "production": 849,
+      "total": 895,
+      "due": "FR-139, 2027-Q1",
+      "cause": "the export job; to read again"
+    },
+    "crates/core/src/plan.rs": {
+      "level": "orange",
+      "production": 832,
+      "total": 1456,
+      "due": "FR-139, 2027-Q1",
+      "cause": "the print plan; to read again"
+    },
+    "crates/core/src/glyph.rs": {
+      "level": "orange",
+      "production": 816,
+      "total": 1052,
+      "due": "FR-139, 2027-Q1",
+      "cause": "the text engine after FR-134 (skrifa metrics); to read again"
+    },
+    "crates/core/src/raw.rs": {
+      "level": "orange",
+      "production": 804,
+      "total": 1168,
+      "due": "FR-139, 2027-Q1",
+      "cause": "the RAW routes; to read again"
+    },
+    "crates/core/tests/pipeline.rs": {
+      "level": "orange",
+      "production": 0,
+      "total": 1555,
+      "due": "FR-139, 2027-Q1",
+      "cause": "ExportOptions written out 22 times; a test helper cuts ~250 lines"
+    }
+  }
+}

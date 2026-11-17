@@ -32,6 +32,7 @@
 | Why a significant decision was made | [adr/](adr/README.md) |
 | Performance methodology, design techniques, benchmark history | [OPTIMIZATION.md](OPTIMIZATION.md) |
 | Latest measured speed and memory, in one readable page | [RESULT.md](RESULT.md) |
+| Code health in numbers: file length, the watch list, how a long file is analysed and split | [CODE_HEALTH.md](CODE_HEALTH.md) |
 | Code, UI, git and docs conventions | [STYLE_RULE.md](STYLE_RULE.md) |
 | How the interface moves: motion tokens, which block uses which, reduced motion, transitions, the frame budget | [TRANS_ANIMATION.md](TRANS_ANIMATION.md) |
 | The app's languages: which exist, what each covers, the fallback, the translation rules, the glossary, adding one | [LOCALIZATION.md](LOCALIZATION.md) |

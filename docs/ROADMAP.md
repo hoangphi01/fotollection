@@ -18,6 +18,7 @@ Fotollection is kept alive as open source for at least two years, to 2028-11 (ow
 
 | When | What |
 |------|------|
+| Every month, code health | `node scripts/code-health.mjs --list`; a row in [CODE_HEALTH.md](CODE_HEALTH.md) §5 (production lines, the share in green files, red, orange, allows); the next stage of FR-138 or FR-139 picked |
 | Every month, performance | the benchmarks run again on `REF-MAC` (`bench/run.sh` against the browser, the `measure_*` examples of OPTIMIZATION §3's budgets), each compared with the first measurements of 2026-10-23 on v0.1, kept as the baseline (owner, 2026-11-17); a result more than 10 % slower than the baseline is a bug fixed before the next release; one row in OPTIMIZATION §5 per run |
 | Every month | `cargo update` and the npm lockfile, `cargo deny check`, `npm audit --omit=dev`, Tauri's patch releases, CI green on all three systems; the issues triaged (CONTRIBUTING §7) |
 | Every Rust release (six weeks) | `rust-toolchain.toml` raised, clippy's new lints fixed |
@@ -81,6 +82,7 @@ v0.14.4 finishes the looks: FR-112 closer to RawTherapee, FR-118 every preset se
 | FR-130 | The Japanese postcard: a はがき (100 × 148 mm, 「郵便はがき」 at the top, Japan Post's address side with its vermilion 3 + 4 code boxes) in Collage mode, the only card in Japanese and a switch in English and Vietnamese for a card sent to Japan, its layout on the style board first; v0.14.2 (owner, 2026-11-14) |
 | FR-132 | The Korean postcard's address side (five code boxes, the 17 mm machine strip) on the 10 × 15 card, and Korea's print sizes (6 × 8, 5 × 7, 3 × 5, 8 × 10, 4 × 4 in); v0.14.2 (owner, 2026-11-15) |
 | FR-133 | AddAssist, assisted address entry: a switch between typing by hand and the postal code filling what the country's bundled data knows (Japan, Korea, Hungary, the Czech Republic, Germany researched), name, street, number and an optional phone typed; shown on the website once it ships; v0.14.2 with FR-130 or later (owner, 2026-11-15) |
+| FR-138 | Code health, part 1: no source file over 1,500 production lines when v1.0.0 ships, in stages (shared shell helpers, `commands.rs` by concern, logic to the core, `preview.rs` to a folder, the tooling scripts) ([CODE_HEALTH.md](CODE_HEALTH.md)) |
 
 ## 2027-Q1 — v1.1 "Core 2" and v1.2 "Smart culling"
 
@@ -99,6 +101,7 @@ v1.1 is the release once called v0.15.0: X-Trans, the GPU develop, the DNG kinds
 | FR-015 | Duplicate detection |
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
+| FR-139 | Code health, part 2: the orange files split or shared in stages (camera to `oscamera`, one text engine for the cards, `sheet`, `postcard`, `library`, the rest), the `too_many_lines` allows at most 10 ([CODE_HEALTH.md](CODE_HEALTH.md)) |
 
 ## 2027-Q2 — v1.3 "The print run" and v1.4 "Cards and sheets"
 

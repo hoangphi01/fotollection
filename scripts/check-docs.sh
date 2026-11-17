@@ -261,6 +261,9 @@ if not ok:
 sys.exit(0 if ok else 1)
 PY
 
+echo "• Code health: files and functions within their thresholds or on the watch list (docs/CODE_HEALTH.md)"
+node scripts/code-health.mjs || fail "code health: see the lines above (docs/CODE_HEALTH.md, scripts/code-health.json)"
+
 echo "• Every lesson has an Area that the Rules table of LESSONS.md lists (the process review, 2026-11-12)"
 awk '
   /^## Rules/ { rules = 1; next }

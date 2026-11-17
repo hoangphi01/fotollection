@@ -1,6 +1,6 @@
 # Style Rules — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-16
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-17
 >
 > These rules apply to all code and docs. Tooling enforces them where possible. Where tooling can't, reviewers do.
 > If a rule blocks you, propose changing it in a PR. Don't silently break it.
@@ -9,7 +9,8 @@
 
 - **Clarity over cleverness.** Code is read far more often than it is written.
 - **Measure before optimizing** ([OPTIMIZATION.md §1](OPTIMIZATION.md#1-rules)). A performance-motivated complication must cite a benchmark.
-- **One concept per module.** If a file exceeds about 500 lines, consider splitting it.
+- **One concept per module.** A file over 800 production lines is orange and watched, over 1,500 red ([CODE_HEALTH.md](CODE_HEALTH.md)).
+- **Quality is a number** (owner, 2026-11-17: code that runs is not good enough; how well it is built is measured). Every rule that can be counted is counted, with a threshold and the tool that checks it: file length (`scripts/code-health.mjs`, ≤ 800 production lines green), function length (clippy `too_many_lines`, ≤ 100 lines, the allows a budget that only goes down), dead code (0, rustc, clippy, tsc), speed (OPTIMIZATION §3's budgets, within 10 % of the 2026-10-23 baseline). A file that turns orange is analysed with CODE_HEALTH §2's checklist before it grows. A rule with no number and no check is a wish: give it one or write why it cannot have one.
 - **No dead code** and no commented-out blocks. Git history is the archive.
 
 ## 2. Rust

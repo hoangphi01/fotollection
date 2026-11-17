@@ -20,6 +20,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 2. **Simplicity first.** The least code that does what was asked: no feature, option or abstraction nobody asked for, no handling of cases that cannot happen. If 200 lines could be 50, write 50.
 3. **Surgical changes.** Every changed line traces to the request. Do not restyle, reformat or refactor what is not broken; a rule for one block names that block, never a shared class (the card icons that moved site-wide, 2026-11-14). Remove only what your change left unused; mention other dead code, do not delete it.
 4. **Goal-driven.** Turn the task into checks that prove it: a test that fails first, a measure, a screenshot. For several steps, say the plan as `step → verify: check` before starting, and loop until every check passes.
+5. **Quality is a number (owner, 2026-11-17).** "It runs" is not the bar: check `node scripts/code-health.mjs` (files ≤ 800 production lines green, > 1,500 red) and STYLE_RULE §1; a file that turns orange is analysed with [docs/CODE_HEALTH.md](docs/CODE_HEALTH.md) §2 before it grows, and a split goes one stage at a time (FR-138, FR-139).
 
 ## Before starting a task
 
