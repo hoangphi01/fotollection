@@ -28,6 +28,18 @@ The TFLite model stores fp16 weights behind `DEQUANTIZE` ops, which `tract-tflit
 
 The script checks every conversion against the TFLite interpreter on a fixed random input. For the committed file, the largest difference over the 1,434 landmark values was **0.00045 px**, on coordinates up to 180 px.
 
+## CLIP candidates (FR-141 S6, measured, not bundled yet)
+
+`scripts/models/clip-export.sh <out> [--check <images>]` exports three image towers for the measurement, each with its labels' text embeddings computed once (`<name>.labels.json`); the app would run the image tower only. In a throwaway uv environment: torch 2.5.1 (BSD-3-Clause), transformers 4.46.3 (Apache-2.0), onnx 1.17.0 (Apache-2.0), onnxruntime 1.20.1 (MIT). Nothing here is in the app until the owner chooses (S6b); `crates/core/examples/clip_bench.rs` measures them.
+
+| Name | Upstream (Hugging Face, commit) | Licence | fp32 ONNX | int8 (MatMul/Gemm) |
+|------|--------------------------------|---------|-----------|--------------------|
+| `clip-b32` | `openai/clip-vit-base-patch32` | MIT | 351.6 MB, `7429cef7…` | 95.8 MB, `d114d9e6…` |
+| `tinyclip-39m` | `wkcn/TinyCLIP-ViT-39M-16-Text-19M-YFCC15M`, `07a4b0bc` | MIT (Microsoft) | 154.6 MB, `87d279c4…` | 40.7 MB, `e52c786a…` |
+| `tinyclip-8m` | `wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M`, `a2a8c6ea` | MIT (Microsoft) | 33.3 MB, `58600187…` | 9.4 MB, `3a96a480…` |
+
+Each export is checked against PyTorch on random inputs (fp32 cosine 0.9999998; int8 0.989 for B/32, 0.998 for the TinyCLIPs). SHA-256 prefixes; the full sums are in the export's report.
+
 ## Use limits from the model cards
 
 FaceMesh is meant for faces seen from the front: less than 80° away from the camera, less than 8° roll, and more than half visible. Fotollection only uses it to measure whether eyes are open. It never identifies people or stores a face representation, which the model card lists as out of scope.

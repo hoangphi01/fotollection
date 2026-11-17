@@ -88,7 +88,7 @@ cargo run --release -p fotollection-core --example check_files -- path/to/folder
 | `fuzz_sanitize_path` | Arbitrary strings → export path builder; asserts the result stays under the root |
 | `fuzz_cube` (with FR-070, planned for v0.14.5) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 
-FR-141's parsers mutate their own inputs in unit tests: every cut and 2,000 xorshift mutations of an Apple MakerNote (`fr_141_a_broken_apple_note_never_panics`) and of a QuickTime file (`fr_141_a_broken_video_never_panics`). `crates/core/examples/roll_scan.rs` runs the sorting over a real roll and, with `--labels`, scores each class against a person's labels kept outside the repository.
+FR-141's parsers mutate their own inputs in unit tests: every cut and 2,000 xorshift mutations of an Apple MakerNote (`fr_141_a_broken_apple_note_never_panics`) and of a QuickTime file (`fr_141_a_broken_video_never_panics`). `crates/core/examples/roll_scan.rs` runs the sorting over a real roll and, with `--labels`, scores each class against a person's labels kept outside the repository. `crates/core/examples/clip_bench.rs` measures a CLIP candidate (S6): load time, ms per photo by stage, peak memory, how close the Rust input (`sorting::clip::pixels`, `fr_141_clip_input_is_the_centre_square_normalised`) comes to CLIP's own processor, and the labels' zero-shot scores.
 
 Any crash found by fuzzing is added to `fixtures` as a regression test.
 

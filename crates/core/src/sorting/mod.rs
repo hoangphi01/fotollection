@@ -5,6 +5,7 @@
 //! are data (`assets/sorting/rules.json`), measured on the owner's labelled roll; what no rule
 //! decides is `Unknown`, for the pixels to settle later (S6).
 
+pub mod clip;
 pub mod dupes;
 pub mod events;
 pub mod locations;
