@@ -1,0 +1,19 @@
+{
+  "about": "FR-141's source rules as data (ADR-0054): a new app, scanner or phone screen is a line here, not code. Measured on the owner's 14,639-file roll and 313 labels, 2026-11-17.",
+  "apps": [
+    { "name": "Instagram", "software": ["Instagram"] },
+    { "name": "Facebook", "make": ["FB Camera"] }
+  ],
+  "editors": [
+    "Lightroom", "Photoshop", "Snapseed", "PicsArt", "VSCO", "ACDSee", "Picasa", "Pixelmator",
+    "SODA", "Tailor", "Microsoft Pix", "Darkroom", "Afterlight", "Lightleap", "Facetune", "Meitu", "PhotoScape"
+  ],
+  "scanners": ["NORITSU", "EZ Controller", "FRONTIER", "Coolscan", "Flextight", "Imacon", "Pakon", "Plustek"],
+  "screen_sizes": [
+    [640, 1136], [750, 1334], [828, 1792], [1080, 1920], [1125, 2436], [1170, 2532],
+    [1179, 2556], [1242, 2208], [1242, 2688], [1284, 2778], [1290, 2796]
+  ],
+  "screen_widths": [640, 750, 828, 1125, 1170, 1179, 1242, 1284, 1290],
+  "panorama": { "min_long_side": 4100, "min_ratio": 1.8 },
+  "my_phone_share": 0.02
+}

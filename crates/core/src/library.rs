@@ -614,6 +614,10 @@ pub struct Library {
     iso: Vec<u32>,
     /// What each file is (FR-071): read at import, never saved (DATABASE.md N4).
     facts: Vec<crate::facts::ImageFacts>,
+    /// Where each photo came from (FR-141): read at import, never saved.
+    sources: Vec<crate::sorting::Source>,
+    /// The library's own phone models (FR-141), worked out once after a change.
+    my_phones: std::sync::OnceLock<Vec<String>>,
 }
 
 const NONE_U16: u16 = u16::MAX;
@@ -980,7 +984,31 @@ impl Library {
         self.exposure_s.push(meta.exposure_s.unwrap_or(f32::NAN));
         self.iso.push(meta.iso.unwrap_or(0));
         self.facts.push(meta.facts);
+        let ext = file
+            .path
+            .extension()
+            .map(|e| e.to_string_lossy().to_lowercase())
+            .unwrap_or_default();
+        self.sources.push(crate::sorting::classify(meta, &ext));
+        self.my_phones = std::sync::OnceLock::new();
         Some(id)
+    }
+
+    /// Where a photo came from (FR-141): its class at import, a camera shot from a model this
+    /// library rarely holds told apart as another phone's.
+    pub fn source(&self, id: PhotoId) -> Option<crate::sorting::Source> {
+        let i = self.index(id)?;
+        let mine = self.my_phones.get_or_init(|| {
+            let models = (0..self.len())
+                .filter(|&j| self.sources[j].class == crate::sorting::SourceClass::Camera)
+                .filter_map(|j| self.cameras.get(usize::from(self.camera[j]))?.1.as_deref());
+            crate::sorting::my_phones(models)
+        });
+        let model = self
+            .cameras
+            .get(usize::from(self.camera[i]))
+            .and_then(|c| c.1.as_deref());
+        Some(crate::sorting::refine(self.sources[i].clone(), model, mine))
     }
 
     fn index(&self, id: PhotoId) -> Option<usize> {

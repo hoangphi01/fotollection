@@ -4,6 +4,7 @@
 //! See `docs/ARCHITECTURE.md` and ADR-0002 for the crate boundary.
 
 pub mod addassist;
+pub mod apple_note;
 pub mod atomic;
 pub mod brands;
 pub mod bundle;
@@ -52,6 +53,7 @@ pub mod preview;
 pub mod print_advice;
 pub mod print_size;
 pub mod project;
+pub mod quicktime;
 pub mod raw;
 pub mod raw_finish;
 pub mod render;
@@ -61,6 +63,7 @@ pub mod settings_store;
 pub mod share;
 pub mod sharpen;
 pub mod sheet;
+pub mod sorting;
 pub mod stamp;
 pub mod straighten;
 pub mod supervise;

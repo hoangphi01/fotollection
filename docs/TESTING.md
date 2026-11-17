@@ -88,6 +88,8 @@ cargo run --release -p fotollection-core --example check_files -- path/to/folder
 | `fuzz_sanitize_path` | Arbitrary strings → export path builder; asserts the result stays under the root |
 | `fuzz_cube` (with FR-070, planned for v0.14.5) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 
+FR-141's parsers mutate their own inputs in unit tests: every cut and 2,000 xorshift mutations of an Apple MakerNote (`fr_141_a_broken_apple_note_never_panics`) and of a QuickTime file (`fr_141_a_broken_video_never_panics`). `crates/core/examples/roll_scan.rs` runs the sorting over a real roll and, with `--labels`, scores each class against a person's labels kept outside the repository.
+
 Any crash found by fuzzing is added to `fixtures` as a regression test.
 
 **The GPU look against Rust's** ([ADR-0039](adr/0039-gpu-for-editing-cpu-for-exports.md)): `cargo run --release -p fotollection-core --example look_parity -- <photo> <dir>`, then `node bench/gpu/parity.mjs <dir>` (the app's own `gpu-look.ts` in WebKit and Chromium) and `uv run python -I bench/quality/look_parity.py <dir>`: ΔE2000 mean and p99 ≤ 1 on the photo. Run it whenever `gpu-look.ts` or `looks.rs` changes; CI has no GPU, so it is a manual check, like TESTING §7.

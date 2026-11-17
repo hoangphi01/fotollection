@@ -75,9 +75,20 @@ Layer 2: CONTAINED PARSING
       ALLOWED: DateTimeOriginal, OffsetTimeOriginal, CreateDate, GPSLatitude(+Ref),
                GPSLongitude(+Ref), GPSAltitude, Make, Model, Orientation,
                PixelXDimension, PixelYDimension, ExposureTime, FNumber, ISO,
-               LensMake, LensModel, FocalLength (range-checked; strings ≤ 100 chars)
-      IGNORED: everything else (UserComment, ImageDescription, Artist, MakerNote,
+               LensMake, LensModel, FocalLength (range-checked; strings ≤ 100 chars),
+               Software, SubSecTimeOriginal (FR-141)
+      READ, NEVER KEPT AS TEXT (FR-141): UserComment becomes one of two kinds
+               (Screenshot, an app's effect), its words dropped; Apple's MakerNote
+               goes through `apple_note.rs` (the `Apple iOS` header, at most 64
+               entries, strings ≤ 64 printable ASCII, every offset checked) for its
+               five identifiers, never shown
+      IGNORED: everything else (ImageDescription, Artist, other makers' MakerNotes,
                XP* fields, …) — never read, never displayed
+  - Videos (FR-141): `quicktime.rs` walks a MOV/MP4's top-level boxes by seeking
+    (at most 64, sizes 0, 1 and 64-bit checked), reads `moov` only when ≤ 2 MB, and
+    takes the creation time, duration and Apple's `keys`/`ilst` strings (content
+    identifier, make, model, software); a cut or forged file reads as nothing
+    (`fr_141_a_broken_video_never_panics`, `fr_141_a_broken_apple_note_never_panics`)
   - Each decode of an untrusted file runs inside `catch_unwind` (`supervise::contained` in `codec::decode_photo`, `decode_for_screen`, `raw::preview` and `raw::dimensions`; rawler's own guard in `crates/rawlgpl`), a panic becoming that photo's decode error (ADR-0048). Time limits per decode are planned, not built
   - Failures mark the photo as failed and the batch continues
 

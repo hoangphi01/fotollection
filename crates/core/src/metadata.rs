@@ -35,6 +35,25 @@ pub struct PhotoMeta {
     pub iso: Option<u32>,
     /// What the file is (FR-071), from the same head.
     pub facts: crate::facts::ImageFacts,
+    /// The program that wrote the file: the system's version, or an app's name (FR-141).
+    pub software: Option<String>,
+    /// The capture's milliseconds, which order a burst and pair a HEIC with its JPEG.
+    pub subsec_ms: Option<u16>,
+    /// The stored image's size in pixels, from EXIF or the header (FR-141).
+    pub pixel_size: Option<(u32, u32)>,
+    /// What `UserComment` marks, never its text, which may be the user's (FR-141).
+    pub comment: Option<CommentKind>,
+    /// Apple's `MakerNote`: present only on the phone's own captures (FR-141).
+    pub apple: Option<crate::apple_note::AppleNote>,
+}
+
+/// The marks a phone or an app leaves in `UserComment` (FR-141).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommentKind {
+    /// iOS writes "Screenshot".
+    Screenshot,
+    /// An app's camera effect, a JSON object with `eId` (Instagram's).
+    AppEffect,
 }
 
 const MAX_STRING_CHARS: usize = 100;
@@ -110,8 +129,34 @@ pub fn read_path(path: &Path) -> PhotoMeta {
     if facts.space == Some(crate::facts::Space::Untagged) && exif.as_ref().is_some_and(adobe_rgb) {
         facts.space = Some(crate::facts::Space::AdobeRgb);
     }
+    if meta.pixel_size.is_none() {
+        meta.pixel_size = header_size(&head, jpeg, png);
+    }
     meta.facts = facts;
     meta
+}
+
+/// The image's size from its header when EXIF has none: a JPEG's frame, a PNG's IHDR, the
+/// largest HEIF `ispe` (an iPhone HEIC's tiles each have their own, the image the largest).
+fn header_size(head: &[u8], jpeg: bool, png: bool) -> Option<(u32, u32)> {
+    let be = |b: &[u8]| u32::from_be_bytes([b[0], b[1], b[2], b[3]]);
+    if jpeg {
+        let l = crate::jpeg_layout::read(head)?;
+        return Some((u32::from(l.width), u32::from(l.height))).filter(|&(w, h)| w > 0 && h > 0);
+    }
+    if png {
+        return head
+            .get(16..24)
+            .map(|b| (be(&b[..4]), be(&b[4..])))
+            .filter(|&(w, h)| w > 0 && h > 0);
+    }
+    head.windows(4)
+        .enumerate()
+        .filter(|(_, w)| *w == b"ispe")
+        .take(64)
+        .filter_map(|(i, _)| head.get(i + 8..i + 16).map(|b| (be(&b[..4]), be(&b[4..]))))
+        .filter(|&(w, h)| w > 0 && h > 0 && w <= 65_535 && h <= 65_535)
+        .max_by_key(|&(w, h)| u64::from(w) * u64::from(h))
 }
 
 /// The EXIF interoperability index "R03": the camera recorded Adobe RGB (DCF 2.0).
@@ -294,6 +339,56 @@ fn from_fields<'a>(
             .and_then(|f| f.value.get_uint(0))
             .filter(|iso| (25..=1_638_400).contains(iso)),
         facts: crate::facts::ImageFacts::default(),
+        software: field(Tag::Software).and_then(clean_string),
+        subsec_ms: field(Tag::SubSecTimeOriginal).and_then(subsec),
+        pixel_size: match (
+            field(Tag::PixelXDimension).and_then(|f| f.value.get_uint(0)),
+            field(Tag::PixelYDimension).and_then(|f| f.value.get_uint(0)),
+        ) {
+            (Some(w), Some(h)) if w > 0 && h > 0 => Some((w, h)),
+            _ => None,
+        },
+        comment: field(Tag::UserComment).and_then(comment_kind),
+        apple: field(Tag::MakerNote).and_then(|f| match &f.value {
+            Value::Undefined(bytes, _) => crate::apple_note::parse(bytes),
+            _ => None,
+        }),
+    }
+}
+
+/// The first three digits of `SubSecTimeOriginal` as milliseconds.
+fn subsec(field: &Field) -> Option<u16> {
+    let Value::Ascii(v) = &field.value else {
+        return None;
+    };
+    let digits: String = v
+        .first()?
+        .iter()
+        .take_while(|b| b.is_ascii_digit())
+        .take(3)
+        .map(|&b| char::from(b))
+        .collect();
+    if digits.is_empty() {
+        return None;
+    }
+    format!("{digits:0<3}").parse().ok()
+}
+
+/// What a `UserComment` marks; its 8-byte character-code prefix skipped, its text dropped.
+fn comment_kind(field: &Field) -> Option<CommentKind> {
+    let bytes = match &field.value {
+        Value::Undefined(b, _) => b.get(8..)?,
+        Value::Ascii(v) => v.first()?,
+        _ => return None,
+    };
+    let text = String::from_utf8_lossy(&bytes[..bytes.len().min(64)]);
+    let text = text.trim_matches(|c: char| c == '\0' || c.is_whitespace());
+    if text == "Screenshot" {
+        Some(CommentKind::Screenshot)
+    } else if text.starts_with("{\"eId\"") {
+        Some(CommentKind::AppEffect)
+    } else {
+        None
     }
 }
 

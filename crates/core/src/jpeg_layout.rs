@@ -15,6 +15,9 @@ pub struct Layout {
     pub sampling: Vec<(u8, u8)>,
     /// Components in the first scan; fewer than the frame's means one scan per component.
     pub first_scan: u8,
+    /// The frame's size in pixels, as stored (before any EXIF orientation).
+    pub width: u16,
+    pub height: u16,
 }
 
 /// The layout and what else the header says about colour (FR-071).
@@ -79,6 +82,8 @@ pub fn read_header(bytes: &[u8]) -> Option<Header> {
                     precision,
                     sampling,
                     first_scan: 0,
+                    height: u16::from_be_bytes([*body.get(1)?, *body.get(2)?]),
+                    width: u16::from_be_bytes([*body.get(3)?, *body.get(4)?]),
                 });
             }
             // APP2: "ICC_PROFILE\0", the chunk's number and count, then the profile's bytes.
@@ -188,6 +193,8 @@ mod tests {
                 precision: 8,
                 sampling: vec![(2, 2), (1, 1), (1, 1)],
                 first_scan: 3,
+                width: 250,
+                height: 186,
             })
         );
         assert!(baseline.is_some_and(|l| l.zune_proven()));
