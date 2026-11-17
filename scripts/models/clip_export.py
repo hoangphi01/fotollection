@@ -7,7 +7,7 @@ labels' prompts and written as `<name>.labels.json` (the app runs the image towe
 `--check <dir>` also writes the embeddings onnxruntime gives for the images in it, with the
 model's own preprocessing, for the Rust side to be compared against.
 
-    python clip_export.py <out-dir> [--check <images-dir>]
+    python clip_export.py <out-dir> [--check <images-dir>] [--only name,name]
 """
 
 import hashlib
@@ -65,6 +65,49 @@ class Image_(torch.nn.Module):
         return self.model.get_image_features(pixel_values=pixel_values)
 
 
+def weight_only_int8(src, dst):
+    """The weights of every MatMul and Gemm stored as int8 per output channel, each behind a
+    DequantizeLinear: a quarter of the bytes, and a runtime that folds constants (tract's
+    `into_optimized`) runs them in f32 again, at f32's speed."""
+    import onnx
+    from onnx import TensorProto, helper, numpy_helper
+
+    m = onnx.load(src)
+    g = m.graph
+    inits = {t.name: t for t in g.initializer}
+    done = {}
+    keep = []
+    for node in g.node:
+        if node.op_type not in ("MatMul", "Gemm"):
+            continue
+        trans_b = any(a.name == "transB" and a.i == 1 for a in node.attribute)
+        for k, name in enumerate(node.input):
+            t = inits.get(name)
+            if t is None or k != 1:
+                continue
+            if name not in done:
+                w = numpy_helper.to_array(t)
+                if w.ndim != 2 or w.size <= 1024:
+                    continue
+                axis = 0 if (node.op_type == "Gemm" and trans_b) else 1
+                scale = np.abs(w).max(axis=1 - axis) / 127.0
+                scale[scale == 0] = 1.0
+                shape = (-1, 1) if axis == 0 else (1, -1)
+                q = np.clip(np.round(w / scale.reshape(shape)), -127, 127).astype(np.int8)
+                qn, sn, out = name + "_q", name + "_scale", name + "_dq"
+                g.initializer.extend([numpy_helper.from_array(q, qn),
+                                      numpy_helper.from_array(scale.astype(np.float32), sn)])
+                keep.append(helper.make_node("DequantizeLinear", [qn, sn], [out], axis=axis))
+                done[name] = out
+                g.initializer.remove(t)
+            node.input[k] = done[name]
+    # The dequantizers first, so every consumer comes after its input.
+    nodes = keep + list(g.node)
+    del g.node[:]
+    g.node.extend(nodes)
+    onnx.save(m, dst)
+
+
 def cosine(a, b):
     a = a / np.linalg.norm(a, axis=-1, keepdims=True)
     b = b / np.linalg.norm(b, axis=-1, keepdims=True)
@@ -81,11 +124,13 @@ def export(name, repo, out, check_dir):
     int8 = os.path.join(out, f"{name}.int8.onnx")
     # MatMul and Gemm hold most of a ViT's weights; ConvInteger has no CPU kernel in onnxruntime.
     quantize_dynamic(fp32, int8, weight_type=QuantType.QInt8, op_types_to_quantize=["MatMul", "Gemm"])
+    w8 = os.path.join(out, f"{name}.w8.onnx")
+    weight_only_int8(fp32, w8)
     xs = torch.randn(4, 3, 224, 224)
     with torch.no_grad():
         want = Image_(model)(xs).numpy()
     report = {"repo": repo, "commit": getattr(model.config, "_commit_hash", None)}
-    for path in (fp32, int8):
+    for path in (fp32, int8, w8):
         got = ort.InferenceSession(path).run(None, {"pixels": xs.numpy()})[0]
         report[os.path.basename(path)] = {
             "bytes": os.path.getsize(path), "sha256": sha256(path),
@@ -120,7 +165,8 @@ def main():
     out = sys.argv[1]
     check_dir = sys.argv[sys.argv.index("--check") + 1] if "--check" in sys.argv else None
     os.makedirs(out, exist_ok=True)
-    reports = {name: export(name, repo, out, check_dir) for name, repo in MODELS.items()}
+    only = sys.argv[sys.argv.index("--only") + 1].split(",") if "--only" in sys.argv else list(MODELS)
+    reports = {name: export(name, MODELS[name], out, check_dir) for name in only}
     print(json.dumps(reports, indent=1))
 
 

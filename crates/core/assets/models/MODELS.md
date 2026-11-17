@@ -40,6 +40,8 @@ The script checks every conversion against the TFLite interpreter on a fixed ran
 
 Each export is checked against PyTorch on random inputs (fp32 cosine 0.9999998; int8 0.989 for B/32, 0.998 for the TinyCLIPs). SHA-256 prefixes; the full sums are in the export's report.
 
+**Weights only in int8 (`<name>.w8.onnx`, chosen for the app):** each MatMul and Gemm weight stored as int8 per output channel behind a `DequantizeLinear`, which tract folds back to f32 once at load: `tinyclip-39m.w8.onnx` 40.8 MB (`95f0808c…`), `tinyclip-8m.w8.onnx` 9.4 MB (`d957aae2…`), cosine 0.9999 against PyTorch, at f32's speed. The dynamic int8 copies above run slower in tract (no int8 kernel for the activations). The owner chose TinyCLIP-39M (FR-141 S6b-1); it is bundled with S6b-2.
+
 ## Use limits from the model cards
 
 FaceMesh is meant for faces seen from the front: less than 80° away from the camera, less than 8° roll, and more than half visible. Fotollection only uses it to measure whether eyes are open. It never identifies people or stores a face representation, which the model card lists as out of scope.

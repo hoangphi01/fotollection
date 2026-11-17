@@ -8,7 +8,8 @@
 //!
 //! `cargo run --release -p fotollection-core --example clip_bench -- --model m.onnx
 //!  --labels m.labels.json --images <roll> [--threads N] [--check m.check.json <dir>]
-//!  [--subjects subjects.csv] [--sources labels.csv]`
+//!  [--subjects subjects.csv] [--sources labels.csv] [--dump probs.jsonl]`
+//! `… --synthetic N [--batch B] [--threads T]` times the model alone on random inputs.
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -128,15 +129,15 @@ fn source_of(label: &str) -> Option<&'static str> {
     })
 }
 
-/// The model in tract, its input fixed to one `size` square.
-fn load(path: &Path, size: u32) -> Plan {
+/// The model in tract, its input fixed to `batch` squares of `size`.
+fn load(path: &Path, size: u32, batch: usize) -> Plan {
     let s = size as usize;
     // The files record shapes for a batch of any size; the input below fixes it to one.
     tract_onnx::onnx()
         .with_ignore_value_info(true)
         .with_ignore_output_shapes(true)
         .model_for_path(path)
-        .and_then(|m| m.with_input_fact(0, f32::fact([1, 3, s, s]).into()))
+        .and_then(|m| m.with_input_fact(0, f32::fact([batch, 3, s, s]).into()))
         .and_then(tract_onnx::prelude::InferenceModelExt::into_optimized)
         .and_then(TypedModel::into_runnable)
         .expect("model")
@@ -222,28 +223,84 @@ fn score(
     )
 }
 
-fn main() {
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    let flag = |name: &str| {
-        args.iter()
-            .position(|a| a == name)
-            .and_then(|i| args.get(i + 1))
-    };
-    let model_path = PathBuf::from(flag("--model").expect("--model"));
-    let labels = labels(Path::new(flag("--labels").expect("--labels")));
-    let images = PathBuf::from(flag("--images").expect("--images"));
-    let threads = flag("--threads").map_or(1, |n| n.parse().unwrap());
-    let pool = fotollection_core::pool::contained(Some(threads), "clip-bench").unwrap();
-
+/// The model alone on random inputs: `n` photos in batches of `batch` over `threads`, the
+/// median of five runs, for a machine without the photos (REF-MAC).
+fn synthetic(path: &Path, labels: &Labels, n: usize, batch: usize, threads: usize) -> Value {
+    let s = labels.size as usize;
     let t = Instant::now();
-    let plan = load(&model_path, labels.size);
+    let plan = load(path, labels.size, batch);
     let load_ms = t.elapsed().as_secs_f64() * 1000.0;
+    let pool = fotollection_core::pool::contained(Some(threads), "clip-bench").unwrap();
+    let mut seed = 0x9E37_79B9_7F4A_7C15_u64;
+    let input: Vec<f32> = (0..batch * 3 * s * s)
+        .map(|_| {
+            seed ^= seed << 13;
+            seed ^= seed >> 7;
+            seed ^= seed << 17;
+            (seed % 2000) as f32 / 1000.0 - 1.0
+        })
+        .collect();
+    let tensor =
+        Tensor::from(tract_ndarray::Array4::from_shape_vec((batch, 3, s, s), input).unwrap());
+    let runs = n.div_ceil(batch);
+    let mut walls: Vec<f64> = (0..5)
+        .map(|_| {
+            let t = Instant::now();
+            pool.install(|| {
+                (0..runs).into_par_iter().for_each(|_| {
+                    plan.run(tvec!(tensor.clone().into())).unwrap();
+                });
+            });
+            t.elapsed().as_secs_f64() * 1000.0
+        })
+        .collect();
+    walls.sort_by(f64::total_cmp);
+    let per = walls[2] / (runs * batch) as f64;
+    json!({
+        "model": path.file_name().map(|n| n.to_string_lossy()), "bytes": std::fs::metadata(path).map(|m| m.len()).ok(),
+        "load_ms": load_ms, "batch": batch, "threads": threads, "photos": runs * batch,
+        "ms_per_photo": per, "minutes_for_15000": per * 15_000.0 / 60_000.0,
+        "runs_ms": walls,
+    })
+}
 
-    let check = flag("--check").map(|c| {
-        let dir = &args[args.iter().position(|a| a == "--check").unwrap() + 2];
-        check(&plan, &labels, Path::new(c), Path::new(dir))
-    });
-    let subjects: HashMap<String, BTreeSet<String>> = flag("--subjects")
+/// Each photo's probabilities, the subjects' and the sources' apart, one JSON line each.
+fn dump(path: &str, results: &[(String, Vec<f32>, [f64; 3])], labels: &Labels) {
+    use std::io::Write;
+    let mut out = std::io::BufWriter::new(std::fs::File::create(path).unwrap());
+    for (name, e, _) in results {
+        let mut line = serde_json::Map::new();
+        line.insert("name".into(), json!(name));
+        for src in [true, false] {
+            let which: Vec<usize> = (0..labels.keys.len())
+                .filter(|&i| labels.keys[i].starts_with("src-") == src)
+                .collect();
+            let vecs: Vec<Vec<f32>> = which.iter().map(|&i| labels.vectors[i].clone()).collect();
+            let p = zero_shot(e, &vecs, labels.scale);
+            let m: serde_json::Map<String, Value> = which
+                .iter()
+                .zip(p)
+                .map(|(&i, p)| (labels.keys[i].clone(), json!(p)))
+                .collect();
+            line.insert(
+                if src { "sources" } else { "subjects" }.into(),
+                Value::Object(m),
+            );
+        }
+        writeln!(out, "{}", Value::Object(line)).unwrap();
+    }
+}
+
+/// The owner's labels: each photo's subjects, and each JPEG or PNG's source among the four.
+#[allow(clippy::type_complexity)]
+fn truths(
+    subjects: Option<&String>,
+    sources: Option<&String>,
+) -> (
+    HashMap<String, BTreeSet<String>>,
+    HashMap<String, &'static str>,
+) {
+    let subjects: HashMap<String, BTreeSet<String>> = subjects
         .map(|p| {
             csv_rows(p)
                 .into_iter()
@@ -252,7 +309,7 @@ fn main() {
                 .collect()
         })
         .unwrap_or_default();
-    let sources: HashMap<String, &'static str> = flag("--sources")
+    let sources: HashMap<String, &'static str> = sources
         .map(|p| {
             csv_rows(p)
                 .into_iter()
@@ -265,6 +322,40 @@ fn main() {
                 .collect()
         })
         .unwrap_or_default();
+    (subjects, sources)
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let flag = |name: &str| {
+        args.iter()
+            .position(|a| a == name)
+            .and_then(|i| args.get(i + 1))
+    };
+    let model_path = PathBuf::from(flag("--model").expect("--model"));
+    let labels = labels(Path::new(flag("--labels").expect("--labels")));
+    if let Some(n) = flag("--synthetic") {
+        let batch = flag("--batch").map_or(1, |b| b.parse().unwrap());
+        let threads = flag("--threads").map_or(1, |t| t.parse().unwrap());
+        println!(
+            "{}",
+            synthetic(&model_path, &labels, n.parse().unwrap(), batch, threads)
+        );
+        return;
+    }
+    let images = PathBuf::from(flag("--images").expect("--images"));
+    let threads = flag("--threads").map_or(1, |n| n.parse().unwrap());
+    let pool = fotollection_core::pool::contained(Some(threads), "clip-bench").unwrap();
+
+    let t = Instant::now();
+    let plan = load(&model_path, labels.size, 1);
+    let load_ms = t.elapsed().as_secs_f64() * 1000.0;
+
+    let check = flag("--check").map(|c| {
+        let dir = &args[args.iter().position(|a| a == "--check").unwrap() + 2];
+        check(&plan, &labels, Path::new(c), Path::new(dir))
+    });
+    let (subjects, sources) = truths(flag("--subjects"), flag("--sources"));
     let names: BTreeSet<&String> = subjects.keys().chain(sources.keys()).collect();
 
     let t = Instant::now();
@@ -289,6 +380,9 @@ fn main() {
     });
     let wall_ms = t.elapsed().as_secs_f64() * 1000.0;
 
+    if let Some(path) = flag("--dump") {
+        dump(path, &results, &labels);
+    }
     let (subjects_top1, subject_score, source_confusion) =
         score(&results, &labels, &subjects, &sources);
     let mut stage: [Vec<f64>; 3] = [Vec::new(), Vec::new(), Vec::new()];
