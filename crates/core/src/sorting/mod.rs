@@ -5,6 +5,7 @@
 //! are data (`assets/sorting/rules.json`), measured on the owner's labelled roll; what no rule
 //! decides is `Unknown`, for the pixels to settle later (S6).
 
+pub mod dupes;
 pub mod events;
 pub mod locations;
 pub mod stacks;
@@ -100,6 +101,12 @@ struct Rules {
     file_time: FileTime,
     events: events::EventRules,
     trips: trips::TripRules,
+    duplicates: dupes::DupRules,
+}
+
+/// The near-duplicates' thresholds ([`dupes`]), as measured on the owner's labels.
+pub fn dup_rules() -> &'static dupes::DupRules {
+    &rules().duplicates
 }
 
 fn rules() -> &'static Rules {
@@ -133,6 +140,8 @@ pub fn trips_of(moments: &[events::Moment]) -> Vec<trips::Trip> {
 pub struct Roll {
     pub events: Vec<Vec<usize>>,
     pub trips: Vec<trips::Trip>,
+    /// Stays at the other homes (a family's town), never the main one.
+    pub visits: Vec<trips::Visit>,
     /// Each photo's place, its own or borrowed from its event.
     pub places: Vec<Option<locations::Located>>,
     pub file_time_confirmed: bool,
@@ -159,10 +168,18 @@ pub fn roll(
             ..t
         })
         .collect();
+    let visits = trips::visits(&sub, &rules().trips)
+        .into_iter()
+        .map(|v| trips::Visit {
+            members: back(v.members),
+            ..v
+        })
+        .collect();
     locations::borrow_from_events(&mut places, &events);
     Roll {
         events,
         trips,
+        visits,
         places,
         file_time_confirmed,
     }

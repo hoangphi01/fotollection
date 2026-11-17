@@ -86,6 +86,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Check that a benchmark measures what the app does, and time each stage of one item, before optimizing a number. Kept by: `measure_folder` mirrors the app.
 - Measure one step of a gesture before and after a change; count pixels on a zoomed screenshot, never by eye. Kept by: `measure_preview LOOK_DRAG=1`.
 - A benchmark runs on a quiet machine, the median of five runs with their spread, and a change is kept only when it beats that spread (OPTIMIZATION §1, rule 6). Kept by: `scripts/resources.sh` (load against the cores).
+- A cheap similarity (a perceptual hash, a name, a date) finds candidates; a decision that hides or deletes a photo needs a proof on the pixels, scored on the owner's labels. Kept by: `fr_015_the_proof_tells_copies_colour_versions_and_two_screens_apart`.
 
 ### checks
 
@@ -126,6 +127,16 @@ Read this table in full before any task; then read in full every entry whose Are
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - A layout with a chosen board copies the board's measured numbers and has a test per part against them. Kept by: `fr_130_the_upright_card_matches_board_a` and its siblings.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
+
+## 2026-11-17
+
+### Two bank transfers hashed one bit apart (FR-015)
+
+- **Area:** measure
+- **Seen:** on the owner's labelled pairs, the 64-bit dHash put two different bank-transfer screenshots (other amounts, other names) one bit apart, and called 25 of 104 sampled pairs within 7 bits duplicates that were two shots or two screens.
+- **Why:** a 9 × 8 grey reduction keeps an app's layout and drops its text; two screens of one app, or two frames of one moment, share it.
+- **Fix:** the hash only proposes; each pair is proven on a 128-cell grid, the second picture's grey fitted to the first by a line, the largest mean residual of an 8 × 8 block at most 13 levels. On the same labels: 19 of 19 different pairs refused, 20 of 20 accepted pairs one picture (`sorting/dupes.rs`).
+- **Rule:** a cheap similarity proposes and the pixels prove, before a photo is hidden or offered for deletion; measure it on labels, the screens of one app among them.
 
 ## 2026-11-16
 

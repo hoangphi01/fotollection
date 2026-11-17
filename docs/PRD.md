@@ -206,7 +206,7 @@ The quarter of each requirement lives in [ROADMAP.md](ROADMAP.md) ([ADR-0053](ad
 
 ### FR-012 — Trip auto-grouping
 
-**P1 (v0.14.4, 2026-Q4, with [FR-141](#fr-141--sorting-a-phones-camera-roll); moved from 2027-Q1 by the owner, 2026-11-17).** Cluster photos into trips by GPS and time proximity, and suggest a name for each trip, for example "2026-07 Lisbon". Built in the core (FR-141 S4, `sorting/trips.rs`): home is the 0.1° cell with photos on the most days, and any cell visited in six different months or more is a home too (a family's town is no trip; owner, 2026-11-17), worked out in memory and never stored or shown; a trip is a run of days whose located photos are mostly more than 50 km from home (owner, 2026-11-17, after checking the first list), days without a location inside it kept, at most three days without photos, at least ten photos; named after the place met most often.
+**P1 (v0.14.4, 2026-Q4, with [FR-141](#fr-141--sorting-a-phones-camera-roll); moved from 2027-Q1 by the owner, 2026-11-17).** Cluster photos into trips by GPS and time proximity, and suggest a name for each trip, for example "2026-07 Lisbon". Built in the core (FR-141 S4, `sorting/trips.rs`): home is the 0.1° cell with photos on the most days, and any cell visited in six different months or more is a home too (a family's town is no trip; owner, 2026-11-17), worked out in memory and never stored or shown; a trip is a run of days whose located photos are mostly more than 50 km from home (owner, 2026-11-17, after checking the first list), days without a location inside it kept, at most three days without photos, at least ten photos; named after the place met most often. **Visits to the other homes** (owner, 2026-11-17: "how many times this year, how many photos") are kept apart from trips: each stay at another home with its days and photos, and per year the number of visits and of photos, for a filter in the view (FR-141 S7); the main home is never one of them.
 
 - The user can merge, split and rename trips.
 
@@ -221,6 +221,10 @@ The quarter of each requirement lives in [ROADMAP.md](ROADMAP.md) ([ADR-0053](ad
 ### FR-015 — Duplicate detection
 
 **P1 (v0.14.4, 2026-Q4, with [FR-141](#fr-141--sorting-a-phones-camera-roll); moved from 2027-Q1 by the owner, 2026-11-17).** Flag near-duplicate photos, such as bursts or re-saves, using perceptual hashing, and let the user exclude them from the print set. Choosing the best photo of a burst is [FR-041](#fr-041--best-shot-suggestions).
+
+- **Built in the core (FR-141 S5, `sorting/dupes.rs`), measured on the owner's 104 labelled pairs (2026-11-17):** a 64-bit dHash of each upright photo proposes pairs within 7 bits (an exact index on the hash's bytes, 8 ms for 7,128 photos); each pair is then proven on the pixels: both pictures on a 128-cell grid, the second's grey fitted to the first's by a line, the largest mean residual of an 8 × 8 block at most 13 levels. The hash alone called two bank-transfer screenshots one bit apart; the proof refused all 19 pairs labelled different and accepted 20 pairs, all one picture.
+- **Two kinds:** a *re-save* (the same picture saved or received again) and a *colour version* (black and white, a filter: saturation or a channel's mean moved), the latter kept by default (owner, 2026-11-17: "these are filters too"). Pairs already one capture (S3's stacks) are not duplicates; two frames of one moment are FR-041's.
+- **Screenshots** (owner, 2026-11-17: "the bank ones need OCR"): the proof already tells two transfers apart by their text; reading it ([FR-142](#fr-142--screenshots-told-apart-by-what-they-show), never stored) will confirm screenshot duplicates once it exists.
 
 ### FR-016 — RAW input
 
@@ -1448,7 +1452,7 @@ Stages, each one ending with the app as it was plus that stage (CODE_HEALTH §4)
 - **The reasons shown**, for example *About 380 px of real detail: enlarged from a small image*, *Softer than 92 % of this roll*, *Meme (CLIP 0.83)*.
 - **Deleting:** to the system's Trash through the `trash` crate (MIT: macOS, Windows, FreeDesktop Linux), so it can be undone there; a folder with no Trash (a NAS share) asks again before deleting for good. Only photos of the library the user picked, each path checked in Rust.
 
-Measured first: the owner's labelling page gains *delete: soft*, *upscaled*, *meme*, *web*; a synthetic set (sharp photos scaled down by a known k, enlarged back, screenshotted) gives ground truth. Done when the suggestions are right at least 95 % of the time on the owner's labels (a wrong suggestion costs the user's time) and k is estimated within ±0.5 on the synthetic set.
+Measured first: the owner's labelling page gains *delete: soft*, *upscaled*, *meme*, *web*; a synthetic set (sharp photos scaled down by a known k, enlarged back, screenshotted) gives ground truth. A re-save is offered for deletion only below a stricter residual than FR-015's proof (the labels put the colour versions that kept their colours between 9 and 13 levels). Done when the suggestions are right at least 95 % of the time on the owner's labels (a wrong suggestion costs the user's time) and k is estimated within ±0.5 on the synthetic set.
 
 ## 7. Non-functional requirements
 

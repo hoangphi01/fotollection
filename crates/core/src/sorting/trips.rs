@@ -44,7 +44,8 @@ fn cell(p: (f32, f32), size: f32) -> (i32, i32) {
     (c(p.0), c(p.1))
 }
 
-/// The home cell's centre: the cell with photos on the most days.
+/// The homes' centres, the main home first: the cell with photos on the most days, then
+/// every cell with photos in at least `min_months` different months.
 fn homes(moments: &[Moment], size: f32, min_months: usize) -> Vec<(f32, f32)> {
     let mut days: HashMap<(i32, i32), HashSet<i64>> = HashMap::new();
     for m in moments {
@@ -54,23 +55,38 @@ fn homes(moments: &[Moment], size: f32, min_months: usize) -> Vec<(f32, f32)> {
                 .insert(m.t.div_euclid(86_400));
         }
     }
-    let first = days
+    let Some(first) = days
         .iter()
         .max_by_key(|(c, d)| (d.len(), std::cmp::Reverse(**c)))
-        .map(|(c, _)| *c);
+        .map(|(c, _)| *c)
+    else {
+        return Vec::new();
+    };
     #[allow(clippy::cast_precision_loss)]
     let centre = |(y, x): (i32, i32)| ((y as f32 + 0.5) * size, (x as f32 + 0.5) * size);
-    days.iter()
+    let mut others: Vec<(i32, i32)> = days
+        .iter()
         .filter(|(c, d)| {
-            Some(**c) == first
-                || d.iter()
+            **c != first
+                && d.iter()
                     .map(|day| day.div_euclid(30))
                     .collect::<HashSet<_>>()
                     .len()
                     >= min_months
         })
-        .map(|(c, _)| centre(*c))
-        .collect()
+        .map(|(c, _)| *c)
+        .collect();
+    others.sort_unstable();
+    std::iter::once(first).chain(others).map(centre).collect()
+}
+
+fn km(a: (f32, f32), b: (f32, f32)) -> f64 {
+    crate::geocode::distance_km(
+        f64::from(a.0),
+        f64::from(a.1),
+        f64::from(b.0),
+        f64::from(b.1),
+    )
 }
 
 /// The trips, in time order.
@@ -84,14 +100,7 @@ pub fn trips(moments: &[Moment], rules: &TripRules) -> Vec<Trip> {
         let e = by_day.entry(m.t.div_euclid(86_400)).or_default();
         e.0.push(i);
         if let Some(p) = m.gps {
-            let far = homes.iter().all(|h| {
-                crate::geocode::distance_km(
-                    f64::from(h.0),
-                    f64::from(h.1),
-                    f64::from(p.0),
-                    f64::from(p.1),
-                ) > rules.away_km
-            });
+            let far = homes.iter().all(|&h| km(h, p) > rules.away_km);
             if far {
                 e.1 += 1;
             } else {
@@ -142,6 +151,88 @@ pub fn trips(moments: &[Moment], rules: &TripRules) -> Vec<Trip> {
         }
     }
     close(&mut open, &mut out);
+    out
+}
+
+/// A day's photos, its located photos by other home, and those located elsewhere.
+type DayCount = (Vec<usize>, HashMap<u8, usize>, usize);
+
+/// A stay at one of the other homes (a family's town): its days and photos. `home` numbers
+/// those homes; the main home is never one of them, nor ever returned.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Visit {
+    pub home: u8,
+    pub first_day: i64,
+    pub last_day: i64,
+    pub members: Vec<usize>,
+}
+
+/// The visits to the other homes, in time order (owner, 2026-11-17: "how many times this
+/// year, how many photos"). Homes closer than `away_km` to the main one are the main one;
+/// homes closer than that to each other are one.
+pub fn visits(moments: &[Moment], rules: &TripRules) -> Vec<Visit> {
+    let homes = homes(moments, rules.home_cell_deg, rules.home_min_months);
+    let Some((&main, rest)) = homes.split_first() else {
+        return Vec::new();
+    };
+    let mut others: Vec<(f32, f32)> = Vec::new();
+    let mut group: Vec<u8> = Vec::new();
+    for &h in rest.iter().filter(|&&h| km(main, h) > rules.away_km) {
+        let g = others
+            .iter()
+            .position(|&o| km(o, h) <= rules.away_km)
+            .map_or_else(
+                || u8::try_from(others.len()).unwrap_or(u8::MAX),
+                |i| group[i],
+            );
+        others.push(h);
+        group.push(g);
+    }
+    let mut by_day: BTreeMap<i64, DayCount> = BTreeMap::new();
+    for (i, m) in moments.iter().enumerate() {
+        let e = by_day.entry(m.t.div_euclid(86_400)).or_default();
+        e.0.push(i);
+        if let Some(p) = m.gps {
+            match others.iter().position(|&o| km(o, p) <= rules.away_km) {
+                Some(o) => *e.1.entry(group[o]).or_default() += 1,
+                None => e.2 += 1,
+            }
+        }
+    }
+    let mut out: Vec<Visit> = Vec::new();
+    for (day, (members, at, elsewhere)) in by_day {
+        let Some((&home, &n)) = at.iter().max_by_key(|&(h, n)| (n, std::cmp::Reverse(h))) else {
+            continue;
+        };
+        if n <= elsewhere {
+            continue;
+        }
+        match out.last_mut() {
+            Some(v) if v.home == home && day - v.last_day <= rules.max_gap_days + 1 => {
+                v.last_day = day;
+                v.members.extend(members);
+            }
+            _ => out.push(Visit {
+                home,
+                first_day: day,
+                last_day: day,
+                members,
+            }),
+        }
+    }
+    out
+}
+
+/// Per year (by a visit's first day) and home: the number of visits and of photos.
+pub fn visits_by_year(visits: &[Visit]) -> BTreeMap<(i32, u8), (usize, usize)> {
+    let mut out: BTreeMap<(i32, u8), (usize, usize)> = BTreeMap::new();
+    for v in visits {
+        let year = chrono::DateTime::from_timestamp(v.first_day * 86_400, 0)
+            .map_or(1970, |t| chrono::Datelike::year(&t));
+        let e = out.entry((year, v.home)).or_default();
+        e.0 += 1;
+        e.1 += v.members.len();
+    }
     out
 }
 
@@ -214,6 +305,26 @@ mod tests {
         m.extend(days(310, 2, Some((44.43, 26.10)), 8));
         let t = trips(&m, &RULES);
         assert_eq!(t.iter().map(|t| t.first_day).collect::<Vec<_>>(), vec![310]);
+    }
+
+    #[test]
+    fn fr_012_visits_to_a_second_home_count_by_year() {
+        let home = Some((47.49, 19.04));
+        let family = Some((46.25, 20.15));
+        let mut m = days(0, 400, home, 2);
+        for month in 0..8 {
+            m.extend(days(month * 35 + 5, 2, family, 8));
+        }
+        let v = visits(&m, &RULES);
+        assert_eq!(v.len(), 8);
+        assert!(
+            v.iter()
+                .all(|v| v.home == 0 && v.last_day == v.first_day + 1)
+        );
+        // Only the days at the second home: 8 visits of 2 days, 10 photos a day.
+        assert_eq!(v.iter().map(|v| v.members.len()).sum::<usize>(), 160);
+        let by_year = visits_by_year(&v);
+        assert_eq!(by_year.get(&(1970, 0)), Some(&(8, 8 * 2 * (8 + 2))));
     }
 
     #[test]

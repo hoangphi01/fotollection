@@ -53,6 +53,9 @@ struct Row {
     stack_key: Option<StackKey>,
     /// A still as the app imports it, for the library's events, trips and places.
     file: Option<(ImportedFile, metadata::PhotoMeta)>,
+    /// The dHash (FR-015) and the time it took.
+    hash: Option<u64>,
+    hash_ms: f64,
     ms: f64,
 }
 
@@ -156,6 +159,10 @@ fn main() {
         .unwrap_or_default();
     println!("{}", stack_report(&rows, &folder, &truth));
     println!("{}", roll_report(&rows, &folder));
+    println!(
+        "{}",
+        dupes_report(&rows, &folder, &out_path, flag("--dupe-labels"))
+    );
     score(&rows, &sources, &truth);
 }
 
@@ -176,6 +183,8 @@ fn read(path: &Path) -> Row {
         video_content_id: None,
         stack_key: None,
         file: None,
+        hash: None,
+        hash_ms: 0.0,
         ms: 0.0,
     };
     if matches!(ext.as_str(), "mov" | "mp4" | "m4v") {
@@ -201,6 +210,13 @@ fn read(path: &Path) -> Row {
             size,
             mtime,
         };
+        let h = Instant::now();
+        row.hash = sorting::dupes::hash_file(
+            path,
+            meta.orientation,
+            &fotollection_core::codec::PureRustCodec,
+        );
+        row.hash_ms = h.elapsed().as_secs_f64() * 1000.0;
         row.file = Some((file, meta));
     }
     row.ms = a.elapsed().as_secs_f64() * 1000.0;
@@ -262,6 +278,118 @@ fn roll_report(rows: &[Row], folder: &Path) -> serde_json::Value {
         "located": roll.places.iter().filter(|p| p.is_some()).count(),
         "borrowed": roll.places.iter().filter(|p| p.is_some_and(|p| p.borrowed)).count(),
         "trips": trips, "places_after_the_first": places,
+        "visits_by_year": sorting::trips::visits_by_year(&roll.visits).into_iter()
+            .map(|((y, h), (n, p))| json!([y, h, n, p])).collect::<Vec<_>>(),
+    })
+}
+
+/// Near-duplicates (FR-015): candidates within the rules' bits (S3's stacks left out), each
+/// pair proven on both pictures decoded again, the groups by kind, each step timed. With
+/// `--dupe-labels <csv>` (`a,b,bits,label`, kept out of the repository), the proof's verdict
+/// on each labelled pair. The candidates go beside `--out` (`<out>.dupes.csv`).
+fn dupes_report(
+    rows: &[Row],
+    folder: &Path,
+    out: &Path,
+    labels: Option<&String>,
+) -> serde_json::Value {
+    use sorting::dupes::{self, DupKind};
+    let stills: Vec<&Row> = rows.iter().filter(|r| r.stack_key.is_some()).collect();
+    let keys: Vec<StackKey> = stills.iter().filter_map(|r| r.stack_key.clone()).collect();
+    let same = stacks::stacks(&keys);
+    let hashes: Vec<Option<u64>> = stills.iter().map(|r| r.hash).collect();
+    let rules = sorting::dup_rules();
+    let t = Instant::now();
+    let pairs = dupes::candidate_pairs(&hashes, rules.max_distance, &same);
+    let find_ms = t.elapsed().as_secs_f64() * 1000.0;
+    let codec = fotollection_core::codec::PureRustCodec;
+    let print = |name: &str| -> Option<dupes::Fingerprint> {
+        let path = folder.join(name);
+        let bytes = std::fs::read(&path).ok()?;
+        let image = fotollection_core::codec::decode_for_screen(&codec, &bytes, 1024)
+            .ok()?
+            .image;
+        let orientation = metadata::read_path(&path).orientation;
+        dupes::fingerprint(
+            &fotollection_core::image::apply_orientation(image, orientation),
+            rules.grid,
+        )
+    };
+    let t = Instant::now();
+    let mut prints: HashMap<usize, Option<dupes::Fingerprint>> = HashMap::new();
+    let mut proven = Vec::new();
+    let mut csv = BufWriter::new(File::create(out.with_extension("dupes.csv")).expect("pairs"));
+    writeln!(csv, "a,b,bits,verdict").expect("write");
+    for &(a, b) in &pairs {
+        for i in [a, b] {
+            prints.entry(i).or_insert_with(|| print(&stills[i].name));
+        }
+        let verdict = match (&prints[&a], &prints[&b]) {
+            (Some(x), Some(y)) => dupes::same_picture(x, y, rules),
+            _ => None,
+        };
+        let bits = (hashes[a].unwrap_or(0) ^ hashes[b].unwrap_or(0)).count_ones();
+        writeln!(
+            csv,
+            "{},{},{bits},{verdict:?}",
+            stills[a].name, stills[b].name
+        )
+        .expect("write");
+        if let Some(kind) = verdict {
+            proven.push((a, b, kind));
+        }
+    }
+    let prove_ms = t.elapsed().as_secs_f64() * 1000.0;
+    let groups = dupes::groups(stills.len(), &proven);
+    let count = |k: DupKind| groups.iter().filter(|g| g.kinds.contains(&k)).count();
+    let mut scored: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
+    if let Some(path) = labels {
+        let index: HashMap<&str, usize> = stills
+            .iter()
+            .enumerate()
+            .map(|(i, r)| (r.name.as_str(), i))
+            .collect();
+        let text = std::fs::read_to_string(path).expect("--dupe-labels");
+        for line in text.lines().skip(1) {
+            let f: Vec<&str> = line.split(',').collect();
+            let (Some(&a), Some(&b), Some(label)) = (
+                index.get(f[0]),
+                index.get(f.get(1).copied().unwrap_or("")),
+                f.get(3),
+            ) else {
+                continue;
+            };
+            let (pa, pb) = (print(&stills[a].name), print(&stills[b].name));
+            let verdict = match (pa, pb) {
+                (Some(x), Some(y)) => format!("{:?}", dupes::same_picture(&x, &y, rules)),
+                _ => "undecoded".to_string(),
+            };
+            *scored
+                .entry((*label).to_string())
+                .or_default()
+                .entry(verdict)
+                .or_default() += 1;
+        }
+    }
+    let mut ms: Vec<f64> = stills
+        .iter()
+        .filter(|r| r.hash.is_some())
+        .map(|r| r.hash_ms)
+        .collect();
+    ms.sort_by(f64::total_cmp);
+    let p = |q: f64| {
+        ms.get((ms.len().saturating_sub(1) as f64 * q).round() as usize)
+            .copied()
+            .unwrap_or(0.0)
+    };
+    json!({
+        "hashed": ms.len(), "not_hashed": stills.len() - ms.len(),
+        "hash_ms": { "p50": p(0.5), "p95": p(0.95), "sum_s": ms.iter().sum::<f64>() / 1000.0 },
+        "candidates": pairs.len(), "find_ms": find_ms, "proven": proven.len(), "prove_ms": prove_ms,
+        "groups": groups.len(), "with_resaves": count(DupKind::Resave),
+        "with_colour_versions": count(DupKind::ColourVersion),
+        "photos_in_groups": groups.iter().map(|g| g.members.len()).sum::<usize>(),
+        "labels_vs_verdict": scored,
     })
 }
 

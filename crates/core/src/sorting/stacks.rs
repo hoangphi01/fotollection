@@ -89,13 +89,40 @@ pub struct Stack {
 }
 
 /// A union-find over the photos, each union remembering why.
-struct Groups {
+pub(crate) struct Groups {
     parent: Vec<usize>,
     links: Vec<(usize, StackKind)>,
 }
 
 impl Groups {
-    fn root(&mut self, mut i: usize) -> usize {
+    pub(crate) fn new(n: usize) -> Self {
+        Self {
+            parent: (0..n).collect(),
+            links: Vec::new(),
+        }
+    }
+
+    /// The sets of two members or more, each in index order, by their first member.
+    pub(crate) fn sets(&mut self) -> Vec<Vec<usize>> {
+        let mut by_root: HashMap<usize, Vec<usize>> = HashMap::new();
+        let mut order = Vec::new();
+        for i in 0..self.parent.len() {
+            let r = self.root(i);
+            by_root
+                .entry(r)
+                .or_insert_with(|| {
+                    order.push(r);
+                    Vec::new()
+                })
+                .push(i);
+        }
+        order
+            .into_iter()
+            .filter_map(|r| by_root.remove(&r).filter(|m| m.len() > 1))
+            .collect()
+    }
+
+    pub(crate) fn root(&mut self, mut i: usize) -> usize {
         while self.parent[i] != i {
             self.parent[i] = self.parent[self.parent[i]];
             i = self.parent[i];
@@ -103,7 +130,7 @@ impl Groups {
         i
     }
 
-    fn join(&mut self, a: usize, b: usize, kind: StackKind) {
+    pub(crate) fn join(&mut self, a: usize, b: usize, kind: StackKind) {
         let (ra, rb) = (self.root(a), self.root(b));
         if ra != rb {
             self.parent[rb] = ra;
@@ -134,10 +161,7 @@ impl Groups {
 
 /// Every stack of two photos or more, in the order of their first member.
 pub fn stacks(keys: &[StackKey]) -> Vec<Stack> {
-    let mut g = Groups {
-        parent: (0..keys.len()).collect(),
-        links: Vec::new(),
-    };
+    let mut g = Groups::new(keys.len());
     let copy = |a: &StackKey, b: &StackKey| {
         if a.derived || b.derived {
             StackKind::EditedCopy
