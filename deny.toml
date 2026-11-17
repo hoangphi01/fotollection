@@ -13,9 +13,13 @@ yanked = "deny"
 # Flag unmaintained crates we depend on directly; transitive ones (e.g. via GTK on Linux) are
 # tracked upstream by Tauri. Real vulnerabilities are always denied.
 unmaintained = "workspace"
-# Nothing ignored: RUSTSEC-2026-0192 (ttf-parser unmaintained) was, for v0.14.2, until FR-134
-# moved every font to skrifa (SECURITY.md §6).
-ignore = []
+# RUSTSEC-2026-0543: chrono is unmaintained (no known vulnerability). Our code and rawler both
+# use it, so it cannot leave the build alone; ignored by the owner's decision (2026-11-17) until
+# a move to jiff that rawler shares (SECURITY.md §6). RUSTSEC-2026-0192 (ttf-parser) was
+# ignored the same way for v0.14.2, until FR-134.
+ignore = [
+  { id = "RUSTSEC-2026-0543", reason = "chrono unmaintained; used by our code and rawler; move to jiff later (SECURITY.md §6)" },
+]
 
 [licenses]
 version = 2
