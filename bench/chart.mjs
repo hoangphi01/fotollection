@@ -1420,10 +1420,98 @@ function charts(lang) {
   return out
 }
 
+// The roadmap at a glance (README, ADR-0053): how much has shipped, how far v1.0.0 is, and each
+// quarter's releases, read from docs/ROADMAP.md, docs/STATUS.md and docs/PRD.md so it never
+// disagrees with them. `check-docs.sh` compares the counts in its description with the docs.
+const ROADMAP_T = {
+  en: {
+    title: 'Roadmap: where Fotollection stands',
+    v1: 'Road to v1.0.0',
+    v1Unit: (d, n) => `${d} of ${n} P0 requirements done`,
+    all: 'All requirements',
+    allUnit: (d, n) => `${d} of ${n} shipped`,
+    shipped: 'Shipped',
+    now: 'now',
+    reqs: (n) => `${n} requirements`,
+    footer: 'From docs/ROADMAP.md and docs/STATUS.md · one quarter per requirement (ADR-0053)',
+  },
+  vi: {
+    title: 'Lộ trình: Fotollection đang ở đâu',
+    v1: 'Đường tới v1.0.0',
+    v1Unit: (d, n) => `${d}/${n} yêu cầu P0 đã xong`,
+    all: 'Mọi yêu cầu',
+    allUnit: (d, n) => `${d}/${n} đã phát hành`,
+    shipped: 'Đã ra',
+    now: 'hiện tại',
+    reqs: (n) => `${n} yêu cầu`,
+    footer: 'Từ docs/ROADMAP.md và docs/STATUS.md · mỗi yêu cầu một quý (ADR-0053)',
+  },
+}
+
+/** The counts and quarters the roadmap chart draws, from the docs. */
+export function roadmapFacts() {
+  const doc = (f) => readFileSync(join(root, 'docs', f), 'utf8')
+  const status = new Map()
+  for (const m of doc('STATUS.md').matchAll(/^\| (FR-\d{3}) \|[^|]*\| ([^|]+?) \| ([^|]+?) \|/gm)) status.set(m[1], { when: m[2], state: m[3] })
+  const priority = new Map()
+  let current = null
+  for (const line of doc('PRD.md').split('\n')) {
+    const h = /^### (FR-\d{3}) /.exec(line)
+    if (h) { current = h[1]; continue }
+    const p = /^\*\*(P[0-3])/.exec(line)
+    if (current && p && !priority.has(current)) priority.set(current, p[1])
+  }
+  const done = [...status.values()].filter((s) => s.state === 'Done').length
+  const p0 = [...priority].filter(([, p]) => p === 'P0').map(([id]) => id)
+  const p0Done = p0.filter((id) => status.get(id)?.state === 'Done').length
+  const quarters = [...doc('ROADMAP.md').matchAll(/^## (20\d\d-Q[1-4]) — (.+)$/gm)].map((m) => ({
+    q: m[1],
+    releases: [...m[2].matchAll(/(v\d+\.\d+(?:\.\d+)?)(?: "([^"]+)")?/g)].map((r) => (r[2] ? `${r[1]} ${r[2]}` : r[1])),
+    count: [...status.values()].filter((s) => s.when === m[1]).length,
+  }))
+  return { done, total: status.size, p0Done, p0: p0.length, quarters }
+}
+
+function roadmapChart(lang) {
+  const t = ROADMAP_T[lang]
+  const f = roadmapFacts()
+  let body = ''
+  // Two progress bars, as the budgets chart draws a measure against its line.
+  const barW = W - 200
+  const progress = (y, label, unit, d, n, cls) => {
+    const w = Math.max(4, (barW * d) / n)
+    return `<text class="t2" x="0" y="${y + 13}">${esc(label)}</text>`
+      + `<rect class="axis" x="190" y="${y}" width="${barW}" height="18" rx="4" fill="none"/>`
+      + bar(cls, 190, y, w, 18, unit(d, n))
+      + `<text class="t3 num" x="190" y="${y + 34}">${esc(unit(d, n))} (${Math.round((100 * d) / n)} %)</text>`
+  }
+  body += progress(30, t.v1, t.v1Unit, f.p0Done, f.p0, 's1')
+  body += progress(80, t.all, t.allUnit, f.done, f.total, 's3')
+  // The quarters as a line of milestones: shipped, now, then the rest.
+  const rows = [{ q: t.shipped, releases: ['v0.1.0 → v0.14.3'], count: f.done, past: true }, ...f.quarters]
+  const y0 = 150
+  const step = 30
+  body += `<line class="axis" x1="8" x2="8" y1="${y0}" y2="${y0 + (rows.length - 1) * step}"/>`
+  rows.forEach((r, i) => {
+    const y = y0 + i * step
+    const now = i === 1
+    const dot = r.past ? `<circle class="s3" cx="8" cy="${y}" r="6"/>` : now ? `<circle class="s1" cx="8" cy="${y}" r="7"/><circle class="bg" cx="8" cy="${y}" r="3"/>` : `<circle class="bg axis" cx="8" cy="${y}" r="5" style="stroke-width:2"/>`
+    body += dot
+    body += `<text class="${now ? 't1' : 't2'}" x="24" y="${y + 4}">${esc(r.q)}${now ? ` · ${esc(t.now)}` : ''}</text>`
+    body += `<text class="${now ? 't1' : 't2'}" x="150" y="${y + 4}">${esc(r.releases.join(' · '))}</text>`
+    body += `<text class="t3 num" x="${W}" y="${y + 4}" text-anchor="end">${esc(t.reqs(r.count))}</text>`
+  })
+  const h = y0 + (rows.length - 1) * step + 34
+  body += `<text class="t3" x="0" y="${h - 4}">${esc(t.footer)}</text>`
+  const desc = `${t.v1Unit(f.p0Done, f.p0)}. ${t.allUnit(f.done, f.total)}. ` + f.quarters.map((r) => `${r.q}: ${r.releases.join(', ')}`).join('. ')
+  return doc(t.title, desc, h, body)
+}
+
 for (const lang of ['en', 'vi']) {
   for (const [name, svg] of Object.entries(charts(lang))) {
     writeFileSync(join(images, `${name}${lang === 'en' ? '' : '-vi'}.svg`), svg)
   }
+  writeFileSync(join(images, `roadmap${lang === 'en' ? '' : '-vi'}.svg`), roadmapChart(lang))
 }
 // The website shows these in its own colours: the home page and the performance page (site/README.md).
 STYLE = styleFor(THEMES.site)

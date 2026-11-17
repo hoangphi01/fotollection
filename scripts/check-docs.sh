@@ -236,6 +236,31 @@ awk '
 [ -s /tmp/check-docs-phase.$$ ] && fail "quarters differ between ROADMAP and STATUS"
 rm -f /tmp/check-docs-phase.$$
 
+echo "• The README's roadmap chart matches ROADMAP, STATUS and PRD (node bench/chart.mjs)"
+python3 -I - <<'PY' || fail "docs/images/roadmap*.svg is stale: run node bench/chart.mjs"
+import re, sys
+status = {m[0]: (m[1], m[2]) for m in re.findall(r"^\| (FR-\d{3}) \|[^|]*\| ([^|]+?) \| ([^|]+?) \|", open("docs/STATUS.md").read(), re.M)}
+prio, cur = {}, None
+for line in open("docs/PRD.md").read().split("\n"):
+    h = re.match(r"^### (FR-\d{3}) ", line)
+    if h:
+        cur = h.group(1); continue
+    p = re.match(r"^\*\*(P[0-3])", line)
+    if cur and p and cur not in prio:
+        prio[cur] = p.group(1)
+done = sum(1 for w, s in status.values() if s == "Done")
+p0 = [i for i, p in prio.items() if p == "P0"]
+p0done = sum(1 for i in p0 if status.get(i, ("", ""))[1] == "Done")
+want = f"{p0done} of {len(p0)} P0 requirements done. {done} of {len(status)} shipped."
+svg = open("docs/images/roadmap.svg").read()
+desc = re.search(r"<desc[^>]*>([^<]*)</desc>", svg).group(1)
+quarters = re.findall(r"^## (20\d\d-Q[1-4]) — ", open("docs/ROADMAP.md").read(), re.M)
+ok = desc.startswith(want) and all(f"{q}:" in desc for q in quarters)
+if not ok:
+    print(f"  wanted: {want} with {len(quarters)} quarters; the chart says: {desc[:120]}")
+sys.exit(0 if ok else 1)
+PY
+
 echo "• Every lesson has an Area that the Rules table of LESSONS.md lists (the process review, 2026-11-12)"
 awk '
   /^## Rules/ { rules = 1; next }

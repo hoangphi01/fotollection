@@ -60,38 +60,42 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 
 ## Features
 
-| | Feature | Phase |
+| | Feature | Since |
 |---|---------|-------|
-| 📅 | **Date and location stamps** from EXIF, in a film-camera LCD face. Places are resolved offline, with no API calls | 1 |
-| ✂️ | **Batch crop** to 21 shop print sizes grouped by market, Europe's (9×13 … 20×30, square, strip), Japan's (L判, 2L判, はがき) and Korea's (4 × 6 … 8 × 10 in), your own sizes or the photo's **original** ratio, with an adjustable crop per photo | 1 |
-| 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
-| ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each print, a dashed stamp box and writing lines, the text typed in a typewriter or a handwriting face or written by hand; since v0.14.2 the Japanese はがき and the Korean 우편엽서 laid out as their posts ask, their addresses filled from the post's own data by **AddAssist**; since v0.14.3 an address book, a sender of its own on each card, and one recipient or message for many cards | 1 |
-| 🌈 | **Looks** (new in v0.14.0): one tap gives a photo a colour, eight looks of our own shown as your photo, with an **Amount**; **Save as look** keeps your own; a strip of looks under the photo in every mode, and in Simple mode a number key picks one | 2 |
-| 🎛️ | **Lightroom presets and LUTs** (new in v0.14.0): your own `.xmp`, `.lrtemplate` and `.zip` presets and `.cube`, HaldCLUT or LUMIX Lab LUTs become looks, read in Rust; a **Color Mixer** as Lightroom's HSL panel, **Dehaze**, and one look given to many photos at once from the gallery | 2 |
-| 💾 | **Settings → Data** (new in v0.14.0): move to another computer with one `.fotosettings` file, see what Fotollection keeps on this one, reset settings or erase data | 2 |
-| 🎨 | **Colour** (new in v0.9.9): **Faves** (brightness, contrast, warm / cool, saturation, then highlights, shadows, tint, vibrance) and **Tools** (fade, toned shadows and highlights, black and white through a filter), for every photo or one; the stamp and the border are never tinted, and a photo with nothing set prints as before | 2 |
-| 📊 | **Reading the photo** (new in v0.13.1): a histogram above the Navigator that follows your sliders, **J** for the clipping on the photo, **W** for white balance from a grey spot; and **copy, paste and reset settings** to one photo or every ticked one, each one step of Undo | 1 |
-| 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | 2 |
-| ⭐ | **Culling**: stars, pick/reject flags and filters (flag, stars, RAW or not), RAW photos badged in the grid, a filmstrip under the photo in the preview, and a develop view a Lightroom user can read (its keys, before and after side by side or split, Navigator and History, the whole window); export writes exactly the filtered set | 1 |
-| ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline *Keep best* keeps the best shot in the Workspace and sets the others aside (v0.13.1). | 1 |
-| 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | 1 |
-| 🖼️ | **Original quality**: export at full resolution, ICC profile preserved, 4:4:4 JPEG for print | 1 |
-| 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, whole in a square or any ratio with a fill if you like, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | 2 |
-| 📱 | **JPEG, PNG and HEIC** (iPhone) input | 1 |
-| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, developed by Fotollection's own engine (a cleaner demosaic, neutral colour or the camera's look in one click, brightness, highlights, shadows and white balance made on the camera's own data, a blown sky's colour rebuilt); on macOS, Panasonic and Olympus by the system, with its lens corrections; thumbnails from the preview inside each file. Nothing to install on Windows | 3 |
-| 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |
-| ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | 1 |
-| ⭐ | **Stars from Lightroom**: stars and rejects saved in XMP sidecars by Lightroom, Bridge, Capture One or darktable come in with the photos; the sidecars are never changed | 2 |
-| 🧭 | **Places from your phone**: a camera without GPS takes the place of a phone photo of the same scene shot minutes apart; sure matches are filled in, the rest are shown side by side to accept | 2 |
-| 📍 | **Dates and places by hand**: give scans and photos without EXIF or GPS a date and a place, one photo or many at once, with an offline place search; rename a place ("Praha 1" → "Prague") and every print follows | 1 |
-| 🎥 | **Shoot from a camera on a cable**: live view with the print's shape, Capture, and the shots in a tab to save or delete; no driver to install (Windows, Sony a6400 first) | 2 |
-| 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | 1 |
-| 🌐 | **English, Deutsch, Magyar, Vietnamese, 日本語 and 한국어** interface, the machine's language on the first launch | 1 |
-| 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | 1 |
-| 🧳 | **Trip grouping**, face-aware smart crop, duplicate detection | 2 |
-| 🎞️ | Photo-book preview, QR codes on the back of prints | 3 |
+| 📅 | **Date and location stamps** from EXIF, in a film-camera LCD face. Places are resolved offline, with no API calls | v0.1.0 |
+| ✂️ | **Batch crop** to 21 shop print sizes grouped by market, Europe's (9×13 … 20×30, square, strip), Japan's (L判, 2L判, はがき) and Korea's (4 × 6 … 8 × 10 in), your own sizes or the photo's **original** ratio, with an adjustable crop per photo | v0.1.0 |
+| 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | v0.9.0 |
+| ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each print, a dashed stamp box and writing lines, the text typed in a typewriter or a handwriting face or written by hand; since v0.14.2 the Japanese はがき and the Korean 우편엽서 laid out as their posts ask, their addresses filled from the post's own data by **AddAssist**; since v0.14.3 an address book, a sender of its own on each card, and one recipient or message for many cards | v0.9.4 |
+| 🌈 | **Looks** (new in v0.14.0): one tap gives a photo a colour, eight looks of our own shown as your photo, with an **Amount**; **Save as look** keeps your own; a strip of looks under the photo in every mode, and in Simple mode a number key picks one | v0.14.0 |
+| 🎛️ | **Lightroom presets and LUTs** (new in v0.14.0): your own `.xmp`, `.lrtemplate` and `.zip` presets and `.cube`, HaldCLUT or LUMIX Lab LUTs become looks, read in Rust; a **Color Mixer** as Lightroom's HSL panel, **Dehaze**, and one look given to many photos at once from the gallery | v0.14.0 |
+| 💾 | **Settings → Data** (new in v0.14.0): move to another computer with one `.fotosettings` file, see what Fotollection keeps on this one, reset settings or erase data | v0.14.0 |
+| 🎨 | **Colour** (new in v0.9.9): **Faves** (brightness, contrast, warm / cool, saturation, then highlights, shadows, tint, vibrance) and **Tools** (fade, toned shadows and highlights, black and white through a filter), for every photo or one; the stamp and the border are never tinted, and a photo with nothing set prints as before | v0.9.9 |
+| 📊 | **Reading the photo** (new in v0.13.1): a histogram above the Navigator that follows your sliders, **J** for the clipping on the photo, **W** for white balance from a grey spot; and **copy, paste and reset settings** to one photo or every ticked one, each one step of Undo | v0.13.1 |
+| 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | v0.9.0 |
+| ⭐ | **Culling**: stars, pick/reject flags and filters (flag, stars, RAW or not), RAW photos badged in the grid, a filmstrip under the photo in the preview, and a develop view a Lightroom user can read (its keys, before and after side by side or split, Navigator and History, the whole window); export writes exactly the filtered set | v0.1.0 |
+| ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline *Keep best* keeps the best shot in the Workspace and sets the others aside (v0.13.1). | v0.1.0 |
+| 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | v0.1.0 |
+| 🖼️ | **Original quality**: export at full resolution, ICC profile preserved, 4:4:4 JPEG for print | v0.1.0 |
+| 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, whole in a square or any ratio with a fill if you like, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | v0.4.0 |
+| 📱 | **JPEG, PNG and HEIC** (iPhone) input | v0.1.0 |
+| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, developed by Fotollection's own engine (a cleaner demosaic, neutral colour or the camera's look in one click, brightness, highlights, shadows and white balance made on the camera's own data, a blown sky's colour rebuilt); on macOS, Panasonic and Olympus by the system, with its lens corrections; thumbnails from the preview inside each file. Nothing to install on Windows | v0.7.0 |
+| 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | v0.7.0 |
+| ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | v0.8.0 |
+| ⭐ | **Stars from Lightroom**: stars and rejects saved in XMP sidecars by Lightroom, Bridge, Capture One or darktable come in with the photos; the sidecars are never changed | v0.8.0 |
+| 🧭 | **Places from your phone**: a camera without GPS takes the place of a phone photo of the same scene shot minutes apart; sure matches are filled in, the rest are shown side by side to accept | v0.8.0 |
+| 📍 | **Dates and places by hand**: give scans and photos without EXIF or GPS a date and a place, one photo or many at once, with an offline place search; rename a place ("Praha 1" → "Prague") and every print follows | v0.8.0 |
+| 🎥 | **Shoot from a camera on a cable**: live view with the print's shape, Capture, and the shots in a tab to save or delete; no driver to install (Windows, Sony a6400 first) | v0.8.0 |
+| 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | v0.1.0 |
+| 🌐 | **English, Deutsch, Magyar, Vietnamese, 日本語 and 한국어** interface, the machine's language on the first launch | v0.1.0 |
+| 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | v0.1.0 |
 
 Full specification: [docs/PRD.md](docs/PRD.md).
+
+## Roadmap
+
+![Roadmap: how far v1.0.0 is, how many requirements have shipped, and the releases planned for each quarter to 2028-Q4.](docs/images/roadmap.svg)
+
+Fotollection is planned two years ahead, to 2028-11: v0.14.4 and **v1.0.0 in December 2026**, then one release a month, each with its theme, and maintenance first. Coming later: trip grouping, duplicate detection and a face-aware crop, a photo-book preview and QR codes on the back of prints. Every requirement and its quarter: [docs/ROADMAP.md](docs/ROADMAP.md); what is left before v1.0.0: [docs/STATUS.md](docs/STATUS.md).
 
 ## Performance
 
@@ -359,7 +363,7 @@ All docs live in [`docs/`](docs/README.md) and change together with the code ([A
 | [File formats](docs/EXTENSION.md) | `.fotollection`, `.fotosettings`, `.fotopreset` and every other file type |
 | [Style rules](docs/STYLE_RULE.md) | Rust, TypeScript, UI, git and docs conventions |
 | [Security](docs/SECURITY.md) | Threat model, privacy, supply chain |
-| [Roadmap](docs/ROADMAP.md) / [Status](docs/STATUS.md) | Phases and progress |
+| [Roadmap](docs/ROADMAP.md) / [Status](docs/STATUS.md) | Quarters, milestones and progress |
 | [User guide](docs/USER_GUIDE.md) | How to use the app, step by step; also the [manual on the website](https://fotollection.org/manual/) |
 | [Error codes](docs/ERROR_CONTROL.md) | Every `ERR-…` code the app can show: cause and what to do |
 | [Docs guide](docs/DOCS_GUIDE.md) | What to update when something changes |
