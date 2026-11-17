@@ -5,105 +5,197 @@
 
 # Fotollection
 
-by [@hoangphi01](https://github.com/hoangphi01)
+**Chuyến đi của bạn, sẵn sàng để in: ngày và nơi chụp trên từng tấm, đúng khổ của tiệm in, không tải ảnh lên đâu cả.**
 
-[EN](README.md) · **Tiếng Việt** · [Trang giới thiệu](https://fotollection.org/vi/)
+Miễn phí · offline · mã nguồn mở · macOS, Windows và Linux
 
-**Chuẩn bị ảnh để in: nhanh, riêng tư, chạy offline trên macOS, Windows và Linux.**
+**[⬇ Tải cho macOS, Windows hoặc Linux](https://fotollection.org/vi/download/)**
 
-In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đi tiệm in, mà không có tấm ảnh nào rời khỏi máy của bạn.
+[Trang giới thiệu](https://fotollection.org/vi/) · [Hướng dẫn](https://fotollection.org/vi/manual/) · [Releases](https://github.com/hoangphi01/fotollection/releases/latest) · [English](README.md) · **Tiếng Việt**
 
-[![CI](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml)
-[![Docs](https://github.com/hoangphi01/fotollection/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/docs.yml)
-[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
-[![Status: beta](https://img.shields.io/badge/status-beta-blue.svg)](docs/STATUS.md)
+</div>
+
+<p align="center">
+  <img src="site/assets/img/showcase/wide-vi.webp" alt="Fotollection trên ảnh Praha: chuyến đi của bạn, sẵn sàng để in" width="100%" />
+</p>
+
+<div align="center">
+
 [![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
-
+[![CI](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 [![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](docs/RELEASE.md)
-[![Rust 1.99](https://img.shields.io/badge/rust-1.99-b7410e.svg?logo=rust)](rust-toolchain.toml)
-[![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db.svg?logo=tauri&logoColor=white)](https://v2.tauri.app/)
-[![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black)](https://react.dev/)
-[![shadcn/ui](https://img.shields.io/badge/ui-shadcn%2Fui-000000.svg?logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
 [![Offline · zero telemetry](https://img.shields.io/badge/privacy-offline%20%C2%B7%20zero%20telemetry-2ea44f.svg)](docs/SECURITY.md#5-privacy)
-
-[![Stars](https://img.shields.io/github/stars/hoangphi01/fotollection?style=social)](https://github.com/hoangphi01/fotollection/stargazers)
-[![Last commit](https://img.shields.io/github/last-commit/hoangphi01/fotollection.svg)](https://github.com/hoangphi01/fotollection/commits/main)
-[![Issues](https://img.shields.io/github/issues/hoangphi01/fotollection.svg)](https://github.com/hoangphi01/fotollection/issues)
-[![Repo size](https://img.shields.io/github/repo-size/hoangphi01/fotollection.svg)](https://github.com/hoangphi01/fotollection)
 
 </div>
 
 ---
 
-> [!NOTE]
-> **Fotollection đang được phát triển tích cực (0.x), vài ngày lại có bản mới.** Ứng dụng đã chạy trọn vẹn trên macOS, Windows và Linux, với **JPEG, PNG, HEIC và ảnh RAW**, ở ba chế độ: **Đơn giản** (giữ hay bỏ, rồi in), **Ghép ảnh** (hai ảnh trên một tấm in, hoặc bưu thiếp) và **Pro** (sao, cờ, ảnh tốt nhất, crop, dấu ngày, khung thông tin), chế độ nào cũng có **look** một chạm. Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ, và một file `.fotosettings` mang thiết lập của bạn sang máy khác. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh); [trang hướng dẫn](https://fotollection.org/vi/manual/) chỉ từng bước.
-
-<p align="center">
-  <img src="site/assets/img/showcase/wide-vi.webp" alt="Fotollection trên nền ảnh Praha: chuyến đi của bạn, sẵn sàng để in" width="100%" />
-</p>
-
-<p align="center">
-  <img src="site/assets/img/grid-vi-light.webp" alt="Cửa sổ chính của Fotollection (giao diện sáng)" width="49%" />
-  <img src="site/assets/img/grid-vi-dark.webp" alt="Cửa sổ chính của Fotollection (giao diện tối)" width="49%" />
-</p>
-
-Có trên [VNLF App Explorer](https://apps.vietnamlinuxfamily.net/app/fotollection) và trong App Center của [CaramOS](https://github.com/VN-Linux-Family/CaramOS), bản phân phối Linux dành cho người Việt.
-
 ## Vì sao có Fotollection?
 
-Bạn chụp 800 tấm trong một chuyến đi và muốn in ra hai mươi tấm. Hiện nay việc đó rất mất công:
+Bạn chụp 800 tấm trong một chuyến đi và muốn in chừng hai chục tấm. Hiện giờ việc đó khá mệt:
 
-- **Ảnh in không ghi khi nào, ở đâu.** Vài năm sau chẳng ai còn nhớ.
+- **Ảnh in không ghi khi nào, ở đâu.** Vài năm sau, chẳng ai nhớ.
 - **Tiệm in tự crop ảnh** về 2:3, 3:4 hay 1:1, và có thể cắt mất đầu người.
-- **Công cụ online bắt tải ảnh lên.** Dữ liệu GPS để lộ nơi bạn sống.
+- **Công cụ online bắt tải ảnh lên.** Dữ liệu GPS lộ cả nơi bạn sống.
 
-Fotollection làm tất cả những việc đó **ngay trên máy bạn**, với tốc độ của Rust native.
+Fotollection làm tất cả những việc đó **ngay trên máy bạn**: 1.000 ảnh mở trong 0,12 giây, xuất 18 ảnh mỗi giây, và bản in giữ trọn chi tiết và màu của máy ảnh:
+
+![Chi tiết giữ lại: Fotollection 100 %, web editor 13 %. Độ bão hoà màu giữ lại với ảnh Display P3: 99,9 % so với 86,8 %. Sai lệch màu ΔE2000: 0,19 so với 1,39, mắt thấy được từ 1.](docs/images/bench-quality-vi.svg)
+
+So với cách xuất thường thấy của web editor (mô phỏng với thiết lập chuẩn: bỏ ICC profile, 2000 px, 4:2:0, chất lượng 80), đo trên Apple M3; cách đo và mọi con số nằm ở mục [Hiệu năng](#hiệu-năng).
+
+## Cách dùng
+
+1. **Mở thư mục của chuyến đi.** JPEG, HEIC từ iPhone hay RAW máy ảnh, hàng nghìn tấm một lúc; app gợi ý tấm đẹp nhất.
+2. **Giữ những tấm muốn in.** Ngày và nơi chụp in lên từng tấm bằng font LCD kiểu máy film, khung crop vừa khổ của tiệm, một look cho màu.
+3. **Xuất cho tiệm in** ở chất lượng gốc, đã bỏ GPS, rồi mang file ra máy in ảnh: dm, Rossmann, CEWE, hay 7-Eleven, Lawson và FamilyMart ở Nhật.
+
+<p align="center">
+  <img src="site/assets/img/results/stamp-vi.webp" alt="Ảnh in hoàn chỉnh với dấu ngày kiểu máy film" width="23%" />
+  <img src="site/assets/img/results/frame-vi.webp" alt="Ảnh in hoàn chỉnh với khung thông tin Shot on" width="23%" />
+  <img src="site/assets/img/results/card-vi.webp" alt="Bưu thiếp hoàn chỉnh: ảnh và mặt địa chỉ" width="51%" />
+</p>
+
+<p align="center"><sub>Ảnh in đúng như Fotollection xuất ra. Ảnh Praha © @hoangphi01.</sub></p>
+
+<p align="center">
+  <img src="site/assets/img/grid-vi-light.webp" alt="Cửa sổ chính Fotollection (giao diện sáng)" width="49%" />
+  <img src="site/assets/img/grid-vi-dark.webp" alt="Cửa sổ chính Fotollection (giao diện tối)" width="49%" />
+</p>
 
 ## Tính năng
 
-| | Tính năng | Từ bản |
-|---|---------|-------|
-| 📇 | **Sổ địa chỉ** (mới trong v0.14.3): lưu người nhận theo tên rồi chọn lại trên bất kỳ bưu thiếp nào, kèm gợi ý những người nhận Nhật và Hàn gần đây; mỗi tấm có người gửi riêng; một người nhận hay lời nhắn cho nhiều tấm trong một bước; **look, LUT và preset trong chế độ Ghép ảnh**, cả trong bản xem trước của tấm | v0.14.3 |
-| 🌏 | **Tiếng Nhật và tiếng Hàn** (mới trong v0.14.2): app bằng 日本語 và 한국어; はがき của Nhật và 우편엽서 của Hàn theo đúng quy định bưu điện, địa chỉ điền từ chính dữ liệu bưu điện nhờ **AddAssist**, không cần mạng; khổ in của cửa hàng tiện lợi Nhật và của Hàn | v0.14.2 |
-| 🎞️ | **Hạt film và tối góc** tính bằng milimét trên ảnh in, **khôi phục vùng cháy sáng** cho trời trắng xoá trong RAW, xoay khổ in nằm hay đứng cho từng ảnh; app bằng **tiếng Đức** và **tiếng Hung** (mới trong v0.14.1) | v0.14.1 |
-| 🌈 | **Look** (mới trong v0.14.0): một chạm là ảnh có màu, tám look của Fotollection hiện ngay trên ảnh của bạn, có chỉnh **Mức độ**; **Lưu thành look** giữ màu của riêng bạn; dải look dưới ảnh ở mọi chế độ, và ở chế độ Đơn giản một phím số chọn một look | v0.14.0 |
-| 🎛️ | **Preset Lightroom và LUT** (mới trong v0.14.0): preset `.xmp`, `.lrtemplate`, `.zip` và LUT `.cube`, HaldCLUT hay LUMIX Lab của bạn thành look, đọc bằng Rust; **Color Mixer** như bảng HSL của Lightroom, **Khử sương**, và áp một look cho nhiều ảnh cùng lúc từ lưới ảnh | v0.14.0 |
-| 💾 | **Cài đặt → Dữ liệu** (mới trong v0.14.0): chuyển sang máy khác bằng một file `.fotosettings`, xem Fotollection giữ gì trên máy này, đặt lại cài đặt hoặc xóa dữ liệu | v0.14.0 |
-| 📊 | **Đọc ảnh** (mới trong v0.13.1): biểu đồ màu phía trên Điều hướng, thay đổi theo thanh trượt, **J** để thấy vùng mất chi tiết trên ảnh, **W** để cân bằng trắng từ một điểm xám; và **sao chép, dán, đặt lại thiết lập** cho một ảnh hay mọi ảnh đã chọn, mỗi lần là một bước hoàn tác | v0.13.1 |
-| 🎨 | **Chỉnh màu** (mới trong v0.9.9): **Cơ bản** (sáng, tương phản, ấm / lạnh, bão hoà, thêm vùng sáng, vùng tối, tint, rực màu) và **Công cụ** (fade, nhuộm vùng tối và vùng sáng, trắng đen qua kính lọc), cho mọi ảnh hoặc từng ảnh; dấu ngày và viền không bao giờ bị nhuộm, ảnh chưa chỉnh gì in ra như trước | v0.9.9 |
-| ✉️ | **Bưu thiếp** (mới trong v0.9.4): trong chế độ Ghép ảnh, mỗi tấm in có một ảnh và mặt sau bưu thiếp, ô dán tem nét đứt và dòng kẻ, chữ gõ bằng font máy đánh chữ hoặc font viết tay, hay tự viết tay; bưu thiếp Nhật, Hàn và sổ địa chỉ ở các dòng trên | v0.9.4 |
-| 🎚️ | **Ba chế độ** (mới trong v0.9.0): **Đơn giản**, từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất; **Ghép ảnh**, hai ảnh trên một tấm in như máy half-frame (một tấm 10 × 15 chứa hai ảnh 10 × 7,5), có cỡ gợi ý, đường cắt và kéo-thả để đổi thứ tự; **Pro**, đủ mọi điều khiển | v0.9.0 |
-| 🔲 | **Viền 3 mm** nằm trong khổ in cho mọi tấm in, có hay không có khung thông tin (mới trong v0.9.0) | v0.9.0 |
-| ⏱️ | **Đồng hồ máy ảnh**: máy để sai giờ được chỉnh theo một ảnh điện thoại chụp cùng lúc; mọi ảnh của máy đó dịch theo, tệp ảnh không bị sửa | v0.8.0 |
-| ⭐ | **Sao từ Lightroom**: số sao và cờ loại mà Lightroom, Bridge, Capture One hay darktable lưu trong tệp XMP đi kèm được nhập cùng ảnh; tệp XMP không bao giờ bị sửa | v0.8.0 |
-| 🧭 | **Vị trí từ điện thoại**: ảnh máy ảnh không có GPS lấy vị trí từ ảnh điện thoại chụp cùng cảnh cách vài phút; cặp chắc chắn được điền ngay, cặp còn lại hiện cạnh nhau để bạn duyệt | v0.8.0 |
-| 📍 | **Đặt ngày và nơi bằng tay**: gán ngày và nơi chụp cho ảnh scan, ảnh không có EXIF hay GPS, từng ảnh hoặc nhiều ảnh một lúc, tìm địa điểm offline; đổi tên một nơi ("Praha 1" → "Prague") thì mọi bản in đổi theo | v0.8.0 |
-| 🎥 | **Chụp từ máy ảnh cắm dây**: xem trực tiếp với khung cỡ in, bấm Chụp, ảnh vào một tab để lưu hoặc xóa; không cần cài driver (Windows, Sony a6400 trước) | v0.8.0 |
-| 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, xử lý bằng bộ xử lý của riêng Fotollection (demosaic sạch hơn, màu trung tính hoặc màu của máy chỉ với một cú nhấp, độ sáng, vùng sáng, vùng tối và cân bằng trắng chỉnh trên chính dữ liệu của máy ảnh, màu của bầu trời bị cháy sáng được dựng lại); trên macOS, Panasonic và Olympus do hệ điều hành xử lý, có hiệu chỉnh ống kính; ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. Trên Windows không cần cài gì thêm | v0.7.0 |
-| 🖱️ | **Mở ảnh bằng Fotollection** từ Finder hoặc Explorer: ảnh mở ngay, thư mục của ảnh thành một tab | v0.7.0 |
-| 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, có thể giữ trọn ảnh trong khung vuông hay tỷ lệ bất kỳ kèm nền, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | v0.4.0 |
-| 📅 | **Dấu ngày và nơi chụp** lấy từ EXIF, bằng kiểu chữ LCD như máy ảnh phim. Địa điểm tra offline, không gọi API nào | v0.1.0 |
-| ✂️ | **Crop hàng loạt** theo 21 khổ in của cửa hàng, xếp theo thị trường: châu Âu (9×13 … 20×30, vuông, dải), Nhật (L判, 2L判, はがき) và Hàn (4 × 6 … 8 × 10 in), khổ của riêng bạn hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | v0.1.0 |
-| ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc (cờ, sao, RAW hay không), ảnh RAW có badge trong gallery, dải ảnh dưới tấm ảnh trong preview, và chế độ chỉnh ảnh quen thuộc với người dùng Lightroom (phím tắt, so sánh trước/sau cạnh nhau hoặc chia đôi, Điều hướng và Lịch sử, phủ kín cửa sổ); export đúng tập ảnh đang lọc | v0.1.0 |
-| ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline *Giữ ảnh tốt nhất* giữ tấm đẹp nhất trong Không gian làm việc và chuyển các tấm khác sang Để riêng (v0.13.1). | v0.1.0 |
-| 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | v0.1.0 |
-| 🖼️ | **Giữ nguyên chất lượng**: export ở độ phân giải đầy đủ, giữ ICC profile, JPEG 4:4:4 cho ảnh in | v0.1.0 |
-| 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | v0.1.0 |
-| 🔒 | **Xóa GPS khi export** theo mặc định. Không tài khoản, không cloud, không telemetry | v0.1.0 |
-| 🌐 | Giao diện **tiếng Anh, tiếng Đức, tiếng Hung, tiếng Việt, tiếng Nhật và tiếng Hàn**, theo ngôn ngữ của máy ở lần chạy đầu | v0.1.0 |
-| 📦 | **File dự án như `.docx`**: lưu lại, mở trên máy khác với đúng font, logo và thiết lập, chỉ lại thư mục ảnh đã bị chuyển | v0.1.0 |
+| | |
+|---|---|
+| 📅 **Ngày và nơi chụp trên ảnh in** | lấy từ EXIF, bằng font LCD của máy film, địa điểm tìm offline |
+| ⏱️ **Máy ảnh và điện thoại cùng nhau** | giờ sai của máy ảnh sửa từ một tấm điện thoại chụp cùng lúc, và địa điểm lấy từ ảnh điện thoại chụp cùng cảnh |
+| ✂️ **Đúng khổ của tiệm in** | 21 khổ in của tiệm và máy in ảnh ở châu Âu, Nhật và Hàn, khổ tự đặt, hay giữ nguyên hình ảnh gốc, kèm viền 3 mm để máy cắt không phạm vào ảnh |
+| ✨ **Gợi ý tấm đẹp nhất** | gom ảnh chụp liên tiếp và ảnh giống nhau, gợi ý tấm nét nhất, mắt mở, kèm lý do; sao, cờ và bộ lọc, phím tắt như Lightroom |
+| 📷 **Mọi loại ảnh** | JPEG, PNG, HEIC từ iPhone, và RAW máy ảnh: Fujifilm RAF, Panasonic, Canon, Nikon, Sony, Olympus và DNG đều dùng được ngay hôm nay |
+| 🌈 **Look, preset và LUT** | một chạm là ảnh có màu; dùng được cả preset Lightroom của bạn và LUT LUMIX Lab hay `.cube`; công cụ màu như Lightroom |
+| ✉️ **Bưu thiếp** | một mặt là ảnh, mặt sau là phần địa chỉ, gõ hoặc viết tay; はがき của Nhật và 우편엽서 của Hàn, địa chỉ tự điền từ mã bưu chính (**AddAssist**) |
+| 🎚️ **Ba chế độ** | **Đơn giản** (giữ hay bỏ, rồi in), **Ghép ảnh** (hai ảnh trên một tấm in, hoặc bưu thiếp) và **Chuyên nghiệp** (đủ mọi điều chỉnh) |
+| 🔒 **Riêng tư từ thiết kế** | không tài khoản, không cloud, không telemetry; GPS bị xoá khi xuất; kết nối mạng duy nhất là kiểm tra bản mới, tắt được |
 
-Đặc tả đầy đủ: [docs/PRD.md](docs/PRD.md) (tiếng Anh).
+**Mới trong v0.14**
+
+- **v0.14.3:** sổ địa chỉ cho bưu thiếp, người gửi riêng cho từng tấm, và look, LUT, preset trong chế độ Ghép ảnh.
+- **v0.14.2:** app bằng 日本語 và 한국어, はがき và 우편엽서 với địa chỉ tự điền từ mã bưu chính, khổ in của Nhật và Hàn.
+- **v0.14.1:** hạt film và tối góc tính bằng milimét trên ảnh in, khôi phục vùng cháy sáng cho trời trắng xoá trong RAW, app bằng tiếng Đức và tiếng Hung.
+
+Giao diện tiếng Anh, tiếng Việt, tiếng Đức, tiếng Hung, 日本語 và 한국어. Từng bước có hình: [hướng dẫn](https://fotollection.org/vi/manual/). Từng phiên bản: [CHANGELOG.md](CHANGELOG.md). Từng yêu cầu: [docs/PRD.md](docs/PRD.md).
 
 ## Lộ trình
 
-![Lộ trình: còn bao xa tới v1.0.0, bao nhiêu yêu cầu đã phát hành, và các bản dự kiến cho từng quý tới quý 4/2028.](docs/images/roadmap-vi.svg)
+![Lộ trình: Fotollection đã dùng trọn vẹn hôm nay; v1.0.0, bản ổn định, là mốc tiếp theo, rồi các bản dự kiến cho từng quý tới quý 4/2028.](docs/images/roadmap-vi.svg)
 
-Fotollection được lên kế hoạch hai năm, tới 11/2028: v0.14.4 và **v1.0.0 vào tháng 12/2026**, sau đó mỗi tháng một bản với chủ đề riêng, bảo trì đi trước. Sắp tới: nhóm ảnh theo chuyến đi, tìm ảnh trùng và crop theo khuôn mặt, xem trước photobook và mã QR sau lưng ảnh in. Mọi yêu cầu và quý của nó: [docs/ROADMAP.md](docs/ROADMAP.md); những gì còn lại trước v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+Fotollection đã dùng trọn vẹn hôm nay; **v1.0.0** vào tháng 12/2026 là lời hứa ổn định. Trước đó là v0.14.4 vào tháng 11; sau đó mỗi tháng một bản với chủ đề riêng, bảo trì đi trước, kế hoạch tới 11/2028. Sắp tới: nhóm ảnh theo chuyến đi, tìm ảnh trùng và crop theo khuôn mặt, xem trước photobook và mã QR sau lưng ảnh in. Mọi yêu cầu và quý của nó: [docs/ROADMAP.md](docs/ROADMAP.md); các hạng mục còn lại trước v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+
+## Tải về
+
+Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` cho Windows 10/11 (file `.msi` dành cho bộ phận IT), và AppImage hoặc `.deb` cho Linux 64-bit ([những distro nào](#linux)). Lúc khởi động, app hỏi GitHub một lần xem có bản mới không (tắt được trong Cài đặt → Cập nhật) và không bao giờ tự tải gì về. Cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
+
+> [!IMPORTANT]
+> Các bản build hiện **chưa được ký số** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)): chứng chỉ ký số tốn tiền mà một dự án mã nguồn mở của một người chưa có. Mã nguồn công khai, mọi bản build đều do CI của GitHub tạo ra, và app chỉ lên mạng để kiểm tra bản mới. Lần mở đầu tiên:
+>
+> - **macOS:** System Settings → Privacy & Security → **Open Anyway**
+> - **Windows:** SmartScreen → **More info** → **Run anyway**
+> - **Linux:** không cần bấm gì thêm; cho AppImage quyền chạy, hoặc cài file `.deb` (bên dưới)
+>
+> Kiểm tra từng file tải về với `SHA256SUMS.txt` trên trang phát hành. Xem [chính sách ký mã và quyền riêng tư](https://fotollection.org/vi/code-signing/).
+
+### Theo hệ điều hành
+
+Cùng một app trên mọi hệ điều hành, với các khác biệt sau ([ADR-0034](docs/adr/0034-linux-lean.md)):
+
+| | macOS | Windows | Linux |
+|---|:-:|:-:|:-:|
+| Lọc ảnh, sao, cờ, ảnh đẹp nhất, giỏ in | ✓ | ✓ | ✓ |
+| Khổ in, cắt, cân ngang, phóng to, dấu ngày, khung thông tin | ✓ | ✓ | ✓ |
+| Địa điểm offline, ngày và nơi chụp đặt tay, đồng hồ máy ảnh | ✓ | ✓ | ✓ |
+| Xuất để in và để đăng mạng xã hội | ✓ | ✓ | ✓ |
+| Look, preset Lightroom và LUT | ✓ | ✓ | ✓ |
+| JPEG và PNG | ✓ | ✓ | ✓ |
+| Ảnh RAW | ✓ ¹ | ✓ | ✓ |
+| HEIC (ảnh iPhone) | ✓ | ✓ ² | chưa có ³ |
+| Chụp qua cáp USB từ máy ảnh | chưa có | ✓ ⁴ | — |
+| "Mở bằng" từ trình quản lý file | ✓ | ✓ | ✓ ⁵ |
+| *Kiểm tra cập nhật* tải bản mới | ✓ | ✓ | ✓ ⁶ |
+
+1. Mọi hệ điều hành đều xử lý RAW Bayer bằng bộ xử lý của riêng Fotollection (Fujifilm X-Trans qua rawler cho tới v1.1); trên macOS, ảnh RAW Panasonic và Olympus do hệ điều hành xử lý trước để được sửa méo ống kính, việc bộ xử lý của Fotollection chưa làm. Trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng.
+2. Cần cài miễn phí **HEIF Image Extensions** và **HEVC Video Extensions** của Microsoft.
+3. HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection không đóng gói kèm (vì bằng sáng chế). Bản sau sẽ dùng `libheif` mà distro của bạn cài (FR-068). Trước đó, hãy chuyển ảnh HEIC sang JPEG.
+4. Sony a6400 trước ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).
+5. Với bản `.deb`. AppImage không tự đăng ký với trình quản lý file, trừ khi dùng công cụ như AppImageLauncher.
+6. AppImage tải AppImage mới; bản `.deb` mở trang phát hành.
+
+### Linux
+
+<details>
+<summary>Những distro nào, và cách cài</summary>
+
+**Chạy được** trên Linux 64-bit có glibc 2.35 trở lên, x86_64 hoặc ARM64:
+
+- **AppImage:** Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro và các distro cùng thời.
+- **`.deb`:** Ubuntu, Debian, Mint, Pop!_OS, elementary OS và Zorin OS.
+
+**Chạy được, cần thêm một bước:**
+
+- **Ubuntu 24.04 trở lên:** AppImage cần FUSE 2, cài một lần: `sudo apt install libfuse2t64`. Cũng có thể chạy với `--appimage-extract-and-run`.
+- **NixOS:** `appimage-run Fotollection_*.AppImage`.
+- **Fedora Silverblue và các hệ bất biến khác:** dùng AppImage.
+- **Card đồ hoạ Nvidia:** Fotollection tự tắt bộ dựng DMA-BUF của WebKit, tránh lỗi cửa sổ trắng.
+
+**Không chạy** trên:
+
+- glibc cũ hơn 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky hoặc Alma 8, openSUSE Leap 15;
+- hệ dùng musl như Alpine;
+- máy 32-bit;
+- ChromeOS khi chưa bật Linux.
+
+**Cài đặt:**
+
+```sh
+# Một dòng cho mọi distro ở trên: kho APT có ký trên Ubuntu, Debian, Mint và họ hàng
+# (cập nhật sau đó bằng sudo apt upgrade), AppImage trong ~/.local ở các distro khác
+curl -fsSL https://fotollection.org/install.sh | sh
+
+# Hoặc tự thêm kho APT
+curl -fsSL https://fotollection.org/apt/fotollection.gpg | sudo tee /usr/share/keyrings/fotollection.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/fotollection.gpg] https://fotollection.org/apt stable main" | sudo tee /etc/apt/sources.list.d/fotollection.list
+sudo apt update && sudo apt install fotollection
+
+# AppImage (các distro trên), x86_64; máy ARM dùng file _aarch64
+chmod +x Fotollection_*_amd64.AppImage && ./Fotollection_*_amd64.AppImage
+
+# .deb (Ubuntu, Debian, Mint…), trong thư mục đã tải về; máy ARM dùng _arm64.deb
+sudo apt install ./Fotollection_*_amd64.deb
+```
+
+</details>
+
+### Cấu hình yêu cầu
+
+<details>
+<summary>Tối thiểu và khuyến nghị</summary>
+
+| | Tối thiểu | Khuyến nghị | Ghi chú |
+|---|---|---|---|
+| **Hệ điều hành** | macOS 11 Big Sur, Windows 10 64-bit, hoặc Linux 64-bit có glibc 2.35 ([những distro nào](#linux)) | macOS 13 trở lên, Windows 11, hoặc Ubuntu 24.04 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10. Linux dùng WebKitGTK 4.1, có sẵn trong AppImage và được cài kèm bản `.deb` |
+| **Bộ xử lý** | CPU 64-bit bất kỳ trong khoảng 8 năm gần đây | Apple Silicon, hoặc x64 đời mới từ 4 nhân | Công việc được chia cho mọi nhân. Mọi số liệu trong [Hiệu năng](#hiệu-năng) đo trên Apple M3 |
+| **RAM** | 4 GB | Từ 8 GB | Khi xuất ảnh, Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Từ v0.11.0, bản xem trước giữ tối đa một phần tư bộ nhớ để ảnh mở ngay ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
+| **Ổ đĩa** | Trống 100 MB, cộng phần cache | Trống 1 GB | Bộ cài nặng 33–118 MB, trong ngân sách 150 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). Cache tốn khoảng 25 MB cho 1.000 ảnh (thumbnail khoảng 22 KB, phân tích ảnh đẹp nhất khoảng 4 KB mỗi ảnh) và xoá lúc nào cũng được. File export cần chỗ cho ảnh độ phân giải đầy đủ |
+| **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
+| **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |
+| **HEIC (ảnh iPhone)** | macOS: có sẵn | — | Windows: cài **HEIF Image Extensions** và **HEVC Video Extensions** từ Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)). Linux: chưa có ([ADR-0034](docs/adr/0034-linux-lean.md)) |
+| **Ảnh RAW** | macOS: có sẵn | — | Windows và Linux: có sẵn trong Fotollection, không cần cài gì ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)). Trên Windows, nếu đã cài **Raw Image Extension** của Microsoft, codec của hệ điều hành là phương án dự phòng cuối cùng ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)) |
+
+</details>
 
 ## Hiệu năng
 
-Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia, nên tốc độ là yêu cầu bắt buộc, không phải thứ có thì tốt. **Mọi con số dưới đây đều đo thật, không phải ước tính**, trên Apple M3 (8 nhân, 16 GB) với ảnh JPEG 16 MP thật, ngày 23/10/2026. Mỗi biểu đồ có một mốc tham chiếu để so: ngân sách hiệu năng, trần RAM, hoặc trình duyệt. Kết quả đầy đủ: [docs/RESULT.md](docs/RESULT.md) (tiếng Anh).
+Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia, nên tốc độ là yêu cầu bắt buộc, không phải thứ có thì tốt. **Mọi con số dưới đây đều đo thật, không phải ước tính**, trên Apple M3 (8 nhân, 16 GB) với ảnh JPEG 16 MP thật. Lần đo đầu tiên, ngày 23/10/2026 trên v0.1, được giữ làm mốc tham chiếu; mỗi mục ghi ngày đo của nó, và các phép đo được chạy lại hằng tháng so với mốc đó ([ROADMAP](docs/ROADMAP.md)). Mỗi biểu đồ có một mốc tham chiếu để so: ngân sách hiệu năng, trần RAM, hoặc trình duyệt. Kết quả đầy đủ: [docs/RESULT.md](docs/RESULT.md) (tiếng Anh).
 
 ### So với ngân sách
 
@@ -140,7 +232,7 @@ Lần export 5.035 ảnh chạy hơn 5 phút, và M3 tự giảm xung khi tải 
 
 ### So với trình duyệt
 
-Phương án thay thế dễ thấy nhất là một web app làm đúng việc đó trong trình duyệt (`createImageBitmap` + `OffscreenCanvas`, mỗi nhân CPU một Web Worker). Cả hai chạy trên cùng 95 ảnh, cùng một máy:
+Phương án thay thế dễ thấy nhất là một web app làm đúng việc đó trong trình duyệt (`createImageBitmap` + `OffscreenCanvas`, mỗi nhân CPU một Web Worker). Cả hai chạy trên cùng 95 ảnh, cùng một máy, ngày 23/10/2026, trên v0.1 (sẽ đo lại trên bản hiện tại):
 
 ![Export cả lô: Fotollection 18,0 ảnh/s, trình duyệt 17,9. Preview đã cache: Fotollection 17,4 ms, trình duyệt 18,5 ms. RAM đỉnh: Fotollection 1,35 GB, trình duyệt 1,78 GB.](docs/images/bench-vi.svg)
 
@@ -154,8 +246,8 @@ Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dù
 
 - Trình duyệt chỉ mã hóa JPEG được ở chế độ màu 4:2:0, tức một nửa độ phân giải màu. Fotollection export ảnh in ở 4:4:4, gấp đôi dữ liệu màu, trong cùng thời gian.
 - Fotollection dùng ít hơn 24 % RAM, và việc export có giới hạn RAM, như bài thử batch lớn cho thấy. Một tab trình duyệt thì có trần cứng.
-- Fotollection ghi file ra đĩa với rename nguyên tử và không ghi EXIF, nên GPS không bao giờ rời khỏi máy bạn. Trình duyệt chỉ tạo blob trong RAM và không ghi file nào.
-- ICC profile, RAW 16-bit (v1.1, quý 1/2027), và HEIC nằm ngoài khả năng của trình duyệt.
+- Fotollection ghi file ra đĩa với rename nguyên tử và không bao giờ ghi GPS, nên nơi bạn sống không bao giờ rời khỏi máy. Trình duyệt chỉ tạo blob trong RAM và không ghi file nào.
+- ICC profile, RAW máy ảnh và HEIC nằm ngoài khả năng của trình duyệt.
 
 ### Thời gian preview đi đâu
 
@@ -183,8 +275,6 @@ Mỗi ảnh được giải mã và mã hoá trên một nhân, nên tốc độ
 ### Chất lượng in: bản xuất có giữ nguyên ảnh không?
 
 Nhanh mà bản in bị nông màu thì cũng vô nghĩa. Ảnh in qua web editor thường trông nông, màu bị bệt và mất chiều sâu so với ảnh gốc. Vì vậy bản xuất của Fotollection được so từng điểm ảnh với ảnh gốc (`bench/quality/audit.py`), đặt cạnh bản xuất của một web editor thông thường.
-
-![Chi tiết giữ lại: Fotollection 100 %, web editor 13 %. Độ bão hoà màu giữ lại với ảnh Display P3: 99,9 % so với 86,8 %. Sai lệch màu ΔE2000: 0,19 so với 1,39, mắt thấy được từ 1.](docs/images/bench-quality-vi.svg)
 
 | Đo so với ảnh gốc (trung vị) | Fotollection | Web editor thông thường |
 |------|-----:|-----:|
@@ -239,99 +329,6 @@ Phân tích vẫn nằm trong ngân sách: 17,4 ms mỗi ảnh, 27,6 ms khi có 
 
 Đo lại tất cả bằng `bench/run.sh <thư-mục-ảnh>` và `bench/batch.sh <thư-mục-ảnh>`; chấm điểm gợi ý ảnh đẹp nhất bằng `cargo run --release -p fotollection-core --example eval_bestshot -- <thư-mục-ảnh> <nhãn.json>`. Phương pháp đo ở [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), và các ngân sách mà mọi thay đổi phải tuân theo ở [§3](docs/OPTIMIZATION.md#3-budgets) (tiếng Anh).
 
-## Tải về
-
-Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` hoặc `.msi` cho Windows 10/11, và AppImage hoặc `.deb` cho Linux 64-bit ([những distro nào](#linux)). Số phiên bản theo [Semantic Versioning](docs/RELEASE.md#1-versioning); các bản 0.x là bản xem trước cho tới khi xong MVP. Lúc khởi động, app hỏi GitHub một lần xem có bản mới không (tắt được trong Cài đặt → Cập nhật, FR-103) và không bao giờ tự tải gì về. Cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
-
-> [!IMPORTANT]
-> Các bản build hiện **chưa được ký số** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). Lần mở đầu tiên:
->
-> - **macOS:** System Settings → Privacy & Security → **Open Anyway**
-> - **Windows:** SmartScreen → **More info** → **Run anyway**
-> - **Linux:** không cần bấm gì thêm; cho AppImage quyền chạy, hoặc cài file `.deb` (bên dưới)
->
-> Kiểm tra từng file tải về với `SHA256SUMS.txt` trên trang phát hành. Xem [chính sách ký mã và quyền riêng tư](https://fotollection.org/vi/code-signing/).
-
-### Theo hệ điều hành
-
-Cùng một app trên mọi hệ điều hành, với các khác biệt sau ([ADR-0034](docs/adr/0034-linux-lean.md)):
-
-| | macOS | Windows | Linux |
-|---|:-:|:-:|:-:|
-| Lọc ảnh, sao, cờ, ảnh đẹp nhất, giỏ in | ✓ | ✓ | ✓ |
-| Khổ in, cắt, cân ngang, phóng to, dấu ngày, khung thông tin | ✓ | ✓ | ✓ |
-| Địa điểm offline, ngày và nơi chụp đặt tay, đồng hồ máy ảnh | ✓ | ✓ | ✓ |
-| Xuất để in và để đăng mạng xã hội | ✓ | ✓ | ✓ |
-| Look, preset Lightroom và LUT | ✓ | ✓ | ✓ |
-| JPEG và PNG | ✓ | ✓ | ✓ |
-| Ảnh RAW | ✓ ¹ | ✓ | ✓ |
-| HEIC (ảnh iPhone) | ✓ | ✓ ² | chưa có ³ |
-| Chụp qua cáp USB từ máy ảnh | chưa có | ✓ ⁴ | — |
-| "Mở bằng" từ trình quản lý file | ✓ | ✓ | ✓ ⁵ |
-| *Kiểm tra cập nhật* tải bản mới | ✓ | ✓ | ✓ ⁶ |
-
-1. Mọi hệ điều hành đều xử lý RAW bằng bộ xử lý của riêng Fotollection; trên macOS, ảnh RAW Panasonic và Olympus do hệ điều hành xử lý trước để được sửa méo ống kính, việc bộ xử lý của Fotollection chưa làm. Trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng.
-2. Cần cài miễn phí **HEIF Image Extensions** và **HEVC Video Extensions** của Microsoft.
-3. HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection không đóng gói kèm (vì bằng sáng chế). Bản sau sẽ dùng `libheif` mà distro của bạn cài (FR-068). Trước đó, hãy chuyển ảnh HEIC sang JPEG.
-4. Sony a6400 trước ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).
-5. Với bản `.deb`. AppImage không tự đăng ký với trình quản lý file, trừ khi dùng công cụ như AppImageLauncher.
-6. AppImage tải AppImage mới; bản `.deb` mở trang phát hành.
-
-### Linux
-
-**Chạy được** trên Linux 64-bit có glibc 2.35 trở lên, x86_64 hoặc ARM64:
-
-- **AppImage:** Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro và các distro cùng thời.
-- **`.deb`:** Ubuntu, Debian, Mint, Pop!_OS, elementary OS và Zorin OS.
-
-**Chạy được, cần thêm một bước:**
-
-- **Ubuntu 24.04 trở lên:** AppImage cần FUSE 2, cài một lần: `sudo apt install libfuse2t64`. Cũng có thể chạy với `--appimage-extract-and-run`.
-- **NixOS:** `appimage-run Fotollection_*.AppImage`.
-- **Fedora Silverblue và các hệ bất biến khác:** dùng AppImage.
-- **Card đồ hoạ Nvidia:** Fotollection tự tắt bộ dựng DMA-BUF của WebKit, tránh lỗi cửa sổ trắng.
-
-**Không chạy** trên:
-
-- glibc cũ hơn 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky hoặc Alma 8, openSUSE Leap 15;
-- hệ dùng musl như Alpine;
-- máy 32-bit;
-- ChromeOS khi chưa bật Linux.
-
-**Cài đặt:**
-
-```sh
-# Một dòng cho mọi distro ở trên: kho APT có ký trên Ubuntu, Debian, Mint và họ hàng
-# (cập nhật sau đó bằng sudo apt upgrade), AppImage trong ~/.local ở các distro khác
-curl -fsSL https://fotollection.org/install.sh | sh
-
-# Hoặc tự thêm kho APT
-curl -fsSL https://fotollection.org/apt/fotollection.gpg | sudo tee /usr/share/keyrings/fotollection.gpg > /dev/null
-echo "deb [signed-by=/usr/share/keyrings/fotollection.gpg] https://fotollection.org/apt stable main" | sudo tee /etc/apt/sources.list.d/fotollection.list
-sudo apt update && sudo apt install fotollection
-
-# AppImage (các distro trên), x86_64; máy ARM dùng file _aarch64
-chmod +x Fotollection_*_amd64.AppImage && ./Fotollection_*_amd64.AppImage
-
-# .deb (Ubuntu, Debian, Mint…), trong thư mục đã tải về; máy ARM dùng _arm64.deb
-sudo apt install ./Fotollection_*_amd64.deb
-```
-
-### Cấu hình yêu cầu
-
-| | Tối thiểu | Khuyến nghị | Ghi chú |
-|---|---|---|---|
-| **Hệ điều hành** | macOS 11 Big Sur, Windows 10 64-bit, hoặc Linux 64-bit có glibc 2.35 ([những distro nào](#linux)) | macOS 13 trở lên, Windows 11, hoặc Ubuntu 24.04 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10. Linux dùng WebKitGTK 4.1, có sẵn trong AppImage và được cài kèm bản `.deb` |
-| **Bộ xử lý** | CPU 64-bit bất kỳ trong khoảng 8 năm gần đây | Apple Silicon, hoặc x64 đời mới từ 4 nhân | Công việc được chia cho mọi nhân. Mọi số liệu trong [Hiệu năng](#hiệu-năng) đo trên Apple M3 |
-| **RAM** | 4 GB | Từ 8 GB | Khi xuất ảnh, Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Từ v0.11.0, bản xem trước giữ tối đa một phần tư bộ nhớ để ảnh mở ngay ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
-| **Ổ đĩa** | Trống 100 MB, cộng phần cache | Trống 1 GB | App được giữ dưới 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). Cache tốn khoảng 25 MB cho 1.000 ảnh (thumbnail khoảng 22 KB, phân tích ảnh đẹp nhất khoảng 4 KB mỗi ảnh) và xoá lúc nào cũng được. File export cần chỗ cho ảnh độ phân giải đầy đủ |
-| **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
-| **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |
-| **HEIC (ảnh iPhone)** | macOS: có sẵn | — | Windows: cài **HEIF Image Extensions** và **HEVC Video Extensions** từ Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)). Linux: chưa có ([ADR-0034](docs/adr/0034-linux-lean.md)) |
-| **Ảnh RAW** | macOS: có sẵn | — | Windows và Linux: có sẵn trong Fotollection, không cần cài gì ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)). Trên Windows, nếu đã cài **Raw Image Extension** của Microsoft, codec của hệ điều hành là phương án dự phòng cuối cùng ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)) |
-
-Để build từ mã nguồn, bạn cần thêm khoảng 10 GB trống cho file build Rust (một bản debug và một bản release; `scripts/clean.sh` dọn lại được), Rust (cài qua `rustup`, phiên bản ghim trong `rust-toolchain.toml`), Node.js 22 trở lên, và Xcode Command Line Tools (macOS), MSVC Build Tools (Windows), hoặc các gói phát triển WebKitGTK 4.1 và GTK 3 (Linux, như `scripts/bootstrap.sh` cài). Danh sách đầy đủ ở [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites) (tiếng Anh).
-
 ## Build từ mã nguồn
 
 ```sh
@@ -343,7 +340,17 @@ npm run dev                        # chạy app
 
 Mọi phiên bản công cụ đều được ghim: `rust-toolchain.toml`, `.node-version`, `Cargo.lock`, `package-lock.json` và, với các công cụ Python quản lý bằng uv, `uv.lock`. Nhờ vậy một bản clone mới build ra giống hệt nhau trên mọi máy. Xem [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) (tiếng Anh) để biết yêu cầu, các lệnh và cách dọn dung lượng build (`scripts/clean.sh`).
 
+Để build từ mã nguồn, bạn cần thêm khoảng 10 GB trống cho file build Rust (một bản debug và một bản release; `scripts/clean.sh` dọn lại được), Rust (cài qua `rustup`, phiên bản ghim trong `rust-toolchain.toml`), Node.js 22 trở lên, và Xcode Command Line Tools (macOS), MSVC Build Tools (Windows), hoặc các gói phát triển WebKitGTK 4.1 và GTK 3 (Linux, như `scripts/bootstrap.sh` cài). Danh sách đầy đủ ở [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites) (tiếng Anh).
+
 ## Công nghệ
+
+[![Rust 1.99](https://img.shields.io/badge/rust-1.99-b7410e.svg?logo=rust)](rust-toolchain.toml)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db.svg?logo=tauri&logoColor=white)](https://v2.tauri.app/)
+[![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black)](https://react.dev/)
+[![shadcn/ui](https://img.shields.io/badge/ui-shadcn%2Fui-000000.svg?logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![Docs](https://github.com/hoangphi01/fotollection/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/docs.yml)
+
+**Vì sao nhanh và an toàn:** mọi điểm ảnh và file đều do Rust xử lý, không bao giờ trong webview; lõi không có mã `unsafe` (`unsafe_code = "forbid"`, chỉ hai crate gọi vào hệ điều hành là ngoại lệ); lõi hoàn toàn không có mã mạng, CI kiểm tra; bộ nhớ có giới hạn từ thiết kế (1,45 GB với 5.035 ảnh); giao diện và lõi gọi nhau qua kiểu dữ liệu chặt chẽ.
 
 | Lớp | Công nghệ |
 |-------|------------|
@@ -382,7 +389,7 @@ Rất hoan nghênh đóng góp, của người hay của AI agent. Vui lòng đ�
 - Mỗi thay đổi đều gắn với một mã yêu cầu (`FR-…`, `NFR-…`), và mã không bao giờ dùng lại.
 - Tài liệu được cập nhật trong cùng commit, theo [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md).
 - Báo lỗi kèm mã `ERR-…` và nội dung *Sao chép thông tin chẩn đoán* của app.
-- **Đóng góp từ bên ngoài cần ký CLA** ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
+- Pull request luôn được chào đón; thoả thuận đóng góp (CLA, [ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)) đã lên kế hoạch nhưng chưa áp dụng. Nên bắt đầu từ các issue có nhãn [good first issue](https://github.com/hoangphi01/fotollection/labels/good%20first%20issue) và [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 Báo lỗi bảo mật qua [GitHub security advisory](https://github.com/hoangphi01/fotollection/security/advisories/new) riêng tư, không mở issue công khai.
 
@@ -396,6 +403,9 @@ Fotollection miễn phí, do một sinh viên làm giữa giờ học và giờ 
 
 ### Ghi nhận bên thứ ba
 
+<details>
+<summary>Font, dữ liệu, mô hình và thư viện Fotollection đóng gói kèm</summary>
+
 - Phần kiểm thử giao diện (`scripts/ui-check.sh`, không bao giờ đi kèm bản cài) dùng [axe-core](https://github.com/dequelabs/axe-core) của Deque Systems theo Mozilla Public License 2.0, chỉ là công cụ khi phát triển ([ADR-0042](docs/adr/0042-axe-core-for-ui-tests-only.md)).
 - Danh sách ngôn ngữ ở màn chào mừng và menu ngôn ngữ của website dùng cờ tròn của [circle-flags](https://github.com/HatScripts/circle-flags) (HatScripts, giấy phép MIT, `ui/src/assets/flags/`, `site/assets/flag/`).
 - Mã hóa JPEG dùng [`jpeg-encoder`](https://github.com/vstroebel/jpeg-encoder), một phần dựa trên công trình của Independent JPEG Group.
@@ -407,3 +417,5 @@ Fotollection miễn phí, do một sinh viên làm giữa giờ học và giờ 
 - **Nhãn hiệu.** Logo các hãng máy ảnh trong khung thông tin (Apple, Canon, Fujifilm, Hasselblad, Leica, Lumix, Nikon, Noritsu, Phase One, Ricoh, Samsung, Sony) là nhãn hiệu của chủ sở hữu. Đây là các bản public domain trên Wikimedia Commons ([danh sách và nguồn](crates/core/assets/brands/BRANDS.md)), chỉ dùng để cho biết ảnh được chụp (hoặc scan phim) bằng máy nào. Fotollection không liên kết, không được tài trợ hay bảo trợ bởi các công ty này, và sẽ gỡ logo khi được yêu cầu. Adobe và Lightroom là nhãn hiệu của Adobe Inc.; LUMIX là nhãn hiệu của Panasonic Holdings Corporation. Fotollection đọc preset và LUT làm bằng phần mềm của họ nhưng không liên quan tới và không được hai công ty này bảo trợ.
 - Ảnh RAW trên Windows (và trên macOS với những tệp ImageIO không đọc được), trừ các định dạng đã chuyển sang trình đọc riêng của Fotollection (hiện là DNG, [ADR-0030](docs/adr/0030-our-own-raw-decoder.md)), được giải mã bằng [rawler](https://github.com/dnglab/dnglab) của Daniel Vogelbacher và cộng sự, theo giấy phép GNU Lesser General Public License 2.1 ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)). Toàn bộ mã nguồn Fotollection được công bố, nên có thể xây dựng lại với một bản rawler đã sửa.
 - Gợi ý ảnh tốt nhất đóng gói model phát hiện khuôn mặt [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet) (MIT, © 2020 Shiqi Yu) và model điểm mốc MediaPipe FaceMesh V2 của Google (Apache License 2.0), đã chuyển sang ONNX. License và checksum: `crates/core/assets/models/`.
+
+</details>

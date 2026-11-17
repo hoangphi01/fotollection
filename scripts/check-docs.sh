@@ -251,7 +251,7 @@ for line in open("docs/PRD.md").read().split("\n"):
 done = sum(1 for w, s in status.values() if s == "Done")
 p0 = [i for i, p in prio.items() if p == "P0"]
 p0done = sum(1 for i in p0 if status.get(i, ("", ""))[1] == "Done")
-want = f"{p0done} of {len(p0)} P0 requirements done. {done} of {len(status)} shipped."
+want = f"{p0done} of {len(p0)} checks done. {done} of {len(status)} planned to 2028."
 svg = open("docs/images/roadmap.svg").read()
 desc = re.search(r"<desc[^>]*>([^<]*)</desc>", svg).group(1)
 quarters = re.findall(r"^## (20\d\d-Q[1-4]) — ", open("docs/ROADMAP.md").read(), re.M)

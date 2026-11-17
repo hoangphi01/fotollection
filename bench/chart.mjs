@@ -1426,25 +1426,27 @@ function charts(lang) {
 const ROADMAP_T = {
   en: {
     title: 'Roadmap: where Fotollection stands',
-    v1: 'Road to v1.0.0',
-    v1Unit: (d, n) => `${d} of ${n} P0 requirements done`,
-    all: 'All requirements',
-    allUnit: (d, n) => `${d} of ${n} shipped`,
+    lead: 'Fotollection works end to end today; v1.0.0 is its stability promise.',
+    v1: 'Milestone v1.0.0, stable',
+    v1Unit: (d, n) => `${d} of ${n} checks done`,
+    all: 'Features shipped',
+    allUnit: (d, n) => `${d} of ${n} planned to 2028`,
     shipped: 'Shipped',
     now: 'now',
-    reqs: (n) => `${n} requirements`,
-    footer: 'From docs/ROADMAP.md and docs/STATUS.md · one quarter per requirement (ADR-0053)',
+    reqs: (n) => `${n} features`,
+    footer: 'From docs/ROADMAP.md and docs/STATUS.md, updated with every release',
   },
   vi: {
     title: 'Lộ trình: Fotollection đang ở đâu',
-    v1: 'Đường tới v1.0.0',
-    v1Unit: (d, n) => `${d}/${n} yêu cầu P0 đã xong`,
-    all: 'Mọi yêu cầu',
-    allUnit: (d, n) => `${d}/${n} đã phát hành`,
+    lead: 'Fotollection đã dùng trọn vẹn hôm nay; v1.0.0 là lời hứa ổn định.',
+    v1: 'Mốc v1.0.0, bản ổn định',
+    v1Unit: (d, n) => `${d}/${n} hạng mục đã chốt`,
+    all: 'Tính năng đã ra',
+    allUnit: (d, n) => `${d}/${n} dự kiến tới 2028`,
     shipped: 'Đã ra',
     now: 'hiện tại',
-    reqs: (n) => `${n} yêu cầu`,
-    footer: 'Từ docs/ROADMAP.md và docs/STATUS.md · mỗi yêu cầu một quý (ADR-0053)',
+    reqs: (n) => `${n} tính năng`,
+    footer: 'Từ docs/ROADMAP.md và docs/STATUS.md, cập nhật mỗi lần phát hành',
   },
 }
 
@@ -1485,11 +1487,12 @@ function roadmapChart(lang) {
       + bar(cls, 190, y, w, 18, unit(d, n))
       + `<text class="t3 num" x="190" y="${y + 34}">${esc(unit(d, n))} (${Math.round((100 * d) / n)} %)</text>`
   }
-  body += progress(30, t.v1, t.v1Unit, f.p0Done, f.p0, 's1')
-  body += progress(80, t.all, t.allUnit, f.done, f.total, 's3')
+  body += `<text class="t2" x="0" y="32">${esc(t.lead)}</text>`
+  body += progress(50, t.v1, t.v1Unit, f.p0Done, f.p0, 's1')
+  body += progress(100, t.all, t.allUnit, f.done, f.total, 's3')
   // The quarters as a line of milestones: shipped, now, then the rest.
   const rows = [{ q: t.shipped, releases: ['v0.1.0 → v0.14.3'], count: f.done, past: true }, ...f.quarters]
-  const y0 = 150
+  const y0 = 170
   const step = 30
   body += `<line class="axis" x1="8" x2="8" y1="${y0}" y2="${y0 + (rows.length - 1) * step}"/>`
   rows.forEach((r, i) => {
