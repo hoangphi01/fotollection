@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Proper names that clippy::doc_markdown would otherwise want in backticks.
-doc-valid-idents = ["YuNet", "FaceMesh", "MediaPipe", "GeoNames", "..", "TFLite"]
+doc-valid-idents = ["YuNet", "FaceMesh", "MediaPipe", "GeoNames", "RollSense", "TinyCLIP", "PhotoTOC", "..", "TFLite"]
 # ADR-0048: a thread or pool that panics must never take the app down nor leave it waiting.
 # Threads start through `fotollection_core::supervise`, pools through `pool::contained`.
 disallowed-methods = [

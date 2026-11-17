@@ -8,6 +8,7 @@
 pub mod clip;
 pub mod dupes;
 pub mod events;
+pub mod facets;
 pub mod locations;
 pub mod pass;
 pub mod stacks;
@@ -17,12 +18,15 @@ pub mod trips;
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::metadata::{CommentKind, PhotoMeta};
 
 /// Where a photo came from.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, specta::Type,
+)]
+#[serde(rename_all = "camelCase")]
 pub enum SourceClass {
     /// The phone's own camera (Apple's `MakerNote`).
     Camera,
@@ -104,6 +108,13 @@ struct Rules {
     events: events::EventRules,
     trips: trips::TripRules,
     duplicates: dupes::DupRules,
+    /// A subject is named only at this probability or more (95 % right on the owner's labels).
+    subject_min_p: f32,
+}
+
+/// The probability a subject must reach to be named ([`clip::subjects`]).
+pub fn subject_min_p() -> f32 {
+    rules().subject_min_p
 }
 
 /// The near-duplicates' thresholds ([`dupes`]), as measured on the owner's labels.

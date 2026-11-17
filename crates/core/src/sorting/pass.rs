@@ -97,15 +97,7 @@ impl SortingCache {
         if let Some(cached) = self.get(record) {
             return Ok(cached);
         }
-        // A cached T1 is already upright and in sRGB; a file is turned as shown.
-        let upright = if let Some(t1) = thumbs.cached_t1(record).and_then(|t| codec.decode(&t).ok())
-        {
-            t1.image
-        } else {
-            let bytes = std::fs::read(&record.path)?;
-            let decoded = decode_for_screen(codec, &bytes, DECODE_EDGE)?;
-            apply_orientation(decoded.image, record.orientation)
-        };
+        let upright = picture(record, thumbs, codec)?;
         let pixels = Pixels {
             hash: super::dupes::dhash(&upright),
             embedding: embedder.embed(&upright)?,
@@ -113,6 +105,21 @@ impl SortingCache {
         let _ = write_atomic(&self.path(record), &encode(&pixels));
         Ok(pixels)
     }
+}
+
+/// The cheapest upright picture of a photo: its cached T1 (already upright and in sRGB),
+/// else the file decoded for the screen and turned as shown.
+pub fn picture(
+    record: &PhotoRecord,
+    thumbs: &ThumbCache,
+    codec: &dyn JpegCodec,
+) -> Result<crate::image::RgbImage, SortingError> {
+    if let Some(t1) = thumbs.cached_t1(record).and_then(|t| codec.decode(&t).ok()) {
+        return Ok(t1.image);
+    }
+    let bytes = std::fs::read(&record.path)?;
+    let decoded = decode_for_screen(codec, &bytes, DECODE_EDGE)?;
+    Ok(apply_orientation(decoded.image, record.orientation))
 }
 
 fn encode(p: &Pixels) -> Vec<u8> {

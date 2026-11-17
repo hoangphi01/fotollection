@@ -5,6 +5,7 @@
 
 use std::collections::HashMap;
 
+mod sense;
 mod sorted;
 use std::path::{Path, PathBuf};
 
@@ -90,6 +91,9 @@ pub struct CullFilter {
     /// RAW files only, or none.
     #[serde(default)]
     pub kind: KindFilter,
+    /// RollSense's pick (FR-141): a source, a subject, a time, a trip, a place…
+    #[serde(default)]
+    pub sort: Option<crate::sorting::facets::SortPick>,
 }
 
 /// One source folder in the library list (FR-056).
@@ -628,6 +632,14 @@ pub struct Library {
     stacks: std::sync::OnceLock<(Vec<crate::sorting::stacks::Stack>, HashMap<u32, usize>)>,
     /// Events, trips and places (FR-141 S4), worked out once after a change.
     roll: std::sync::OnceLock<crate::sorting::Roll>,
+    /// From the pixels' pass (FR-141 S6), in memory only: each photo's named subject (an
+    /// index into `clip::subject_keys`) and difference hash, and the proven duplicates.
+    subject: Vec<Option<u8>>,
+    hash: Vec<Option<u64>>,
+    analysed: Vec<bool>,
+    duplicate: Vec<bool>,
+    /// What each photo is under RollSense's picks, worked out once after a change.
+    sort_index: std::sync::OnceLock<sense::SortIndex>,
 }
 
 const NONE_U16: u16 = u16::MAX;
@@ -1021,6 +1033,11 @@ impl Library {
         self.my_phones = std::sync::OnceLock::new();
         self.stacks = std::sync::OnceLock::new();
         self.roll = std::sync::OnceLock::new();
+        self.subject.push(None);
+        self.hash.push(None);
+        self.analysed.push(false);
+        self.duplicate.push(false);
+        self.sort_index = std::sync::OnceLock::new();
         Some(id)
     }
 
@@ -1093,6 +1110,7 @@ impl Library {
         let old = self.edits(id);
         if old.date != edits.date || old.place != edits.place {
             self.roll = std::sync::OnceLock::new();
+            self.sort_index = std::sync::OnceLock::new();
         }
         if let Some(i) = self.index(id) {
             self.manual_date[i] = edits
@@ -1221,6 +1239,7 @@ impl Library {
                 && self.index(id).is_some_and(|i| {
                     filter.matches(&self.edits(id), self.facts[i].unusual(), self.is_raw_at(i))
                 })
+                && filter.sort.as_ref().is_none_or(|pick| self.picks(pick, id))
         });
         ids
     }

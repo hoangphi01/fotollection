@@ -58,6 +58,8 @@ pub enum TaskKind {
     Previews,
     /// Thumbnails coloured after a look was given to many photos (FR-114).
     Looks,
+    /// RollSense's pixels pass: subjects and duplicates (FR-141).
+    Sort,
 }
 
 /// Start-up is over: the last session is back, or there was none (FR-060).
@@ -72,6 +74,16 @@ pub struct AnalysisFinished {
     pub analyzed: u32,
     pub failed: u32,
     pub groups: u32,
+    pub cancelled: bool,
+}
+
+/// RollSense's pass finished (or was cancelled); the UI refetches the facets (FR-141).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[serde(rename_all = "camelCase")]
+pub struct SortingFinished {
+    pub job_id: u32,
+    pub analysed: u32,
+    pub failed: u32,
     pub cancelled: bool,
 }
 

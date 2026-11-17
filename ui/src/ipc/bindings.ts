@@ -814,6 +814,13 @@ export const commands = {
 	 *  another shot.
 	 */
 	keepOne: (group: PhotoId, photo: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_one", { group, photo })),
+	/**
+	 *  Reads every photo's pixels (cached ones at once), then proves the duplicates. Returns
+	 *  the job id for `cancel_job`; a second call while one runs returns the running job.
+	 */
+	analyzeSorting: () => typedError<number, IpcError>(__TAURI_INVOKE("analyze_sorting")),
+	/**  Everything RollSense lists, with counts. */
+	sortFacets: () => typedError<Facets, IpcError>(__TAURI_INVOKE("sort_facets")),
 	/**  Finds a camera, runs its handshake and starts the session. */
 	cameraConnect: () => typedError<CameraInfo, IpcError>(__TAURI_INVOKE("camera_connect")),
 	/**
@@ -871,6 +878,7 @@ export const events = {
 	openPhoto: makeEvent<OpenPhoto>("open-photo"),
 	quitBlocked: makeEvent<QuitBlocked>("quit-blocked"),
 	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
+	sortingFinished: makeEvent<SortingFinished>("sorting-finished"),
 	startupFinished: makeEvent<StartupFinished>("startup-finished"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
 	thumbReady: makeEvent<ThumbReady>("thumb-ready"),
@@ -1216,12 +1224,24 @@ export type Confidence =
 
 export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
 
+/**  A count under a name. */
+export type Count<T> = {
+	value: T,
+	count: number,
+};
+
 /**  A country `AddAssist` has data for. */
 export type Country = 
 /**  Japan Post's postal-code data. */
 "jp" | 
 /**  The Ministry of the Interior's road-name addresses. */
 "kr";
+
+export type CountryFacet = {
+	country: string,
+	count: number,
+	places: PlaceFacet[],
+};
 
 /**  A country and its data, for Settings and the manual. */
 export type CountryInfo = {
@@ -1298,6 +1318,8 @@ export type CullFilter = {
 	queue?: QueueView,
 	/**  RAW files only, or none. */
 	kind?: KindFilter,
+	/**  RollSense's pick (FR-141): a source, a subject, a time, a trip, a place… */
+	sort?: SortPick | null,
 };
 
 /**  A saved custom print size (FR-043). Stored in millimetres, short edge first. */
@@ -1386,6 +1408,14 @@ export type EffectivePlace = {
 	/**  The place's own name in the bundled data, before any rename. */
 	original: string,
 	source: PlaceSource,
+};
+
+export type EventFacet = {
+	first: number,
+	firstDay: number,
+	lastDay: number,
+	count: number,
+	place: string | null,
 };
 
 /**
@@ -1481,6 +1511,22 @@ export type ExportTarget =
 { kind: "print" } | { kind: "share"; preset: SharePreset };
 
 export type ExposureSetting = "iso" | "shutter";
+
+/**  Everything RollSense lists, each with its count. */
+export type Facets = {
+	total: number,
+	/**  Photos the pixels' pass has read (subjects and duplicates come from it). */
+	analysed: number,
+	sources: Count<SourceClass>[],
+	subjects: Count<string>[],
+	noSubject: number,
+	years: YearFacet[],
+	trips: TripFacet[],
+	visits: VisitFacet[],
+	countries: CountryFacet[],
+	duplicates: number,
+	stacks: number,
+};
 
 /**  Which parts of a card's text do not fit their lines and are cut on the print. */
 export type Fit = {
@@ -1909,6 +1955,12 @@ export type Mixer = {
  */
 export type Mono = "off" | "neutral" | "yellow" | "orange" | "red" | "green";
 
+export type MonthFacet = {
+	month: number,
+	count: number,
+	events: EventFacet[],
+};
+
 /**
  *  How much the interface moves (FR-100, `docs/TRANS_ANIMATION.md`): `System` follows the
  *  operating system's *Reduce motion*; `Reduce` turns slides and zooms into short fades
@@ -2099,6 +2151,12 @@ export type Place = {
 	lat: number | null,
 	lon: number | null,
 	population: number,
+};
+
+export type PlaceFacet = {
+	id: number,
+	name: string,
+	count: number,
 };
 
 /**  How a place is written on a print (FR-005). */
@@ -2516,6 +2574,56 @@ export type Skipped = {
 	reason: string,
 };
 
+/**  What the grid keeps in RollSense. */
+export type SortPick = { kind: "source"; class: SourceClass } | { kind: "subject"; key: string } | 
+/**  Photos whose subject no label reached the rules' probability for. */
+{ kind: "noSubject" } | { kind: "year"; year: number } | { kind: "month"; year: number; month: number } | 
+/**  The event that starts with this photo. */
+{ kind: "event"; first: number } | 
+/**  The trip that starts on this day (days since 1970, camera-local). */
+{ kind: "trip"; first_day: number } | 
+/**  The visits to one of the other homes in one year. */
+{ kind: "visit"; home: number; year: number } | { kind: "place"; id: number } | 
+/**  Photos with a near-duplicate (FR-015). */
+{ kind: "duplicates" } | 
+/**  Photos of a stack (S3), every member shown. */
+{ kind: "stacks" };
+
+/**  RollSense's pass finished (or was cancelled); the UI refetches the facets (FR-141). */
+export type SortingFinished = {
+	jobId: number,
+	analysed: number,
+	failed: number,
+	cancelled: boolean,
+};
+
+/**  Where a photo came from. */
+export type SourceClass = 
+/**  The phone's own camera (Apple's `MakerNote`). */
+"camera" | 
+/**  The phone's panorama: Apple's make, no `MakerNote`, a long side past the sensor. */
+"panorama" | 
+/**  A screenshot, marked by the system or at a phone screen's size. */
+"screenshot" | 
+/**
+ *  Probably a screenshot cropped or marked up, its metadata lost: a phone screen's width.
+ *  A guess (13 of 23 labelled were screenshots, the rest memes and saved images), for the
+ *  pixels to confirm (S6).
+ */
+"screenshotCropped" | 
+/**  Saved or shot through an app ([`Source::app`] names it). */
+"app" | 
+/**  Saved by an editor ([`Source::app`] names it). */
+"edited" | 
+/**  A film scan from a lab's scanner (FR-140). */
+"filmScan" | 
+/**  A camera other than a phone. */
+"otherCamera" | 
+/**  An iPhone that is not one of this library's own. */
+"anotherPhone" | 
+/**  No rule decided: saved from the web or a chat, a meme, a received photo. */
+"unknown";
+
 /**  The colour space a file states: by its ICC profile's name, its header or EXIF. */
 export type Space = "srgb" | "displayP3" | "adobeRgb" | "proPhoto" | "grey" | "cmyk" | 
 /**  A profile with another name. */
@@ -2581,7 +2689,9 @@ export type TaskKind =
 /**  Standard previews made on disk, so any photo opens at once (FR-091). */
 "previews" | 
 /**  Thumbnails coloured after a look was given to many photos (FR-114). */
-"looks";
+"looks" | 
+/**  RollSense's pixels pass: subjects and duplicates (FR-141). */
+"sort";
 
 /**  Progress of a background task, for the progress bar (coalesced to ≤ 30 per second). */
 export type TaskProgress = {
@@ -2620,6 +2730,14 @@ export type Tint = {
 	hue?: number,
 	/**  0…100. */
 	amount?: number,
+};
+
+export type TripFacet = {
+	firstDay: number,
+	lastDay: number,
+	count: number,
+	/**  The place met most often, for the suggested name (`2022-07 Đà Lạt`). */
+	place: string | null,
 };
 
 /**  Per-machine interface preferences (FR-020, FR-052). Never part of a project file. */
@@ -2784,6 +2902,21 @@ export type VignetteShape = {
 	feather?: number,
 	/**  0…100, how much of the highlights a darkening keeps. */
 	highlights?: number,
+};
+
+/**  The visits to one other home in one year (FR-012): how many, how many photos. */
+export type VisitFacet = {
+	home: number,
+	year: number,
+	visits: number,
+	count: number,
+	place: string | null,
+};
+
+export type YearFacet = {
+	year: number,
+	count: number,
+	months: MonthFacet[],
 };
 
 /* Tauri Specta runtime */

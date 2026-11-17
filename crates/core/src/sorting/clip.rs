@@ -114,6 +114,19 @@ impl Embedder {
     }
 }
 
+/// The subject labels' keys in order, a subject's index into them being what the library keeps.
+pub fn subject_keys() -> &'static [&'static str] {
+    static KEYS: OnceLock<Vec<&'static str>> = OnceLock::new();
+    KEYS.get_or_init(|| {
+        labels()
+            .labels
+            .keys()
+            .filter(|k| !k.starts_with("src-"))
+            .map(String::as_str)
+            .collect()
+    })
+}
+
 /// The subjects an embedding shows, most likely first, as probabilities over the subject
 /// labels (the `src-` labels, about where a file came from, apart).
 pub fn subjects(embedding: &[f32]) -> Vec<(&'static str, f32)> {

@@ -416,7 +416,7 @@ Presets work like Lightroom presets, applied to *print* settings ([FR-038](PRD.m
 - **Layout:** `sorting/<first 2 hex chars>/<blake3(path ‖ size ‖ mtime)>.bin`, beside `thumbs/` and `analysis/`, with the same content key (FR-141 S6, `sorting/pass.rs`, ADR-0056).
 - **Format:** 2,064 bytes: `FSRT`, a version byte (now 1), three zero bytes, the photo's difference hash (u64, little-endian, FR-015) and its CLIP embedding (512 × f32, little-endian, unit length). The embedding is kept, not the labels, so a label added later costs a dot product, not a pass. About 31 MB for 15,000 photos.
 - **Reading:** an entry of another length, magic or version, or with a value that is not finite, reads as absent and is computed again (`fr_141_a_sorting_cache_entry_round_trips_and_a_broken_one_is_a_miss`).
-- **Writes, eviction and clearing:** as the analysis cache (atomic, the same limit and *Clear cache*, wired with the sorting view in S7).
+- **Writes, eviction and clearing:** as the analysis cache: atomic, under the same limit with `thumbs/` and `analysis/` (counted with the analyses), emptied by *Clear cache* (`src-tauri/src/cache.rs`).
 
 ### 8.1 Analysis cache
 

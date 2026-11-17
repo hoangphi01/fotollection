@@ -150,6 +150,10 @@ pub struct AppState {
     /// `analysis/` next to `thumbs/` in the cache dir (DATABASE.md §8).
     pub analysis_cache: AnalysisCache,
     pub analyses: Mutex<Analyses>,
+    /// `sorting/` next to `thumbs/`: RollSense's pixels pass (FR-141, DATABASE.md §8.2).
+    pub sorting_cache: fotollection_core::sorting::pass::SortingCache,
+    /// Job id of the RollSense pass in progress, if any.
+    pub sorting: Mutex<Option<u32>>,
     pub previews: PreviewCache,
     /// Thumbnails through each photo's colour, in memory (FR-114, ADR-0047), and the batch
     /// whose thumbnails are being made: a newer batch stops an older one's.
@@ -292,6 +296,12 @@ impl AppState {
         let store_path = config_dir.join("settings.json");
         let logo_dir = config_dir.join("logos");
         let font_dir = config_dir.join("fonts");
+        // The analysis and sorting caches sit next to `thumbs/` (DATABASE.md §8).
+        let beside = |name: &str| {
+            thumb_dir
+                .parent()
+                .map_or_else(|| thumb_dir.join(name), |p| p.join(name))
+        };
         // What a write cut short left (`.tmp`, `.part`), before anything writes here.
         for dir in [config_dir, &logo_dir, &font_dir, &config_dir.join("looks")] {
             fotollection_core::atomic::sweep_leftovers(dir);
@@ -349,12 +359,10 @@ impl AppState {
             library_generation: AtomicU64::new(0),
             prefetch: crate::prefetch::Prefetch::default(),
             codec: default_codec(),
-            analysis_cache: AnalysisCache::new(
-                thumb_dir
-                    .parent()
-                    .map_or_else(|| thumb_dir.join("analysis"), |p| p.join("analysis")),
-            ),
+            analysis_cache: AnalysisCache::new(beside("analysis")),
             analyses: Mutex::new(Analyses::default()),
+            sorting_cache: fotollection_core::sorting::pass::SortingCache::new(beside("sorting")),
+            sorting: Mutex::new(None),
             previews: PreviewCache::with(
                 fotollection_core::preview::machine_budget(stored.ui.preview_memory_percent),
                 Some(thumb_dir.clone()),

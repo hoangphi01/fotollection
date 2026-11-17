@@ -21,6 +21,7 @@ mod places;
 mod prefetch;
 mod protocol;
 mod settings_copy;
+mod sorting;
 mod state;
 mod timing;
 mod updates;
@@ -183,6 +184,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             culling::list_groups,
             culling::keep_best,
             culling::keep_one,
+            sorting::analyze_sorting,
+            sorting::sort_facets,
             camera::camera_connect,
             camera::camera_disconnect,
             camera::camera_capture,
@@ -203,6 +206,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::DocumentChanged,
             events::MenuAction,
             events::AnalysisFinished,
+            events::SortingFinished,
             events::StartupFinished,
             open_with::OpenPhoto,
             camera::CameraStatus,

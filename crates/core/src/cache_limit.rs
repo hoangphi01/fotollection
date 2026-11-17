@@ -76,7 +76,7 @@ pub fn usage_by_kind(dirs: &[&Path]) -> Kinds {
             .unwrap_or_default();
         if name.contains(".t2-") {
             k.previews = add(k.previews, e.bytes);
-        } else if name.ends_with(".json") {
+        } else if name.ends_with(".json") || name.ends_with(".bin") {
             k.analyses = add(k.analyses, e.bytes);
         } else {
             k.thumbnails = add(k.thumbnails, e.bytes);
