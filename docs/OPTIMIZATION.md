@@ -83,7 +83,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-003](PRD.md#nfr-003--export-throughput) | Export throughput, 24 MP JPEG | ≥ 8 photos/s | `measure_folder` export; `bench/run.sh` against Chromium |
 | [NFR-004](PRD.md#nfr-004--memory-ceiling) | Peak RSS during export | ≤ 2 GB | `bench/batch.sh`: `measure_folder --discard-output` on 5,000+ photos, peak RSS from `/usr/bin/time -l`; `peakExportRssMb`, sampled during the export; `bench/trip.sh` on large camera files |
 | [NFR-005](PRD.md#nfr-005--ui-responsiveness) | Input latency during export | < 100 ms | Manual; E2E probe planned |
-| [NFR-008](PRD.md#nfr-008--install-size) | Installer size | ≤ 150 MB (25 MB until 2026-11-05) | Release asset sizes, checked by hand; a CI check is planned |
+| [NFR-008](PRD.md#nfr-008--install-size) | Installer size | ≤ 300 MB (150 MB from 2026-11-05, 25 MB before; 300 MB for the bundled CLIP model, owner 2026-11-18) | Release asset sizes, checked by hand; a CI check is planned |
 | [NFR-010](PRD.md#nfr-010--cold-start) | Launch to interactive | < 1.5 s | `scripts/measure-startup.sh` (`FOTOLLECTION_TIMING`, release build) |
 | [NFR-012](PRD.md#nfr-012--culling-navigation) | Loupe next/previous to a sharp preview, p95; since FR-091 any photo once its standard preview is made | < 100 ms | `measure_browse` (a folder, each photo opened from disk, from memory and with nothing kept) |
 | [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `measure_project` (synthetic library, every photo edited); kill-during-write test planned |

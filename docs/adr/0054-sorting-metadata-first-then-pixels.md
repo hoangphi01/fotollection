@@ -24,5 +24,5 @@ Option 3. The classes, stacks, time and events come from bounded parsers in the 
 
 - Import reads more of each header (the MakerNote, a video's metadata); NFR-022 sets the budgets from a first measurement on the owner's files (FR-141 S0).
 - MOV files are imported for the first time, as companions of a still, never edited.
-- CLIP adds tens of megabytes; if the installer would pass NFR-008's 150 MB, the owner chooses between an optional model pack downloaded once and a larger budget (FR-141 S6).
+- Decided 2026-11-18 after the measurement (FR-141 S6a): TinyCLIP-39M is bundled, and NFR-008 became 300 MB. As first written: CLIP adds tens of megabytes; if the installer would pass NFR-008's 150 MB, the owner chooses between an optional model pack downloaded once and a larger budget (FR-141 S6).
 - FR-012 and FR-015 move from 2027-Q1 to v0.14.4; the looks of v0.14.4 move to v0.14.5.
