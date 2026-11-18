@@ -1699,3 +1699,10 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Seen:** RollSense's button, pressed, still looked raised after a first fix that darkened its face and its hollow (owner, 2026-11-18, a screenshot).
 - **Why:** `pressed-in` shades from `--face`, which still held the resting violet (L 0.5) while the face shown was darker (L 0.39): the hollow came out at the face's own lightness and the inner ring lighter than the face, so no depth showed.
 - **Rule:** a control that changes its background when pressed sets `--face` to that same colour, so the depth is shaded from what is shown; check the hollow is darker than the face by numbers, not by eye.
+
+### Picking every member of a duplicate group deleted the original too (FR-141)
+
+- **Area:** state-cache
+- **Seen:** the release review (2026-11-18) found that ticking *Duplicates* and pressing *Delete* sent every copy to the Trash, the original included; on a NAS without a Trash, the second confirm deleted them for good.
+- **Why:** `set_duplicates` took every member of each proven group: a group is a relation, but a delete needs a keeper.
+- **Rule:** a facet that feeds a delete names what stays, not only what matches: one keeper per group, tested (`fr_141_duplicates_keep_one_copy_of_each_group`); and the permanent path is guarded in Rust, never by the interface alone.

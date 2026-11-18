@@ -212,6 +212,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-IPC-0038` | v0.14.3 | `address_book.label_invalid` | `crates/core/src/addassist/book.rs` (`save`) | (the Rust message) | A saved recipient's name was empty, over 60 characters or held a control character; the interface's field stops before. | Give it a shorter name. |
 | `ERR-IPC-0039` | v0.14.3 | `address_book.address_invalid` | `crates/core/src/addassist/book.rs` (`save`) | (the Rust message) | The recipient to save was empty or over its card's limits (5 lines and 200 characters, or AddAssist's fields). | Fill in the address, then save it. |
 | `ERR-IPC-0040` | v0.14.3 | `address_book.unknown` | `crates/core/src/addassist/book.rs` (`forget`) | (the Rust message) | A saved recipient was removed after it had left the book, for example in another window. | Open the address book again. |
+| `ERR-IPC-0041` | v0.14.4 | `photo.not_refused` | `src-tauri/src/sorting.rs` (`remove_photos`) | Only photos the Trash refused can be deleted for good | `delete_photos` was asked for a file the Trash had not refused just before (FR-141, ADR-0055: the Trash always comes first). | Delete the photos again from RollSense: the Trash is tried first. |
 
 ### UI: The interface itself
 

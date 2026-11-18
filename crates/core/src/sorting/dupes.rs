@@ -283,9 +283,43 @@ pub fn groups(n: usize, proven: &[(usize, usize, DupKind)]) -> Vec<DupGroup> {
         .collect()
 }
 
+/// The copies a user can let go (FR-015, FR-141): each group's members but its keeper, the one
+/// ranked highest by `rank` (the largest file, then the oldest capture), so ticking *Duplicates*
+/// and deleting never takes every copy. A group of colour versions only gives none: both are
+/// kept by default.
+pub fn spare<K: Ord>(groups: &[DupGroup], rank: impl Fn(usize) -> K) -> Vec<usize> {
+    groups
+        .iter()
+        .filter(|g| g.kinds.contains(&DupKind::Resave))
+        .flat_map(|g| {
+            let keeper = g.members.iter().copied().max_by_key(|&m| rank(m));
+            g.members
+                .iter()
+                .copied()
+                .filter(move |&m| Some(m) != keeper)
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fr_141_duplicates_keep_one_copy_of_each_group() {
+        // 0, 1, 2 are re-saves of one picture; 3 and 4 a colour version pair; 5 alone.
+        let proven = [
+            (0, 1, DupKind::Resave),
+            (1, 2, DupKind::Resave),
+            (3, 4, DupKind::ColourVersion),
+        ];
+        let groups = groups(6, &proven);
+        let size = [300u64, 900, 500, 10, 20, 99];
+        let mut spare = spare(&groups, |m| size[m]);
+        spare.sort_unstable();
+        // The largest (1) stays; the colour versions both stay; a single photo is no duplicate.
+        assert_eq!(spare, vec![0, 2]);
+    }
 
     /// A test picture: a soft diagonal ramp with a bright square, at any size.
     fn picture(w: u32, h: u32, square_at: u32) -> RgbImage {

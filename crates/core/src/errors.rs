@@ -107,6 +107,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("address_book.label_invalid", "ERR-IPC-0038"),
     ("address_book.address_invalid", "ERR-IPC-0039"),
     ("address_book.unknown", "ERR-IPC-0040"),
+    ("photo.not_refused", "ERR-IPC-0041"),
     ("update.none", "ERR-NET-0001"),
     ("update.offline", "ERR-NET-0002"),
     ("update.unreadable", "ERR-NET-0003"),

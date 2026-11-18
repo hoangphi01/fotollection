@@ -190,9 +190,14 @@ fn prove_duplicates(
         .map(|r| r.id.0 as usize + 1)
         .max()
         .unwrap_or(0);
-    let ids: Vec<PhotoId> = dupes::groups(n, &proven)
+    // Each group's keeper left out (the largest file, then the oldest capture), so *Duplicates*
+    // shows only the copies that can go.
+    let rank = |m: usize| {
+        let r = u32::try_from(m).ok().and_then(|id| by_id.get(&PhotoId(id)));
+        r.map(|r| (r.size, std::cmp::Reverse(r.capture)))
+    };
+    let ids: Vec<PhotoId> = dupes::spare(&dupes::groups(n, &proven), rank)
         .into_iter()
-        .flat_map(|g| g.members)
         .filter_map(|m| Some(PhotoId(u32::try_from(m).ok()?)))
         .collect();
     if let Ok(mut library) = state.library.write() {
@@ -295,6 +300,15 @@ async fn remove_photos(
                 fotollection_core::project::snapshot(&library),
             )
         };
+        {
+            let refused = state.trash_refused.lock().map_err(poisoned)?;
+            if for_good && !paths.iter().all(|p| refused.contains(p)) {
+                return Err(IpcError::new(
+                    "photo.not_refused",
+                    "Only photos the Trash refused can be deleted for good",
+                ));
+            }
+        }
         let mut kept = std::collections::HashSet::new();
         let mut removed = 0u32;
         for path in &paths {
@@ -308,6 +322,9 @@ async fn remove_photos(
             } else {
                 kept.insert(path.clone());
             }
+        }
+        if !for_good {
+            kept.clone_into(&mut *state.trash_refused.lock().map_err(poisoned)?);
         }
         if removed > 0 {
             crate::document::rebuild_library(&app, &state, folders, &snapshot)?;
