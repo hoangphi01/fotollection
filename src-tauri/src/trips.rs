@@ -2,6 +2,8 @@
 //! The user's changes to RollSense's trips (FR-012, FR-141 S7c; owner 2026-11-18): rename,
 //! split after a day, merge with the trip before, and a trip's days for its page. Kept in the
 //! project (schema v17); every input is checked in the core against the trips found.
+// Tauri hands commands their arguments by value.
+#![allow(clippy::needless_pass_by_value)]
 
 use fotollection_core::library::TripEditError;
 use fotollection_core::sorting::facets::TripDay;
@@ -57,7 +59,11 @@ pub fn split_trip(
 /// Merges the trip that starts on `first_day` into the trip before it.
 #[tauri::command]
 #[specta::specta]
-pub fn merge_trip(app: AppHandle, state: State<'_, AppState>, first_day: i32) -> Result<(), IpcError> {
+pub fn merge_trip(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    first_day: i32,
+) -> Result<(), IpcError> {
     state
         .library
         .write()
