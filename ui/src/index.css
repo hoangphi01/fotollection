@@ -210,6 +210,8 @@
     --sense: oklch(0.5 0.17 292);
     /* Its lip and the cards' icon tiles in RollSense's column. */
     --sense-lip: oklch(0.34 0.13 292);
+    /* The hollow of the pressed RollSense button, darker than its lip. */
+    --sense-hollow: oklch(0.16 0.06 292);
     --sense-tile: var(--sense);
     /* Each badge's lip is its own colour, deeper (owner, 2026-11-06): dark green, a deep
        amber brown, burgundy; never mixed with the theme's shade. */

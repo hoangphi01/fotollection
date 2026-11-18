@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - In a sheet's preview, the note that the narrow window folded *Presets & LUTs* shows on the Edit tab only, no longer taking room on the Postcard and Print tabs.
 - The hint on writing a postcard by hand is one sentence: a fine permanent marker, tried in the stamp box first, or the text typed in the preview.
+- The update window at start closes only with one of its buttons, not with a click outside it or Esc. Settings → Updates shows the version that check found, with its red warning when there is one, without asking to check again.
 
 ## [0.14.3] - 2026-11-16 — Postcards, part 2
 

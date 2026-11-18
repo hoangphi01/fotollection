@@ -395,8 +395,8 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
 
 Fotollection looks for a newer version once when it starts, and when you ask ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates), [FR-103](PRD.md#fr-103--check-for-updates-at-start-never-download-unasked)). Nothing is downloaded until you choose; offline, nothing happens.
 
-1. **At start:** if a newer version is out, a small window says so, with **What's new**, **Download** and **Later**. A red box inside it means your version has a serious fault fixed since: please update. To stop the check, turn off **Check for updates when the app starts** in **Settings → Updates**.
-2. **Any time:** open **Settings** (the gear at the top of the sidebar, or the version number at the foot of any panel), then **Updates** and **Check for updates**.
+1. **At start:** if a newer version is out, a small window says so, with **What's new**, **Download** and **Later**; it closes only with one of them. A red box inside it means your version has a serious fault fixed since: please update. To stop the check, turn off **Check for updates when the app starts** in **Settings → Updates**.
+2. **Any time:** open **Settings** (the gear at the top of the sidebar, or the version number at the foot of any panel), then **Updates**: the version found at start is already there, with its red box if any; otherwise **Check for updates**.
 3. If a newer version exists, click **Download the installer**: your browser downloads the right one for your computer.
 4. Install it over the current version. Your settings, camera profiles and projects stay.
    - **Mac:** open the disk image and drag Fotollection into Applications, then choose **Replace**.

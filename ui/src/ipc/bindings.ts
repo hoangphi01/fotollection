@@ -53,6 +53,30 @@ export const commands = {
 	reasonEn: string,
 	reasonVi: string,
 } | null, IpcError>(__TAURI_INVOKE("check_for_update_at_start")),
+	/**
+	 *  The newer version the last check found (the one at start, most often), or `None`: no
+	 *  network call, so Settings opens on what is already known.
+	 */
+	lastUpdateCheck: () => __TAURI_INVOKE<{
+	/**  This app's version, `0.7.0`. */
+	current: string,
+	/**  The latest published version, `0.8.0`. */
+	latest: string,
+	/**  True when `latest` is newer than `current`. */
+	newer: boolean,
+	/**  The release page, for "What's new". */
+	pageUrl: string,
+	/**
+	 *  The oldest version still safe to use, published with the release (FR-103); `None`
+	 *  when the release says none.
+	 */
+	minSafe: string | null,
+	/**  True when this version is older than `min_safe`: the notice turns into a red warning. */
+	belowMinSafe: boolean,
+	/**  Why, in English and Vietnamese, plain text (never HTML); empty when not said. */
+	reasonEn: string,
+	reasonVi: string,
+} | null>("last_update_check"),
 	/**  How this copy is updated, for the Settings window's *Updates* card. */
 	updateSource: () => __TAURI_INVOKE<UpdateSource>("update_source"),
 	/**

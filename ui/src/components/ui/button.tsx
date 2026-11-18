@@ -19,9 +19,11 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground [--face:var(--primary)] raised hover:bg-primary-deep active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-pressed:bg-pressed aria-pressed:pressed-in aria-pressed:hover:bg-primary",
         // RollSense's own button (FR-141, owner 2026-11-18): its colour, raised as every button;
         // pressed in the same way as every button, in its own colour, while its view is shown.
-        // Its shade is its deep violet, so the lip and the pressed hollow never turn teal.
+        // Its shade is its deep violet, so the lip and the pressed hollow never turn teal; pressed,
+        // the face sinks to the lip's violet and the hollow takes a near-black violet, so it reads
+        // as pushed in on its own dark colour (owner, 2026-11-18: "pressed must sink").
         sense:
-          "bg-sense text-white [--face:var(--sense)] [--shade:var(--sense-lip)] raised hover:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_35%)] active:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_45%)]! active:pressed-in! active:ease-enter aria-pressed:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_45%)] aria-pressed:pressed-in",
+          "bg-sense text-white [--face:var(--sense)] [--shade:var(--sense-lip)] raised hover:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_35%)] active:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_70%)]! active:[--shade:var(--sense-hollow)] active:pressed-in! active:ease-enter aria-pressed:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_70%)] aria-pressed:[--shade:var(--sense-hollow)] aria-pressed:pressed-in",
         outline:
           "border-border bg-card [--face:var(--card)] raised hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted",
         secondary:

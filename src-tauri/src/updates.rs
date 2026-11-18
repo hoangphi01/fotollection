@@ -128,9 +128,10 @@ fn plain(text: &str) -> String {
 }
 
 /// The installer to open after a check found a newer version, never supplied by the webview.
-/// The installer and the release page found by the last check: (download, page).
+/// The installer and the check that found it, the last time a newer version was found (at
+/// start or from Settings): Settings shows it without asking again (owner, 2026-11-18).
 #[derive(Default)]
-pub struct PendingDownload(Mutex<Option<(String, String)>>);
+pub struct PendingDownload(Mutex<Option<(String, UpdateCheck)>>);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Platform {
@@ -297,7 +298,7 @@ fn check_now(app: &AppHandle) -> Result<UpdateCheck, IpcError> {
         .map_err(|why| IpcError::new("update.unreadable", why))?;
     let pending = tauri::Manager::state::<AppState>(app);
     if let Ok(mut slot) = pending.update_download.0.lock() {
-        *slot = check.newer.then(|| (download, check.page_url.clone()));
+        *slot = check.newer.then(|| (download, check.clone()));
     }
     Ok(check)
 }
@@ -339,11 +340,24 @@ pub fn open_update_page(app: AppHandle, state: State<'_, AppState>) -> Result<()
         .0
         .lock()
         .ok()
-        .and_then(|slot| slot.as_ref().map(|(_, page)| page.clone()))
+        .and_then(|slot| slot.as_ref().map(|(_, check)| check.page_url.clone()))
         .ok_or_else(|| IpcError::new("update.none", "no newer version was found"))?;
     app.opener()
         .open_url(url, None::<&str>)
         .map_err(|e| IpcError::internal(e.to_string()))
+}
+
+/// The newer version the last check found (the one at start, most often), or `None`: no
+/// network call, so Settings opens on what is already known.
+#[tauri::command]
+#[specta::specta]
+pub fn last_update_check(state: State<'_, AppState>) -> Option<UpdateCheck> {
+    state
+        .update_download
+        .0
+        .lock()
+        .ok()
+        .and_then(|slot| slot.as_ref().map(|(_, check)| check.clone()))
 }
 
 /// Opens the installer found by the last check in the browser.

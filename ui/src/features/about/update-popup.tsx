@@ -14,6 +14,8 @@ import { commands, type UpdateCheck } from '@/ipc/bindings'
  * small window says a newer version is out, with *What's new* and *Download*; below the
  * minimum safe version it carries a red warning with the reason the release gives. It only
  * reads; nothing is downloaded until the user asks. *Later* closes it until the next launch.
+ * A click outside or Esc never closes it: the user answers with one of its buttons (owner,
+ * 2026-11-18).
  */
 export function UpdatePopup() {
   const { t, i18n } = useTranslation()
@@ -32,7 +34,7 @@ export function UpdatePopup() {
   const reason = update ? (languageInfo(i18n.language).value === 'vi' ? update.reasonVi : update.reasonEn) : ''
   return (
     <Dialog open={update !== null} onOpenChange={(open) => !open && setUpdate(null)}>
-      <DialogContent>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('update.popupTitle', { version: update?.latest ?? '' })}</DialogTitle>
           <DialogDescription>{t('update.popupBody', { current: update?.current ?? '' })}</DialogDescription>

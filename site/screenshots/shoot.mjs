@@ -117,8 +117,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     list_fonts: () => common.list_fonts,
     // The welcome (FR-109) seen, so it covers no shot; a shot of it sets `ui.welcomeSeen: false`.
     get_ui_settings: () => ({ ...common.get_ui_settings, welcomeSeen: true, language, mode, ...ui }),
-    // The update window at start (FR-103), shown when a shot asks for it.
-    check_for_update_at_start: () => update,
+    // The update window at start (FR-103) and Settings' copy of it, when a shot asks for it.
+    check_for_update_at_start: () => update, last_update_check: () => update,
     // The preview's colour cards (FR-079): the scenario's look, shared by every photo.
     get_photo_look: () => ({ look: current.settings.look, custom: false, raw: null }),
     // The Looks card and Simple mode's strip (FR-079): the built-in looks, as recorded.

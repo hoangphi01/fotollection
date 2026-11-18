@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CircleCheck, Download, RefreshCw } from 'lucide-react'
+import { CircleCheck, Download, RefreshCw, TriangleAlert } from 'lucide-react'
 import { Spinner } from '@/components/forms/spinner'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint } from '@/components/forms/field'
+import { PanelNote } from '@/components/layout/panel-note'
 import { Button } from '@/components/ui/button'
+import { languageInfo } from '@/i18n'
 import { commands, type UpdateCheck as Check } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 
@@ -18,11 +20,22 @@ type State =
  * "Check for updates" (FR-061), in the Settings window (FR-086), beside the check at start
  * (FR-103): the app goes online when this button is clicked, and once at start unless that is
  * turned off. A newer version opens its installer in the browser; installing it replaces this
- * one and keeps settings and projects.
+ * one and keeps settings and projects. A newer version the check at start found shows at once,
+ * with its red warning below the minimum safe version, never asking again (owner, 2026-11-18).
  */
 export function UpdateCheck() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [state, setState] = useState<State>({ kind: 'idle' })
+
+  useEffect(() => {
+    let live = true
+    void commands.lastUpdateCheck().then((found) => {
+      if (live && found) setState((s) => (s.kind === 'idle' ? { kind: 'done', check: found } : s))
+    })
+    return () => {
+      live = false
+    }
+  }, [])
 
   const check = async () => {
     setState({ kind: 'checking' })
@@ -35,6 +48,12 @@ export function UpdateCheck() {
       {state.kind === 'done' && state.check.newer ? (
         <>
           <p className="text-sm font-medium">{t('update.available', { version: state.check.latest })}</p>
+          {state.check.belowMinSafe && (
+            <PanelNote danger icon={<TriangleAlert />}>
+              {t('update.belowMinSafe', { version: state.check.minSafe ?? '' })}{' '}
+              {languageInfo(i18n.language).value === 'vi' ? state.check.reasonVi : state.check.reasonEn}
+            </PanelNote>
+          )}
           <Button size="sm" className="w-full" onClick={() => void commands.openUpdateDownload()}>
             <Download data-icon="inline-start" /> {t('update.download')}
           </Button>
