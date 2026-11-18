@@ -349,6 +349,7 @@ export function App() {
                   <ToolbarButton
                     icon={<Square />}
                     label={t('bestShot.stop')}
+                    labelFrom="5xl"
                     onClick={bestShots.cancel}
                     data-hint={t('bestShot.findHint')}
                   />
@@ -356,6 +357,9 @@ export function App() {
                   <ToolbarButton
                     icon={<Sparkles />}
                     label={t('bestShot.find')}
+                    // Its icon alone below 64 rem, so the full words of the views and RollSense
+                    // fit beside the filters (UI-LAYOUT-010, Hungarian at 1400 px).
+                    labelFrom="5xl"
                     onClick={() => {
                       setView('groups')
                       void bestShots.analyze()
