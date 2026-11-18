@@ -14,6 +14,9 @@ type ToolbarButtonProps = Omit<ComponentProps<typeof Button>, 'children' | 'size
   /** The label shows only from a wider row (`5xl`, 64 rem): a crowded toolbar, as the
    * develop view's with copy, paste and reset (owner, 2026-11-07; MEASURE at 1180 px). */
   labelFrom?: '3xl' | '5xl'
+  /** Switched on (a filter, select mode, the basket): pressed in, as every control is
+   * (STYLE_RULE §4); one prop, so no toolbar writes the variant and `aria-pressed` by hand. */
+  pressed?: boolean
 }
 
 /**
@@ -29,6 +32,7 @@ export function ToolbarButton({
   busy = false,
   iconOnly = false,
   labelFrom = '3xl',
+  pressed,
   variant = 'outline',
   className,
   disabled,
@@ -38,7 +42,8 @@ export function ToolbarButton({
   return (
     <span data-hint={hint} className="inline-flex shrink-0">
       <Button
-        variant={variant}
+        variant={pressed && variant === 'outline' ? 'default' : variant}
+        aria-pressed={pressed}
         size="sm"
         aria-label={label}
         aria-busy={busy || undefined}

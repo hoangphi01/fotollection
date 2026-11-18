@@ -125,8 +125,7 @@ export function PreviewToolbar({
           icon={<ShoppingBasket />}
           label={t(inBasket ? 'preview.inBasket' : 'preview.toBasket')}
           labelFrom="5xl"
-          variant={inBasket ? 'default' : 'outline'}
-          aria-pressed={inBasket}
+          pressed={inBasket}
           data-hint={t('preview.basketHint')}
           disabled={!photo}
           onClick={() => photo && void commands.setPhotoQueue([photo.id], inBasket ? null : 'print')}
@@ -139,8 +138,7 @@ export function PreviewToolbar({
         icon={<Eye />}
         label={t('look.before')}
         labelFrom="5xl"
-        variant={before || compare !== 'off' ? 'default' : 'outline'}
-        aria-pressed={before}
+        pressed={before || compare !== 'off'}
         data-hint={t('look.beforeHint')}
         disabled={!photo}
         onClick={onBefore}
@@ -161,8 +159,7 @@ export function PreviewToolbar({
         <ToolbarButton
           icon={filmstrip ? <PanelBottomClose /> : <PanelBottomOpen />}
           label={stripLabel}
-          variant={filmstrip ? 'default' : 'outline'}
-          aria-pressed={filmstrip}
+          pressed={filmstrip}
           data-hint={stripLabel}
           iconOnly
           onClick={onFilmstrip}
@@ -170,8 +167,7 @@ export function PreviewToolbar({
         <ToolbarButton
           icon={windowed ? <Minimize2 /> : <Maximize2 />}
           label={t(windowed ? 'viewer.layoutDialog' : 'viewer.layoutWindow')}
-          variant={windowed ? 'default' : 'outline'}
-          aria-pressed={windowed}
+          pressed={windowed}
           data-hint={t(windowed ? 'viewer.layoutDialog' : 'viewer.layoutWindow')}
           iconOnly
           onClick={onLayout}

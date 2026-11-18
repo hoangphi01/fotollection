@@ -26,14 +26,14 @@ export function PickChip({ picks, facets, onOpen, onClear }: PickChipProps) {
   if (!first) return null
   const words = picks.length > 1 ? `${label(first)} +${picks.length - 1}` : label(first)
   return (
-    <span className="theme-sense inline-flex min-w-0 shrink items-center gap-1">
+    <span className="inline-flex min-w-0 shrink items-center gap-1">
       <Button variant="outline" size="sm" className="min-w-0" onClick={onOpen} data-hint={t('rollsense.backToPick')}>
-        <span data-slot="card-icon">
+        <span data-slot="sense-key">
           <ScanSearch />
         </span>
         {words}
       </Button>
-      <RemoveButton kind="clear" iconOnly small label={t('rollsense.clearPick')} onClick={onClear} />
+      <RemoveButton kind="clear" iconOnly label={t('rollsense.clearPick')} onClick={onClear} />
     </span>
   )
 }

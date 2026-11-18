@@ -7,7 +7,7 @@ import {
   Folder,
   FolderOpen,
   Archive,
-  Trash2,
+  Trash,
   Images,
   ListChecks,
   ShoppingBasket,
@@ -214,7 +214,7 @@ export function LibrarySidebar({
               aria-label={t('library.select')}
               aria-pressed={selecting}
               data-hint={t('library.selectHint')}
-              className={cn(selecting && 'bg-pressed text-primary-foreground pressed-in [--face:var(--primary)]')}
+              className={cn(selecting && 'bg-pressed text-primary-foreground pressed-in')}
               onClick={() => setSelecting((on) => !on)}
             >
               <ListChecks />
@@ -268,7 +268,7 @@ export function LibrarySidebar({
               [
                 ['print', ShoppingBasket, 'library.basket', 'library.basketHint', queueCounts.print],
                 ['aside', Archive, 'library.aside', 'library.asideHint', queueCounts.aside],
-                ['delete', Trash2, 'library.toDelete', 'library.toDeleteHint', queueCounts.delete],
+                ['delete', Trash, 'library.toDelete', 'library.toDeleteHint', queueCounts.delete],
               ] as const
             ).map(([view, Icon, label, hint, count]) => (
               <li key={view}>

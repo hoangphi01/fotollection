@@ -17,7 +17,7 @@ import { errorText } from '@/lib/errors'
 import { SaveLookDialog } from './save-look-dialog'
 import { lookName } from './use-looks'
 import { unappliedLines } from './unapplied'
-import { MenuContent } from '@/components/forms/menu-content'
+import { MenuContent, MenuSeparator } from '@/components/forms/menu-content'
 import { RowMenu } from '@/components/forms/row-menu'
 
 /** A list this long gets its filter, as Lightroom's panel. */
@@ -159,6 +159,7 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
                     <ListRow icon={<FolderInput />} onClick={() => (close(), setAsking({ kind: 'move', entry }))}>
                       {t('look.move')}
                     </ListRow>
+                    <MenuSeparator />
                     <RemoveButton wide label={t('look.remove')} onClick={() => (close(), remove(entry.id))} />
                   </>
                 )

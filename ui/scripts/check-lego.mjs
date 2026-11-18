@@ -206,7 +206,31 @@ for (const path of allTsx) {
       const line = text.slice(0, m.index).split('\n').length
       problems.push(`${rel}:${line}: a button that removes or resets is RemoveButton or ResetButton (components/forms/danger-button.tsx), never a hand-made one`)
     }
+    // Switched on is pressed in (STYLE_RULE §4): an outline button carries no pressed look of
+    // its own, so `aria-pressed` on one is a Toggle or ToolbarButton's `pressed` (a flat on/off
+    // choice stays flat, as §4 allows).
+    if (/aria-pressed/.test(block) && /variant="outline"/.test(block) && !block.includes('pressed-in')) {
+      const line = text.slice(0, m.index).split('\n').length
+      problems.push(`${rel}:${line}: aria-pressed on a ghost or outline Button shows no press: use Toggle or ToolbarButton's pressed (STYLE_RULE §4)`)
+    }
   }
+  // The style audit of 2026-11-18 (LESSONS): each rule below is a fault shipped that day.
+  const at = (i) => text.slice(0, i).split('\n').length
+  // A ButtonGroup's buttons are flat in the raised bar: a solid one hides the bar's lip.
+  for (const g of text.matchAll(/<ButtonGroup\b[\s\S]*?<\/ButtonGroup>/g)) {
+    const solid = /variant="(default|secondary|sense)"/.exec(g[0])
+    if (solid) problems.push(`${rel}:${at(g.index + solid.index)}: a solid button inside a ButtonGroup hides the bar's lip: keep its buttons outline, a switched-on one through pressed (STYLE_RULE §4)`)
+  }
+  // A ToolbarButton or a ListRow with a removing icon is a RemoveButton or ResetButton.
+  for (const b of text.matchAll(/<(ToolbarButton|ListRow)\b[^>]*?icon=\{<(X|XIcon|Trash2|FilterX|CircleX|RotateCcw)\b[\s\S]*?(\/>|>)/g)) {
+    if (!b[0].includes('aria-pressed') && !b[0].includes('pressed=')) problems.push(`${rel}:${at(b.index)}: a ${b[1]} with a removing icon: use RemoveButton or ResetButton (STYLE_RULE §4 "Red")`)
+  }
+  // RollSense's violet tokens belong to its column only; outside it, its key is `sense-key`.
+  if (/className="[^"]*\btheme-sense\b/.test(text) && rel !== 'features/rollsense/rollsense-panel.tsx')
+    problems.push(`${rel}: theme-sense outside RollSense's column: the toolbar and the rest stay neutral; use data-slot="sense-key" for the violet key`)
+  // A note's action is one default Button `sm` (or a RemoveButton at 32 px), as PanelNote says.
+  for (const a of text.matchAll(/<PanelNote\b[^>]*?action=\{\s*<(Button\b[^>]*variant="outline"|RemoveButton\b[^>]*\bsmall\b)/g))
+    problems.push(`${rel}:${at(a.index)}: a note's action is a default Button sm or a 32 px RemoveButton (PanelNote, STYLE_RULE §4)`)
 }
 
 // SECURITY.md §7, as CI's security job greps it (LESSONS: v0.13.2's release stopped on a comment

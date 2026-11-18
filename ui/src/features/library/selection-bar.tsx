@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Archive, CheckCheck, ClipboardPaste, MapPin, ShoppingBasket, Trash2, Undo2 } from 'lucide-react'
+import { Archive, CheckCheck, ClipboardPaste, MapPin, ShoppingBasket, Trash, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
@@ -45,13 +45,13 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
             the red clear stands apart. */}
         <ButtonGroup ariaLabel={t('toolbar.move')}>
         {view !== 'print' && (
-          <ToolbarButton icon={<ShoppingBasket />} label={t('select.toBasket')} labelFrom="5xl" variant="default" data-hint={t('select.toBasket')} disabled={none} onClick={() => onMove('print')} />
+          <ToolbarButton icon={<ShoppingBasket />} label={t('select.toBasket')} labelFrom="5xl" data-hint={t('select.toBasket')} disabled={none} onClick={() => onMove('print')} />
         )}
         {view !== 'aside' && (
           <ToolbarButton icon={<Archive />} label={t('select.toAside')} labelFrom="5xl" data-hint={t('select.toAside')} disabled={none} onClick={() => onMove('aside')} />
         )}
         {view !== 'delete' && (
-          <ToolbarButton icon={<Trash2 />} label={t('select.toDelete')} labelFrom="5xl" data-hint={t('select.toDelete')} disabled={none} onClick={() => onMove('delete')} />
+          <ToolbarButton icon={<Trash />} label={t('select.toDelete')} labelFrom="5xl" data-hint={t('select.toDelete')} disabled={none} onClick={() => onMove('delete')} />
         )}
         {view !== 'gallery' && (
           <ToolbarButton icon={<Undo2 />} label={t('select.toGallery')} labelFrom="5xl" data-hint={t('select.toGallery')} disabled={none} onClick={() => onMove(null)} />

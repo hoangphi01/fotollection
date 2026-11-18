@@ -44,8 +44,7 @@ export function CullFilterBar({ filter, onChange }: CullFilterBarProps) {
         <ToolbarButton
           icon={<ListFilter />}
           label={active > 0 ? t('culling.filtersOn', { count: active }) : t('culling.filters')}
-          variant={active > 0 ? 'default' : 'outline'}
-          aria-pressed={active > 0}
+          pressed={active > 0}
           data-hint={t('culling.filtersHint')}
         />
       </PopoverTrigger>

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// @shown panel: the right column while the sidebar's *To delete* is chosen (FR-141).
-import { HardDrive, Images, Trash2 } from 'lucide-react'
+// @shown gallery: the right column while the sidebar's *To delete* is chosen (FR-141).
+import { HardDrive, Images } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton } from '@/components/forms/danger-button'
@@ -68,11 +68,7 @@ export function ToDeletePanel({ shown }: { shown: PhotoId[] }) {
 
   return (
     <SidePanel
-      title={
-        <span className="flex items-center gap-2">
-          <Trash2 className="size-4" /> {t('library.toDelete')}
-        </span>
-      }
+      title={t('library.toDelete')}
       footer={
         <>
           {count > 0 && <RemoveButton kind="delete" wide label={t('toDelete.move', { count })} onClick={() => setAsking(true)} />}
@@ -103,33 +99,33 @@ export function ToDeletePanel({ shown }: { shown: PhotoId[] }) {
       <AlertDialog open={asking} onOpenChange={setAsking}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('rollsense.deleteTitle', { count })}</AlertDialogTitle>
+            <AlertDialogTitle>{t('toDelete.deleteTitle', { count })}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('rollsense.deleteBody')}
+              {t('toDelete.deleteBody')}
               {without > 0 && ` ${t('toDelete.noTrash', { count: without })}`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <RemoveButton kind="delete" label={t('rollsense.deleteConfirm')} onClick={() => void moveAll()} />
+            <RemoveButton kind="delete" label={t('toDelete.deleteConfirm')} onClick={() => void moveAll()} />
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
       <AlertDialog open={forGood !== null} onOpenChange={(open) => !open && setForGood(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('rollsense.forGoodTitle', { count: forGood?.length ?? 0 })}</AlertDialogTitle>
-            <AlertDialogDescription>{t('rollsense.forGoodBody')}</AlertDialogDescription>
+            <AlertDialogTitle>{t('toDelete.forGoodTitle', { count: forGood?.length ?? 0 })}</AlertDialogTitle>
+            <AlertDialogDescription>{t('toDelete.forGoodBody')}</AlertDialogDescription>
           </AlertDialogHeader>
           <Stack>
             <Hint>{t('toDelete.typeCount', { count: forGood?.length ?? 0 })}</Hint>
             <CommitInput value={typed} placeholder={String(forGood?.length ?? "")} numeric liveMs={150} onCommit={setTyped} ariaLabel={t('toDelete.typeCount', { count: forGood?.length ?? 0 })} />
           </Stack>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('rollsense.keep')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('toDelete.keep')}</AlertDialogCancel>
             <RemoveButton
               kind="delete"
-              label={t('rollsense.forGoodConfirm')}
+              label={t('toDelete.forGoodConfirm')}
               disabled={typed.trim() !== String(forGood?.length ?? '')}
               onClick={() => forGood && void deleteForGood(forGood)}
             />

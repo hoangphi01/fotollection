@@ -863,8 +863,6 @@ export const commands = {
 	 *  sit on a volume without a Trash.
 	 */
 	trashCheck: (ids: PhotoId[]) => typedError<TrashCheck, IpcError>(__TAURI_INVOKE("trash_check", { ids })),
-	/**  Stops a move to the Trash before its next file; the photos not moved stay marked. */
-	cancelTrash: () => __TAURI_INVOKE<void>("cancel_trash"),
 	/**
 	 *  Names the trip that starts on `first_day` (days since 1970); `None` brings back the
 	 *  suggested name. The core trims it and cuts it to 80 characters.
@@ -876,6 +874,8 @@ export const commands = {
 	mergeTrip: (firstDay: number) => typedError<null, IpcError>(__TAURI_INVOKE("merge_trip", { firstDay })),
 	/**  The days of the trip that starts on `first_day`, for its page. */
 	tripDays: (firstDay: number) => typedError<TripDay[], IpcError>(__TAURI_INVOKE("trip_days", { firstDay })),
+	/**  Stops a move to the Trash before its next file; the photos not moved stay marked. */
+	cancelTrash: () => __TAURI_INVOKE<void>("cancel_trash"),
 	/**  Finds a camera, runs its handshake and starts the session. */
 	cameraConnect: () => typedError<CameraInfo, IpcError>(__TAURI_INVOKE("camera_connect")),
 	/**

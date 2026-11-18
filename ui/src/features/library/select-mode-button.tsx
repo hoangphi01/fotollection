@@ -15,8 +15,7 @@ export function SelectModeButton({ select }: SelectModeButtonProps) {
     <ToolbarButton
       icon={<ListChecks />}
       label={t(select.active ? 'select.done' : 'select.start')}
-      variant={select.active ? 'default' : 'outline'}
-      aria-pressed={select.active}
+      pressed={select.active}
       data-hint={t('select.hint')}
       onClick={() => (select.active ? select.leave() : select.start())}
     />

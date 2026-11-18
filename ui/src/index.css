@@ -188,6 +188,8 @@
     --highlight: oklch(1 0 0 / 0.7);
     --lip: 3px;
     --lip-mix: 60%;
+    /* How far a pressed face sinks toward the shade (`bg-pressed`): halfway to the lip. */
+    --press-mix: 30%;
     --row-lip-mix: 45%;
     --lift: 0 4px 12px -4px oklch(0.32 0.06 175 / 0.35), 0 1px 2px oklch(0.32 0.06 175 / 0.2);
     --lift-strong: 0 12px 32px -8px oklch(0.32 0.06 175 / 0.35), 0 2px 6px oklch(0.32 0.06 175 / 0.18);
@@ -290,6 +292,8 @@
     --chrome-muted: oklch(0.29 0.04 58);
     --shade: oklch(0 0 0);
     --lip-mix: 38%;
+    /* Less in dark: the accent's dark ink keeps 4.5:1 (4.79 at 10 %; 19 % gave 3.73). */
+    --press-mix: 10%;
     --row-lip-mix: 15%;
     /* Dark words on the orange accent: a smaller step keeps them at 4.5:1 (5.1). */
     --deep: 8%;
@@ -529,7 +533,7 @@
 }
 /* Switched on (a toggle, the chosen segment, the basket while the photo is in it): pressed in
    like a console's button, owner 2026-11-06. No lip, the shade inside, in the theme's own accent
-   (a darker accent was tried and looked muddy, owner): on and off differ by depth. The control sets the background with `bg-pressed`
+   (owner 2026-11-18: the face sinks halfway to its lip, `bg-pressed`): on and off differ by depth. The control sets the background with `bg-pressed`
    (below) and `--face`. */
 @utility pressed-in {
   --tw-shadow: inset 0 2px 3px color-mix(in oklch, var(--face, var(--primary)), var(--shade) 40%),
@@ -542,8 +546,13 @@
   background-color: color-mix(in oklch, var(--primary), var(--shade) var(--deep));
 }
 
+/* One pressed face for every control (owner, 2026-11-18, after a style audit: a pressed button
+   read as raised): the accent sunk toward its shade by `--press-mix` (halfway to the lip in
+   light, less in dark for the ink's contrast), and `--face` the same, so `pressed-in` shades
+   from the colour shown. */
 @utility bg-pressed {
-  background-color: var(--primary);
+  --face: color-mix(in oklch, var(--primary), var(--shade) var(--press-mix));
+  background-color: var(--face);
 }
 /* A badge: raised like a button but a step smaller, a 1.5 px lip and a small shadow, and it never
    reacts to the pointer, so what is read is not taken for what is pressed (owner, 2026-11-06). */
@@ -608,8 +617,15 @@
   --sense-lip: oklch(0.36 0.12 292);
 }
 
-/* Each RollSense card's icon on a small violet key: RollSense's mark, repeated on every card. */
-.theme-sense [data-slot='card-icon'] {
+/* Each RollSense card's icon on a small violet key: RollSense's mark, repeated on every card;
+   `sense-key` is the same key outside the column (the toolbar's pick chip), which takes none of
+   the column's tokens: the toolbar stays neutral (style audit, 2026-11-18). */
+.dark [data-slot='sense-key'] {
+  --sense-tile: oklch(0.58 0.17 292);
+  --sense-lip: oklch(0.36 0.12 292);
+}
+.theme-sense [data-slot='card-icon'],
+[data-slot='sense-key'] {
   display: grid;
   place-items: center;
   width: 22px;
@@ -619,7 +635,8 @@
   color: oklch(0.99 0 0);
   box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.22), inset 0 -2px 0 var(--sense-lip);
 }
-.theme-sense [data-slot='card-icon'] svg {
+.theme-sense [data-slot='card-icon'] svg,
+[data-slot='sense-key'] svg {
   width: 14px;
   height: 14px;
 }

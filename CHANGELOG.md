@@ -25,6 +25,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - RollSense no longer holds the window while it reads: its groups fill as the photos are read, and a stop still keeps nothing.
 - **Select** works in RollSense too: its buttons take the ticked photos when there are some.
 - RollSense opens with **Clean up**: extra copies, screenshots, photos saved from apps and chats, and memes, each with its count and the space it takes, one press to review them; Simple mode offers it for a phone's roll.
+- Every switched-on button now sinks the same way, its face darker, so a pressed button no longer reads as raised; the select bar's three moves sit flat in their bar; marking to delete is neutral everywhere, red only for the move to the Trash.
+- RollSense's trips can be renamed, split between two days on the trip's own page, and merged, from **⋯** or a right click; the changes are kept in the project.
 - Right-click menus share one block: a row's ⋯ and its right click open the same menu, Shift+F10 or the menu key open it from the keyboard, and groups are split by a hairline; the looks' list and strip use it first.
 - Deleting is now one place, **To delete** in the sidebar: **Delete** on a photo, *Mark to delete* in select mode, or RollSense's *Mark n photos to delete* move photos there, undoable; its column shows the count, the space freed and any drive without a Trash, the photos to keep are brought back, and one press moves the rest to the Trash with a progress bar and a stop.
 - RollSense's *Duplicates* holds only the extra copies, one of each picture always kept, and a photo is deleted for good only after the Trash refused it.

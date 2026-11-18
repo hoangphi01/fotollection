@@ -55,7 +55,7 @@ export function PartFailed({ onRetry }: { onRetry: () => void }) {
       <PanelNote
         icon={<TriangleAlert />}
         action={
-          <Button variant="outline" size="sm" onClick={onRetry}>
+          <Button size="sm" onClick={onRetry}>
             <RefreshCw data-icon="inline-start" /> {t('part.retry')}
           </Button>
         }

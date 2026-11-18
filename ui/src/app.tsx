@@ -7,7 +7,6 @@ import { useStartupNotice } from '@/features/startup/use-startup-notices'
 import { PartBoundary } from '@/components/layout/part-boundary'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
-import { Button } from '@/components/ui/button'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
@@ -65,6 +64,7 @@ import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
 import { RemoveButton } from '@/components/forms/danger-button'
 import { ToDeletePanel } from '@/features/library/to-delete-panel'
+import { FitText } from '@/components/forms/fit-text'
 import { PickChip } from '@/features/rollsense/pick-chip'
 import { RollSensePanel } from '@/features/rollsense/rollsense-panel'
 import { useRollSense } from '@/features/rollsense/use-rollsense'
@@ -383,27 +383,33 @@ export function App() {
                   />
                 )}
               {/* RollSense apart, in its own colour, pressed in while shown (owner, 2026-11-18). */}
-              <Button
+              <ToolbarButton
+                icon={<ScanSearch />}
+                label={t('rollsense.view')}
+                // Its icon alone below 64 rem, as Find best shots (UI-LAYOUT-010).
+                labelFrom="5xl"
                 variant="sense"
-                size="sm"
-                aria-pressed={rollsense}
+                pressed={rollsense}
+                data-hint={t('rollsense.view')}
                 onClick={() => {
                   if (rollsense) return setView('photos')
                   setView('rollsense')
                   sense.open()
                 }}
-              >
-                <ScanSearch data-icon="inline-start" /> {t('rollsense.view')}
-              </Button>
+              />
               {view === 'photos' && (
                 <PickChip picks={picks} facets={sense.facets} onOpen={() => setView('rollsense')} onClear={() => setPicks([])} />
               )}
               {view !== 'groups' && (
-                <span className="shrink-0 font-medium whitespace-nowrap tabular-nums">
+                // The count gives way last, fitted as a button's words, so a long language never
+                // pushes Select and Filters past the edge (UI-LAYOUT-010, en-XA at 1180 px).
+                <span className="flex min-w-0 font-medium whitespace-nowrap tabular-nums">
                   {/* RollSense counts within the tab chosen, not the whole library. */}
-                  {photos.length === (rollsense ? (sense.facets?.total ?? total) : total)
-                    ? t('app.photos', { count: photos.length })
-                    : t('app.filtered', { shown: photos.length, count: rollsense ? (sense.facets?.total ?? total) : total })}
+                  <FitText>
+                    {photos.length === (rollsense ? (sense.facets?.total ?? total) : total)
+                      ? t('app.photos', { count: photos.length })
+                      : t('app.filtered', { shown: photos.length, count: rollsense ? (sense.facets?.total ?? total) : total })}
+                  </FitText>
                 </span>
               )}
               {view === 'photos' && (

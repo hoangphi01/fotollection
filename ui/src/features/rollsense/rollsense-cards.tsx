@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown gallery: in RollSense's side panel (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { CalendarDays, Copy, House, MapPin, Plane, Smartphone, Tags } from 'lucide-react'
+import { CalendarDays, Copy, House, MapPin, Merge, Pencil, Plane, Scissors, Smartphone, Tags } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ResetButton } from '@/components/forms/danger-button'
 import { GroupRows } from '@/components/forms/group-rows'
-import { CheckRow, ListRows } from '@/components/forms/list-row'
+import { CommitInput } from '@/components/forms/commit-input'
+import { CheckRow, ListRow, ListRows } from '@/components/forms/list-row'
+import { MenuSeparator } from '@/components/forms/menu-content'
+import { RowMenu } from '@/components/forms/row-menu'
 import { SectionCard } from '@/components/layout/section-card'
-import type { Facets, SortPick } from '@/ipc/bindings'
-import { useDay } from './pick-label'
+import { commands, type Facets, type SortPick, type TripFacet } from '@/ipc/bindings'
+import { useDay, useTripName } from './pick-label'
 
 type PickProps = {
   facets: Facets
@@ -157,20 +160,66 @@ export function TimeCard({ facets, picks, onPicks }: PickProps) {
 }
 
 /** Trips away from home (FR-012), named after their place. */
-export function TripsCard({ facets, picks, onPicks }: PickProps) {
+export function TripsCard({ facets, picks, onPicks, onOpenTrip }: PickProps & { onOpenTrip(trip: TripFacet): void }) {
   const { t } = useTranslation()
-  const day = useDay()
+  const name = useTripName()
+  const [renaming, setRenaming] = useState<number | null>(null)
   if (facets.trips.length === 0) return null
+  const trips = facets.trips
   return (
     <FacetCard card={3} icon={<Plane />} title={t('rollsense.trips')} picks={picks} onPicks={onPicks}>
-      {[...facets.trips].reverse().map((trip) => (
-        <PickRow key={trip.firstDay} value={{ kind: 'trip', firstDay: trip.firstDay }} count={trip.count} picks={picks} onPicks={onPicks}>
-          {trip.place ?? t('rollsense.unknownPlace')} · {day(trip.firstDay)}
-        </PickRow>
-      ))}
+      {[...trips].reverse().map((trip) => {
+        // The trip after it in time, the one "Merge with the next" takes in.
+        const next = trips[trips.indexOf(trip) + 1]
+        return renaming === trip.firstDay ? (
+          <CommitInput
+            key={trip.firstDay}
+            value={trip.name ?? ''}
+            placeholder={name({ ...trip, name: null })}
+            maxLength={80}
+            ariaLabel={t('rollsense.trip.rename')}
+            onCommit={(value) => {
+              setRenaming(null)
+              void commands.renameTrip(trip.firstDay, value.trim() || null)
+            }}
+          />
+        ) : (
+          // Its actions on a ⋯ and a right click (FR-117), the split on the trip's page.
+          <RowMenu
+            key={trip.firstDay}
+            label={t('rollsense.trip.actions')}
+            menu={(close) => (
+              <>
+                <ListRow icon={<Pencil />} onClick={() => (close(), setRenaming(trip.firstDay))}>
+                  {t('rollsense.trip.rename')}
+                </ListRow>
+                <ListRow icon={<Scissors />} onClick={() => (close(), onOpenTrip(trip))}>
+                  {t('rollsense.trip.split')}
+                </ListRow>
+                {next && (
+                  <ListRow icon={<Merge />} onClick={() => (close(), void commands.mergeTrip(next.firstDay))}>
+                    {t('rollsense.trip.mergeNext')}
+                  </ListRow>
+                )}
+                {trip.name && (
+                  <>
+                    <MenuSeparator />
+                    <ResetButton wide label={t('rollsense.trip.suggested')} onClick={() => (close(), void commands.renameTrip(trip.firstDay, null))} />
+                  </>
+                )}
+              </>
+            )}
+          >
+            <PickRow value={{ kind: 'trip', firstDay: trip.firstDay }} count={trip.count} picks={picks} onPicks={onPicks}>
+              {name(trip)}
+            </PickRow>
+          </RowMenu>
+        )
+      })}
     </FacetCard>
   )
 }
+
 
 /** Visits to the other homes, per year (FR-012). */
 export function VisitsCard({ facets, picks, onPicks }: PickProps) {

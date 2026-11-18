@@ -16,7 +16,7 @@ const buttonVariants = cva(
         // a cut with no motion felt jerky) and the release `ease-move`, as every control. Marked important: in dark,
         // `dark:bg-secondary` and `dark:hover:bg-muted` weigh as much or more and come later. Ghost and link
         // stay flat at rest.
-        default: "bg-primary text-primary-foreground [--face:var(--primary)] raised hover:bg-primary-deep active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-pressed:bg-pressed aria-pressed:pressed-in aria-pressed:hover:bg-primary",
+        default: "bg-primary text-primary-foreground [--face:var(--primary)] raised hover:bg-primary-deep active:bg-pressed! active:text-primary-foreground! active:pressed-in! active:ease-enter aria-pressed:bg-pressed aria-pressed:pressed-in",
         // RollSense's own button (FR-141, owner 2026-11-18): its colour, raised as every button;
         // pressed in the same way as every button, in its own colour, while its view is shown.
         // Its shade is its deep violet, so the lip and the pressed hollow never turn teal; pressed,
@@ -27,11 +27,11 @@ const buttonVariants = cva(
         sense:
           "bg-sense text-white [--face:var(--sense)] [--shade:var(--sense-lip)] raised hover:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_35%)] active:[--face:color-mix(in_oklch,var(--sense),var(--sense-lip)_50%)]! active:bg-(--face)! active:[--shade:var(--sense-hollow)] active:pressed-in! active:ease-enter aria-pressed:[--face:color-mix(in_oklch,var(--sense),var(--sense-lip)_50%)] aria-pressed:bg-(--face) aria-pressed:[--shade:var(--sense-hollow)] aria-pressed:pressed-in",
         outline:
-          "border-border bg-card [--face:var(--card)] raised hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted",
+          "border-border bg-card [--face:var(--card)] raised hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted",
         secondary:
-          "bg-secondary text-secondary-foreground [--face:var(--secondary)] raised hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-secondary-foreground [--face:var(--secondary)] raised hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] active:bg-pressed! active:text-primary-foreground! active:pressed-in! active:ease-enter aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
-          "hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         // Red for anything that deletes, clears, removes or stops (owner, 2026-11-06; STYLE_RULE
         // §4 "Red"): the red badges' deep red in both themes, white ink, their burgundy lip,
         // deeper under the pointer; icon-only ones too (a tab's ✕ is a round one).
@@ -41,7 +41,7 @@ const buttonVariants = cva(
         // where the wood stands out on green; the card's cream in light, where the teal accent
         // would sink into the green (owner, 2026-11-06). Raised as every button.
         "on-colour":
-          "bg-card text-foreground [--face:var(--card)] raised hover:bg-muted active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter dark:bg-primary dark:text-primary-foreground dark:[--face:var(--primary)] dark:hover:bg-primary/90",
+          "bg-card text-foreground [--face:var(--card)] raised hover:bg-muted active:bg-pressed! active:text-primary-foreground! active:pressed-in! active:ease-enter dark:bg-primary dark:text-primary-foreground dark:[--face:var(--primary)] dark:hover:bg-primary/90",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

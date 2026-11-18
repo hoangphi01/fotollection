@@ -9,15 +9,15 @@ import { ListRows } from './list-row'
  * `ListRow`s and a red `RemoveButton wide`, every one 32 px as every control (STYLE_RULE §4).
  * One block for every menu, so none is sized by hand.
  */
-/** A hairline between a menu's groups of actions, as Lightroom's (FR-117). */
-export function MenuSeparator() {
-  return <div role="separator" className="my-1 h-px bg-border" />
-}
-
 export function MenuContent({ align = 'start', children }: { align?: ComponentProps<typeof PopoverContent>['align']; children: ReactNode }) {
   return (
     <PopoverContent align={align} className="w-max max-w-80 min-w-48 p-1">
       <ListRows>{children}</ListRows>
     </PopoverContent>
   )
+}
+
+/** A hairline between a menu's groups of actions, as Lightroom's (FR-117). */
+export function MenuSeparator() {
+  return <div role="separator" className="my-1 h-px bg-border" />
 }

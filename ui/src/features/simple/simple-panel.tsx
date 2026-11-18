@@ -67,7 +67,7 @@ export function SimplePanel({ settings, onChange, exporter, basketCount, customS
         <PanelNote
           icon={<Eraser />}
           action={
-            <Button variant="outline" size="sm" onClick={onCleanup}>
+            <Button size="sm" onClick={onCleanup}>
               {t('simple.cleanupOpen')}
             </Button>
           }

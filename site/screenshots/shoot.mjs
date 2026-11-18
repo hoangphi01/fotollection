@@ -1029,8 +1029,8 @@ async function stressViews({ language, theme }) {
     out.push(...(await stableChecks(page, 'photo preview', '[role="dialog"] aside section', () => page.keyboard.press('ArrowRight'), `${card}: a first slider step`)))
     await context.close()
   }
-  // UI-STATE-009: a button held down is the theme's colour, pressed in, in both themes (owner,
-  // 2026-11-08: "a press shows nothing"; in dark, dark:bg-secondary outweighed the press).
+  // UI-STATE-009: a button held down is `bg-pressed`, the accent sunk halfway, in both themes
+  // (owner 2026-11-08: "a press shows nothing"; 2026-11-18: one pressed face for every control).
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
   await (await reach(page, SHOW.crop)).dblclick()
   await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
@@ -1045,13 +1045,13 @@ async function stressViews({ language, theme }) {
       await page.waitForTimeout(250)
       const [bg, primary] = await held.evaluate((el) => {
         const probe = document.createElement('i')
-        probe.style.color = 'var(--primary)'
+        probe.className = 'bg-pressed'
         el.append(probe)
-        const want = getComputedStyle(probe).color
+        const want = getComputedStyle(probe).backgroundColor
         probe.remove()
         return [getComputedStyle(el).backgroundColor, want]
       })
-      if (bg !== primary) out.push(`photo preview: UI-STATE-009 a held button is ${bg}, not the theme's colour ${primary}`)
+      if (bg !== primary) out.push(`photo preview: UI-STATE-009 a held button is ${bg}, not the pressed face ${primary}`)
       // UI-LAYOUT-023: the sheet's toolbar is the photo's, less what a sheet has not.
       const photoBar = await barOrder(page)
       const common = (sheetBar ?? []).filter((n) => photoBar.includes(n))

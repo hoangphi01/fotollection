@@ -1713,3 +1713,10 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Seen:** opened from RollSense, the preview stepped through the pick with ←/→ while its export and colour took the whole folder (UX review, 2026-11-18).
 - **Why:** the grid got `viewFilter` and the preview and export panel got `filter`: two scopes for one screen.
 - **Rule:** one filter value per mode (`proFilter`) is passed to the grid, the preview and every panel that acts on "the photos shown"; a count shown and a scope acted on come from the same value.
+
+### Features shipped in a day skipped the style audit, and the depth broke (UI)
+
+- **Area:** ui-blocks
+- **Seen:** after a day of RollSense features the owner sent two screenshots (2026-11-18): the select bar's basket a flat tan slab beside lipped cells, and the pressed Select button reading as raised; an audit then found 10 more slips (the pick chip carrying the column's violet lips into the toolbar, a mark-to-delete red in one place and neutral in another, a split toggle with no pressed look, notes with the wrong action size).
+- **Why:** each feature passed `tsc`, lint and ui-check, but no check knew these rules: a solid button inside a `ButtonGroup`, `aria-pressed` on an outline button, `theme-sense` outside its column, a note's action size; and the pressed face kept the plain accent, which in dark reads as an edge, not a hollow.
+- **Rule:** a UI feature is not done before the `style-audit` skill ran on it, even when features ship fast; every slip it finds that code can catch becomes a `check-lego` rule in the same commit (seven added that day), and the pressed look is one recipe, `bg-pressed`, for every control.
