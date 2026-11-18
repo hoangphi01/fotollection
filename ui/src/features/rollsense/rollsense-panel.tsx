@@ -136,7 +136,7 @@ export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit, o
           <TimeCard {...props} />
           <TripsCard {...props} onOpenTrip={setTripOpen} />
           <VisitsCard {...props} />
-          <WhereCard {...props} />
+          <WhereCard {...props} folders={sense.folders} />
           <DuplicatesCard {...props} />
         </>
       )}

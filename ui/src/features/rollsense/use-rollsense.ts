@@ -93,7 +93,7 @@ export function useRollSense(folders: number[], shown: boolean) {
     if (result.status === 'error') setError(errorText(result.error))
   }, [])
 
-  return { facets, running: jobId !== null, error, analyze, open, cancel, setAside, toBasket, markDelete }
+  return { folders, facets, running: jobId !== null, error, analyze, open, cancel, setAside, toBasket, markDelete }
 }
 
 export type RollSense = ReturnType<typeof useRollSense>

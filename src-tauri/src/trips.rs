@@ -85,3 +85,22 @@ pub fn trip_days(state: State<'_, AppState>, first_day: i32) -> Result<Vec<TripD
         .trip_days(i64::from(first_day))
         .map_err(|e| refused(&e))
 }
+
+/// The country `country` (as the facets name it) of the photos in `folders`, its outline and a
+/// pin per place, for the top of the Where card (FR-141); none without an outline.
+#[tauri::command]
+#[specta::specta]
+pub fn country_map(
+    state: State<'_, AppState>,
+    folders: Vec<u16>,
+    country: String,
+) -> Result<Option<fotollection_core::geo_shapes::CountryMap>, IpcError> {
+    if country.len() > 100 {
+        return Err(IpcError::new("place.unknown", "Unknown place"));
+    }
+    Ok(state
+        .library
+        .read()
+        .map_err(poisoned)?
+        .country_map(&folders, &country))
+}

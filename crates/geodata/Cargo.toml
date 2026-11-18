@@ -1,6 +1,6 @@
 [package]
 name = "fotollection-geodata"
-description = "Build-time packer for the bundled GeoNames places (ADR-0003); never shipped in the app"
+description = "Build-time packers for the bundled GeoNames places (ADR-0003) and Natural Earth country shapes (FR-141); never shipped in the app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,6 +10,7 @@ publish = false
 
 [dependencies]
 blake3.workspace = true
+serde_json.workspace = true
 
 [lints]
 workspace = true

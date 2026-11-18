@@ -195,6 +195,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             trips::split_trip,
             trips::merge_trip,
             trips::trip_days,
+            trips::country_map,
             sorting::cancel_trash,
             camera::camera_connect,
             camera::camera_disconnect,

@@ -1671,6 +1671,7 @@
     "trips": "旅行",
     "visits": "帰省",
     "places": "場所",
+    "pin": "{{places}}：この写真にチェック",
     "more": "重複、Live Photos と連写",
     "noSubject": "認識できず",
     "duplicates": "重複",

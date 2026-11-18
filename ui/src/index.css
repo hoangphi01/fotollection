@@ -140,6 +140,9 @@
     --popover: oklch(0.993 0.008 88);
     --popover-foreground: oklch(0.2 0.015 65);
     --primary: oklch(0.552 0.089 172.9);
+    /* RollSense's map (FR-141): the land in the theme's own accent, as literal values, since the
+       column's `theme-sense` turns `--primary` violet (owner, 2026-11-19). */
+    --map-land: oklch(0.552 0.089 172.9);
     --primary-foreground: oklch(0.986 0.017 88);
     --secondary: oklch(0.955 0.022 88);
     --secondary-foreground: oklch(0.28 0.03 60);
@@ -254,6 +257,7 @@
     --popover: oklch(0.225 0.012 70);
     --popover-foreground: oklch(0.95 0.015 85);
     --primary: oklch(0.685 0.106 61.2);
+    --map-land: oklch(0.685 0.106 61.2);
     --primary-foreground: oklch(0.2 0.03 60);
     --secondary: oklch(0.28 0.016 70);
     --secondary-foreground: oklch(0.95 0.015 85);
@@ -634,6 +638,11 @@
   background-color: var(--sense-tile);
   color: oklch(0.99 0 0);
   box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.22), inset 0 -2px 0 var(--sense-lip);
+}
+/* A ticked map pin (FR-141): its key pressed in, as every control switched on. */
+[aria-pressed='true'] > [data-slot='sense-key'] {
+  background-color: color-mix(in oklch, var(--sense-tile), var(--sense-lip) 50%);
+  box-shadow: inset 0 2px 3px var(--sense-hollow), inset 0 0 0 1px var(--sense-lip);
 }
 .theme-sense [data-slot='card-icon'] svg,
 [data-slot='sense-key'] svg {

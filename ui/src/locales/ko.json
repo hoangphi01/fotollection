@@ -1671,6 +1671,7 @@
     "trips": "여행",
     "visits": "고향 방문",
     "places": "장소",
+    "pin": "{{places}}: 이 사진 체크",
     "more": "중복, Live Photo와 연속 촬영",
     "noSubject": "인식 안 됨",
     "duplicates": "중복",

@@ -1678,6 +1678,7 @@
     "trips": "Trips",
     "visits": "Visits home",
     "places": "Where",
+    "pin": "{{places}}: tick these photos",
     "more": "Duplicates, Live Photos and bursts",
     "noSubject": "Not recognised",
     "duplicates": "Duplicates",

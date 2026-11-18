@@ -6,9 +6,21 @@
 # downloads anything.
 #
 #   scripts/geodata/fetch-and-pack.sh [out=crates/core/assets/geo/places.bin]
+#   scripts/geodata/fetch-and-pack.sh countries   # RollSense's country outlines (FR-141)
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ "${1:-}" = countries ]; then
+  # Natural Earth 1:50m admin-0 countries (public domain), pinned to a release.
+  work="$(mktemp -d)"
+  trap 'rm -rf "$work"' EXIT
+  curl -sSfL -o "$work/countries.geojson" \
+    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson"
+  cargo run -q --release -p fotollection-geodata --bin countries -- \
+    "$work/countries.geojson" "$root/crates/core/assets/geo/countries.bin"
+  echo "Update the BLAKE3 sum in GEODATA.md and crates/core/src/geo_shapes.rs." >&2
+  exit 0
+fi
 out="${1:-$root/crates/core/assets/geo/places.bin}"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT

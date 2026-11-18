@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - RollSense no longer holds the window while it reads: its groups fill as the photos are read, and a stop still keeps nothing.
 - **Select** works in RollSense too: its buttons take the ticked photos when there are some.
 - RollSense opens with **Clean up**: extra copies, screenshots, photos saved from apps and chats, and memes, each with its count and the space it takes, one press to review them; Simple mode offers it for a phone's roll.
+- RollSense's **Where** opens with a map of one country in the theme's own colour, a violet pin for each place with photos; pressing a pin ticks its photos. Offline, from Natural Earth's outlines (127 KB); Vietnam's map holds the Hoàng Sa and Trường Sa archipelagos.
 - Every switched-on button now sinks the same way, its face darker, so a pressed button no longer reads as raised; the select bar's three moves sit flat in their bar; marking to delete is neutral everywhere, red only for the move to the Trash.
 - RollSense's trips can be renamed, split between two days on the trip's own page, and merged, from **⋯** or a right click; the changes are kept in the project.
 - Right-click menus share one block: a row's ⋯ and its right click open the same menu, Shift+F10 or the menu key open it from the keyboard, and groups are split by a hairline; the looks' list and strip use it first.

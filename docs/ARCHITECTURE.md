@@ -95,6 +95,7 @@ crates/
                            # score.rs (robust z within the group + reasons), cache.rs (analysis/)
       addassist/         † # AddAssist 1.1 (FR-133, ADR-0051): a postal code or a search fills an address from the post's own data, bundled, BLAKE3-checked, parsed at first use; jp.rs (Japan Post's table), kr.rs (Korea's road-name table: a road and a building number to the code, a code to its roads), romaji.rs (Hepburn from the kana, Revised Romanization from the Hangul, the search's folding), address.rs (a Japanese or Korean address, checked), book.rs (the address book and the recent recipients); one interface: countries, lookup, search
       geocode.rs         † # offline reverse geocoder + place search: bundled GeoNames, BLAKE3-checked, 1° grid index (FR-005/032)
+      geo_shapes.rs        # RollSense's map: bundled Natural Earth outlines (BLAKE3-checked), one country projected to 275 px with pins (FR-141)
       xmp.rs             † # XMP sidecars of other apps, read only on import: `xmp:Rating` → stars or reject; ≤ 1 MB, no DTD (FR-058)
       places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places; borrowing from another device's photo of the same scene (FR-005/031/032). GPX tracks are planned (FR-066)
       cluster.rs           # trip DBSCAN (Phase 2)

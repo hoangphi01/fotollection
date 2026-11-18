@@ -11,6 +11,7 @@ import { MenuSeparator } from '@/components/forms/menu-content'
 import { RowMenu } from '@/components/forms/row-menu'
 import { SectionCard } from '@/components/layout/section-card'
 import { commands, type Facets, type SortPick, type TripFacet } from '@/ipc/bindings'
+import { CountryMapView } from './country-map'
 import { useDay, useTripName } from './pick-label'
 
 type PickProps = {
@@ -236,13 +237,17 @@ export function VisitsCard({ facets, picks, onPicks }: PickProps) {
   )
 }
 
-/** Countries › places (FR-141 S4); the map comes later. */
-export function WhereCard({ facets, picks, onPicks }: PickProps) {
+/** Countries › places (FR-141 S4), one country's map at the top (owner, 2026-11-18). */
+export function WhereCard({ facets, picks, onPicks, folders }: PickProps & { folders: number[] }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState<string | null>(null)
   if (facets.countries.length === 0) return null
+  // The map shows the country open in the list, else the one with the most photos (owner,
+  // 2026-11-18: one country at a time).
+  const shown = facets.countries.find((c) => c.country === open) ?? [...facets.countries].sort((a, b) => b.count - a.count)[0]
   return (
     <FacetCard card={5} icon={<MapPin />} title={t('rollsense.places')} picks={picks} onPicks={onPicks}>
+      {shown && <CountryMapView country={shown} folders={folders} picks={picks} onPicks={onPicks} />}
       {facets.countries.map((c) => (
         <GroupRows key={c.country} title={c.country} count={c.count} open={open === c.country} onToggle={() => setOpen(open === c.country ? null : c.country)}>
           {c.places.map((p) => (

@@ -24,6 +24,7 @@ pub mod export;
 pub mod facts;
 pub mod fonts;
 pub mod frame;
+pub mod geo_shapes;
 pub mod geocode;
 pub mod glyph;
 pub mod hagaki;

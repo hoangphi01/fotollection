@@ -1610,6 +1610,7 @@
     "trips": "Chuyến đi",
     "visits": "Về nhà",
     "places": "Nơi chụp",
+    "pin": "{{places}}: tick những ảnh này",
     "more": "Ảnh trùng, Live Photo và ảnh liên tiếp",
     "noSubject": "Chưa nhận ra",
     "duplicates": "Ảnh trùng",

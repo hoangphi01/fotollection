@@ -874,6 +874,16 @@ export const commands = {
 	mergeTrip: (firstDay: number) => typedError<null, IpcError>(__TAURI_INVOKE("merge_trip", { firstDay })),
 	/**  The days of the trip that starts on `first_day`, for its page. */
 	tripDays: (firstDay: number) => typedError<TripDay[], IpcError>(__TAURI_INVOKE("trip_days", { firstDay })),
+	/**
+	 *  The country `country` (as the facets name it) of the photos in `folders`, its outline and a
+	 *  pin per place, for the top of the Where card (FR-141); none without an outline.
+	 */
+	countryMap: (folders: number[], country: string) => typedError<{
+	width: number | null,
+	height: number | null,
+	path: string,
+	pins: MapPin[],
+} | null, IpcError>(__TAURI_INVOKE("country_map", { folders, country })),
 	/**  Stops a move to the Trash before its next file; the photos not moved stay marked. */
 	cancelTrash: () => __TAURI_INVOKE<void>("cancel_trash"),
 	/**  Finds a camera, runs its handshake and starts the session. */
@@ -1328,6 +1338,17 @@ export type CountryInfo = {
 	dataDate: string,
 	/**  `AddAssist`'s version, kept with an address it fills (`Address::filled_by`). */
 	version: string,
+};
+
+/**
+ *  One country drawn for the panel: its outline as an SVG path (only `M`, `L` and `Z` with
+ *  numbers) and its pins, all in a frame `width` × `height` px.
+ */
+export type CountryMap = {
+	width: number | null,
+	height: number | null,
+	path: string,
+	pins: MapPin[],
 };
 
 /**
@@ -1993,6 +2014,14 @@ export type MachineInfo = {
 	memory: number | null,
 	/**  Bytes free on the cache's disk, or `None` when the system does not say. */
 	freeDisk: number | null,
+};
+
+/**  A pin: the places it stands for (one, or several close together), their photos, and where. */
+export type MapPin = {
+	ids: number[],
+	x: number | null,
+	y: number | null,
+	count: number,
 };
 
 /**  Where a print size is sold. */

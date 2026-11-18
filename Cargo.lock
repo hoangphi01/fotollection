@@ -1589,6 +1589,7 @@ name = "fotollection-geodata"
 version = "0.14.3"
 dependencies = [
  "blake3",
+ "serde_json",
 ]
 
 [[package]]

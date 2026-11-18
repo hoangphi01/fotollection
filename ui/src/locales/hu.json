@@ -1678,6 +1678,7 @@
     "trips": "Utazások",
     "visits": "Látogatások otthon",
     "places": "Hol",
+    "pin": "{{places}}: e képek bejelölése",
     "more": "Ismétlődők, Live Photók és sorozatok",
     "noSubject": "Nem felismert",
     "duplicates": "Ismétlődők",

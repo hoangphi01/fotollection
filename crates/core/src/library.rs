@@ -5,6 +5,7 @@
 
 use std::collections::HashMap;
 
+mod map;
 mod sense;
 mod sorted;
 mod trip_edit;

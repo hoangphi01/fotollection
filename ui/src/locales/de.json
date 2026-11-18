@@ -1678,6 +1678,7 @@
     "trips": "Reisen",
     "visits": "Besuche zu Hause",
     "places": "Wo",
+    "pin": "{{places}}: diese Fotos anhaken",
     "more": "Duplikate, Live Photos und Serien",
     "noSubject": "Nicht erkannt",
     "duplicates": "Duplikate",
