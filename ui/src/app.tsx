@@ -107,8 +107,8 @@ export function App() {
   const project = useProject()
   const bestShots = useBestShots()
   const sense = useRollSense(filter.folders ?? [], rollsense)
-  // RollSense reading: the rest of the window waits, the red stop on the progress bar ends it,
-  // keeps nothing and goes back to Photos (owner, 2026-11-18).
+  // RollSense reading: the window stays free and the cards fill as it reads; the red stop on
+  // the progress bar ends it, keeps nothing and goes back to Photos (owner, 2026-11-18).
   const sorting = sense.running
   const cancelSorting = () => {
     sense.cancel()
@@ -271,7 +271,7 @@ export function App() {
       <TitleBar name={project.document.name ?? t('project.untitled')} />
       <div className="flex min-h-0 flex-1">
       {/* The folder list fails alone (ADR-0048). */}
-      <div className="contents" inert={sorting}>
+      <div className="contents">
       <PartBoundary part="folders">
       <LibrarySidebar
         folders={folders}
@@ -314,7 +314,7 @@ export function App() {
           )}
         </NoticeStack>
         {/* The main view fails alone, its notices above it stay (ADR-0048). */}
-        <div className="flex min-h-0 flex-1 flex-col" inert={sorting}>
+        <div className="flex min-h-0 flex-1 flex-col">
         <PartBoundary part="main">
         {total === 0 ? (
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
@@ -538,7 +538,7 @@ export function App() {
         onLocate={(id) => void project.relink(id)}
         onClose={() => setRelinkHiddenFor(project.document.generation)}
       />
-      <div className="contents" inert={sorting}>
+      <div className="contents">
       {collageMode ? (
         <CollagePanel
           settings={settings}

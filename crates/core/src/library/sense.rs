@@ -87,6 +87,28 @@ impl Library {
         true
     }
 
+    /// What a pixels' pass changes, taken before it: a stopped pass puts it back, so it keeps
+    /// nothing (owner, 2026-11-18) while its photos show as they are read.
+    pub fn sense_snapshot(&self) -> SenseSnapshot {
+        SenseSnapshot {
+            subject: self.subject.clone(),
+            hash: self.hash.clone(),
+            analysed: self.analysed.clone(),
+        }
+    }
+
+    /// Puts back a snapshot; false, and nothing changed, when the library was rebuilt since.
+    pub fn restore_sense(&mut self, snapshot: SenseSnapshot) -> bool {
+        if snapshot.analysed.len() != self.analysed.len() {
+            return false;
+        }
+        self.subject = snapshot.subject;
+        self.hash = snapshot.hash;
+        self.analysed = snapshot.analysed;
+        self.sort_index = std::sync::OnceLock::new();
+        true
+    }
+
     /// Pairs of photos whose hashes are close and which are not one capture: the
     /// candidates the shell proves on their pictures (FR-015).
     pub fn duplicate_candidates(&self) -> Vec<(PhotoId, PhotoId)> {
@@ -475,6 +497,14 @@ fn countries(places: &[Option<crate::sorting::locations::Located>]) -> Vec<Count
     out
 }
 
+/// The pixels' facts of every photo before a pass (`Library::sense_snapshot`).
+#[derive(Clone, Debug)]
+pub struct SenseSnapshot {
+    subject: Vec<u16>,
+    hash: Vec<Option<u64>>,
+    analysed: Vec<bool>,
+}
+
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
@@ -492,6 +522,28 @@ mod tests {
             orientation: 1,
             ..PhotoMeta::default()
         }
+    }
+
+    #[test]
+    fn fr_141_a_stopped_pass_puts_the_library_back() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/roll"));
+        let file = ImportedFile {
+            path: PathBuf::from("/roll/0.jpg"),
+            size: 1,
+            mtime: 0,
+        };
+        lib.push(f, &file, &shot(3, 9));
+        let before = lib.sense_snapshot();
+        let cat = crate::sorting::clip::labels().labels["cat"][0].clone();
+        let pixels = Pixels {
+            hash: 7,
+            embedding: cat,
+        };
+        assert!(lib.set_pixels(PhotoId(0), Path::new("/roll/0.jpg"), &pixels));
+        assert_eq!(lib.facets(&[]).analysed, 1);
+        assert!(lib.restore_sense(before));
+        assert_eq!(lib.facets(&[]).analysed, 0);
     }
 
     #[test]

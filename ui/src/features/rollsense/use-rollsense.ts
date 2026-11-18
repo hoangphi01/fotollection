@@ -21,26 +21,35 @@ export function useRollSense(folders: number[], shown: boolean) {
 
   useEffect(() => {
     // Folders ticked or unticked while RollSense is shown: the new set's unread photos are read
-    // at once, as a press would (owner, 2026-11-18); only on the set's first load, so a pass
-    // stopped by the user is not started again.
-    let first = true
+    // at once, as a press would (owner, 2026-11-18). Once per set, so a pass stopped by the user
+    // or one that left photos it could not read is not started again; a pass of the set before,
+    // still running when the set changed, hands on to this one when it ends.
+    let wanted = true
+    let own: number | null = null
     const load = () =>
       commands.sortFacets(JSON.parse(scope) as number[]).then(async (result) => {
         if (result.status !== 'ok') return setError(errorText(result.error))
         setFacets(result.data)
-        if (first && shownRef.current && result.data.analysed < result.data.total) {
+        if (wanted && shownRef.current && result.data.analysed < result.data.total) {
+          wanted = false
           const job = await commands.analyzeSorting(JSON.parse(scope) as number[])
-          if (job.status === 'ok') setJobId(job.data)
-          else setError(errorText(job.error))
+          if (job.status === 'ok') {
+            setJobId(job.data)
+            own = job.data
+          } else setError(errorText(job.error))
         }
-        first = false
+        wanted = false
       })
     void load()
     const unlisteners = [
-      events.sortingFinished.listen(() => {
+      events.sortingFinished.listen((e) => {
         setJobId(null)
+        // Another set's pass ended on its own: this set's turn.
+        if (e.payload.jobId !== own && !e.payload.cancelled) wanted = true
         void load()
       }),
+      // The pass's photos as they are read, so the cards fill (owner, 2026-11-18).
+      events.sortingRead.listen(() => void load()),
       events.libraryChanged.listen(() => void load()),
       events.documentChanged.listen(() => void load()),
     ]

@@ -212,6 +212,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::MenuAction,
             events::AnalysisFinished,
             events::SortingFinished,
+            events::SortingRead,
             events::StartupFinished,
             open_with::OpenPhoto,
             camera::CameraStatus,

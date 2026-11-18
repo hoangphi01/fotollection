@@ -21,7 +21,7 @@ use tauri::{AppHandle, Manager, State};
 use tauri_specta::Event;
 
 use crate::commands::progress_reporter;
-use crate::events::{SortingFinished, TaskKind};
+use crate::events::{SortingFinished, SortingRead, TaskKind};
 use crate::state::{AppState, IpcError};
 
 /// The bundled model, compiled in once here (the core takes its bytes).
@@ -39,6 +39,12 @@ fn embedder() -> Result<&'static Embedder, IpcError> {
         .as_ref()
         .map_err(|e| IpcError::new("sorting.clip_failed", e.clone()))
 }
+
+/// Photos read between two writes to the library: small enough that the cards fill often,
+/// large enough that the write lock is rare.
+const BATCH: usize = 256;
+/// How often the UI is told to refetch the facets while a pass reads.
+const SHOW_EVERY: std::time::Duration = std::time::Duration::from_secs(2);
 
 /// The pass's pool, on every core, made on first use.
 fn pool() -> Result<&'static rayon::ThreadPool, IpcError> {
@@ -100,40 +106,14 @@ pub fn analyze_sorting(
         "sorting",
         move || {
             let state = app.state::<AppState>();
-            let tick = progress_reporter(&app, TaskKind::Sort, total);
-            let failed = AtomicU32::new(0);
-            let results: Vec<(PhotoId, std::path::PathBuf, Pixels)> = pool.install(|| {
-                records
-                    .par_iter()
-                    .filter_map(|r| {
-                        if cancel.is_cancelled() {
-                            return None;
-                        }
-                        let p = state
-                            .sorting_cache
-                            .pass(r, &state.thumbs, state.codec.as_ref(), embedder)
-                            .inspect_err(|_| {
-                                failed.fetch_add(1, Ordering::Relaxed);
-                            })
-                            .ok();
-                        tick();
-                        Some((r.id, r.path.clone(), p?))
-                    })
-                    .collect()
-            });
+            let (analysed, failed) =
+                read_batches(&app, &state, pool, embedder, &records, &cancel, job_id);
             let cancelled = cancel.is_cancelled();
-            let analysed = u32::try_from(results.len()).unwrap_or(u32::MAX);
-            // Cancelled: nothing is kept (what was read stays cached, so the next pass is quick).
             if !cancelled {
-                let candidates = state.library.write().map_or_else(
-                    |_| Vec::new(),
-                    |mut library| {
-                        for (id, path, p) in &results {
-                            library.set_pixels(*id, path, p);
-                        }
-                        library.duplicate_candidates()
-                    },
-                );
+                let candidates = state
+                    .library
+                    .read()
+                    .map_or_else(|_| Vec::new(), |library| library.duplicate_candidates());
                 prove_duplicates(&state, pool, &records, &candidates);
             }
             if let Ok(mut running) = state.sorting.lock() {
@@ -145,7 +125,7 @@ pub fn analyze_sorting(
             let _ = SortingFinished {
                 job_id,
                 analysed,
-                failed: failed.load(Ordering::Relaxed),
+                failed,
                 cancelled,
             }
             .emit(&app);
@@ -153,6 +133,69 @@ pub fn analyze_sorting(
         ended,
     );
     Ok(job_id)
+}
+
+/// Reads `records` in batches, each kept as it is read, so the cards fill while the window stays
+/// free (owner, 2026-11-18); a stopped pass puts back the snapshot taken before it. Returns the
+/// photos read and those that failed.
+fn read_batches(
+    app: &AppHandle,
+    state: &AppState,
+    pool: &rayon::ThreadPool,
+    embedder: &Embedder,
+    records: &[PhotoRecord],
+    cancel: &CancellationToken,
+    job_id: u32,
+) -> (u32, u32) {
+    let total = u32::try_from(records.len()).unwrap_or(u32::MAX);
+    let tick = progress_reporter(app, TaskKind::Sort, total);
+    let failed = AtomicU32::new(0);
+    // In batches, each kept as it is read, so the cards fill while the window stays
+    // free (owner, 2026-11-18); a stopped pass puts the snapshot back.
+    let before = state.library.read().ok().map(|l| l.sense_snapshot());
+    let mut analysed = 0u32;
+    let mut shown = std::time::Instant::now();
+    for batch in records.chunks(BATCH) {
+        if cancel.is_cancelled() {
+            break;
+        }
+        let results: Vec<(PhotoId, std::path::PathBuf, Pixels)> = pool.install(|| {
+            batch
+                .par_iter()
+                .filter_map(|r| {
+                    if cancel.is_cancelled() {
+                        return None;
+                    }
+                    let p = state
+                        .sorting_cache
+                        .pass(r, &state.thumbs, state.codec.as_ref(), embedder)
+                        .inspect_err(|_| {
+                            failed.fetch_add(1, Ordering::Relaxed);
+                        })
+                        .ok();
+                    tick();
+                    Some((r.id, r.path.clone(), p?))
+                })
+                .collect()
+        });
+        analysed += u32::try_from(results.len()).unwrap_or(u32::MAX);
+        if let Ok(mut library) = state.library.write() {
+            for (id, path, p) in &results {
+                library.set_pixels(*id, path, p);
+            }
+        }
+        if shown.elapsed() >= SHOW_EVERY {
+            shown = std::time::Instant::now();
+            let _ = SortingRead { job_id, analysed }.emit(app);
+        }
+    }
+    if cancel.is_cancelled() {
+        // Stopped: nothing is kept (what was read stays cached, so the next pass is quick).
+        if let (Some(before), Ok(mut library)) = (before, state.library.write()) {
+            library.restore_sense(before);
+        }
+    }
+    (analysed, failed.load(Ordering::Relaxed))
 }
 
 /// Each candidate pair proven on its two pictures (FR-015: a re-save or a colour version,

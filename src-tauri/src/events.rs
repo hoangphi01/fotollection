@@ -89,6 +89,15 @@ pub struct SortingFinished {
     pub cancelled: bool,
 }
 
+/// RollSense's pass has read more photos (every 2 seconds at most): the UI refetches the
+/// facets, so the cards fill as it reads (FR-141, owner 2026-11-18).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[serde(rename_all = "camelCase")]
+pub struct SortingRead {
+    pub job_id: u32,
+    pub analysed: u32,
+}
+
 /// Progress of a background task, for the progress bar (coalesced to ≤ 30 per second).
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
 #[serde(rename_all = "camelCase")]

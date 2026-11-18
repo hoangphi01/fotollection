@@ -923,6 +923,7 @@ export const events = {
 	quitBlocked: makeEvent<QuitBlocked>("quit-blocked"),
 	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
 	sortingFinished: makeEvent<SortingFinished>("sorting-finished"),
+	sortingRead: makeEvent<SortingRead>("sorting-read"),
 	startupFinished: makeEvent<StartupFinished>("startup-finished"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
 	thumbReady: makeEvent<ThumbReady>("thumb-ready"),
@@ -2682,6 +2683,15 @@ export type SortingFinished = {
 	analysed: number,
 	failed: number,
 	cancelled: boolean,
+};
+
+/**
+ *  RollSense's pass has read more photos (every 2 seconds at most): the UI refetches the
+ *  facets, so the cards fill as it reads (FR-141, owner 2026-11-18).
+ */
+export type SortingRead = {
+	jobId: number,
+	analysed: number,
 };
 
 /**  Where a photo came from. */
