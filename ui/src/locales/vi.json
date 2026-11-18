@@ -793,6 +793,8 @@
     "professionalHint": "Đủ mọi điều khiển: cắt ảnh, khung, kiểu dấu ngày, bộ lọc và ảnh đẹp nhất"
   },
   "simple": {
+    "cleanup": "Ở đây có {{screenshots}} ảnh chụp màn hình và {{copies}} bản thừa. Dọn trước khi in?",
+    "cleanupOpen": "Dọn ảnh",
     "title": "Đơn giản",
     "progress": "Ảnh {{index}} / {{count}}",
     "counts": "Giữ {{kept}} · Bỏ {{dropped}}",
@@ -1614,6 +1616,13 @@
     "forGoodBody": "Ổ chứa chúng không có Thùng rác, như ổ mạng thường không có. Xoá hẳn? Việc này không hoàn tác được.",
     "forGoodConfirm": "Xoá hẳn",
     "keep": "Giữ lại",
+    "cleanup": "Dọn ảnh",
+    "cleanupKind": {
+      "duplicates": "Bản thừa",
+      "screenshots": "Ảnh chụp màn hình",
+      "saved": "Lưu từ ứng dụng và tin nhắn",
+      "memes": "Meme (AI, nên kiểm tra)"
+    },
     "delete_other": "Đánh dấu xoá {{count}} ảnh",
     "edit_other": "Chỉnh {{count}} ảnh trong Ảnh",
     "toBasket_other": "Cho {{count}} ảnh vào giỏ in",

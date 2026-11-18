@@ -566,6 +566,12 @@ export function App() {
           revision={revision}
           photoId={photos[current]?.id}
           onSettingsReload={reload}
+          cleanup={sense.facets?.cleanup}
+          onCleanup={() => {
+            setMode('professional')
+            setView('rollsense')
+            sense.open()
+          }}
         />
       ) : rollsense ? (
         <RollSensePanel

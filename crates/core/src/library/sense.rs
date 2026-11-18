@@ -11,8 +11,8 @@ use chrono::Datelike;
 
 use super::{Library, NO_DATE, PhotoId};
 use crate::sorting::facets::{
-    Count, CountryFacet, EventFacet, Facets, MonthFacet, PlaceFacet, SortPick, TripFacet,
-    VisitFacet, YearFacet,
+    CleanupKind, CleanupRow, Count, CountryFacet, EventFacet, Facets, MonthFacet, PlaceFacet,
+    SortPick, TripFacet, VisitFacet, YearFacet,
 };
 use crate::sorting::pass::Pixels;
 
@@ -305,7 +305,58 @@ impl Library {
                     .filter(|st| st.members.iter().any(|&m| inn[m as usize]))
                     .count(),
             ),
+            cleanup: self.cleanup(&inn, keys),
         }
+    }
+
+    /// The clean-up rows over the photos `inn` keeps (FR-141): each one's count and bytes, the
+    /// rows with no photo left out.
+    fn cleanup(&self, inn: &[bool], keys: &[&str]) -> Vec<CleanupRow> {
+        use crate::sorting::SourceClass as C;
+        let meme = keys.iter().position(|k| *k == "meme");
+        let source = |class| SortPick::Source { class };
+        let kinds = [
+            CleanupKind::Duplicates,
+            CleanupKind::Screenshots,
+            CleanupKind::Saved,
+            CleanupKind::Memes,
+        ];
+        kinds
+            .into_iter()
+            .filter_map(|kind| {
+                let has = |i: usize| {
+                    let class = u32::try_from(i)
+                        .ok()
+                        .and_then(|id| self.source(PhotoId(id)))
+                        .map(|s| s.class);
+                    match kind {
+                        CleanupKind::Duplicates => self.duplicate[i],
+                        CleanupKind::Screenshots => {
+                            matches!(class, Some(C::Screenshot | C::ScreenshotCropped))
+                        }
+                        CleanupKind::Saved => matches!(class, Some(C::App | C::Unknown)),
+                        CleanupKind::Memes => meme.is_some_and(|b| self.subject[i] & (1 << b) != 0),
+                    }
+                };
+                let picks = match kind {
+                    CleanupKind::Duplicates => vec![SortPick::Duplicates],
+                    CleanupKind::Screenshots => {
+                        vec![source(C::Screenshot), source(C::ScreenshotCropped)]
+                    }
+                    CleanupKind::Saved => vec![source(C::App), source(C::Unknown)],
+                    CleanupKind::Memes => vec![SortPick::Subject { key: "meme".into() }],
+                };
+                let members: Vec<usize> = (0..self.len()).filter(|&i| inn[i] && has(i)).collect();
+                #[allow(clippy::cast_precision_loss)]
+                let bytes = members.iter().map(|&i| self.size[i] as f64).sum();
+                (!members.is_empty()).then(|| CleanupRow {
+                    kind,
+                    count: u32::try_from(members.len()).unwrap_or(u32::MAX),
+                    bytes,
+                    picks,
+                })
+            })
+            .collect()
     }
 
     /// Years › months › events, newest first; an event under the month of its first photo.
@@ -441,6 +492,32 @@ mod tests {
             orientation: 1,
             ..PhotoMeta::default()
         }
+    }
+
+    #[test]
+    fn fr_141_cleanup_rows_count_their_photos_and_bytes() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/roll"));
+        for (k, size) in [100u64, 250].into_iter().enumerate() {
+            let file = ImportedFile {
+                path: PathBuf::from(format!("/roll/{k}.jpg")),
+                size,
+                mtime: 0,
+            };
+            lib.push(f, &file, &shot(3, 9));
+        }
+        // No row without photos: a camera's shots are no clean-up.
+        assert_eq!(lib.facets(&[]).cleanup, Vec::new());
+        lib.set_duplicates(&[PhotoId(1)]);
+        assert_eq!(
+            lib.facets(&[]).cleanup,
+            vec![CleanupRow {
+                kind: CleanupKind::Duplicates,
+                count: 1,
+                bytes: 250.0,
+                picks: vec![SortPick::Duplicates],
+            }]
+        );
     }
 
     #[test]

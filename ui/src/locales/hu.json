@@ -821,6 +821,8 @@
     "professionalHint": "Minden vezérlő: vágás, keret, bélyegstílusok, szűrők és legjobb kép"
   },
   "simple": {
+    "cleanup": "Itt {{screenshots}} képernyőkép és {{copies}} fölösleges másolat van. Rendet raksz nyomtatás előtt?",
+    "cleanupOpen": "Rendrakás",
     "title": "Egyszerű",
     "progress": "{{index}}. fotó / {{count}}",
     "counts": "{{kept}} megtartva · {{dropped}} elvetve",
@@ -1683,6 +1685,13 @@
     "forGoodBody": "A meghajtójuknak nincs Kukája, ahogy a hálózati meghajtóknak gyakran. Végleg törlöd? Ez nem vonható vissza.",
     "forGoodConfirm": "Végleges törlés",
     "keep": "Megtartás",
+    "cleanup": "Rendrakás",
+    "cleanupKind": {
+      "duplicates": "Fölösleges másolatok",
+      "screenshots": "Képernyőképek",
+      "saved": "Alkalmazásokból és csevegésekből mentve",
+      "memes": "Mémek (MI, érdemes ellenőrizni)"
+    },
     "delete_one": "{{count}} kép megjelölése törlésre",
     "delete_other": "{{count}} kép megjelölése törlésre",
     "edit_one": "{{count}} kép szerkesztése a Képekben",

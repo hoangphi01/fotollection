@@ -821,6 +821,8 @@
     "professionalHint": "すべての機能：トリミング、フレーム、スタンプのスタイル、フィルター、ベストショット"
   },
   "simple": {
+    "cleanup": "スクリーンショット {{screenshots}} 枚と余分なコピー {{copies}} 枚があります。プリントの前に整理しますか？",
+    "cleanupOpen": "整理する",
     "title": "シンプル",
     "progress": "写真{{index}} / {{count}}",
     "counts": "{{kept}}枚残す · {{dropped}}枚捨てる",
@@ -1675,6 +1677,13 @@
     "forGoodBody": "ネットワークドライブのように、このドライブにはゴミ箱がありません。完全に削除しますか？元に戻せません。",
     "forGoodConfirm": "完全に削除",
     "keep": "残す",
+    "cleanup": "整理",
+    "cleanupKind": {
+      "duplicates": "余分なコピー",
+      "screenshots": "スクリーンショット",
+      "saved": "アプリやチャットから保存",
+      "memes": "ミーム（AI、要確認）"
+    },
     "delete_other": "{{count}} 枚を削除予定にする",
     "edit_other": "{{count}} 枚を写真で編集",
     "toBasket_other": "{{count}} 枚をプリントかごへ",

@@ -821,6 +821,8 @@
     "professionalHint": "Every control: crop, frame, stamp styles, filters and best shot"
   },
   "simple": {
+    "cleanup": "{{screenshots}} screenshots and {{copies}} extra copies here. Clean up before printing?",
+    "cleanupOpen": "Clean up",
     "title": "Simple",
     "progress": "Photo {{index}} of {{count}}",
     "counts": "{{kept}} kept · {{dropped}} dropped",
@@ -1683,6 +1685,13 @@
     "forGoodBody": "Their drive has no Trash, as a network drive often has not. Delete them for good? This cannot be undone.",
     "forGoodConfirm": "Delete for good",
     "keep": "Keep them",
+    "cleanup": "Clean up",
+    "cleanupKind": {
+      "duplicates": "Extra copies",
+      "screenshots": "Screenshots",
+      "saved": "Saved from apps and chats",
+      "memes": "Memes (AI, check them)"
+    },
     "delete_one": "Mark {{count}} photo to delete",
     "delete_other": "Mark {{count}} photos to delete",
     "edit_one": "Edit {{count}} photo in Photos",

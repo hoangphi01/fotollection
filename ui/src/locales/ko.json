@@ -821,6 +821,8 @@
     "professionalHint": "모든 기능: 자르기, 프레임, 날짜 표시 스타일, 필터, 베스트 샷"
   },
   "simple": {
+    "cleanup": "스크린샷 {{screenshots}}장과 남는 사본 {{copies}}장이 있습니다. 인쇄 전에 정리할까요?",
+    "cleanupOpen": "정리하기",
     "title": "심플",
     "progress": "사진 {{index}} / {{count}}",
     "counts": "{{kept}}장 남김 · {{dropped}}장 뺌",
@@ -1675,6 +1677,13 @@
     "forGoodBody": "네트워크 드라이브처럼 이 드라이브에는 휴지통이 없습니다. 영구 삭제할까요? 되돌릴 수 없습니다.",
     "forGoodConfirm": "영구 삭제",
     "keep": "남겨 두기",
+    "cleanup": "정리",
+    "cleanupKind": {
+      "duplicates": "남는 사본",
+      "screenshots": "스크린샷",
+      "saved": "앱과 채팅에서 저장",
+      "memes": "밈 (AI, 확인 필요)"
+    },
     "delete_other": "{{count}}장을 삭제 예정으로 표시",
     "edit_other": "{{count}}장을 사진에서 편집",
     "toBasket_other": "{{count}}장을 인쇄 바구니에",

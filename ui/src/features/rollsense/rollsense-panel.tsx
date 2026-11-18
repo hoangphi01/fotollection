@@ -9,6 +9,7 @@ import { SidePanel } from '@/components/layout/side-panel'
 import { Button } from '@/components/ui/button'
 import type { PhotoId, SortPick } from '@/ipc/bindings'
 import { PanelFooter } from '@/features/about/panel-footer'
+import { CleanupCard } from './cleanup-card'
 import {
   DuplicatesCard,
   SourcesCard,
@@ -95,6 +96,7 @@ export function RollSensePanel({ sense, picks, onPicks, shown, onEdit }: RollSen
       </ListRow>
       {props && (
         <>
+          <CleanupCard rows={props.facets.cleanup} picks={picks} onPicks={onPicks} />
           <SourcesCard {...props} />
           <SubjectsCard {...props} />
           <TimeCard {...props} />

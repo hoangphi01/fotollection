@@ -1236,6 +1236,26 @@ export type Chroma = "4:4:4" | "4:2:2" | "4:2:0" | "4:4:0" | "4:1:1" |
 /**  Three components stored as RGB, not YCbCr (Adobe transform 0). */
 "rgb" | "cmyk" | "ycck";
 
+/**
+ *  A ready-made clean-up row (FR-141, owner 2026-11-18, two UX reviews): what a roll's owner
+ *  most often clears out, by the task and not by the facet.
+ */
+export type CleanupKind = 
+/**  The extra copies of a picture (its keeper left out). */
+"duplicates" | "screenshots" | 
+/**  Saved from apps, the web or chats. */
+"saved" | 
+/**  Memes, from the pixels: never ticked for the user. */
+"memes";
+
+/**  One clean-up row: its photos, their bytes on disk, and the picks that show them. */
+export type CleanupRow = {
+	kind: CleanupKind,
+	count: number,
+	bytes: number | null,
+	picks: SortPick[],
+};
+
 /**  The JPEG coding process, from the frame marker. */
 export type Coding = "baseline" | "extended" | "progressive" | "lossless" | "arithmetic" | "hierarchical";
 
@@ -1583,6 +1603,8 @@ export type Facets = {
 	countries: CountryFacet[],
 	duplicates: number,
 	stacks: number,
+	/**  The clean-up rows with photos, in their order. */
+	cleanup: CleanupRow[],
 };
 
 /**  Which parts of a card's text do not fit their lines and are cut on the print. */

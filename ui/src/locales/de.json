@@ -821,6 +821,8 @@
     "professionalHint": "Alle Regler: Zuschnitt, Rahmen, Stempelstile, Filter und beste Aufnahme"
   },
   "simple": {
+    "cleanup": "Hier sind {{screenshots}} Bildschirmfotos und {{copies}} zusätzliche Kopien. Vor dem Drucken aufräumen?",
+    "cleanupOpen": "Aufräumen",
     "title": "Einfach",
     "progress": "Foto {{index}} von {{count}}",
     "counts": "{{kept}} behalten · {{dropped}} weggelegt",
@@ -1683,6 +1685,13 @@
     "forGoodBody": "Ihr Laufwerk hat keinen Papierkorb, wie oft ein Netzlaufwerk. Endgültig löschen? Das lässt sich nicht rückgängig machen.",
     "forGoodConfirm": "Endgültig löschen",
     "keep": "Behalten",
+    "cleanup": "Aufräumen",
+    "cleanupKind": {
+      "duplicates": "Zusätzliche Kopien",
+      "screenshots": "Bildschirmfotos",
+      "saved": "Aus Apps und Chats gespeichert",
+      "memes": "Memes (KI, bitte prüfen)"
+    },
     "delete_one": "{{count}} Foto zum Löschen markieren",
     "delete_other": "{{count}} Fotos zum Löschen markieren",
     "edit_one": "{{count}} Foto unter Fotos bearbeiten",

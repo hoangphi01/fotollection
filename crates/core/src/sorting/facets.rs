@@ -145,6 +145,30 @@ pub struct CountryFacet {
     pub places: Vec<PlaceFacet>,
 }
 
+/// A ready-made clean-up row (FR-141, owner 2026-11-18, two UX reviews): what a roll's owner
+/// most often clears out, by the task and not by the facet.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum CleanupKind {
+    /// The extra copies of a picture (its keeper left out).
+    Duplicates,
+    Screenshots,
+    /// Saved from apps, the web or chats.
+    Saved,
+    /// Memes, from the pixels: never ticked for the user.
+    Memes,
+}
+
+/// One clean-up row: its photos, their bytes on disk, and the picks that show them.
+#[derive(Clone, Debug, PartialEq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CleanupRow {
+    pub kind: CleanupKind,
+    pub count: u32,
+    pub bytes: f64,
+    pub picks: Vec<SortPick>,
+}
+
 /// Everything RollSense lists, each with its count.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -161,4 +185,6 @@ pub struct Facets {
     pub countries: Vec<CountryFacet>,
     pub duplicates: u32,
     pub stacks: u32,
+    /// The clean-up rows with photos, in their order.
+    pub cleanup: Vec<CleanupRow>,
 }
