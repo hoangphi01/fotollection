@@ -185,7 +185,8 @@ grep -rn 'open_devtools' src-tauri/src | grep -v 'cfg(debug_assertions)' && fail
 # means a green docs workflow. Skipped only where npx is missing.
 echo "• The website's depth tokens match the app's (site.css and ui/src/index.css)"
 for token in --shade --highlight --lip --lip-mix; do
-  app=$(grep -E "^\s*$token:" ui/src/index.css | sed 's/^ *//' | sort -u)
+  # RollSense's column (FR-141) shades its own lips; the website has no such column.
+  app=$(grep -E "^\s*$token:" ui/src/index.css | grep -v 'theme-sense:' | sed 's/^ *//' | sort -u)
   web=$(grep -E "^\s*$token:" site/assets/css/site.css | sed 's/^ *//' | sort -u)
   [ "$app" = "$web" ] || fail "$token differs between ui/src/index.css and site/assets/css/site.css"
 done

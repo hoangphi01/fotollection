@@ -40,7 +40,7 @@ export function SectionCard({ icon, title, action, open = true, footer, children
           hasBody && !open && !footer && 'border-b-transparent',
         )}
       >
-        <span className="flex text-primary [&_svg]:size-4">{icon}</span>
+        <span data-slot="card-icon" className="flex text-primary [&_svg]:size-4">{icon}</span>
         {onToggle ? (
           <button type="button" className="flex h-8 min-w-0 flex-1 items-center gap-2 text-left" aria-expanded={open} onClick={onToggle}>
             <span className="min-w-0 truncate" data-hint={typeof title === 'string' ? title : undefined}>{title}</span>

@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **RollSense**, Pro mode's third tab beside Photos and Groups, sorts a phone's camera roll on this computer: by source (camera, screenshots, apps, edited copies, film scans, saved or received), by what the photos show, by year, month and event, by trip, by visits home and by place, with duplicates and stacks of one capture. Choose a group, then set its photos aside or delete them to the system's Trash; back in Photos only the kept photos remain for colour and print.
+- **RollSense**, Pro mode's third tab beside Photos and Groups, sorts a phone's camera roll on this computer: by source (camera, screenshots, apps, edited copies, film scans, saved or received), by what the photos show, by year, month and event, by trip, by visits home and by place, with duplicates and stacks of one capture. It reads the chosen folder only (the Workspace: all of them), and its red square on the progress bar stops it. Tick groups, several in a card or across cards, then set their photos aside or delete them to the system's Trash; back in Photos only the kept photos remain for colour and print.
 - A photo with no date of its own takes the date written in its file name (`2020-06-18 21-51-22.jpg`, `PXL_20230105_093012.jpg`, `IMG-20220127-WA0001.jpg`) before the file's time.
 
 ### Changed

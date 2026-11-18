@@ -10,11 +10,8 @@ export type Segment<T extends string> = {
   /** For an icon-only segment. */
   ariaLabel?: string
   hint?: string
-  /** A Lucide icon before the words; with `labelFrom`, the icon alone in a narrower row, the
-   * words from that container width, as `ToolbarButton` (STYLE_RULE §4: a toolbar stays one
-   * line at 1,180 px). */
+  /** A Lucide icon before the words. */
   icon?: ReactNode
-  labelFrom?: '4xl'
 }
 
 type SegmentedToggleProps<T extends string> = {
@@ -85,7 +82,7 @@ export function SegmentedToggle<T extends string>({
           {o.icon ? (
             <span className="inline-flex items-center gap-1.5 [&>svg]:size-4">
               {o.icon}
-              <span className={o.labelFrom === '4xl' ? 'hidden @4xl:inline' : undefined}>{o.label}</span>
+              <span>{o.label}</span>
             </span>
           ) : (
             o.label

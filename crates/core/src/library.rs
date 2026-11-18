@@ -91,9 +91,10 @@ pub struct CullFilter {
     /// RAW files only, or none.
     #[serde(default)]
     pub kind: KindFilter,
-    /// RollSense's pick (FR-141): a source, a subject, a time, a trip, a place…
+    /// RollSense's picks (FR-141): sources, subjects, times, trips, places… (one card's widen,
+    /// different cards' narrow); none means no sorting.
     #[serde(default)]
-    pub sort: Option<crate::sorting::facets::SortPick>,
+    pub sort: Vec<crate::sorting::facets::SortPick>,
 }
 
 /// One source folder in the library list (FR-056).
@@ -1239,7 +1240,7 @@ impl Library {
                 && self.index(id).is_some_and(|i| {
                     filter.matches(&self.edits(id), self.facts[i].unusual(), self.is_raw_at(i))
                 })
-                && filter.sort.as_ref().is_none_or(|pick| self.picks(pick, id))
+                && (filter.sort.is_empty() || self.picks(&filter.sort, id))
         });
         ids
     }

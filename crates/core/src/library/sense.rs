@@ -154,15 +154,24 @@ impl Library {
         })
     }
 
-    /// Whether RollSense's pick keeps the photo (the filter's test, `CullFilter::sort`).
-    pub(crate) fn picks(&self, pick: &SortPick, id: PhotoId) -> bool {
+    /// Whether RollSense's picks keep the photo (the filter's test, `CullFilter::sort`): every
+    /// card picked from has one pick that keeps it.
+    pub(crate) fn picks(&self, picks: &[SortPick], id: PhotoId) -> bool {
         let Some(i) = self.index(id) else {
             return false;
         };
         let idx = self.sort_index();
-        if pick.folds_stacks() && !idx.shown[i] {
+        if picks.iter().all(SortPick::folds_stacks) && !idx.shown[i] {
             return false;
         }
+        (0..7u8).all(|card| {
+            let mut of_card = picks.iter().filter(|p| p.card() == card).peekable();
+            of_card.peek().is_none() || of_card.any(|p| self.picked(p, i, id))
+        })
+    }
+
+    fn picked(&self, pick: &SortPick, i: usize, id: PhotoId) -> bool {
+        let idx = self.sort_index();
         match pick {
             SortPick::Source { class } => self.source(id).is_some_and(|s| s.class == *class),
             SortPick::Subject { key } => {
@@ -181,14 +190,22 @@ impl Library {
         }
     }
 
-    /// Everything RollSense lists, with counts.
-    pub fn facets(&self) -> Facets {
+    /// Everything RollSense lists, with counts, over the photos of `folders` (every folder
+    /// when empty: the Workspace; owner, 2026-11-18: "only the tab chosen").
+    pub fn facets(&self, folders: &[u16]) -> Facets {
         let n = self.len();
         let idx = self.sort_index();
         let roll = self.roll();
+        let inn: Vec<bool> = (0..n)
+            .map(|i| folders.is_empty() || folders.contains(&self.folder[i]))
+            .collect();
         let ids: Vec<PhotoId> = (0..n)
+            .filter(|&i| inn[i])
             .filter_map(|i| Some(PhotoId(u32::try_from(i).ok()?)))
             .collect();
+        let only = |members: &[usize]| -> Vec<usize> {
+            members.iter().copied().filter(|&m| inn[m]).collect()
+        };
         let mut sources: BTreeMap<crate::sorting::SourceClass, usize> = BTreeMap::new();
         for &id in &ids {
             if let Some(s) = self.source(id) {
@@ -197,8 +214,8 @@ impl Library {
         }
         let keys = crate::sorting::clip::subject_keys();
         let mut subjects: BTreeMap<u8, usize> = BTreeMap::new();
-        for s in self.subject.iter().flatten() {
-            *subjects.entry(*s).or_default() += 1;
+        for s in (0..n).filter(|&i| inn[i]).filter_map(|i| self.subject[i]) {
+            *subjects.entry(s).or_default() += 1;
         }
         let mut subjects: Vec<Count<String>> = subjects
             .into_iter()
@@ -212,8 +229,8 @@ impl Library {
         subjects.sort_by_key(|c| std::cmp::Reverse(c.count));
         let place_ids: Vec<Option<u32>> = idx.place.clone();
         Facets {
-            total: count(n),
-            analysed: count(self.analysed.iter().filter(|a| **a).count()),
+            total: count(ids.len()),
+            analysed: count((0..n).filter(|&i| inn[i] && self.analysed[i]).count()),
             sources: sources
                 .into_iter()
                 .map(|(value, c)| Count {
@@ -224,24 +241,54 @@ impl Library {
             subjects,
             no_subject: count(
                 (0..n)
-                    .filter(|&i| self.analysed[i] && self.subject[i].is_none())
+                    .filter(|&i| inn[i] && self.analysed[i] && self.subject[i].is_none())
                     .count(),
             ),
-            years: self.years(idx, &roll.events, &place_ids),
+            years: self.years(idx, &roll.events, &place_ids, &inn),
             trips: roll
                 .trips
                 .iter()
-                .map(|t| TripFacet {
-                    first_day: day32(t.first_day),
-                    last_day: day32(t.last_day),
-                    count: count(t.members.len()),
-                    place: place_name(crate::sorting::trips::main_place(t, &place_ids)),
+                .filter_map(|t| {
+                    let members = only(&t.members);
+                    let t = crate::sorting::trips::Trip {
+                        members,
+                        ..t.clone()
+                    };
+                    (!t.members.is_empty()).then(|| TripFacet {
+                        first_day: day32(t.first_day),
+                        last_day: day32(t.last_day),
+                        count: count(t.members.len()),
+                        place: place_name(crate::sorting::trips::main_place(&t, &place_ids)),
+                    })
                 })
                 .collect(),
-            visits: visits(&roll.visits, &place_ids),
-            countries: countries(&roll.places),
-            duplicates: count(self.duplicate.iter().filter(|d| **d).count()),
-            stacks: count(self.stacks().len()),
+            visits: visits(
+                &roll
+                    .visits
+                    .iter()
+                    .map(|v| crate::sorting::trips::Visit {
+                        members: only(&v.members),
+                        ..v.clone()
+                    })
+                    .filter(|v| !v.members.is_empty())
+                    .collect::<Vec<_>>(),
+                &place_ids,
+            ),
+            countries: countries(
+                &roll
+                    .places
+                    .iter()
+                    .enumerate()
+                    .map(|(i, p)| p.filter(|_| inn[i]))
+                    .collect::<Vec<_>>(),
+            ),
+            duplicates: count((0..n).filter(|&i| inn[i] && self.duplicate[i]).count()),
+            stacks: count(
+                self.stacks()
+                    .iter()
+                    .filter(|st| st.members.iter().any(|&m| inn[m as usize]))
+                    .count(),
+            ),
         }
     }
 
@@ -251,12 +298,18 @@ impl Library {
         idx: &SortIndex,
         events: &[Vec<usize>],
         places: &[Option<u32>],
+        inn: &[bool],
     ) -> Vec<YearFacet> {
         let mut months: BTreeMap<(i32, u8), (usize, Vec<EventFacet>)> = BTreeMap::new();
-        for i in 0..self.len() {
+        for i in (0..self.len()).filter(|&i| inn[i]) {
             months.entry((idx.year[i], idx.month[i])).or_default().0 += 1;
         }
-        for e in events {
+        for whole in events {
+            // The pick names the event by its first photo; the counts are the scope's.
+            let Some(&id) = whole.first() else {
+                continue;
+            };
+            let e: Vec<usize> = whole.iter().copied().filter(|&m| inn[m]).collect();
             let (Some(&first), Some(&last)) = (e.first(), e.last()) else {
                 continue;
             };
@@ -273,7 +326,7 @@ impl Library {
                 .or_default()
                 .1
                 .push(EventFacet {
-                    first: count(first),
+                    first: count(id),
                     first_day: day32(idx.t[first].div_euclid(86_400)),
                     last_day: day32(idx.t[last].div_euclid(86_400)),
                     count: count(e.len()),
@@ -387,22 +440,22 @@ mod tests {
             lib.push(f, &file, &shot(day, hour));
         }
         let mut filter = super::super::CullFilter {
-            sort: Some(SortPick::Source {
+            sort: vec![SortPick::Source {
                 class: SourceClass::OtherCamera,
-            }),
+            }],
             ..super::super::CullFilter::default()
         };
         assert_eq!(lib.filtered_ids(&filter).len(), 3);
-        filter.sort = Some(SortPick::Month {
+        filter.sort = vec![SortPick::Month {
             year: 2022,
             month: 7,
-        });
+        }];
         assert_eq!(lib.filtered_ids(&filter).len(), 3);
-        let facets = lib.facets();
+        let facets = lib.facets(&[]);
         assert_eq!(facets.total, 3);
         assert_eq!(facets.years[0].months[0].events.len(), 2);
         let first = facets.years[0].months[0].events[0].first;
-        filter.sort = Some(SortPick::Event { first });
+        filter.sort = vec![SortPick::Event { first }];
         assert_eq!(lib.filtered_ids(&filter).len(), 2);
         // A subject set by the pass, kept only for the photo still at that path.
         let cat = crate::sorting::clip::labels().labels["cat"].clone();
@@ -412,12 +465,45 @@ mod tests {
         };
         assert!(!lib.set_pixels(PhotoId(0), Path::new("/elsewhere.jpg"), &pixels));
         assert!(lib.set_pixels(PhotoId(0), Path::new("/roll/0.jpg"), &pixels));
-        filter.sort = Some(SortPick::Subject { key: "cat".into() });
+        filter.sort = vec![SortPick::Subject { key: "cat".into() }];
         assert_eq!(lib.filtered_ids(&filter), vec![PhotoId(0)]);
-        assert_eq!(lib.facets().subjects[0].value, "cat");
+        assert_eq!(lib.facets(&[]).subjects[0].value, "cat");
+        // One card's picks widen, different cards' narrow.
+        filter.sort = vec![SortPick::Subject { key: "cat".into() }, SortPick::NoSubject];
+        assert_eq!(lib.filtered_ids(&filter), vec![PhotoId(0)]);
+        filter.sort = vec![
+            SortPick::Subject { key: "cat".into() },
+            SortPick::Event { first },
+        ];
+        assert_eq!(lib.filtered_ids(&filter), vec![PhotoId(0)]);
+        filter.sort = vec![
+            SortPick::Subject { key: "cat".into() },
+            SortPick::Month {
+                year: 2021,
+                month: 1,
+            },
+        ];
+        assert_eq!(lib.filtered_ids(&filter), Vec::<PhotoId>::new());
+        // Only the tab chosen: a second folder's photo counts in its own scope alone.
+        let g = lib.add_folder(Path::new("/other"));
+        let file = ImportedFile {
+            path: PathBuf::from("/other/x.jpg"),
+            size: 1,
+            mtime: 0,
+        };
+        lib.push(g, &file, &shot(25, 9));
+        assert_eq!(
+            (
+                lib.facets(&[]).total,
+                lib.facets(&[f]).total,
+                lib.facets(&[g]).total
+            ),
+            (4, 3, 1)
+        );
+        assert_eq!(lib.facets(&[g]).subjects.len(), 0);
         // Old filters without a pick still read.
         let old: super::super::CullFilter =
             serde_json::from_str(r#"{"flag":"all","minRating":0}"#).unwrap_or_default();
-        assert_eq!(old.sort, None);
+        assert_eq!(old.sort, Vec::new());
     }
 }

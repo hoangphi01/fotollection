@@ -1631,6 +1631,7 @@
     }
   },
   "rollsense": {
+    "reset": "Clear this group's ticks",
     "view": "RollSense",
     "title": "RollSense",
     "all": "All photos",

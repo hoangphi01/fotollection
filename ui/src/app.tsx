@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Images, ScanSearch, Sparkles, Square } from 'lucide-react'
+import { GalleryHorizontalEnd, Images, ScanSearch, Sparkles, Square } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
@@ -7,6 +7,7 @@ import { useStartupNotice } from '@/features/startup/use-startup-notices'
 import { PartBoundary } from '@/components/layout/part-boundary'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
+import { Button } from '@/components/ui/button'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
@@ -83,12 +84,12 @@ export function App() {
   const [view, setView] = useState<'photos' | 'groups' | 'rollsense'>('photos')
   // RollSense (FR-141): its pick narrows the grid on its own tab only, so Photos, colour and
   // print never stay filtered by a sort left behind.
-  const [pick, setPick] = useState<SortPick | null>(null)
+  const [picks, setPicks] = useState<SortPick[]>([])
   const rollsense = mode === 'professional' && view === 'rollsense'
   // Simple and Collage follow the sidebar only (folders, basket, set aside); Pro's star and
   // flag filters stay in Pro, where they can be seen and cleared.
   const viewFilter: CullFilter =
-    mode === 'professional' ? (rollsense ? { ...filter, sort: pick } : filter) : { ...filter, flag: 'all', minRating: 0 }
+    mode === 'professional' ? (rollsense ? { ...filter, sort: picks } : filter) : { ...filter, flag: 'all', minRating: 0 }
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(viewFilter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
@@ -101,7 +102,15 @@ export function App() {
   const exporter = useExport()
   const project = useProject()
   const bestShots = useBestShots()
-  const sense = useRollSense()
+  const sense = useRollSense(filter.folders ?? [])
+  // RollSense reading: the rest of the window waits, the red stop on the progress bar ends it,
+  // keeps nothing and goes back to Photos (owner, 2026-11-18).
+  const sorting = sense.running
+  const cancelSorting = () => {
+    sense.cancel()
+    setPicks([])
+    setView('photos')
+  }
   // Tethered capture (FR-062, FR-063): the capture screen and the session tabs.
   // The camera went away by itself (unplugged, turned off): show the session's tab, as
   // closing the capture screen does (ADR-0028).
@@ -247,6 +256,7 @@ export function App() {
       <TitleBar name={project.document.name ?? t('project.untitled')} />
       <div className="flex min-h-0 flex-1">
       {/* The folder list fails alone (ADR-0048). */}
+      <div className="contents" inert={sorting}>
       <PartBoundary part="folders">
       <LibrarySidebar
         folders={folders}
@@ -273,6 +283,7 @@ export function App() {
         cameraAction={<ConnectCameraButton capture={capture} />}
       />
       </PartBoundary>
+      </div>
       <main className="flex min-w-0 flex-1 flex-col">
         <NoticeStack>
           {shownError && <ErrorNotice message={shownError} onDismiss={() => setDismissedError(shownError)} />}
@@ -283,9 +294,12 @@ export function App() {
               onDiscard={() => setDiscarding(sessionTab)}
             />
           )}
-          {taskProgress && <TaskProgressBar progress={taskProgress} />}
+          {taskProgress && (
+            <TaskProgressBar progress={taskProgress} onCancel={taskProgress.task === 'sort' && sorting ? cancelSorting : undefined} />
+          )}
         </NoticeStack>
         {/* The main view fails alone, its notices above it stay (ADR-0048). */}
+        <div className="flex min-h-0 flex-1 flex-col" inert={sorting}>
         <PartBoundary part="main">
         {total === 0 ? (
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
@@ -320,26 +334,15 @@ export function App() {
                 icons first, then the filters wrap to a second row. */}
             {/* Always one line (STYLE_RULE §4): filters are dropdowns, hints hide when narrow. */}
             <div className="@container box-content flex h-header shrink-0 flex-nowrap items-center gap-2 overflow-hidden border-b px-4 text-sm">
-              <SegmentedToggle<'photos' | 'groups' | 'rollsense'>
+              {/* Best shot's cluster: its two views and its button (owner, 2026-11-18). */}
+              <SegmentedToggle<'photos' | 'groups'>
                 fit
-                value={view}
-                onChange={(next) => {
-                  setView(next)
-                  if (next === 'rollsense') sense.open()
-                }}
+                value={view === 'rollsense' ? undefined : view}
+                onChange={setView}
                 ariaLabel={t('bestShot.view')}
-                // Icons first, the words from a wide row (STYLE_RULE §4: one line at 1,180 px).
                 options={[
                   { value: 'photos', label: t('bestShot.viewPhotos'), icon: <Images /> },
-                  {
-                    value: 'groups',
-                    label: t('bestShot.viewGroups', { count: scopedShots.groups.length }),
-                    ariaLabel: t('bestShot.viewGroups', { count: scopedShots.groups.length }),
-                    hint: t('bestShot.viewGroups', { count: scopedShots.groups.length }),
-                    icon: <Sparkles />,
-                    labelFrom: '4xl',
-                  },
-                  { value: 'rollsense', label: t('rollsense.view'), ariaLabel: t('rollsense.view'), hint: t('rollsense.view'), icon: <ScanSearch />, labelFrom: '4xl' },
+                  { value: 'groups', label: t('bestShot.viewGroups', { count: scopedShots.groups.length }), icon: <GalleryHorizontalEnd /> },
                 ]}
               />
                 {bestShots.running ? (
@@ -360,11 +363,25 @@ export function App() {
                     data-hint={t('bestShot.findHint')}
                   />
                 )}
+              {/* RollSense apart, in its own colour, pressed in while shown (owner, 2026-11-18). */}
+              <Button
+                variant="sense"
+                size="sm"
+                aria-pressed={rollsense}
+                onClick={() => {
+                  if (rollsense) return setView('photos')
+                  setView('rollsense')
+                  sense.open()
+                }}
+              >
+                <ScanSearch data-icon="inline-start" /> {t('rollsense.view')}
+              </Button>
               {view !== 'groups' && (
                 <span className="shrink-0 font-medium whitespace-nowrap tabular-nums">
-                  {photos.length === total
-                    ? t('app.photos', { count: total })
-                    : t('app.filtered', { shown: photos.length, count: total })}
+                  {/* RollSense counts within the tab chosen, not the whole library. */}
+                  {photos.length === (rollsense ? (sense.facets?.total ?? total) : total)
+                    ? t('app.photos', { count: photos.length })
+                    : t('app.filtered', { shown: photos.length, count: rollsense ? (sense.facets?.total ?? total) : total })}
                 </span>
               )}
               {view === 'photos' && (
@@ -404,7 +421,7 @@ export function App() {
                 <RemoveButton
                   kind="clear"
                   label={t('app.showAll')}
-                  onClick={() => (rollsense ? setPick(null) : setFilter({ ...ALL_PHOTOS, folders: filter.folders }))}
+                  onClick={() => (rollsense ? setPicks([]) : setFilter({ ...ALL_PHOTOS, folders: filter.folders }))}
                 />
               </div>
             ) : (
@@ -425,6 +442,7 @@ export function App() {
           </>
         )}
         </PartBoundary>
+        </div>
       </main>
       {quickShown.shown && (
         <QuickPreview
@@ -497,6 +515,7 @@ export function App() {
         onLocate={(id) => void project.relink(id)}
         onClose={() => setRelinkHiddenFor(project.document.generation)}
       />
+      <div className="contents" inert={sorting}>
       {collageMode ? (
         <CollagePanel
           settings={settings}
@@ -527,9 +546,9 @@ export function App() {
       ) : rollsense ? (
         <RollSensePanel
           sense={sense}
-          pick={pick}
-          onPick={(next) => {
-            setPick(next)
+          picks={picks}
+          onPicks={(next) => {
+            setPicks(next)
             setSelected(0)
           }}
           shown={photos.map((p) => p.id)}
@@ -550,6 +569,7 @@ export function App() {
         ticked={selectMode ? select.ordered : undefined}
       />
       )}
+      </div>
       </div>
     </div>
   )

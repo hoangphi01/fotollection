@@ -12,7 +12,7 @@ export async function measureSidePanels({ open, settle, measure, allChecks, say,
   await page.screenshot({ path: path.join(outDir, 'measure-simple.png') })
   await context.close()
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
-  await page.getByRole('radio', { name: say('rollsense.view') }).click()
+  await page.getByRole('button', { name: say('rollsense.view') }).click()
   await settle(page)
   rows.push(['RollSense panel', await measure(page, 'aside.border-l')])
   extra.push(...(await allChecks(page, 'RollSense panel')))

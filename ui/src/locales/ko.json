@@ -1631,6 +1631,7 @@
     }
   },
   "rollsense": {
+    "reset": "이 그룹 선택 해제",
     "view": "RollSense",
     "title": "RollSense",
     "all": "모든 사진",

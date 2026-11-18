@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { CheckIcon } from 'lucide-react'
 import type { MouseEventHandler, ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -102,6 +103,37 @@ export function RemovableRow({
       </div>
       <RemoveButton iconOnly label={removeLabel} onClick={onRemove} />
     </div>
+  )
+}
+
+/**
+ * A row of a list that is ticked, many at once (RollSense's groups, FR-141; owner, 2026-11-18):
+ * a `ListRow`'s measure with its checkbox where the icon goes, as the folder list's rows in
+ * select mode, and what follows the words (a count).
+ */
+export function CheckRow({ checked, trailing, onToggle, children }: { checked: boolean; trailing?: ReactNode; onToggle: () => void; children: ReactNode }) {
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      role="checkbox"
+      aria-checked={checked}
+      className={cn('w-full justify-start font-normal', ROW_LAYOUT, ROW_HOVER)}
+      onClick={onToggle}
+    >
+      {/* The checkbox's look only: a control inside the row's button would nest two (axe). */}
+      <span
+        aria-hidden
+        className={cn(
+          'flex size-4 shrink-0 items-center justify-center rounded-[4px] border sunken motion-control [&>svg]:size-3.5',
+          checked ? 'border-primary bg-primary text-primary-foreground' : 'border-input dark:bg-input/30',
+        )}
+      >
+        {checked && <CheckIcon />}
+      </span>
+      <span className="min-w-0 flex-1 truncate text-left">{children}</span>
+      {trailing}
+    </Button>
   )
 }
 

@@ -32,8 +32,8 @@ import type { RollSense } from './use-rollsense'
 
 type RollSensePanelProps = {
   sense: RollSense
-  pick: SortPick | null
-  onPick(pick: SortPick | null): void
+  picks: SortPick[]
+  onPicks(picks: SortPick[]): void
   /** The photos the pick shows in the grid, what the two actions take. */
   shown: PhotoId[]
 }
@@ -43,19 +43,19 @@ type RollSensePanelProps = {
  * Photos only the kept ones remain for colour and print"): the facets as cards, and under
  * them the pass's state and the two ends of a sort for the photos the pick shows.
  */
-export function RollSensePanel({ sense, pick, onPick, shown }: RollSensePanelProps) {
+export function RollSensePanel({ sense, picks, onPicks, shown }: RollSensePanelProps) {
   const { t } = useTranslation()
   const { facets } = sense
   const [asking, setAsking] = useState<PhotoId[] | null>(null)
   const [forGood, setForGood] = useState<PhotoId[] | null>(null)
-  const props = facets ? { facets, pick, onPick } : null
+  const props = facets ? { facets, picks, onPicks } : null
   const count = shown.length
 
   const trash = async (ids: PhotoId[]) => {
     setAsking(null)
     const report = await sense.remove(ids, false)
     if (report && report.notRemoved.length > 0) setForGood(report.notRemoved)
-    onPick(null)
+    onPicks([])
   }
   const deleteForGood = async (ids: PhotoId[]) => {
     setForGood(null)
@@ -63,8 +63,18 @@ export function RollSensePanel({ sense, pick, onPick, shown }: RollSensePanelPro
   }
 
   return (
+    // RollSense's column: violet on its small solid things, from `.theme-sense`'s tokens.
+    <div className="contents theme-sense">
     <SidePanel
-      title={t('rollsense.title')}
+      title={
+        // The column's name beside RollSense's violet key, the mark each card repeats.
+        <span className="flex items-center gap-2">
+          <span data-slot="card-icon">
+            <ScanSearch />
+          </span>
+          {t('rollsense.title')}
+        </span>
+      }
       footer={
         <>
           <Stack>
@@ -79,7 +89,7 @@ export function RollSensePanel({ sense, pick, onPick, shown }: RollSensePanelPro
                 </Button>
               )
             )}
-            {pick && count > 0 && (
+            {picks.length > 0 && count > 0 && (
               <>
                 <Button variant="secondary" onClick={() => void sense.setAside(shown)}>
                   <Archive data-icon="inline-start" /> {t('rollsense.setAside', { count })}
@@ -95,7 +105,7 @@ export function RollSensePanel({ sense, pick, onPick, shown }: RollSensePanelPro
       {sense.error && <PanelNote danger>{sense.error}</PanelNote>}
       {!facets || (facets.analysed === 0 && sense.running) ? <PanelNote>{t('rollsense.reading')}</PanelNote> : null}
       <Hint>{t('rollsense.hint')}</Hint>
-      <ListRow icon={<Images />} chosen={pick === null} onClick={() => onPick(null)}>
+      <ListRow icon={<Images />} chosen={picks.length === 0} onClick={() => onPicks([])}>
         {t('rollsense.all')}
       </ListRow>
       {props && (
@@ -134,5 +144,6 @@ export function RollSensePanel({ sense, pick, onPick, shown }: RollSensePanelPro
         </AlertDialogContent>
       </AlertDialog>
     </SidePanel>
+    </div>
   )
 }

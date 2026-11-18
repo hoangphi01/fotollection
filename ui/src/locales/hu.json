@@ -1631,6 +1631,7 @@
     }
   },
   "rollsense": {
+    "reset": "A csoport jelöléseinek törlése",
     "view": "RollSense",
     "title": "RollSense",
     "all": "Minden kép",

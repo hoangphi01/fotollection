@@ -815,12 +815,14 @@ export const commands = {
 	 */
 	keepOne: (group: PhotoId, photo: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_one", { group, photo })),
 	/**
-	 *  Reads every photo's pixels (cached ones at once), then proves the duplicates. Returns
-	 *  the job id for `cancel_job`; a second call while one runs returns the running job.
+	 *  Reads the pixels of the photos in `folders` (every folder when empty: the Workspace;
+	 *  owner, 2026-11-18: "only the tab chosen"), cached ones at once, then proves the duplicates.
+	 *  Cancelled, it keeps nothing: the library is as before. Returns the job id for `cancel_job`;
+	 *  a second call while one runs returns the running job.
 	 */
-	analyzeSorting: () => typedError<number, IpcError>(__TAURI_INVOKE("analyze_sorting")),
-	/**  Everything RollSense lists, with counts. */
-	sortFacets: () => typedError<Facets, IpcError>(__TAURI_INVOKE("sort_facets")),
+	analyzeSorting: (folders: number[]) => typedError<number, IpcError>(__TAURI_INVOKE("analyze_sorting", { folders })),
+	/**  Everything RollSense lists, with counts, over the photos of `folders` (all when empty). */
+	sortFacets: (folders: number[]) => typedError<Facets, IpcError>(__TAURI_INVOKE("sort_facets", { folders })),
 	/**
 	 *  Moves the chosen photos' files to the system's Trash (FR-141, ADR-0055), then rebuilds the
 	 *  library from its folders so they leave it; every other photo keeps its edits. The paths
@@ -1329,8 +1331,11 @@ export type CullFilter = {
 	queue?: QueueView,
 	/**  RAW files only, or none. */
 	kind?: KindFilter,
-	/**  RollSense's pick (FR-141): a source, a subject, a time, a trip, a place… */
-	sort?: SortPick | null,
+	/**
+	 *  RollSense's picks (FR-141): sources, subjects, times, trips, places… (one card's widen,
+	 *  different cards' narrow); none means no sorting.
+	 */
+	sort?: SortPick[],
 };
 
 /**  A saved custom print size (FR-043). Stored in millimetres, short edge first. */

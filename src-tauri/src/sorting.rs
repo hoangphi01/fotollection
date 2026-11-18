@@ -50,11 +50,17 @@ fn pool() -> Result<&'static rayon::ThreadPool, IpcError> {
     .map_err(|e| IpcError::internal(e.clone()))
 }
 
-/// Reads every photo's pixels (cached ones at once), then proves the duplicates. Returns
-/// the job id for `cancel_job`; a second call while one runs returns the running job.
+/// Reads the pixels of the photos in `folders` (every folder when empty: the Workspace;
+/// owner, 2026-11-18: "only the tab chosen"), cached ones at once, then proves the duplicates.
+/// Cancelled, it keeps nothing: the library is as before. Returns the job id for `cancel_job`;
+/// a second call while one runs returns the running job.
 #[tauri::command]
 #[specta::specta]
-pub fn analyze_sorting(app: AppHandle, state: State<'_, AppState>) -> Result<u32, IpcError> {
+pub fn analyze_sorting(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    folders: Vec<u16>,
+) -> Result<u32, IpcError> {
     let mut running = state.sorting.lock().map_err(poisoned)?;
     if let Some(job_id) = *running {
         return Ok(job_id);
@@ -64,6 +70,9 @@ pub fn analyze_sorting(app: AppHandle, state: State<'_, AppState>) -> Result<u32
         library
             .sorted_ids()
             .into_iter()
+            .filter(|&id| {
+                folders.is_empty() || library.folder_of(id).is_some_and(|f| folders.contains(&f))
+            })
             .filter_map(|id| library.record(id))
             .collect()
     };
@@ -114,16 +123,17 @@ pub fn analyze_sorting(app: AppHandle, state: State<'_, AppState>) -> Result<u32
             });
             let cancelled = cancel.is_cancelled();
             let analysed = u32::try_from(results.len()).unwrap_or(u32::MAX);
-            let candidates = state.library.write().map_or_else(
-                |_| Vec::new(),
-                |mut library| {
-                    for (id, path, p) in &results {
-                        library.set_pixels(*id, path, p);
-                    }
-                    library.duplicate_candidates()
-                },
-            );
+            // Cancelled: nothing is kept (what was read stays cached, so the next pass is quick).
             if !cancelled {
+                let candidates = state.library.write().map_or_else(
+                    |_| Vec::new(),
+                    |mut library| {
+                        for (id, path, p) in &results {
+                            library.set_pixels(*id, path, p);
+                        }
+                        library.duplicate_candidates()
+                    },
+                );
                 prove_duplicates(&state, pool, &records, &candidates);
             }
             if let Ok(mut running) = state.sorting.lock() {
@@ -211,11 +221,11 @@ fn sorting_ended(app: &AppHandle, job_id: u32, total: u32) -> impl FnOnce() + Se
     }
 }
 
-/// Everything RollSense lists, with counts.
+/// Everything RollSense lists, with counts, over the photos of `folders` (all when empty).
 #[tauri::command]
 #[specta::specta]
-pub fn sort_facets(state: State<'_, AppState>) -> Result<Facets, IpcError> {
-    Ok(state.library.read().map_err(poisoned)?.facets())
+pub fn sort_facets(state: State<'_, AppState>, folders: Vec<u16>) -> Result<Facets, IpcError> {
+    Ok(state.library.read().map_err(poisoned)?.facets(&folders))
 }
 
 /// Most photos one delete may take (IPC input bound, SECURITY.md §2): a whole roll.

@@ -1631,6 +1631,7 @@
     }
   },
   "rollsense": {
+    "reset": "Auswahl dieser Gruppe aufheben",
     "view": "RollSense",
     "title": "RollSense",
     "all": "Alle Fotos",

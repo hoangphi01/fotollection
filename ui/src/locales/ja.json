@@ -1631,6 +1631,7 @@
     }
   },
   "rollsense": {
+    "reset": "このグループの選択を解除",
     "view": "RollSense",
     "title": "RollSense",
     "all": "すべての写真",

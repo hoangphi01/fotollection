@@ -109,6 +109,8 @@
     --color-vermilion: var(--vermilion);
     --color-warning-solid: var(--warning-solid);
     --color-danger-solid: var(--danger-solid);
+    /* RollSense's own colour (FR-141, owner 2026-11-18: "another colour, standing out"). */
+    --color-sense: var(--sense);
     /* Room for Vietnamese: a stacked mark (ấ, ộ, ữ) needs about half a line above the letter,
        so small text gets 1.5 lines, not Tailwind's 1.33; it never touches the line above
        (owner, 2026-11-06, with Be Vietnam Pro). */
@@ -203,6 +205,12 @@
        2026-11-09: never checked until a small photo's "acceptable" badge was shown). */
     --warning-solid: oklch(0.565 0.13 62);
     --danger-solid: oklch(0.54 0.18 27);
+    /* RollSense's button: a deep violet apart from the accent and the three states, white on
+       it, one tone in both themes (owner, 2026-11-18). */
+    --sense: oklch(0.5 0.17 292);
+    /* Its lip and the cards' icon tiles in RollSense's column. */
+    --sense-lip: oklch(0.34 0.13 292);
+    --sense-tile: var(--sense);
     /* Each badge's lip is its own colour, deeper (owner, 2026-11-06): dark green, a deep
        amber brown, burgundy; never mixed with the theme's shade. */
     --success-lip: oklch(0.36 0.09 155);
@@ -556,6 +564,64 @@
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+/* RollSense's column (FR-141, owner 2026-11-18, "violet is a signal"): the big faces stay the
+   theme's, violet only on small solid things (icon tiles, ticks, the chosen row, buttons) and
+   in the lips and shadows, so a block never stands on a teal foot. Literal values, never a
+   `color-mix` across far hues: violet with cream goes through red (LESSONS 2026-11-18). The
+   dividing lines keep the theme's. A side panel, never a surface right around photos. */
+.theme-sense {
+  --primary: var(--sense);
+  --primary-foreground: oklch(0.99 0 0);
+  --ring: oklch(0.6 0.15 292);
+  --accent: oklch(0.955 0.03 292);
+  --accent-foreground: oklch(0.36 0.12 292);
+  --input: oklch(0.62 0.1 292);
+  --sidebar-primary: var(--sense);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-ring: oklch(0.6 0.15 292);
+  --shade: oklch(0.3 0.09 292); /* theme-sense: the app's column only */
+  --lift: 0 4px 12px -4px oklch(0.3 0.09 292 / 0.3), 0 1px 2px oklch(0.3 0.09 292 / 0.18);
+  --sink: inset 0 2px 3px oklch(0.3 0.09 292 / 0.18);
+  /* A white with no hue, so a card's lip mixes to violet, not through red. */
+  --chrome-card: oklch(0.993 0 none);
+}
+
+/* Dark: a lighter violet for ticks and outlines, dark words on it. */
+.dark .theme-sense {
+  --primary: oklch(0.72 0.15 292);
+  --primary-foreground: oklch(0.18 0.04 292);
+  --ring: oklch(0.72 0.15 292);
+  --accent: oklch(0.32 0.07 292);
+  --accent-foreground: oklch(0.9 0.05 292);
+  --input: oklch(0.6 0.12 292);
+  --sidebar-primary: oklch(0.72 0.15 292);
+  --sidebar-primary-foreground: oklch(0.18 0.04 292);
+  --sidebar-ring: oklch(0.72 0.15 292);
+  /* The dark theme's own shade, shadows and wood, not the light violet ones above. */
+  --shade: inherit; /* theme-sense: the app's column only */
+  --lift: inherit;
+  --sink: inherit;
+  --chrome-card: inherit;
+  --sense-tile: oklch(0.58 0.17 292);
+  --sense-lip: oklch(0.36 0.12 292);
+}
+
+/* Each RollSense card's icon on a small violet key: RollSense's mark, repeated on every card. */
+.theme-sense [data-slot='card-icon'] {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background-color: var(--sense-tile);
+  color: oklch(0.99 0 0);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.22), inset 0 -2px 0 var(--sense-lip);
+}
+.theme-sense [data-slot='card-icon'] svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* The chosen row of a list (a folder, a History step, a Settings section): an accent outline
    inside and a deep accent lip at its foot, as Sentry's chosen project (owner, 2026-11-06).
    One utility, so every list chooses alike. The lip takes less of the shade in dark, where black

@@ -35,6 +35,8 @@ Read this table in full before any task; then read in full every entry whose Are
 - A new state or variant of a shared block is checked in both themes, in dark against its `dark:` and `hover:` utilities. Kept by: UI-STATE-009.
 - A rule for one block names that block's own mark, never a shared class it happens to sit in (the website's `.cta`). Kept by: no machine check yet.
 - A block that is not a stack resets what its folds read from the stack around it (`--stack-gap`), and the measure opens and folds its groups both ways. Kept by: UI-LAYOUT-002 on RollSense's panel (folded years).
+- A theme's colour is a literal value, never a `color-mix` of two far hues, and a theme that changes the accent changes the shade its lips and shadows mix with. Kept by: no machine check yet (UI-MANUAL-009 by eye, both themes).
+- A row that is itself the control draws its check box as a picture, never a second control inside it. Kept by: UI-A11Y-002 (axe nested-interactive).
 
 ### text-i18n
 
@@ -130,6 +132,22 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-18
+
+### RollSense's column turned salmon and teal in light (FR-141)
+
+- **Area:** ui-blocks
+- **Seen:** the owner called the light RollSense column "a disaster": the chosen row salmon, each violet card standing on a teal-grey lip, the check boxes' borders faint (2.72:1), the disabled red resets pink.
+- **Why:** `--accent` was `color-mix(in oklch, violet 22%, cream)`: hues 292 and 88 mix the short way round, through red. `.theme-sense` changed the accent but not `--shade`, which every lip and shadow mixes with, so they stayed teal. The violet coat on every head made it worse.
+- **Fix:** literal violet tokens, a violet `--shade`, `--lift` and `--sink` in light and a hueless white card face, `--input` at 3.7:1; violet only on small solid things (an icon key per card), heads neutral; the reset shows once its card has a tick.
+- **Rule:** a theme's colour is a literal value, never a mix of far hues; a theme that changes the accent changes the shade too.
+
+### A ticked row nested a checkbox inside its button (FR-141)
+
+- **Area:** ui-blocks
+- **Seen:** UI-A11Y-002 on RollSense's panel, axe *nested-interactive* on every facet row, once the measure reached the panel again.
+- **Why:** `CheckRow` is a button with `role="checkbox"` and drew Radix's `Checkbox` inside; `tabIndex={-1}` and `aria-hidden` do not stop assistive technology from finding the inner control.
+- **Fix:** the row draws the box as a plain `span` with the checkbox's look.
+- **Rule:** a row that is the control draws its check box as a picture.
 
 ### A folded group pulled the next one 8 px over it (FR-141)
 

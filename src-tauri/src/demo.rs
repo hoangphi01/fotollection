@@ -99,7 +99,8 @@ fn prepare(app: &AppHandle, folder: PathBuf) -> Result<Vec<PhotoId>, String> {
     }
 
     // RollSense's pass (FR-141), for its panel's facets; wait for it too.
-    crate::sorting::analyze_sorting(app.clone(), app.state()).map_err(|e| format!("{e:?}"))?;
+    crate::sorting::analyze_sorting(app.clone(), app.state(), Vec::new())
+        .map_err(|e| format!("{e:?}"))?;
     loop {
         std::thread::sleep(Duration::from_millis(200));
         if state.sorting.lock().map_err(|e| e.to_string())?.is_none() {
@@ -175,7 +176,10 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
         to_json(document::get_document(app.state()))?,
     );
     common.insert("list_groups", ok(culling::list_groups(app.state()))?);
-    common.insert("sort_facets", ok(crate::sorting::sort_facets(app.state()))?);
+    common.insert(
+        "sort_facets",
+        ok(crate::sorting::sort_facets(app.state(), Vec::new()))?,
+    );
     // The Places card and the place picker (FR-005, FR-032), with one search typed.
     common.insert(
         "list_places",

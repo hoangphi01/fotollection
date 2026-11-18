@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { commands, events, type DeleteReport, type Facets, type PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 
@@ -8,15 +8,16 @@ import { errorText } from '@/lib/errors'
  * first time the tab opens while photos are unread), and the two ends of a sort: set aside or
  * delete (to the Trash, then for good on a volume without one, ADR-0055).
  */
-export function useRollSense() {
+export function useRollSense(folders: number[]) {
+  // Only the tab chosen (owner, 2026-11-18): a folder's photos, or the Workspace's when none.
+  const scope = JSON.stringify(folders)
   const [facets, setFacets] = useState<Facets | null>(null)
   const [jobId, setJobId] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const started = useRef(false)
 
   useEffect(() => {
     const load = () =>
-      commands.sortFacets().then((result) => {
+      commands.sortFacets(JSON.parse(scope) as number[]).then((result) => {
         if (result.status === 'ok') setFacets(result.data)
         else setError(errorText(result.error))
       })
@@ -27,28 +28,23 @@ export function useRollSense() {
         void load()
       }),
       events.libraryChanged.listen(() => void load()),
-      events.documentChanged.listen(() => {
-        // Another library: its photos are read again when the tab is next opened.
-        started.current = false
-        void load()
-      }),
+      events.documentChanged.listen(() => void load()),
     ]
     return () => {
       for (const unlisten of unlisteners) void unlisten.then((fn) => fn())
     }
-  }, [])
+  }, [scope])
 
   const analyze = useCallback(async () => {
     setError(null)
-    const result = await commands.analyzeSorting()
+    const result = await commands.analyzeSorting(JSON.parse(scope) as number[])
     if (result.status === 'ok') setJobId(result.data)
     else setError(errorText(result.error))
-  }, [])
+  }, [scope])
 
-  /** The tab opened: the first look reads the photos not read yet, as the user asked RollSense. */
+  /** The tab opened: the photos of the scope not read yet are read, as the user asked RollSense. */
   const open = useCallback(() => {
-    if (started.current || !facets || facets.total === 0) return
-    started.current = true
+    if (!facets || facets.total === 0) return
     if (facets.analysed < facets.total) void analyze()
   }, [facets, analyze])
 

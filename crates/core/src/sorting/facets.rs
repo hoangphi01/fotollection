@@ -58,6 +58,20 @@ impl SortPick {
     pub const fn folds_stacks(&self) -> bool {
         !matches!(self, Self::Stacks | Self::Duplicates)
     }
+
+    /// The card a pick belongs to: picks of one card widen the grid (people or scenery), picks
+    /// of different cards narrow it (cats, shot by the camera, in 2022; owner, 2026-11-18).
+    pub const fn card(&self) -> u8 {
+        match self {
+            Self::Source { .. } => 0,
+            Self::Subject { .. } | Self::NoSubject => 1,
+            Self::Year { .. } | Self::Month { .. } | Self::Event { .. } => 2,
+            Self::Trip { .. } => 3,
+            Self::Visit { .. } => 4,
+            Self::Place { .. } => 5,
+            Self::Duplicates | Self::Stacks => 6,
+        }
+    }
 }
 
 /// A count under a name.

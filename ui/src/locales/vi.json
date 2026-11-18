@@ -1570,6 +1570,7 @@
     }
   },
   "rollsense": {
+    "reset": "Bỏ chọn nhóm này",
     "view": "RollSense",
     "title": "RollSense",
     "all": "Tất cả ảnh",
