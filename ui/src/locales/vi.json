@@ -40,6 +40,8 @@
     "basketHint": "Những ảnh bạn sẽ in: bấm ↑ trong màn xem trước, hoặc dùng Chọn trong gallery",
     "aside": "Để riêng",
     "asideHint": "Ảnh bạn gạt ra bằng ↓: không hiện trong gallery, không bao giờ bị xoá; mở ra để quyết định lại",
+    "toDelete": "Sẽ xoá",
+    "toDeleteHint": "Ảnh đánh dấu bằng phím Delete: không hiện trong gallery; xem lại, đưa về những ảnh muốn giữ, rồi chuyển tất cả vào Thùng rác",
     "inBasket": "Trong giỏ in",
     "placeBorrowed": "Vị trí mượn từ ảnh điện thoại",
     "fromXmp_one": "Lấy sao hoặc cờ loại từ {{count}} tệp XMP (Lightroom, Bridge…)",
@@ -52,7 +54,8 @@
     "previews": "Đang chuẩn bị bản xem trước",
     "analyze": "Đang tìm ảnh đẹp nhất",
     "sort": "Đang đọc ảnh cho RollSense",
-    "looks": "Đang áp dụng màu"
+    "looks": "Đang áp dụng màu",
+    "trash": "Đang chuyển ảnh vào Thùng rác"
   },
   "culling": {
     "keysHint": "0–5 sao · P chọn · X loại · U bỏ cờ · [ ] xoay",
@@ -677,6 +680,7 @@
     "elsewhere_other": "trong đó {{count}} ảnh ở thư mục khác",
     "toBasket": "Giỏ in",
     "toAside": "Để riêng",
+    "toDelete": "Đánh dấu xoá",
     "toGallery": "Trả về gallery",
     "all": "Chọn tất cả",
     "clear": "Bỏ chọn",
@@ -1569,6 +1573,17 @@
       "kr": "세종대로 175, sejong-daero"
     }
   },
+  "toDelete": {
+    "summary": "Tóm tắt",
+    "photos": "Số ảnh",
+    "frees": "Giải phóng",
+    "hint": "Tick những ảnh muốn giữ rồi đưa về thư viện; Enter để xem từng ảnh.",
+    "empty": "Chưa có ảnh nào được đánh dấu xoá. Bấm phím Delete trên một ảnh, hoặc đánh dấu một nhóm trong RollSense.",
+    "move_other": "Chuyển {{count}} ảnh vào Thùng rác…",
+    "done_other": "Đã chuyển {{count}} ảnh vào Thùng rác.",
+    "noTrash_other": "{{count}} ảnh nằm trên ổ có thể không có Thùng rác: sẽ bị xoá hẳn.",
+    "typeCount_other": "Gõ {{count}} để xoá hẳn."
+  },
   "rollsense": {
     "reset": "Bỏ chọn nhóm này",
     "view": "RollSense",
@@ -1580,7 +1595,6 @@
     "analyze": "Đọc ảnh",
     "stop": "Dừng",
     "setAside_other": "Để riêng {{count}} ảnh",
-    "delete_other": "Xoá {{count}} ảnh…",
     "sources": "Nguồn",
     "subjects": "Nội dung",
     "time": "Thời gian",
@@ -1600,6 +1614,7 @@
     "forGoodBody": "Ổ chứa chúng không có Thùng rác, như ổ mạng thường không có. Xoá hẳn? Việc này không hoàn tác được.",
     "forGoodConfirm": "Xoá hẳn",
     "keep": "Giữ lại",
+    "delete_other": "Đánh dấu xoá {{count}} ảnh",
     "edit_other": "Chỉnh {{count}} ảnh trong Ảnh",
     "toBasket_other": "Cho {{count}} ảnh vào giỏ in",
     "backToPick": "Về RollSense, giữ nguyên các tick",

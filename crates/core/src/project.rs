@@ -37,7 +37,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// from the European card's free `address`; absent before.
 /// v15: `photos[].postcard.senders`, the card's own senders of its Japanese and Korean cards,
 /// one per country (owner, 2026-11-15); absent before (the machine's sender prints).
-pub const SCHEMA_VERSION: u32 = 15;
+/// v16: `photos[].queue` may be `delete`, marked to delete (FR-141, owner 2026-11-18); an older
+/// app would refuse that value, so the version tells it the file is newer.
+pub const SCHEMA_VERSION: u32 = 16;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -1346,6 +1348,24 @@ mod tests {
             panic!("v6 project should load");
         };
         assert_eq!(v6.cameras, Vec::new());
+    }
+
+    /// Marked to delete (owner, 2026-11-18): a v16 file keeps the mark, and a written one reads
+    /// it again.
+    #[test]
+    fn fr_141_v16_keeps_the_photos_marked_to_delete() {
+        let Loaded::Ok(v16) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v16.fotollection"))
+        else {
+            panic!("v16 project should load");
+        };
+        let queues: Vec<Option<Queue>> = v16.photos.iter().map(|p| p.queue).collect();
+        assert_eq!(queues, [Some(Queue::Delete), Some(Queue::Print)]);
+        let json = serde_json::to_string(&v16).unwrap_or_default();
+        let Loaded::Ok(again) = from_bytes(json.as_bytes()) else {
+            panic!("a written v16 file should load");
+        };
+        assert_eq!(again.photos[0].queue, Some(Queue::Delete));
     }
 
     #[test]

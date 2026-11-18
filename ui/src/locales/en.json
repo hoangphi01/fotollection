@@ -43,6 +43,8 @@
     "basketHint": "The photos you will print: ↑ in the preview, or Select in the gallery",
     "aside": "Set aside",
     "asideHint": "Photos you put aside with ↓: out of the gallery, never deleted; open them to decide again",
+    "toDelete": "To delete",
+    "toDeleteHint": "Photos marked with Delete: out of the gallery; review them, put back the ones to keep, then move them all to the Trash",
     "inBasket": "In the print basket",
     "placeBorrowed": "Place borrowed from a phone photo",
     "fromXmp_one": "Stars or reject from {{count}} XMP sidecar (Lightroom, Bridge…)",
@@ -55,7 +57,8 @@
     "previews": "Preparing previews",
     "analyze": "Finding the best shots",
     "sort": "Reading the photos for RollSense",
-    "looks": "Applying colour"
+    "looks": "Applying colour",
+    "trash": "Moving photos to the Trash"
   },
   "culling": {
     "keysHint": "0–5 stars · P pick · X reject · U unflag · [ ] rotate",
@@ -702,6 +705,7 @@
     "elsewhere_other": "{{count}} of them in other folders",
     "toBasket": "Print basket",
     "toAside": "Set aside",
+    "toDelete": "Mark to delete",
     "toGallery": "Back to the gallery",
     "all": "Select all",
     "clear": "Clear",
@@ -1630,6 +1634,21 @@
       "kr": "세종대로 175, sejong-daero"
     }
   },
+  "toDelete": {
+    "summary": "Summary",
+    "photos": "Photos",
+    "frees": "Frees",
+    "hint": "Tick the photos to keep and bring them back; Enter shows them one by one.",
+    "empty": "Nothing is marked to delete. Press Delete on a photo, or mark a group in RollSense.",
+    "move_one": "Move {{count}} photo to the Trash…",
+    "move_other": "Move {{count}} photos to the Trash…",
+    "done_one": "{{count}} photo moved to the Trash.",
+    "done_other": "{{count}} photos moved to the Trash.",
+    "noTrash_one": "{{count}} photo is on a drive that may have no Trash: it would be deleted for good.",
+    "noTrash_other": "{{count}} photos are on a drive that may have no Trash: they would be deleted for good.",
+    "typeCount_one": "Type {{count}} to delete it for good.",
+    "typeCount_other": "Type {{count}} to delete them for good."
+  },
   "rollsense": {
     "reset": "Clear this group's ticks",
     "view": "RollSense",
@@ -1642,8 +1661,6 @@
     "stop": "Stop",
     "setAside_one": "Set aside {{count}} photo",
     "setAside_other": "Set aside {{count}} photos",
-    "delete_one": "Delete {{count}} photo…",
-    "delete_other": "Delete {{count}} photos…",
     "sources": "Source",
     "subjects": "What they show",
     "time": "When",
@@ -1666,6 +1683,8 @@
     "forGoodBody": "Their drive has no Trash, as a network drive often has not. Delete them for good? This cannot be undone.",
     "forGoodConfirm": "Delete for good",
     "keep": "Keep them",
+    "delete_one": "Mark {{count}} photo to delete",
+    "delete_other": "Mark {{count}} photos to delete",
     "edit_one": "Edit {{count}} photo in Photos",
     "edit_other": "Edit {{count}} photos in Photos",
     "toBasket_one": "Add {{count}} photo to the print basket",

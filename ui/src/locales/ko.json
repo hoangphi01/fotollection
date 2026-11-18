@@ -43,6 +43,8 @@
     "basketHint": "프린트할 사진: 미리 보기에서 ↑, 또는 갤러리에서 ‘선택’",
     "aside": "보류",
     "asideHint": "↓ 로 보류한 사진: 갤러리에서 빠지지만 삭제되지 않습니다. 열어서 다시 정할 수 있습니다",
+    "toDelete": "삭제 예정",
+    "toDeleteHint": "Delete로 표시한 사진: 갤러리에 나오지 않습니다. 다시 보고 남길 사진은 되돌린 뒤 모두 휴지통으로 옮기세요",
     "inBasket": "프린트 바구니에 있음",
     "placeBorrowed": "휴대폰 사진에서 가져온 장소",
     "fromXmp_one": "XMP 사이드카 {{count}}개의 별점 또는 제외(Lightroom, Bridge…)",
@@ -55,7 +57,8 @@
     "previews": "미리 보기 준비 중",
     "analyze": "베스트 샷 찾는 중",
     "sort": "RollSense를 위해 사진 읽는 중",
-    "looks": "색 적용 중"
+    "looks": "색 적용 중",
+    "trash": "사진을 휴지통으로 옮기는 중"
   },
   "culling": {
     "keysHint": "0–5 별점 · P 채택 · X 제외 · U 플래그 해제 · [ ] 회전",
@@ -702,6 +705,7 @@
     "elsewhere_other": "그중 {{count}}장은 다른 폴더에",
     "toBasket": "프린트 바구니",
     "toAside": "보류",
+    "toDelete": "삭제 예정으로 표시",
     "toGallery": "갤러리로 되돌리기",
     "all": "모두 선택",
     "clear": "해제",
@@ -1630,6 +1634,17 @@
       "kr": "세종대로 175, sejong-daero"
     }
   },
+  "toDelete": {
+    "summary": "요약",
+    "photos": "사진",
+    "frees": "확보 용량",
+    "hint": "남길 사진을 체크해 되돌리세요. Enter로 한 장씩 볼 수 있습니다.",
+    "empty": "삭제 예정인 사진이 없습니다. 사진에서 Delete를 누르거나 RollSense에서 그룹을 표시하세요.",
+    "move_other": "{{count}}장을 휴지통으로…",
+    "done_other": "{{count}}장을 휴지통으로 옮겼습니다.",
+    "noTrash_other": "{{count}}장은 휴지통이 없을 수 있는 드라이브에 있습니다: 완전히 삭제됩니다.",
+    "typeCount_other": "완전히 삭제하려면 {{count}}을(를) 입력하세요."
+  },
   "rollsense": {
     "reset": "이 그룹 선택 해제",
     "view": "RollSense",
@@ -1641,7 +1656,6 @@
     "analyze": "사진 읽기",
     "stop": "중지",
     "setAside_other": "{{count}}장 따로 두기",
-    "delete_other": "{{count}}장 삭제…",
     "sources": "출처",
     "subjects": "찍힌 것",
     "time": "날짜",
@@ -1661,6 +1675,7 @@
     "forGoodBody": "네트워크 드라이브처럼 이 드라이브에는 휴지통이 없습니다. 영구 삭제할까요? 되돌릴 수 없습니다.",
     "forGoodConfirm": "영구 삭제",
     "keep": "남겨 두기",
+    "delete_other": "{{count}}장을 삭제 예정으로 표시",
     "edit_other": "{{count}}장을 사진에서 편집",
     "toBasket_other": "{{count}}장을 인쇄 바구니에",
     "backToPick": "체크를 유지한 채 RollSense로 돌아가기",

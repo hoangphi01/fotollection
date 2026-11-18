@@ -577,13 +577,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1 (in progress, v0.5.0).** Two **holding areas** for the photos of a trip, separate from culling: the **print basket**, the photos that will really be printed, and **set aside**, the photos taken out of the gallery for now. A typical batch: 100 photos are edited together, filters keep 60, only 5–10 go to the lab. Step-by-step use: [USER_GUIDE.md §4](USER_GUIDE.md#4-choosing-the-photos-to-print).
 
-- **One place per photo:** the gallery, the print basket or set aside, never two. Independent of stars and pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a pick does not have to be printed.
+- **One place per photo:** the gallery, the print basket, set aside or *To delete* (FR-141, owner 2026-11-18), never two. Independent of stars and pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a pick does not have to be printed.
 - **Set aside is never deletion:** the photo leaves *Workspace* and the folders, its file is never touched, and it can be brought back at any time.
 - **The sidebar lists both areas** under *Workspace*, with their counts. Opening one shows only its photos; *Export* then follows the view, so the basket exports exactly the basket and photos set aside are never exported from the gallery.
 - **Ticked photos export first (v0.8.3, user feedback 2026-11-01):** while photos are ticked in select mode, *Export* writes only them and says so (*Export 3 selected photos*), with the size estimate for them; with no tick it follows the view again. Ticks in other folder tabs count too (FR-056). Collage sheets keep following the view.
 - **In the preview:** **↑** puts the photo in the basket and moves to the next photo; **↓** sets it aside and the next photo takes its place. A *Print basket* button on the photo does the same as ↑, and a photo set aside offers *Back to the gallery*.
 - **In the gallery, select mode** (like the Select button on an iPhone): *Select* turns clicks into ticks (Shift+click for a range, Cmd/Ctrl+A for all), and a bar moves the ticked photos to the basket, aside, or back to the gallery. Ticks are temporary; the areas are saved.
-- **Saved and undoable:** stored per photo in the project (schema v6, [DATABASE.md](DATABASE.md)); every move is one undo step.
+- **To delete (FR-141, owner 2026-11-18, two UX reviews):** **Delete** on a photo, *Mark to delete* in select mode or RollSense's *Mark n photos to delete* move photos into a third area, out of the gallery and undoable like the others. Its column sums them up (photos, space freed, how many sit on a drive that may have no Trash) and one press moves them all to the Trash, with a progress bar and a stop; photos to keep are ticked and brought back first, or one by one from the preview. A drive without a Trash asks again and wants the count typed before deleting for good ([ADR-0055](adr/0055-deleting-to-the-trash-on-the-users-word.md)).
+- **Saved and undoable:** stored per photo in the project (schema v6, `delete` since v16, [DATABASE.md](DATABASE.md)); every move is one undo step.
 - **Later:** "Also export the print basket" into an extra folder (for example `Print/`), and, with copies and the order summary ([FR-024](#fr-024--copies-and-order-summary)), the order itself.
 
 ### FR-051 — Landmark recognition

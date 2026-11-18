@@ -1,0 +1,31 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 16,
+  "app_version": "0.14.4",
+  "modified_at": "2026-11-18T20:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Roll",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "IMG_0001.HEIC",
+      "fp_size": 3000000,
+      "fp_mtime": 1730000000,
+      "queue": "delete"
+    },
+    {
+      "id": 2,
+      "folder": 1,
+      "path": "IMG_0002.HEIC",
+      "fp_size": 3100000,
+      "fp_mtime": 1730000100,
+      "queue": "print"
+    }
+  ]
+}

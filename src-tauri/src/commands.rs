@@ -490,9 +490,8 @@ pub struct PhotoList {
     pub custom_stamps: u32,
     /// Every source folder with its own count, whatever the filter (FR-056).
     pub folders: Vec<fotollection_core::library::FolderSummary>,
-    /// Photos in the print basket and set aside (FR-050).
-    pub print_count: u32,
-    pub aside_count: u32,
+    /// Photos in each holding area (FR-050, FR-141).
+    pub queue_counts: fotollection_core::library::QueueCounts,
 }
 
 /// The photos kept by `filter`, ordered by capture time (FR-003, FR-022).
@@ -527,8 +526,7 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
         total: u32::try_from(library.len()).unwrap_or(u32::MAX),
         custom_stamps: u32::try_from(custom_stamps).unwrap_or(u32::MAX),
         folders: library.folder_summaries(),
-        print_count: library.queue_counts().0,
-        aside_count: library.queue_counts().1,
+        queue_counts: library.queue_counts(),
     })
 }
 

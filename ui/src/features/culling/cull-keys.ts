@@ -22,6 +22,10 @@ export function handleCullKey(
     void commands.setPhotoFlag([id], 'reject')
   } else if (key === 'u') {
     void commands.setPhotoFlag([id], null)
+  } else if (key === 'delete' || key === 'backspace') {
+    // Marked to delete (FR-141, owner 2026-11-18): out of the gallery, undoable, deleted only
+    // from *To delete* with one press for all.
+    void commands.setPhotoQueue([id], 'delete')
   } else if (key === '[' || key === ']') {
     // Quarter turns (FR-006): [ to the left, ] to the right.
     void commands.rotatePhotos([id], key === ']')

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { commands, events, type DeleteReport, type Facets, type PhotoId } from '@/ipc/bindings'
+import { commands, events, type Facets, type PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 
 /**
@@ -77,16 +77,14 @@ export function useRollSense(folders: number[], shown: boolean) {
     if (result.status === 'error') setError(errorText(result.error))
   }, [])
 
-  /** Moves the files to the Trash, or deletes them for good; what could not be moved comes back. */
-  const remove = useCallback(async (ids: PhotoId[], forGood: boolean): Promise<DeleteReport | null> => {
-    setError(null)
-    const result = forGood ? await commands.deletePhotos(ids) : await commands.trashPhotos(ids)
-    if (result.status === 'ok') return result.data
-    setError(errorText(result.error))
-    return null
+  /** Marked to delete (FR-141): out of the gallery, undoable; the files go to the Trash from
+   * the sidebar's *To delete*, all at once. */
+  const markDelete = useCallback(async (ids: PhotoId[]) => {
+    const result = await commands.setPhotoQueue(ids, 'delete')
+    if (result.status === 'error') setError(errorText(result.error))
   }, [])
 
-  return { facets, running: jobId !== null, error, analyze, open, cancel, setAside, toBasket, remove }
+  return { facets, running: jobId !== null, error, analyze, open, cancel, setAside, toBasket, markDelete }
 }
 
 export type RollSense = ReturnType<typeof useRollSense>

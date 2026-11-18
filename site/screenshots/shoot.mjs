@@ -249,8 +249,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
         ...list,
         photos: inView(all, a?.filter),
         folders,
-        printCount: all.filter((p) => p.queue === 'print').length,
-        asideCount: all.filter((p) => p.queue === 'aside').length,
+        queueCounts: Object.fromEntries(['print', 'aside', 'delete'].map((q) => [q, all.filter((p) => p.queue === q).length])),
       }
     },
     photo_details: (a) => byId(common.photo_details, a),

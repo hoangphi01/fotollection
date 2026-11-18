@@ -246,6 +246,67 @@ pub struct DeleteReport {
     pub not_removed: Vec<PhotoId>,
 }
 
+/// What moving the photos marked to delete will free and risk (FR-141), for the summary shown
+/// before it: their bytes on disk, and how many sit on a volume that seems to have no Trash
+/// (a network share), whose files would be deleted for good.
+#[derive(Debug, Clone, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TrashCheck {
+    pub bytes: f64,
+    pub without_trash: u32,
+}
+
+/// Whether `path`'s volume seems to have no Trash. macOS: a volume under `/Volumes` without
+/// `.Trashes` (network shares; a new USB drive may make one on its first delete). Windows: a
+/// network path (`\\server\share`). Elsewhere, and when unsure, a Trash is assumed: the move
+/// itself still refuses, and the user is asked again (ADR-0055).
+fn without_trash(path: &std::path::Path) -> bool {
+    if cfg!(target_os = "macos") {
+        let mut parts = path.components().skip(1);
+        if let (Some(first), Some(volume)) = (parts.next(), parts.next())
+            && first.as_os_str() == "Volumes"
+        {
+            return !std::path::Path::new("/Volumes")
+                .join(volume.as_os_str())
+                .join(".Trashes")
+                .exists();
+        }
+        return false;
+    }
+    let text = path.to_string_lossy();
+    cfg!(windows) && text.starts_with(r"\\") && !text.starts_with(r"\\?\")
+}
+
+/// The summary before a move to the Trash (FR-141): the photos' bytes, and how many seem to
+/// sit on a volume without a Trash.
+#[tauri::command]
+#[specta::specta]
+pub fn trash_check(state: State<'_, AppState>, ids: Vec<PhotoId>) -> Result<TrashCheck, IpcError> {
+    if ids.len() > MAX_DELETE_IDS {
+        return Err(IpcError::new(
+            "photo.invalid_selection",
+            "Choose between 1 and 100,000 photos to delete",
+        ));
+    }
+    let library = state.library.read().map_err(poisoned)?;
+    let records: Vec<PhotoRecord> = ids.iter().filter_map(|&id| library.record(id)).collect();
+    drop(library);
+    #[allow(clippy::cast_precision_loss)]
+    let bytes = records.iter().map(|r| r.size as f64).sum();
+    let without = records.iter().filter(|r| without_trash(&r.path)).count();
+    Ok(TrashCheck {
+        bytes,
+        without_trash: u32::try_from(without).unwrap_or(u32::MAX),
+    })
+}
+
+/// Stops a move to the Trash before its next file; the photos not moved stay marked.
+#[tauri::command]
+#[specta::specta]
+pub fn cancel_trash(state: State<'_, AppState>) {
+    state.trash_cancel.store(true, Ordering::Relaxed);
+}
+
 /// Moves the chosen photos' files to the system's Trash (FR-141, ADR-0055), then rebuilds the
 /// library from its folders so they leave it; every other photo keeps its edits. The paths
 /// come from the library, never from the webview.
@@ -311,7 +372,17 @@ async fn remove_photos(
         }
         let mut kept = std::collections::HashSet::new();
         let mut removed = 0u32;
+        state.trash_cancel.store(false, Ordering::Relaxed);
+        let tick = progress_reporter(
+            &app,
+            TaskKind::Trash,
+            u32::try_from(paths.len()).unwrap_or(u32::MAX),
+        );
         for path in &paths {
+            if state.trash_cancel.load(Ordering::Relaxed) {
+                break;
+            }
+            tick();
             let done = if for_good {
                 std::fs::remove_file(path).is_ok()
             } else {

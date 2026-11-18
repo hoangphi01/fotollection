@@ -31,24 +31,36 @@ pub enum Flag {
     Reject,
 }
 
-/// The two holding areas of the print workflow (FR-050): the print basket, and photos set
-/// aside, out of the gallery but never deleted. A photo is in one of them or in neither.
+/// The holding areas of the print workflow (FR-050): the print basket, photos set aside (out
+/// of the gallery, never deleted), and photos marked to delete (FR-141, owner 2026-11-18: out of
+/// the gallery until the user moves them all to the Trash at once, or puts some back). A photo
+/// is in one of them or in none.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum Queue {
     Print,
     Aside,
+    Delete,
+}
+
+/// Photos in each holding area (FR-050, FR-141), for the sidebar.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Type)]
+pub struct QueueCounts {
+    pub print: u32,
+    pub aside: u32,
+    pub delete: u32,
 }
 
 /// Which part of the library a view shows (FR-050).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum QueueView {
-    /// Every photo except those set aside; the basket's photos stay, marked.
+    /// Every photo except those set aside or marked to delete; the basket's photos stay, marked.
     #[default]
     Gallery,
     Print,
     Aside,
+    Delete,
 }
 
 /// Which flags a culling filter keeps (FR-022).
@@ -120,9 +132,10 @@ impl CullFilter {
             FlagFilter::Unusual => unusual,
         };
         let queue_ok = match self.queue {
-            QueueView::Gallery => edits.queue != Some(Queue::Aside),
+            QueueView::Gallery => !matches!(edits.queue, Some(Queue::Aside | Queue::Delete)),
             QueueView::Print => edits.queue == Some(Queue::Print),
             QueueView::Aside => edits.queue == Some(Queue::Aside),
+            QueueView::Delete => edits.queue == Some(Queue::Delete),
         };
         let kind_ok = match self.kind {
             KindFilter::All => true,
@@ -1245,13 +1258,17 @@ impl Library {
         ids
     }
 
-    /// Photos in the print basket and set aside (FR-050), for the sidebar.
-    pub fn queue_counts(&self) -> (u32, u32) {
-        self.edits.values().fold((0, 0), |(p, a), e| match e.queue {
-            Some(Queue::Print) => (p + 1, a),
-            Some(Queue::Aside) => (p, a + 1),
-            None => (p, a),
-        })
+    /// Photos in each holding area (FR-050, FR-141), for the sidebar.
+    pub fn queue_counts(&self) -> QueueCounts {
+        let mut counts = QueueCounts::default();
+        for queue in self.edits.values().filter_map(|e| e.queue) {
+            match queue {
+                Queue::Print => counts.print += 1,
+                Queue::Aside => counts.aside += 1,
+                Queue::Delete => counts.delete += 1,
+            }
+        }
+        counts
     }
 
     /// The source folder of a photo (FR-056).
@@ -1794,18 +1811,27 @@ mod tests {
         };
         lib.set_edits(ids[0], queued(Queue::Print));
         lib.set_edits(ids[1], queued(Queue::Aside));
+        lib.set_edits(ids[3], queued(Queue::Delete));
         let view = |queue| CullFilter {
             queue,
             ..CullFilter::default()
         };
-        // The gallery hides set-aside photos but keeps the basket's.
+        // The gallery hides set-aside photos and those marked to delete, but keeps the basket's.
         assert_eq!(
             lib.filtered_ids(&view(QueueView::Gallery)),
-            [ids[0], ids[2], ids[3]]
+            [ids[0], ids[2]]
         );
         assert_eq!(lib.filtered_ids(&view(QueueView::Print)), [ids[0]]);
         assert_eq!(lib.filtered_ids(&view(QueueView::Aside)), [ids[1]]);
-        assert_eq!(lib.queue_counts(), (1, 1));
+        assert_eq!(lib.filtered_ids(&view(QueueView::Delete)), [ids[3]]);
+        assert_eq!(
+            lib.queue_counts(),
+            QueueCounts {
+                print: 1,
+                aside: 1,
+                delete: 1
+            }
+        );
         assert_eq!(
             lib.summary(ids[0]).and_then(|s| s.queue),
             Some(Queue::Print)

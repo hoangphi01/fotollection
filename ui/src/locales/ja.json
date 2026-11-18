@@ -43,6 +43,8 @@
     "basketHint": "プリントする写真：プレビューで ↑、またはギャラリーで「選択」",
     "aside": "保留",
     "asideHint": "↓ で保留にした写真：ギャラリーから外れますが、削除はされません。開いてもう一度決められます",
+    "toDelete": "削除予定",
+    "toDeleteHint": "Delete で印を付けた写真：ギャラリーには出ません。見直して残すものを戻し、まとめてゴミ箱へ移します",
     "inBasket": "プリントバスケット内",
     "placeBorrowed": "スマートフォンの写真から借用した場所",
     "fromXmp_one": "{{count}}個のXMPサイドカーからのレーティングまたは除外（Lightroom、Bridge…）",
@@ -55,7 +57,8 @@
     "previews": "プレビューを準備中",
     "analyze": "ベストショットを検索中",
     "sort": "RollSense のために写真を読み込み中",
-    "looks": "色を適用中"
+    "looks": "色を適用中",
+    "trash": "写真をゴミ箱へ移動中"
   },
   "culling": {
     "keysHint": "0–5 レーティング · P 採用 · X 除外 · U フラグなし · [ ] 回転",
@@ -702,6 +705,7 @@
     "elsewhere_other": "うち{{count}}枚は別のフォルダー",
     "toBasket": "バスケットへ",
     "toAside": "保留",
+    "toDelete": "削除予定にする",
     "toGallery": "ギャラリーへ戻す",
     "all": "すべて選択",
     "clear": "クリア",
@@ -1630,6 +1634,17 @@
       "kr": "세종대로 175、sejong-daero"
     }
   },
+  "toDelete": {
+    "summary": "概要",
+    "photos": "写真",
+    "frees": "空く容量",
+    "hint": "残す写真にチェックを入れて戻します。Enter で 1 枚ずつ見られます。",
+    "empty": "削除予定の写真はありません。写真で Delete を押すか、RollSense でグループに印を付けます。",
+    "move_other": "{{count}} 枚をゴミ箱へ…",
+    "done_other": "{{count}} 枚をゴミ箱へ移しました。",
+    "noTrash_other": "{{count}} 枚はゴミ箱がないかもしれないドライブにあります：完全に削除されます。",
+    "typeCount_other": "完全に削除するには {{count}} と入力します。"
+  },
   "rollsense": {
     "reset": "このグループの選択を解除",
     "view": "RollSense",
@@ -1641,7 +1656,6 @@
     "analyze": "写真を読み込む",
     "stop": "停止",
     "setAside_other": "{{count}} 枚を別にする",
-    "delete_other": "{{count}} 枚を削除…",
     "sources": "入手元",
     "subjects": "写っているもの",
     "time": "日付",
@@ -1661,6 +1675,7 @@
     "forGoodBody": "ネットワークドライブのように、このドライブにはゴミ箱がありません。完全に削除しますか？元に戻せません。",
     "forGoodConfirm": "完全に削除",
     "keep": "残す",
+    "delete_other": "{{count}} 枚を削除予定にする",
     "edit_other": "{{count}} 枚を写真で編集",
     "toBasket_other": "{{count}} 枚をプリントかごへ",
     "backToPick": "チェックを残したまま RollSense へ戻る",

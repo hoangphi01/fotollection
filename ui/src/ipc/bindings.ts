@@ -382,7 +382,7 @@ export const commands = {
 	 *  Puts photos in the print basket, sets them aside, or (`None`) back into the gallery
 	 *  (FR-050). One undoable step; set-aside photos are never deleted.
 	 */
-	setPhotoQueue: (ids: PhotoId[], queue: "print" | "aside" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_queue", { ids, queue })),
+	setPhotoQueue: (ids: PhotoId[], queue: "print" | "aside" | "delete" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_queue", { ids, queue })),
 	/**  The sheets of the photos shown, in order (FR-035). */
 	listSheets: (filter: CullFilter) => typedError<SheetPair[], IpcError>(__TAURI_INVOKE("list_sheets", { filter })),
 	/**
@@ -858,6 +858,13 @@ export const commands = {
 	 *  a volume without a Trash refused), then rebuilds the library.
 	 */
 	deletePhotos: (ids: PhotoId[]) => typedError<DeleteReport, IpcError>(__TAURI_INVOKE("delete_photos", { ids })),
+	/**
+	 *  The summary before a move to the Trash (FR-141): the photos' bytes, and how many seem to
+	 *  sit on a volume without a Trash.
+	 */
+	trashCheck: (ids: PhotoId[]) => typedError<TrashCheck, IpcError>(__TAURI_INVOKE("trash_check", { ids })),
+	/**  Stops a move to the Trash before its next file; the photos not moved stay marked. */
+	cancelTrash: () => __TAURI_INVOKE<void>("cancel_trash"),
 	/**  Finds a camera, runs its handshake and starts the session. */
 	cameraConnect: () => typedError<CameraInfo, IpcError>(__TAURI_INVOKE("camera_connect")),
 	/**
@@ -2101,9 +2108,8 @@ export type PhotoList = {
 	customStamps: number,
 	/**  Every source folder with its own count, whatever the filter (FR-056). */
 	folders: FolderSummary[],
-	/**  Photos in the print basket and set aside (FR-050). */
-	printCount: number,
-	asideCount: number,
+	/**  Photos in each holding area (FR-050, FR-141). */
+	queueCounts: QueueCounts,
 };
 
 /**  One photo's colour look as the preview edits it (FR-079). */
@@ -2408,15 +2414,24 @@ export type PrintVerdict =
 "pixelated";
 
 /**
- *  The two holding areas of the print workflow (FR-050): the print basket, and photos set
- *  aside, out of the gallery but never deleted. A photo is in one of them or in neither.
+ *  The holding areas of the print workflow (FR-050): the print basket, photos set aside (out
+ *  of the gallery, never deleted), and photos marked to delete (FR-141, owner 2026-11-18: out of
+ *  the gallery until the user moves them all to the Trash at once, or puts some back). A photo
+ *  is in one of them or in none.
  */
-export type Queue = "print" | "aside";
+export type Queue = "print" | "aside" | "delete";
+
+/**  Photos in each holding area (FR-050, FR-141), for the sidebar. */
+export type QueueCounts = {
+	print: number,
+	aside: number,
+	delete: number,
+};
 
 /**  Which part of the library a view shows (FR-050). */
 export type QueueView = 
-/**  Every photo except those set aside; the basket's photos stay, marked. */
-"gallery" | "print" | "aside";
+/**  Every photo except those set aside or marked to delete; the basket's photos stay, marked. */
+"gallery" | "print" | "aside" | "delete";
 
 /**
  *  Closing the app was held back because shots exist only in Fotollection's data: a camera
@@ -2741,7 +2756,9 @@ export type TaskKind =
 /**  Thumbnails coloured after a look was given to many photos (FR-114). */
 "looks" | 
 /**  RollSense's pixels pass: subjects and duplicates (FR-141). */
-"sort";
+"sort" | 
+/**  Photos marked to delete, moved to the Trash at once (FR-141). */
+"trash";
 
 /**  Progress of a background task, for the progress bar (coalesced to ≤ 30 per second). */
 export type TaskProgress = {
@@ -2780,6 +2797,16 @@ export type Tint = {
 	hue?: number,
 	/**  0…100. */
 	amount?: number,
+};
+
+/**
+ *  What moving the photos marked to delete will free and risk (FR-141), for the summary shown
+ *  before it: their bytes on disk, and how many sit on a volume that seems to have no Trash
+ *  (a network share), whose files would be deleted for good.
+ */
+export type TrashCheck = {
+	bytes: number | null,
+	withoutTrash: number,
 };
 
 export type TripFacet = {

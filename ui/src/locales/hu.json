@@ -43,6 +43,8 @@
     "basketHint": "A fotók, amelyeket kinyomtatsz: ↑ az előnézetben, vagy Kijelölés a galériában",
     "aside": "Félretett",
     "asideHint": "A ↓-vel félretett fotók: kikerülnek a galériából, de sosem törlődnek; nyisd meg őket, és dönts újra",
+    "toDelete": "Törlendő",
+    "toDeleteHint": "A Delete gombbal jelölt képek: nincsenek a galériában; nézd át, hozd vissza a megtartandókat, majd tedd mind a Kukába",
     "inBasket": "A nyomtatási kosárban",
     "placeBorrowed": "A helyszín egy telefonos fotóból",
     "fromXmp_one": "Csillagok vagy elvetés {{count}} XMP-kísérőfájlból (Lightroom, Bridge…)",
@@ -55,7 +57,8 @@
     "previews": "Előnézetek készítése",
     "analyze": "A legjobb képek keresése",
     "sort": "Képek olvasása a RollSense-hez",
-    "looks": "Színek alkalmazása"
+    "looks": "Színek alkalmazása",
+    "trash": "Képek áthelyezése a Kukába"
   },
   "culling": {
     "keysHint": "0–5 csillag · P kiválaszt · X elvet · U jelölő törlése · [ ] forgatás",
@@ -702,6 +705,7 @@
     "elsewhere_other": "ebből {{count}} más mappákban",
     "toBasket": "Nyomtatási kosár",
     "toAside": "Félretesz",
+    "toDelete": "Megjelölés törlésre",
     "toGallery": "Vissza a galériába",
     "all": "Összes kijelölése",
     "clear": "Törlés",
@@ -1630,6 +1634,21 @@
       "kr": "세종대로 175, sejong-daero"
     }
   },
+  "toDelete": {
+    "summary": "Összegzés",
+    "photos": "Képek",
+    "frees": "Felszabadul",
+    "hint": "Jelöld be a megtartandókat, és hozd vissza őket; az Enter egyenként mutatja.",
+    "empty": "Semmi sincs törlésre jelölve. Nyomd meg a Delete gombot egy képen, vagy jelölj meg egy csoportot a RollSense-ben.",
+    "move_one": "{{count}} kép a Kukába…",
+    "move_other": "{{count}} kép a Kukába…",
+    "done_one": "{{count}} kép a Kukába került.",
+    "done_other": "{{count}} kép a Kukába került.",
+    "noTrash_one": "{{count}} kép olyan meghajtón van, amelyen talán nincs Kuka: véglegesen törlődne.",
+    "noTrash_other": "{{count}} kép olyan meghajtón van, amelyen talán nincs Kuka: véglegesen törlődnének.",
+    "typeCount_one": "Írd be: {{count}}, a végleges törléshez.",
+    "typeCount_other": "Írd be: {{count}}, a végleges törléshez."
+  },
   "rollsense": {
     "reset": "A csoport jelöléseinek törlése",
     "view": "RollSense",
@@ -1642,8 +1661,6 @@
     "stop": "Leállítás",
     "setAside_one": "{{count}} kép félretétele",
     "setAside_other": "{{count}} kép félretétele",
-    "delete_one": "{{count}} kép törlése…",
-    "delete_other": "{{count}} kép törlése…",
     "sources": "Forrás",
     "subjects": "Mit ábrázolnak",
     "time": "Mikor",
@@ -1666,6 +1683,8 @@
     "forGoodBody": "A meghajtójuknak nincs Kukája, ahogy a hálózati meghajtóknak gyakran. Végleg törlöd? Ez nem vonható vissza.",
     "forGoodConfirm": "Végleges törlés",
     "keep": "Megtartás",
+    "delete_one": "{{count}} kép megjelölése törlésre",
+    "delete_other": "{{count}} kép megjelölése törlésre",
     "edit_one": "{{count}} kép szerkesztése a Képekben",
     "edit_other": "{{count}} kép szerkesztése a Képekben",
     "toBasket_one": "{{count}} kép a nyomtatási kosárba",

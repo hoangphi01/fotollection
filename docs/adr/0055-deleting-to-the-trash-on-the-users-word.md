@@ -23,3 +23,7 @@ Option 3. Suggested deletions (FR-143) carry their reasons and certainty. The us
 - ADR-0054's "never deleted" now reads "never deleted on its own"; FR-141 says the same.
 - A new dependency (`trash`, MIT) and a new error code for a file that cannot be moved to the Trash, both added with the code.
 - A wrong suggestion now costs more, so FR-143's suggestions must be right at least 95 % of the time on the owner's labels before they ship.
+
+## Amendment, 2026-11-18: one *To delete* area, emptied at once
+
+Two UX reviews found that RollSense's *Delete n photos* acted on every photo the grid showed, with no way to keep a few and no undo, against this record's "never a batch they did not see". Owner's choice: every delete now only **marks** photos (`queue: delete`, undoable, FR-050), and the sidebar's *To delete* is the one place files leave: its column shows the count, the space freed and the photos on a drive that may have no Trash (checked before the move, `trash_check`); one confirmation moves them all, with a progress bar and a stop (`cancel_trash`); a drive without a Trash then asks for the count to be typed before deleting for good, and `delete_photos` takes only files the Trash refused just before.

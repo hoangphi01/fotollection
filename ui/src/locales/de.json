@@ -43,6 +43,8 @@
     "basketHint": "Die Fotos, die du druckst: ↑ in der Vorschau oder Auswählen in der Galerie",
     "aside": "Zurückgelegt",
     "asideHint": "Fotos, die du mit ↓ zurückgelegt hast: raus aus der Galerie, nie gelöscht; öffne sie, um neu zu entscheiden",
+    "toDelete": "Zum Löschen",
+    "toDeleteHint": "Mit Entf markierte Fotos: nicht in der Galerie; prüfe sie, hole zurück, was bleiben soll, und verschiebe dann alle in den Papierkorb",
     "inBasket": "Im Druckkorb",
     "placeBorrowed": "Ort von einem Handyfoto übernommen",
     "fromXmp_one": "Sterne oder Verworfen aus {{count}} XMP-Filialdatei (Lightroom, Bridge…)",
@@ -55,7 +57,8 @@
     "previews": "Vorschauen werden erstellt",
     "analyze": "Beste Aufnahmen werden gesucht",
     "sort": "Fotos werden für RollSense gelesen",
-    "looks": "Farbe wird angewendet"
+    "looks": "Farbe wird angewendet",
+    "trash": "Fotos in den Papierkorb"
   },
   "culling": {
     "keysHint": "0–5 Sterne · P Auswahl · X verwerfen · U Markierung weg · [ ] drehen",
@@ -702,6 +705,7 @@
     "elsewhere_other": "{{count}} davon in anderen Ordnern",
     "toBasket": "Druckkorb",
     "toAside": "Zurücklegen",
+    "toDelete": "Zum Löschen markieren",
     "toGallery": "Zurück in die Galerie",
     "all": "Alle auswählen",
     "clear": "Leeren",
@@ -1630,6 +1634,21 @@
       "kr": "세종대로 175, sejong-daero"
     }
   },
+  "toDelete": {
+    "summary": "Übersicht",
+    "photos": "Fotos",
+    "frees": "Frei werden",
+    "hint": "Hake an, was bleiben soll, und hole es zurück; Eingabe zeigt sie einzeln.",
+    "empty": "Nichts ist zum Löschen markiert. Drücke Entf auf einem Foto oder markiere eine Gruppe in RollSense.",
+    "move_one": "{{count}} Foto in den Papierkorb…",
+    "move_other": "{{count}} Fotos in den Papierkorb…",
+    "done_one": "{{count}} Foto in den Papierkorb verschoben.",
+    "done_other": "{{count}} Fotos in den Papierkorb verschoben.",
+    "noTrash_one": "{{count}} Foto liegt auf einem Laufwerk, das vielleicht keinen Papierkorb hat: es würde endgültig gelöscht.",
+    "noTrash_other": "{{count}} Fotos liegen auf einem Laufwerk, das vielleicht keinen Papierkorb hat: sie würden endgültig gelöscht.",
+    "typeCount_one": "Gib {{count}} ein, um es endgültig zu löschen.",
+    "typeCount_other": "Gib {{count}} ein, um sie endgültig zu löschen."
+  },
   "rollsense": {
     "reset": "Auswahl dieser Gruppe aufheben",
     "view": "RollSense",
@@ -1642,8 +1661,6 @@
     "stop": "Stopp",
     "setAside_one": "{{count}} Foto beiseitelegen",
     "setAside_other": "{{count}} Fotos beiseitelegen",
-    "delete_one": "{{count}} Foto löschen…",
-    "delete_other": "{{count}} Fotos löschen…",
     "sources": "Quelle",
     "subjects": "Was sie zeigen",
     "time": "Wann",
@@ -1666,6 +1683,8 @@
     "forGoodBody": "Ihr Laufwerk hat keinen Papierkorb, wie oft ein Netzlaufwerk. Endgültig löschen? Das lässt sich nicht rückgängig machen.",
     "forGoodConfirm": "Endgültig löschen",
     "keep": "Behalten",
+    "delete_one": "{{count}} Foto zum Löschen markieren",
+    "delete_other": "{{count}} Fotos zum Löschen markieren",
     "edit_one": "{{count}} Foto unter Fotos bearbeiten",
     "edit_other": "{{count}} Fotos unter Fotos bearbeiten",
     "toBasket_one": "{{count}} Foto in den Druckkorb",

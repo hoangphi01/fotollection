@@ -64,6 +64,7 @@ import { useCollage } from '@/features/collage/use-collage'
 import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
 import { RemoveButton } from '@/components/forms/danger-button'
+import { ToDeletePanel } from '@/features/library/to-delete-panel'
 import { PickChip } from '@/features/rollsense/pick-chip'
 import { RollSensePanel } from '@/features/rollsense/rollsense-panel'
 import { useRollSense } from '@/features/rollsense/use-rollsense'
@@ -149,9 +150,11 @@ export function App() {
     // Another tab while RollSense is shown: back to Photos, its picks dropped; a press reads the
     // new tab (owner, 2026-11-18: the button stayed pressed while nothing read the new folder).
     // A folder ticked or unticked beside one kept stays in RollSense, over all the ticked ones.
+    // Another part of the library (basket, set aside, to delete) leaves RollSense too.
     const was = filter.folders ?? []
     const now = next.folders ?? []
-    if (view === 'rollsense' && JSON.stringify(now) !== JSON.stringify(was) && !now.some((f) => was.includes(f))) {
+    const elsewhere = (next.queue ?? 'gallery') !== (filter.queue ?? 'gallery')
+    if (view === 'rollsense' && (elsewhere || (JSON.stringify(now) !== JSON.stringify(was) && !now.some((f) => was.includes(f))))) {
       setView('photos')
       setPicks([])
     }
@@ -307,7 +310,7 @@ export function App() {
             />
           )}
           {taskProgress && (
-            <TaskProgressBar progress={taskProgress} onCancel={taskProgress.task === 'sort' && sorting ? cancelSorting : undefined} />
+            <TaskProgressBar progress={taskProgress} onCancel={taskProgress.task === 'sort' && sorting ? cancelSorting : taskProgress.task === 'trash' ? () => void commands.cancelTrash() : undefined} />
           )}
         </NoticeStack>
         {/* The main view fails alone, its notices above it stay (ADR-0048). */}
@@ -551,6 +554,8 @@ export function App() {
           customStamps={customStamps}
           revision={revision}
         />
+      ) : filter.queue === 'delete' ? (
+        <ToDeletePanel shown={photos.map((p) => p.id)} />
       ) : simple ? (
         <SimplePanel
           settings={settings}

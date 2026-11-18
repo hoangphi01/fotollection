@@ -312,6 +312,12 @@ export function PreviewDialog({
       return
     }
     if (zoom.onKey(event)) return
+    // Delete marks to delete and goes on, as ↑ and ↓ do (FR-141).
+    if ((event.key === 'Delete' || event.key === 'Backspace') && !mod && !event.altKey) {
+      event.preventDefault()
+      send('delete')
+      return
+    }
     if (handleCullKey(event, photo?.id)) event.preventDefault()
     else if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)

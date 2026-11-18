@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Archive, CheckCheck, ClipboardPaste, MapPin, ShoppingBasket, Undo2 } from 'lucide-react'
+import { Archive, CheckCheck, ClipboardPaste, MapPin, ShoppingBasket, Trash2, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
@@ -25,8 +25,9 @@ type SelectionBarProps = {
 
 /**
  * Select mode's actions (FR-050), like the Select button on an iPhone: put the ticked photos
- * in the print basket, set them aside, or bring them back to the gallery, and set their date
- * and place by hand (FR-032). Each action is undoable; nothing is ever deleted.
+ * in the print basket, set them aside, mark them to delete (FR-141), or bring them back to the
+ * gallery, and set their date and place by hand (FR-032). Each action is undoable; files are
+ * deleted only from *To delete*, all at once.
  */
 export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, onDatePlace, onPasteSettings, onSelectAll, onClear }: SelectionBarProps) {
   const { t } = useTranslation()
@@ -48,6 +49,9 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         )}
         {view !== 'aside' && (
           <ToolbarButton icon={<Archive />} label={t('select.toAside')} labelFrom="5xl" data-hint={t('select.toAside')} disabled={none} onClick={() => onMove('aside')} />
+        )}
+        {view !== 'delete' && (
+          <ToolbarButton icon={<Trash2 />} label={t('select.toDelete')} labelFrom="5xl" data-hint={t('select.toDelete')} disabled={none} onClick={() => onMove('delete')} />
         )}
         {view !== 'gallery' && (
           <ToolbarButton icon={<Undo2 />} label={t('select.toGallery')} labelFrom="5xl" data-hint={t('select.toGallery')} disabled={none} onClick={() => onMove(null)} />

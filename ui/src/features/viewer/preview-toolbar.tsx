@@ -111,7 +111,8 @@ export function PreviewToolbar({
         onClick={() => rotate(true)}
       />
       </ButtonGroup>
-      {photo?.queue === 'aside' ? (
+      {/* Set aside or marked to delete (FR-141): one press brings it back to the gallery. */}
+      {photo?.queue === 'aside' || photo?.queue === 'delete' ? (
         <ToolbarButton
           icon={<ArchiveRestore />}
           label={t('select.toGallery')}

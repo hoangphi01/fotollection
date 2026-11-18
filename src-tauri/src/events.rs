@@ -60,6 +60,8 @@ pub enum TaskKind {
     Looks,
     /// RollSense's pixels pass: subjects and duplicates (FR-141).
     Sort,
+    /// Photos marked to delete, moved to the Trash at once (FR-141).
+    Trash,
 }
 
 /// Start-up is over: the last session is back, or there was none (FR-060).

@@ -157,6 +157,8 @@ pub struct AppState {
     /// The files the Trash refused last (a volume without one): the only ones `delete_photos`
     /// may delete for good, so the Trash always comes first (FR-141, ADR-0055).
     pub trash_refused: Mutex<std::collections::HashSet<std::path::PathBuf>>,
+    /// Set by `cancel_trash`: the move to the Trash stops before its next file.
+    pub trash_cancel: std::sync::atomic::AtomicBool,
     pub previews: PreviewCache,
     /// Thumbnails through each photo's colour, in memory (FR-114, ADR-0047), and the batch
     /// whose thumbnails are being made: a newer batch stops an older one's.
@@ -367,6 +369,7 @@ impl AppState {
             sorting_cache: fotollection_core::sorting::pass::SortingCache::new(beside("sorting")),
             sorting: Mutex::new(None),
             trash_refused: Mutex::default(),
+            trash_cancel: std::sync::atomic::AtomicBool::new(false),
             previews: PreviewCache::with(
                 fotollection_core::preview::machine_budget(stored.ui.preview_memory_percent),
                 Some(thumb_dir.clone()),

@@ -7,6 +7,7 @@ import {
   Folder,
   FolderOpen,
   Archive,
+  Trash2,
   Images,
   ListChecks,
   ShoppingBasket,
@@ -45,7 +46,7 @@ type LibrarySidebarProps = {
   /** The gallery, the print basket or the photos set aside (FR-050). */
   queue: QueueView
   onQueue: (queue: QueueView) => void
-  queueCounts: { print: number; aside: number }
+  queueCounts: { print: number; aside: number; delete: number }
   lastImport: ImportSummary | null
   onOpenFolder: () => void
   /** Scan the folders again for new photos, keeping every edit. */
@@ -257,15 +258,17 @@ export function LibrarySidebar({
               >
                 <Images />
                 <span className="truncate">{t('library.allPhotos')}</span>
-                <span className="ml-auto text-xs text-muted-foreground tabular-nums">{total - queueCounts.aside}</span>
+                <span className="ml-auto text-xs text-muted-foreground tabular-nums">{total - queueCounts.aside - queueCounts.delete}</span>
               </button>
             </li>
-            {/* The two holding areas of the print workflow (FR-050): what will be printed, and
-                what was set aside, out of the gallery but never deleted. */}
+            {/* The holding areas of the print workflow (FR-050): what will be printed, what was
+                set aside (never deleted), and what is marked to delete, moved to the Trash
+                from there at once (FR-141). */}
             {(
               [
                 ['print', ShoppingBasket, 'library.basket', 'library.basketHint', queueCounts.print],
                 ['aside', Archive, 'library.aside', 'library.asideHint', queueCounts.aside],
+                ['delete', Trash2, 'library.toDelete', 'library.toDeleteHint', queueCounts.delete],
               ] as const
             ).map(([view, Icon, label, hint, count]) => (
               <li key={view}>
