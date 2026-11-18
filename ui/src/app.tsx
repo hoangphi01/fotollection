@@ -409,15 +409,16 @@ export function App() {
               {view === 'photos' && (
                 <KeysInfo lines={[t('app.enterToPreview'), ...t('culling.keysHint').split(' · ')]} />
               )}
-              {view === 'photos' && (
+              {view !== 'groups' && (
                 <div className="ml-auto flex items-center gap-2">
-                  {/* Select mode (FR-050): tick photos for the basket or to set aside. */}
+                  {/* Select mode (FR-050): tick photos for the basket, to set aside or to delete;
+                      in RollSense too, its actions then take the ticked photos (owner, 2026-11-18). */}
                   <SelectModeButton select={select} />
-                  <CullFilterBar filter={filter} onChange={setFilter} />
+                  {view === 'photos' && <CullFilterBar filter={filter} onChange={setFilter} />}
                 </div>
               )}
             </div>
-            {view === 'photos' && selectMode && (
+            {view !== 'groups' && selectMode && (
               <SelectionBar
                 count={select.checked.size}
                 elsewhere={select.checked.size - photos.filter((p) => select.checked.has(p.id)).length}
@@ -581,7 +582,8 @@ export function App() {
             setPicks(next)
             setSelected(0)
           }}
-          shown={photos.map((p) => p.id)}
+          shown={select.checked.size > 0 ? photos.filter((p) => select.checked.has(p.id)).map((p) => p.id) : photos.map((p) => p.id)}
+          ticked={select.checked.size > 0}
           onEdit={() => setView('photos')}
         />
       ) : (

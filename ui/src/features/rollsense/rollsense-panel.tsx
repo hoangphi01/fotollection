@@ -25,8 +25,10 @@ type RollSensePanelProps = {
   sense: RollSense
   picks: SortPick[]
   onPicks(picks: SortPick[]): void
-  /** The photos the pick shows in the grid, what the actions take. */
+  /** What the actions take: the photos ticked in select mode, else those the pick shows. */
   shown: PhotoId[]
+  /** Photos are ticked in select mode: the actions show even with no pick. */
+  ticked: boolean
   /** To Photos with the pick kept, to colour, print or export it (ADR-0057). */
   onEdit(): void
 }
@@ -36,7 +38,7 @@ type RollSensePanelProps = {
  * what a pick leads to (owner 2026-11-18, ADR-0057): edited in Photos with the pick kept, into
  * the print basket, set aside, or deleted.
  */
-export function RollSensePanel({ sense, picks, onPicks, shown, onEdit }: RollSensePanelProps) {
+export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit }: RollSensePanelProps) {
   const { t } = useTranslation()
   const { facets } = sense
   const props = facets ? { facets, picks, onPicks } : null
@@ -69,7 +71,7 @@ export function RollSensePanel({ sense, picks, onPicks, shown, onEdit }: RollSen
                 </Button>
               )
             )}
-            {picks.length > 0 && count > 0 && (
+            {(picks.length > 0 || ticked) && count > 0 && (
               <>
                 <Button onClick={onEdit}>
                   <PencilLine data-icon="inline-start" /> {t('rollsense.edit', { count })}

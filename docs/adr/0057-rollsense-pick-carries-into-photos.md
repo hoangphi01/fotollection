@@ -24,7 +24,7 @@ Option 3, the owner's choice on 2026-11-18, export following the pick:
 - Pro's filter is `{ ...filter, sort: picks }` on every Pro view, so the grid, the preview, colour and export take the same photos. The core already applies `sort` in its one filter (`library.rs`).
 - In Photos, a chip beside RollSense's button names the pick (its first choice, `+n` for the others) with RollSense's violet key. Pressing it goes back to RollSense with its ticks; its **✕** clears the pick. The count reads *n of total*, and the export notes that only the filtered photos go.
 - The pick is session state: never saved in the project. A tab with no folder in common clears it. Simple and Collage ignore it, as they ignore Pro's stars and flags.
-- Picking single photos stays in Photos' select mode, on the narrowed grid: no second select mode.
+- Picking single photos is Photos' select mode, on the narrowed grid: no second select mode. Amended the same day (owner): that one select mode shows in RollSense too, and RollSense's buttons then take the ticked photos only.
 
 ## Consequences
 
