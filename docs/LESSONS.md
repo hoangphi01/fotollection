@@ -34,6 +34,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A size a family of blocks shares is set once in the block; a block that places something absolutely keeps room for it beside it. Kept by: `check-lego` (pop-up widths), UI-LAYOUT-022.
 - A new state or variant of a shared block is checked in both themes, in dark against its `dark:` and `hover:` utilities. Kept by: UI-STATE-009.
 - A rule for one block names that block's own mark, never a shared class it happens to sit in (the website's `.cta`). Kept by: no machine check yet.
+- A block that is not a stack resets what its folds read from the stack around it (`--stack-gap`), and the measure opens and folds its groups both ways. Kept by: UI-LAYOUT-002 on RollSense's panel (folded years).
 
 ### text-i18n
 
@@ -127,6 +128,16 @@ Read this table in full before any task; then read in full every entry whose Are
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - A layout with a chosen board copies the board's measured numbers and has a test per part against them. Kept by: `fr_130_the_upright_card_matches_board_a` and its siblings.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
+
+## 2026-11-18
+
+### A folded group pulled the next one 8 px over it (FR-141)
+
+- **Area:** ui-blocks
+- **Seen:** RollSense's panel, its years folded in the *When* card: UI-LAYOUT-002 found each year's row overlapping the next by 8 px; Presets & LUTs' closed groups had the same fault, never measured folded.
+- **Why:** a folded `Collapse` gives back the gap of the stack it sits in, `margin-top: calc(-1 * var(--stack-gap))`; inside `GroupRows` it read the card's 12 px, though `GroupRows` is a plain block whose rows are 4 px apart.
+- **Fix:** `GroupRows` sets `--stack-gap: 0px` for what it holds.
+- **Rule:** a block that is not a stack resets what its folds read from the stack around it, and a list of folds is measured with some folded.
 
 ## 2026-11-17
 

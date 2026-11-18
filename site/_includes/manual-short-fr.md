@@ -397,3 +397,14 @@ Tous les réglages de cet ordinateur se trouvent dans une seule fenêtre : cli
 - **What's new :** chaque version avec ce qu’elle a apporté.
 
 <!-- shot: settings | La fenêtre Settings sur RAM & cache : la mémoire pour les aperçus, le cache sur disque, Default et Auto -->
+
+<!-- chapter: rollsense -->
+
+## 24. RollSense : trier les photos d’un téléphone
+
+Les photos d’un téléphone mêlent les prises de vue de l’appareil, les captures d’écran, les images enregistrées depuis les applis et les messageries, les copies retouchées et les doublons. **RollSense** les trie sur cet ordinateur, pour faire le tri avant la couleur et l’impression. Il ne modifie jamais une photo et ne supprime que ce que vous choisissez, vers la corbeille.
+
+1. En mode Pro, choisissez **RollSense** dans la barre d’outils, à côté de **Photos** et **Groups**. La première fois, il lit chaque photo ; **Stop** interrompt.
+2. La colonne de droite liste les groupes avec leur nombre de photos : **Source**, **What they show**, **When**, **Trips**, **Visits home**, **Where**, **Duplicates and stacks**. Choisissez-en un : la grille montre ses photos.
+3. Puis **Set aside n photos** (réversible, **Cmd/Ctrl+Z**) ou **Delete n photos…** : après confirmation, vers la corbeille du système ; sur un disque sans corbeille, Fotollection redemande avant de supprimer définitivement.
+4. De retour dans **Photos**, seules les photos gardées restent, pour la couleur et l’impression.

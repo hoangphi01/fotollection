@@ -359,6 +359,7 @@ const PLACES = {
   'features/settings/settings-panel.tsx': 'gallery',
   'features/simple/simple-panel.tsx': 'gallery',
   'features/collage/collage-panel.tsx': 'gallery',
+  'features/rollsense/rollsense-panel.tsx': 'gallery',
   'features/viewer/preview-dialog.tsx': 'preview',
   'features/collage/sheet-preview-dialog.tsx': 'preview',
   'features/settings-window/settings-window.tsx': 'settings',

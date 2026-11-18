@@ -54,8 +54,9 @@
 | **Postcard** | A collage sheet with one photo and the back of a postcard on its other half: a dashed stamp box and writing lines, with typed text or room to write by hand ([FR-073](PRD.md#fr-073--postcard-sheets)). |
 | **Preset (partial)** | A saved bundle of settings that owns only some setting groups, so presets can be stacked ([FR-038](PRD.md#fr-038--print-presets)). |
 | **Presets & LUTs** | The develop view's left-column panel (Pro mode) listing the looks of the library in groups, with *Import presets…* and *Import LUT…*, as Lightroom's Presets panel. |
-| **Print basket / set aside** | The two holding areas ([FR-050](PRD.md#fr-050--print-basket)): the photos that will really be printed, and the ones taken out of the gallery for now. Nothing is ever deleted. |
+| **Print basket / set aside** | The two holding areas ([FR-050](PRD.md#fr-050--print-basket)): the photos that will really be printed, and the ones taken out of the gallery for now. Nothing here is deleted; only RollSense deletes, to the Trash, on the user's word (ADR-0055). |
 | **Rendering intent** | How a colour conversion handles colours outside the target space: *perceptual* compresses the whole gamut smoothly, *relative colorimetric* clips only out-of-gamut colours. |
+| **RollSense** | Pro mode's third tab (FR-141, ADR-0054, ADR-0056): a phone's camera roll sorted by source, subject, time, trips, visits home, place and duplicates, the chosen group then set aside or deleted to the Trash, so only the kept photos go on to colour and print. |
 | **RenderPlan** | Fotollection's pure, serializable description of how one output photo is produced: crop rectangle, stamp, output path. It is shared by preview and export. |
 | **Settings → Data** | The Settings section of what Fotollection keeps on this computer (FR-116): moving it with a `.fotosettings`, each store's size and folder, starting afresh. |
 | **sRGB** | The standard colour space most print labs expect. Wider spaces (Display P3, Adobe RGB) look dull if a lab treats them as sRGB. |

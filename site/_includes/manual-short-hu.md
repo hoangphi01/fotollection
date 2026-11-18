@@ -364,3 +364,14 @@ A gép minden beállítása egyetlen ablakban van: kattints a fogaskerékre az o
 - **Frissítések**, **Kézikönyv**, **Hiba jelentése** és **Újdonságok**.
 
 <!-- shot: settings | A Settings ablak a RAM & cache résznél: az előnézetek memóriája, a lemezes gyorsítótár, Default és Auto -->
+
+<!-- chapter: rollsense -->
+
+## 24. RollSense: egy telefon képeinek rendezése
+
+Egy telefon képei között vannak kamerás fotók, képernyőképek, alkalmazásokból és csevegésekből mentett képek, szerkesztett másolatok és ismétlődők. A **RollSense** ezen a gépen rendezi őket, hogy színezés és nyomtatás előtt rendet tegyél. Soha nem módosít fotót, és csak azt törli, amit kiválasztasz, a Kukába.
+
+1. Pro módban válaszd az eszköztáron a **RollSense** lehetőséget, a **Fotók** és a **Csoportok** mellett. Első alkalommal minden képet beolvas; a **Leállítás** megszakítja.
+2. A jobb oszlop sorolja a csoportokat, mindegyiket a képei számával: **Forrás**, **Mit ábrázolnak**, **Mikor**, **Utazások**, **Látogatások otthon**, **Hol**, **Ismétlődők és kötegek**. Válassz egyet: a rács a képeit mutatja.
+3. Ezután **Képek félretétele** (visszahozható, **Cmd/Ctrl+Z**) vagy **Képek törlése…**: megerősítés után a rendszer Kukájába; Kuka nélküli meghajtón a Fotollection még egyszer rákérdez, mielőtt végleg törölne.
+4. Vissza a **Fotók** nézetbe: csak a megtartott képek maradnak, színezésre és nyomtatásra.

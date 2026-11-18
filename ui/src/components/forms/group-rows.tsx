@@ -18,8 +18,10 @@ type GroupRowsProps = {
  * row with a chevron and how many it holds, its rows under it, 4 px apart as every list.
  */
 export function GroupRows({ title, count, open, onToggle, children }: GroupRowsProps) {
+  // Not a stack itself: a folded group gives back no gap of the card around it (a nested
+  // group's rows overlapped by 8 px, RollSense's years, 2026-11-18).
   return (
-    <div>
+    <div className="[--stack-gap:0px]">
       <ListRow
         icon={<ChevronDown className={cn('motion-move', !open && '-rotate-90')} aria-hidden />}
         trailing={<span className="text-xs text-muted-foreground tabular-nums">{count}</span>}

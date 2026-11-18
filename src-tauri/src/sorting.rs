@@ -217,3 +217,102 @@ fn sorting_ended(app: &AppHandle, job_id: u32, total: u32) -> impl FnOnce() + Se
 pub fn sort_facets(state: State<'_, AppState>) -> Result<Facets, IpcError> {
     Ok(state.library.read().map_err(poisoned)?.facets())
 }
+
+/// Most photos one delete may take (IPC input bound, SECURITY.md §2): a whole roll.
+const MAX_DELETE_IDS: usize = 100_000;
+
+/// What a delete did: the files moved to the Trash (or deleted for good), and the photos it
+/// could not move, by their ids in the library rebuilt after it (a volume with no Trash, such
+/// as a NAS share, refuses; ADR-0055 asks again before deleting those for good).
+#[derive(Debug, Clone, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct DeleteReport {
+    pub removed: u32,
+    pub not_removed: Vec<PhotoId>,
+}
+
+/// Moves the chosen photos' files to the system's Trash (FR-141, ADR-0055), then rebuilds the
+/// library from its folders so they leave it; every other photo keeps its edits. The paths
+/// come from the library, never from the webview.
+#[tauri::command]
+#[specta::specta]
+pub async fn trash_photos(app: AppHandle, ids: Vec<PhotoId>) -> Result<DeleteReport, IpcError> {
+    remove_photos(app, ids, false).await
+}
+
+/// Deletes the chosen photos' files for good, after the user said so a second time (photos
+/// a volume without a Trash refused), then rebuilds the library.
+#[tauri::command]
+#[specta::specta]
+pub async fn delete_photos(app: AppHandle, ids: Vec<PhotoId>) -> Result<DeleteReport, IpcError> {
+    remove_photos(app, ids, true).await
+}
+
+async fn remove_photos(
+    app: AppHandle,
+    ids: Vec<PhotoId>,
+    for_good: bool,
+) -> Result<DeleteReport, IpcError> {
+    if ids.is_empty() || ids.len() > MAX_DELETE_IDS {
+        return Err(IpcError::new(
+            "photo.invalid_selection",
+            "Choose between 1 and 100,000 photos to delete",
+        ));
+    }
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let _guard = state.document_lock.lock().map_err(poisoned)?;
+        let (paths, folders, snapshot) = {
+            let library = state.library.read().map_err(poisoned)?;
+            let paths: Vec<std::path::PathBuf> = ids
+                .iter()
+                .filter_map(|&id| library.record(id).map(|r| r.path))
+                .collect();
+            if paths.len() != ids.len() {
+                return Err(IpcError::new(
+                    "photo.unknown",
+                    "A photo to delete is not in the library",
+                ));
+            }
+            let folders: Vec<std::path::PathBuf> = library
+                .folders_in_order()
+                .into_iter()
+                .map(|(_, p)| p.clone())
+                .collect();
+            (
+                paths,
+                folders,
+                fotollection_core::project::snapshot(&library),
+            )
+        };
+        let mut kept = std::collections::HashSet::new();
+        let mut removed = 0u32;
+        for path in &paths {
+            let done = if for_good {
+                std::fs::remove_file(path).is_ok()
+            } else {
+                trash::delete(path).is_ok()
+            };
+            if done {
+                removed += 1;
+            } else {
+                kept.insert(path.clone());
+            }
+        }
+        if removed > 0 {
+            crate::document::rebuild_library(&app, &state, folders, &snapshot)?;
+        }
+        let library = state.library.read().map_err(poisoned)?;
+        let not_removed = library
+            .sorted_ids()
+            .into_iter()
+            .filter(|&id| library.record(id).is_some_and(|r| kept.contains(&r.path)))
+            .collect();
+        Ok(DeleteReport {
+            removed,
+            not_removed,
+        })
+    })
+    .await
+    .map_err(poisoned)?
+}

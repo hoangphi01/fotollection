@@ -35,6 +35,7 @@ pub enum SortPick {
     },
     /// The trip that starts on this day (days since 1970, camera-local).
     Trip {
+        #[serde(rename = "firstDay")]
         first_day: i32,
     },
     /// The visits to one of the other homes in one year.

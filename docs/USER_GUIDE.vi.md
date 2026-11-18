@@ -604,3 +604,14 @@ Mọi cài đặt của máy này nằm trong một cửa sổ ([FR-086](PRD.md#
 - **Có gì mới:** mọi phiên bản, mỗi bản hai dòng tóm tắt; **Xem tất cả** mở toàn bộ ghi chú của bản đó (thêm mới, thay đổi, sửa lỗi). Bản bạn đang dùng mở sẵn; mở bản khác thì bản đang mở tự gập lại, nên mỗi lúc chỉ mở một bản.
 
 <!-- shot: settings | Cửa sổ Cài đặt ở mục Bộ nhớ RAM & cache: bộ nhớ cho bản xem trước, cache trên ổ đĩa, Mặc định và Tự động -->
+
+<!-- chapter: rollsense -->
+
+## 24. RollSense: lọc kho ảnh điện thoại
+
+Kho ảnh điện thoại trộn lẫn ảnh chụp bằng camera với ảnh chụp màn hình, ảnh lưu từ ứng dụng và tin nhắn, bản đã chỉnh, ảnh trùng và cặp ảnh Live Photo. **RollSense** lọc chúng ngay trên máy này, để bạn dọn những gì không cần trước khi chỉnh màu và in ([FR-141](PRD.md#fr-141--sorting-a-phones-camera-roll)). Nó không bao giờ sửa ảnh; chỉ xoá những gì bạn chọn, vào Thùng rác.
+
+1. Ở chế độ Pro, chọn **RollSense** trên thanh công cụ, cạnh **Ảnh** và **Nhóm**. Lần đầu, nó đọc mọi ảnh (mỗi ảnh có gì, và các ảnh gần trùng); ảnh đã đọc rồi không đọc lại. **Dừng** để ngừng sớm.
+2. Cột bên phải liệt kê các nhóm, mỗi nhóm kèm số ảnh: **Nguồn** (camera điện thoại, ảnh chụp màn hình, ứng dụng, đã chỉnh sửa, ảnh scan phim, lưu về hoặc nhận được…), **Nội dung** (người, mèo, chó, phong cảnh, đồ ăn, giấy tờ, meme), **Thời gian** (năm, tháng và các sự kiện trong đó), **Chuyến đi**, **Về nhà** (theo năm, bao nhiêu lần và bao nhiêu ảnh), **Nơi chụp** (quốc gia và thành phố), **Ảnh trùng và chồng**. Chọn một nhóm: lưới hiện ảnh của nhóm đó. **Tất cả ảnh** hiện lại toàn bộ.
+3. Rồi, với những ảnh lưới đang hiện: **Để riêng n ảnh** chuyển chúng sang *Để riêng*, đưa về được bất cứ lúc nào (**Cmd/Ctrl+Z** hoàn tác), hoặc **Xoá n ảnh…** chuyển file vào Thùng rác của hệ thống sau khi bạn xác nhận, khôi phục được từ đó. Với ổ không có Thùng rác, như ổ mạng, Fotollection hỏi thêm một lần trước khi xoá hẳn.
+4. Quay về **Ảnh**, chỉ còn những ảnh bạn giữ, để chỉnh màu và in.

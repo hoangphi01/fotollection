@@ -821,6 +821,17 @@ export const commands = {
 	analyzeSorting: () => typedError<number, IpcError>(__TAURI_INVOKE("analyze_sorting")),
 	/**  Everything RollSense lists, with counts. */
 	sortFacets: () => typedError<Facets, IpcError>(__TAURI_INVOKE("sort_facets")),
+	/**
+	 *  Moves the chosen photos' files to the system's Trash (FR-141, ADR-0055), then rebuilds the
+	 *  library from its folders so they leave it; every other photo keeps its edits. The paths
+	 *  come from the library, never from the webview.
+	 */
+	trashPhotos: (ids: PhotoId[]) => typedError<DeleteReport, IpcError>(__TAURI_INVOKE("trash_photos", { ids })),
+	/**
+	 *  Deletes the chosen photos' files for good, after the user said so a second time (photos
+	 *  a volume without a Trash refused), then rebuilds the library.
+	 */
+	deletePhotos: (ids: PhotoId[]) => typedError<DeleteReport, IpcError>(__TAURI_INVOKE("delete_photos", { ids })),
 	/**  Finds a camera, runs its handshake and starts the session. */
 	cameraConnect: () => typedError<CameraInfo, IpcError>(__TAURI_INVOKE("camera_connect")),
 	/**
@@ -1358,6 +1369,16 @@ export type Decoder =
 "own" | "rawler" | 
 /**  The operating system's codec (`ImageIO` on macOS, WIC on Windows). */
 "system";
+
+/**
+ *  What a delete did: the files moved to the Trash (or deleted for good), and the photos it
+ *  could not move, by their ids in the library rebuilt after it (a volume with no Trash, such
+ *  as a NAS share, refuses; ADR-0055 asks again before deleting those for good).
+ */
+export type DeleteReport = {
+	removed: number,
+	notRemoved: PhotoId[],
+};
 
 /**  The DNG kinds our develop does not read yet (docs/raw/dng.md). */
 export type DngKind = {
@@ -2581,7 +2602,7 @@ export type SortPick = { kind: "source"; class: SourceClass } | { kind: "subject
 /**  The event that starts with this photo. */
 { kind: "event"; first: number } | 
 /**  The trip that starts on this day (days since 1970, camera-local). */
-{ kind: "trip"; first_day: number } | 
+{ kind: "trip"; firstDay: number } | 
 /**  The visits to one of the other homes in one year. */
 { kind: "visit"; home: number; year: number } | { kind: "place"; id: number } | 
 /**  Photos with a near-duplicate (FR-015). */

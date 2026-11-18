@@ -606,3 +606,14 @@ Every setting of this computer is in one window ([FR-086](PRD.md#fr-086--one-set
 - **What's new:** every version with two lines on what it brought; **Show all** opens its whole entry (added, changed, fixed). The version you run opens unfolded; opening another folds the one open, so one is open at a time.
 
 <!-- shot: settings | The Settings window at RAM & cache: the memory for previews, the cache on disk, Default and Auto -->
+
+<!-- chapter: rollsense -->
+
+## 24. RollSense: sorting a phone's camera roll
+
+A phone's camera roll mixes camera shots with screenshots, photos saved from apps and chats, edited copies, duplicates and Live Photo twins. **RollSense** sorts them on this computer, so you can clear out what you do not want before colour and print ([FR-141](PRD.md#fr-141--sorting-a-phones-camera-roll)). It never changes a photo; it deletes only what you choose, to the Trash.
+
+1. In Pro mode, choose **RollSense** in the toolbar, beside **Photos** and **Groups**. The first time, it reads every photo (what each one shows, and its near-duplicates); the photos read before are not read again. **Stop** ends it early.
+2. The right column lists the groups, each with how many photos it holds: **Source** (phone camera, screenshots, apps, edited, film scans, saved or received…), **What they show** (people, cats, dogs, scenery, food, documents, memes), **When** (years, months and the events in them), **Trips**, **Visits home** (per year, how many times and how many photos), **Where** (countries and towns), **Duplicates and stacks**. Choose one: the grid shows its photos. **All photos** shows them all again.
+3. Then, for the photos the grid shows: **Set aside n photos** moves them to *Set aside*, ready to come back (**Cmd/Ctrl+Z** takes it back), or **Delete n photos…** moves their files to the system's Trash after you confirm, where you can put them back. On a drive without a Trash, such as a network drive, Fotollection asks once more before deleting them for good.
+4. Back in **Photos**, only the photos you kept remain, for colour and print.

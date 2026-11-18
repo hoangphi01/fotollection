@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Sparkles, Square } from 'lucide-react'
+import { Images, ScanSearch, Sparkles, Square } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
@@ -12,7 +12,7 @@ import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
-import { commands, events, type CullFilter, type OpenPhoto } from '@/ipc/bindings'
+import { commands, events, type CullFilter, type OpenPhoto, type SortPick } from '@/ipc/bindings'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
@@ -63,6 +63,8 @@ import { useCollage } from '@/features/collage/use-collage'
 import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
 import { RemoveButton } from '@/components/forms/danger-button'
+import { RollSensePanel } from '@/features/rollsense/rollsense-panel'
+import { useRollSense } from '@/features/rollsense/use-rollsense'
 
 export function App() {
   const { t } = useTranslation()
@@ -78,9 +80,15 @@ export function App() {
   const simple = mode === 'simple'
   const collageMode = mode === 'collage'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
+  const [view, setView] = useState<'photos' | 'groups' | 'rollsense'>('photos')
+  // RollSense (FR-141): its pick narrows the grid on its own tab only, so Photos, colour and
+  // print never stay filtered by a sort left behind.
+  const [pick, setPick] = useState<SortPick | null>(null)
+  const rollsense = mode === 'professional' && view === 'rollsense'
   // Simple and Collage follow the sidebar only (folders, basket, set aside); Pro's star and
   // flag filters stay in Pro, where they can be seen and cleared.
-  const viewFilter: CullFilter = mode === 'professional' ? filter : { ...filter, flag: 'all', minRating: 0 }
+  const viewFilter: CullFilter =
+    mode === 'professional' ? (rollsense ? { ...filter, sort: pick } : filter) : { ...filter, flag: 'all', minRating: 0 }
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(viewFilter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
@@ -93,13 +101,13 @@ export function App() {
   const exporter = useExport()
   const project = useProject()
   const bestShots = useBestShots()
+  const sense = useRollSense()
   // Tethered capture (FR-062, FR-063): the capture screen and the session tabs.
   // The camera went away by itself (unplugged, turned off): show the session's tab, as
   // closing the capture screen does (ADR-0028).
   const onCameraGone = useRef<() => void>(() => {})
   const capture = useCapture({ onGone: () => onCameraGone.current() })
   const [discarding, setDiscarding] = useState<number | null>(null)
-  const [view, setView] = useState<'photos' | 'groups'>('photos')
   // The Relink dialog opens by itself after Open; "Later" hides it until the next project.
   const [relinkHiddenFor, setRelinkHiddenFor] = useState<number | null>(null)
   const revision = Math.max(renderRevision, frameRevision, history.revision)
@@ -312,14 +320,26 @@ export function App() {
                 icons first, then the filters wrap to a second row. */}
             {/* Always one line (STYLE_RULE §4): filters are dropdowns, hints hide when narrow. */}
             <div className="@container box-content flex h-header shrink-0 flex-nowrap items-center gap-2 overflow-hidden border-b px-4 text-sm">
-              <SegmentedToggle<'photos' | 'groups'>
+              <SegmentedToggle<'photos' | 'groups' | 'rollsense'>
                 fit
                 value={view}
-                onChange={setView}
+                onChange={(next) => {
+                  setView(next)
+                  if (next === 'rollsense') sense.open()
+                }}
                 ariaLabel={t('bestShot.view')}
+                // Icons first, the words from a wide row (STYLE_RULE §4: one line at 1,180 px).
                 options={[
-                  { value: 'photos', label: t('bestShot.viewPhotos') },
-                  { value: 'groups', label: t('bestShot.viewGroups', { count: scopedShots.groups.length }) },
+                  { value: 'photos', label: t('bestShot.viewPhotos'), icon: <Images /> },
+                  {
+                    value: 'groups',
+                    label: t('bestShot.viewGroups', { count: scopedShots.groups.length }),
+                    ariaLabel: t('bestShot.viewGroups', { count: scopedShots.groups.length }),
+                    hint: t('bestShot.viewGroups', { count: scopedShots.groups.length }),
+                    icon: <Sparkles />,
+                    labelFrom: '4xl',
+                  },
+                  { value: 'rollsense', label: t('rollsense.view'), ariaLabel: t('rollsense.view'), hint: t('rollsense.view'), icon: <ScanSearch />, labelFrom: '4xl' },
                 ]}
               />
                 {bestShots.running ? (
@@ -340,7 +360,7 @@ export function App() {
                     data-hint={t('bestShot.findHint')}
                   />
                 )}
-              {view === 'photos' && (
+              {view !== 'groups' && (
                 <span className="shrink-0 font-medium whitespace-nowrap tabular-nums">
                   {photos.length === total
                     ? t('app.photos', { count: total })
@@ -381,7 +401,11 @@ export function App() {
             ) : photos.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
                 <p>{t('app.noMatch')}</p>
-                <RemoveButton kind="clear" label={t('app.showAll')} onClick={() => setFilter({ ...ALL_PHOTOS, folders: filter.folders })} />
+                <RemoveButton
+                  kind="clear"
+                  label={t('app.showAll')}
+                  onClick={() => (rollsense ? setPick(null) : setFilter({ ...ALL_PHOTOS, folders: filter.folders }))}
+                />
               </div>
             ) : (
               <LibraryGrid
@@ -499,6 +523,16 @@ export function App() {
           revision={revision}
           photoId={photos[current]?.id}
           onSettingsReload={reload}
+        />
+      ) : rollsense ? (
+        <RollSensePanel
+          sense={sense}
+          pick={pick}
+          onPick={(next) => {
+            setPick(next)
+            setSelected(0)
+          }}
+          shown={photos.map((p) => p.id)}
         />
       ) : (
       <SettingsPanel

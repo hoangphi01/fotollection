@@ -397,3 +397,14 @@ Alle Einstellungen dieses Computers liegen in einem Fenster: Klick auf das Zahnr
 - **Neuigkeiten:** jede Version mit dem, was sie gebracht hat.
 
 <!-- shot: settings | Das Einstellungsfenster bei RAM & Cache: der Speicher für Vorschauen, der Festplatten-Cache, Standard und Auto -->
+
+<!-- chapter: rollsense -->
+
+## 24. RollSense: die Fotos eines Handys sortieren
+
+Die Aufnahmen eines Handys mischen Kamerafotos mit Bildschirmfotos, Bildern aus Apps und Chats, bearbeiteten Kopien und Duplikaten. **RollSense** sortiert sie auf diesem Computer, damit du vor Farbe und Druck aufräumst. Es ändert nie ein Foto und löscht nur, was du wählst, in den Papierkorb.
+
+1. Wähl im Pro-Modus in der Werkzeugleiste **RollSense**, neben **Fotos** und **Gruppen**. Beim ersten Mal liest es jedes Foto; **Stopp** bricht ab.
+2. Die rechte Spalte listet die Gruppen mit ihrer Anzahl: **Quelle**, **Was sie zeigen**, **Wann**, **Reisen**, **Besuche zu Hause**, **Wo**, **Duplikate und Stapel**. Wähl eine: das Raster zeigt ihre Fotos.
+3. Dann **Fotos beiseitelegen** (zurückholbar, **Cmd/Ctrl+Z**) oder **Fotos löschen…**: nach deiner Bestätigung in den Papierkorb des Systems; auf einem Laufwerk ohne Papierkorb fragt Fotollection noch einmal, bevor es endgültig löscht.
+4. Zurück in **Fotos** bleiben nur die behaltenen Fotos, für Farbe und Druck.

@@ -9,6 +9,7 @@
 // network: every request outside the two local hosts is refused.
 
 import { axeChecks, baseline, fitReport, layoutChecks, stableChecks } from './checks.mjs'
+import { measureSidePanels } from './side-panels.mjs'
 import { readFile } from 'node:fs/promises'
 import { existsSync, writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
@@ -230,6 +231,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     sheet_info: (a) => collage.sheet_info[a.sheet.second == null ? `${a.sheet.first}` : `${a.sheet.first}-${a.sheet.second}`],
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
+    sort_facets: () => common.sort_facets, // RollSense (FR-141): recorded; its pass is done
+    analyze_sorting: () => 1,
     // Dumps recorded before FR-056 have no folder list: count it from the photos. A few
     // photos sit in the print basket and set aside (FR-050), as after a culling session.
     list_photos: (a) => {
@@ -1159,11 +1162,7 @@ async function measurePanels() {
   }
   await page.screenshot({ path: path.join(outDir, 'measure-preview.png') })
   await context.close()
-  ;({ context, page } = await open({ scenario: 'stamp', language, theme, mode: 'simple' }))
-  await settle(page)
-  rows.push(['Simple panel', await measure(page, 'aside.border-l')])
-  await page.screenshot({ path: path.join(outDir, 'measure-simple.png') })
-  await context.close()
+  await measureSidePanels({ open, settle, measure, allChecks, say, outDir }, { language, theme }, rows, extra)
   ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES }))
   let sheet = page.locator('[data-cell]').nth(2)
   await sheet.click(); await settle(page)

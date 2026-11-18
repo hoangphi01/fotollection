@@ -37,6 +37,8 @@ ureq = { version = "3", default-features = false, features = ["rustls"] }
 tauri-specta.workspace = true
 # FR-124: the first launch speaks the machine's language (MIT OR Apache-2.0).
 sys-locale = "0.3"
+# FR-141, ADR-0055: RollSense moves the photos the user deletes to the system's Trash (MIT).
+trash = "5"
 
 [dev-dependencies]
 tempfile.workspace = true

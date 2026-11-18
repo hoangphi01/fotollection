@@ -398,3 +398,14 @@ Všechna nastavení tohoto počítače jsou v jednom okně: ozubené kolo nahoř
 - **Updates**, **Manual**, **Report a problem** a **What's new**.
 
 <!-- shot: settings | Okno Settings v RAM & cache: paměť pro náhledy, mezipaměť na disku, Default a Auto -->
+
+<!-- chapter: rollsense -->
+
+## 24. RollSense: třídění fotek z telefonu
+
+Fotky z telefonu míchají snímky z fotoaparátu se snímky obrazovky, obrázky uloženými z aplikací a chatů, upravenými kopiemi a duplikáty. **RollSense** je roztřídí na tvém počítači, abys před barvami a tiskem uklidil. Nikdy fotku nemění a maže jen to, co vybereš, do koše.
+
+1. V režimu Pro vyber na panelu nástrojů **RollSense**, vedle **Photos** a **Groups**. Poprvé přečte všechny fotky; **Stop** to ukončí dřív.
+2. Pravý sloupec ukazuje skupiny s počtem fotek: **Source**, **What they show**, **When**, **Trips**, **Visits home**, **Where**, **Duplicates and stacks**. Vyber jednu a mřížka ukáže její fotky.
+3. Pak **Set aside n photos** (dá se vrátit, **Cmd/Ctrl+Z**) nebo **Delete n photos…**: po potvrzení do systémového koše; na disku bez koše se Fotollection zeptá ještě jednou, než smaže natrvalo.
+4. Zpátky v **Photos** zůstanou jen ponechané fotky, pro barvy a tisk.
