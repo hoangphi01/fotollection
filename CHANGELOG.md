@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The hint on writing a postcard by hand is one sentence: a fine permanent marker, tried in the stamp box first, or the text typed in the preview.
 - RollSense names what more photos show: trees, autumn leaves, parks and streets are scenery, a street with people is also people, and the edges of a photo count. Photos read before are read again once.
 - The update window at start closes only with one of its buttons, not with a click outside it or Esc. Settings → Updates shows the version that check found, with its red warning when there is one, without asking to check again.
+- RollSense follows the folders: ticking more keeps it, over all the ticked ones; choosing another folder goes back to Photos. Its button, while shown, now reads pressed in.
 
 ## [0.14.3] - 2026-11-16 — Postcards, part 2
 

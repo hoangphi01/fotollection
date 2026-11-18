@@ -21,9 +21,11 @@ const buttonVariants = cva(
         // pressed in the same way as every button, in its own colour, while its view is shown.
         // Its shade is its deep violet, so the lip and the pressed hollow never turn teal; pressed,
         // the face sinks to the lip's violet and the hollow takes a near-black violet, so it reads
-        // as pushed in on its own dark colour (owner, 2026-11-18: "pressed must sink").
+        // as pushed in on its own dark colour (owner, 2026-11-18: "pressed must sink"). The pressed
+        // face is also `--face`, so `pressed-in` shades from the colour shown: shaded from the
+        // lighter resting violet, the hollow matched the face and the ring was lighter, so it read flat.
         sense:
-          "bg-sense text-white [--face:var(--sense)] [--shade:var(--sense-lip)] raised hover:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_35%)] active:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_70%)]! active:[--shade:var(--sense-hollow)] active:pressed-in! active:ease-enter aria-pressed:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_70%)] aria-pressed:[--shade:var(--sense-hollow)] aria-pressed:pressed-in",
+          "bg-sense text-white [--face:var(--sense)] [--shade:var(--sense-lip)] raised hover:bg-[color-mix(in_oklch,var(--sense),var(--sense-lip)_35%)] active:[--face:color-mix(in_oklch,var(--sense),var(--sense-lip)_50%)]! active:bg-(--face)! active:[--shade:var(--sense-hollow)] active:pressed-in! active:ease-enter aria-pressed:[--face:color-mix(in_oklch,var(--sense),var(--sense-lip)_50%)] aria-pressed:bg-(--face) aria-pressed:[--shade:var(--sense-hollow)] aria-pressed:pressed-in",
         outline:
           "border-border bg-card [--face:var(--card)] raised hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted",
         secondary:

@@ -1692,3 +1692,10 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Area:** spec-request
 - **Seen:** *Fit* was built twice the wrong way before the owner explained it with real sizes.
 - **Rule:** for a visual rule, restate it with numbers (10 × 15 cm keeps 10 × 15; *Fit* adds 5 mm on three sides plus the bar) and get a yes before coding.
+
+### A pressed button shaded from its resting colour read flat (FR-141)
+
+- **Area:** ui-blocks
+- **Seen:** RollSense's button, pressed, still looked raised after a first fix that darkened its face and its hollow (owner, 2026-11-18, a screenshot).
+- **Why:** `pressed-in` shades from `--face`, which still held the resting violet (L 0.5) while the face shown was darker (L 0.39): the hollow came out at the face's own lightness and the inner ring lighter than the face, so no depth showed.
+- **Rule:** a control that changes its background when pressed sets `--face` to that same colour, so the depth is shaded from what is shown; check the hollow is darker than the face by numbers, not by eye.

@@ -102,7 +102,7 @@ export function App() {
   const exporter = useExport()
   const project = useProject()
   const bestShots = useBestShots()
-  const sense = useRollSense(filter.folders ?? [])
+  const sense = useRollSense(filter.folders ?? [], rollsense)
   // RollSense reading: the rest of the window waits, the red stop on the progress bar ends it,
   // keeps nothing and goes back to Photos (owner, 2026-11-18).
   const sorting = sense.running
@@ -143,6 +143,15 @@ export function App() {
   const setFilter = (next: CullFilter, keepTicks = false) => {
     setFilterState(next)
     setSelected(0)
+    // Another tab while RollSense is shown: back to Photos, its picks dropped; a press reads the
+    // new tab (owner, 2026-11-18: the button stayed pressed while nothing read the new folder).
+    // A folder ticked or unticked beside one kept stays in RollSense, over all the ticked ones.
+    const was = filter.folders ?? []
+    const now = next.folders ?? []
+    if (view === 'rollsense' && JSON.stringify(now) !== JSON.stringify(was) && !now.some((f) => was.includes(f))) {
+      setView('photos')
+      setPicks([])
+    }
     if (!keepTicks) select.reset()
   }
   const quick = useQuickPreview(selectMode, photos.length, hovered, select.anchor ?? current, select.toggle)

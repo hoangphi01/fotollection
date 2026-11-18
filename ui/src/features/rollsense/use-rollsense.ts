@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { commands, events, type DeleteReport, type Facets, type PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 
@@ -8,18 +8,32 @@ import { errorText } from '@/lib/errors'
  * first time the tab opens while photos are unread), and the two ends of a sort: set aside or
  * delete (to the Trash, then for good on a volume without one, ADR-0055).
  */
-export function useRollSense(folders: number[]) {
+export function useRollSense(folders: number[], shown: boolean) {
   // Only the tab chosen (owner, 2026-11-18): a folder's photos, or the Workspace's when none.
   const scope = JSON.stringify(folders)
   const [facets, setFacets] = useState<Facets | null>(null)
   const [jobId, setJobId] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const shownRef = useRef(shown)
+  useEffect(() => {
+    shownRef.current = shown
+  }, [shown])
 
   useEffect(() => {
+    // Folders ticked or unticked while RollSense is shown: the new set's unread photos are read
+    // at once, as a press would (owner, 2026-11-18); only on the set's first load, so a pass
+    // stopped by the user is not started again.
+    let first = true
     const load = () =>
-      commands.sortFacets(JSON.parse(scope) as number[]).then((result) => {
-        if (result.status === 'ok') setFacets(result.data)
-        else setError(errorText(result.error))
+      commands.sortFacets(JSON.parse(scope) as number[]).then(async (result) => {
+        if (result.status !== 'ok') return setError(errorText(result.error))
+        setFacets(result.data)
+        if (first && shownRef.current && result.data.analysed < result.data.total) {
+          const job = await commands.analyzeSorting(JSON.parse(scope) as number[])
+          if (job.status === 'ok') setJobId(job.data)
+          else setError(errorText(job.error))
+        }
+        first = false
       })
     void load()
     const unlisteners = [
