@@ -1,0 +1,27 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 17,
+  "app_version": "0.14.4",
+  "modified_at": "2026-11-18T22:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Roll",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "IMG_0001.HEIC",
+      "fp_size": 3000000,
+      "fp_mtime": 1730000000
+    }
+  ],
+  "trips": {
+    "cuts": [19100],
+    "joins": [19200],
+    "names": { "19050": "Summer in Lisbon" }
+  }
+}

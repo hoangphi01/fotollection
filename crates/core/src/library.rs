@@ -7,7 +7,10 @@ use std::collections::HashMap;
 
 mod sense;
 mod sorted;
+mod trip_edit;
+
 use std::path::{Path, PathBuf};
+pub use trip_edit::TripEditError;
 
 use chrono::{DateTime, NaiveDateTime};
 use serde::{Deserialize, Serialize};
@@ -646,6 +649,8 @@ pub struct Library {
     stacks: std::sync::OnceLock<(Vec<crate::sorting::stacks::Stack>, HashMap<u32, usize>)>,
     /// Events, trips and places (FR-141 S4), worked out once after a change.
     roll: std::sync::OnceLock<crate::sorting::Roll>,
+    /// The user's cuts, joins and names of trips (FR-012 S7c), kept in the project.
+    trip_edits: crate::sorting::trips::TripEdits,
     /// From the pixels' pass (FR-141 S6), in memory only: each photo's named subject (an
     /// index into `clip::subject_keys`) and difference hash, and the proven duplicates.
     subject: Vec<u16>,

@@ -39,7 +39,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// one per country (owner, 2026-11-15); absent before (the machine's sender prints).
 /// v16: `photos[].queue` may be `delete`, marked to delete (FR-141, owner 2026-11-18); an older
 /// app would refuse that value, so the version tells it the file is newer.
-pub const SCHEMA_VERSION: u32 = 16;
+/// v17: `trips`, the user's cuts, joins and names of trips (FR-012 S7c, owner 2026-11-18);
+/// absent before: the trips as found.
+pub const SCHEMA_VERSION: u32 = 17;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -183,6 +185,12 @@ pub struct ProjectFile {
     /// Places the user renamed (schema v8, FR-005).
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub places: Vec<PlaceRow>,
+    /// Trips the user split, merged or named (schema v17, FR-012 S7c).
+    #[serde(
+        default,
+        skip_serializing_if = "crate::sorting::trips::TripEdits::is_empty"
+    )]
+    pub trips: crate::sorting::trips::TripEdits,
     /// Session autosave only (schema v2); never inside a bundle.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub document: Option<DocumentRef>,
@@ -311,6 +319,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
             })
             .collect(),
         places,
+        trips: library.trip_edits().clone(),
         document: None,
         settings: None,
     }
@@ -609,6 +618,7 @@ pub fn restore_into(
     for row in &file.places {
         library.rename_place(row.geonames_id, Some(&row.name));
     }
+    library.set_trip_edits(file.trips.clone());
     for row in &file.cameras {
         library.restore_clock(&crate::library::CameraClock {
             id: 0,
@@ -1348,6 +1358,33 @@ mod tests {
             panic!("v6 project should load");
         };
         assert_eq!(v6.cameras, Vec::new());
+    }
+
+    /// Trips the user changed (owner, 2026-11-18): a v17 file keeps its cuts, joins and names,
+    /// a v16 file has none, and a written one reads them again.
+    #[test]
+    fn fr_012_v17_keeps_the_users_trip_edits() {
+        let Loaded::Ok(v16) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v16.fotollection"))
+        else {
+            panic!("v16 project should load");
+        };
+        assert!(v16.trips.is_empty());
+        let Loaded::Ok(v17) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v17.fotollection"))
+        else {
+            panic!("v17 project should load");
+        };
+        assert!(v17.trips.cuts.contains(&19_100) && v17.trips.joins.contains(&19_200));
+        assert_eq!(
+            v17.trips.names.get(&19_050).map(String::as_str),
+            Some("Summer in Lisbon")
+        );
+        let json = serde_json::to_string(&v17).unwrap_or_default();
+        let Loaded::Ok(again) = from_bytes(json.as_bytes()) else {
+            panic!("a written v17 file should load");
+        };
+        assert_eq!(again.trips, v17.trips);
     }
 
     /// Marked to delete (owner, 2026-11-18): a v16 file keeps the mark, and a written one reads

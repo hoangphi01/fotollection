@@ -83,7 +83,14 @@ impl Library {
                     })
                 })
                 .collect();
-            crate::sorting::roll(&moments, &firm, places, confirmed)
+            let mut roll = crate::sorting::roll(&moments, &firm, places, confirmed);
+            // The user's cuts and joins (S7c), on the trips found.
+            roll.trips = crate::sorting::trips::apply_edits(
+                std::mem::take(&mut roll.trips),
+                &self.trip_edits,
+                |i| moments.get(i).map_or(0, |m| m.t.div_euclid(86_400)),
+            );
+            roll
         })
     }
 

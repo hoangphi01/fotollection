@@ -111,10 +111,21 @@ pub struct YearFacet {
 #[derive(Clone, Debug, PartialEq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct TripFacet {
+    /// The name the user gave it (S7c), else none: the UI shows the suggested one.
+    pub name: Option<String>,
     pub first_day: i32,
     pub last_day: i32,
     pub count: u32,
     /// The place met most often, for the suggested name (`2022-07 Đà Lạt`).
+    pub place: Option<String>,
+}
+
+/// One day of a trip, for its page (S7c): how many photos, and the place met most often.
+#[derive(Clone, Debug, PartialEq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TripDay {
+    pub day: i32,
+    pub count: u32,
     pub place: Option<String>,
 }
 

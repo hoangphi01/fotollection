@@ -7,7 +7,7 @@
 //! two days away stays in the trip. Homes are worked out in memory and never stored, logged
 //! or shown.
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 use super::events::Moment;
 
@@ -29,6 +29,62 @@ pub struct Trip {
     pub first_day: i64,
     pub last_day: i64,
     pub members: Vec<usize>,
+}
+
+/// The user's changes to the trips found (FR-012, S7c; owner 2026-11-18), kept in the project:
+/// a cut ends a trip after a day, a join puts the trip that starts on a day into the one before,
+/// and a name is given to the trip that starts on a day. Cuts apply first, then joins; a name
+/// whose trip is gone is kept and shown again if the trip comes back.
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct TripEdits {
+    pub cuts: BTreeSet<i64>,
+    pub joins: BTreeSet<i64>,
+    pub names: BTreeMap<i64, String>,
+}
+
+impl TripEdits {
+    pub fn is_empty(&self) -> bool {
+        self.cuts.is_empty() && self.joins.is_empty() && self.names.is_empty()
+    }
+}
+
+/// The trips found with the user's cuts, then joins, applied; `day` gives a photo's day.
+pub fn apply_edits(trips: Vec<Trip>, edits: &TripEdits, day: impl Fn(usize) -> i64) -> Vec<Trip> {
+    if edits.cuts.is_empty() && edits.joins.is_empty() {
+        return trips;
+    }
+    let mut cut: Vec<Trip> = Vec::new();
+    for t in trips {
+        let bounds: Vec<i64> = edits.cuts.range(t.first_day..t.last_day).copied().collect();
+        let mut parts: Vec<Vec<usize>> = vec![Vec::new(); bounds.len() + 1];
+        for &m in &t.members {
+            let d = day(m);
+            parts[bounds.iter().filter(|&&c| c < d).count()].push(m);
+        }
+        cut.extend(parts.into_iter().filter(|p| !p.is_empty()).map(|members| {
+            let days = members.iter().map(|&m| day(m));
+            let first_day = days.clone().min().unwrap_or(t.first_day);
+            let last_day = days.max().unwrap_or(t.last_day);
+            Trip {
+                first_day,
+                last_day,
+                members,
+            }
+        }));
+    }
+    cut.sort_by_key(|t| t.first_day);
+    let mut out: Vec<Trip> = Vec::new();
+    for t in cut {
+        match out.last_mut() {
+            Some(prev) if edits.joins.contains(&t.first_day) => {
+                prev.last_day = prev.last_day.max(t.last_day);
+                prev.members.extend(t.members);
+            }
+            _ => out.push(t),
+        }
+    }
+    out
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -272,6 +328,37 @@ mod tests {
                 })
             })
             .collect()
+    }
+
+    #[test]
+    fn fr_012_a_trip_is_cut_and_joined_by_the_users_edits() {
+        // Photos 0..5 on days 10..14, one a day: one trip.
+        let trips = vec![Trip {
+            first_day: 10,
+            last_day: 14,
+            members: (0..5).collect(),
+        }];
+        let day = |m: usize| 10 + i64::try_from(m).unwrap_or(0);
+        let mut edits = TripEdits::default();
+        edits.cuts.insert(11);
+        let two = apply_edits(trips.clone(), &edits, day);
+        assert_eq!(
+            two.iter()
+                .map(|t| (t.first_day, t.last_day))
+                .collect::<Vec<_>>(),
+            [(10, 11), (12, 14)]
+        );
+        // Joined again by the trip that starts on day 12.
+        edits.joins.insert(12);
+        let one = apply_edits(trips.clone(), &edits, day);
+        assert_eq!(one.len(), 1);
+        assert_eq!(one[0].members, (0..5).collect::<Vec<_>>());
+        // A cut outside every trip changes nothing.
+        let far = TripEdits {
+            cuts: [3].into(),
+            ..TripEdits::default()
+        };
+        assert_eq!(apply_edits(trips.clone(), &far, day), trips);
     }
 
     #[test]

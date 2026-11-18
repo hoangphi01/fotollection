@@ -24,6 +24,7 @@ mod settings_copy;
 mod sorting;
 mod state;
 mod timing;
+mod trips;
 mod updates;
 
 use tauri::{DragDropEvent, Manager, WindowEvent};
@@ -190,6 +191,10 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             sorting::trash_photos,
             sorting::delete_photos,
             sorting::trash_check,
+            trips::rename_trip,
+            trips::split_trip,
+            trips::merge_trip,
+            trips::trip_days,
             sorting::cancel_trash,
             camera::camera_connect,
             camera::camera_disconnect,

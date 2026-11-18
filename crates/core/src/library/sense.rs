@@ -38,13 +38,13 @@ fn year_month(t: i64) -> (i32, u8) {
     })
 }
 
-fn place_name(id: Option<u32>) -> Option<String> {
+pub(super) fn place_name(id: Option<u32>) -> Option<String> {
     id.and_then(|id| crate::geocode::by_id(id).ok().flatten())
         .map(|p| p.name)
 }
 
 /// Days since 1970 fit an `i32` for 5.8 million years; the UI's numbers stay exact.
-fn day32(day: i64) -> i32 {
+pub(super) fn day32(day: i64) -> i32 {
     i32::try_from(day).unwrap_or(if day < 0 { i32::MIN } else { i32::MAX })
 }
 
@@ -283,23 +283,7 @@ impl Library {
                     .count(),
             ),
             years: self.years(idx, &roll.events, &place_ids, &inn),
-            trips: roll
-                .trips
-                .iter()
-                .filter_map(|t| {
-                    let members = only(&t.members);
-                    let t = crate::sorting::trips::Trip {
-                        members,
-                        ..t.clone()
-                    };
-                    (!t.members.is_empty()).then(|| TripFacet {
-                        first_day: day32(t.first_day),
-                        last_day: day32(t.last_day),
-                        count: count(t.members.len()),
-                        place: place_name(crate::sorting::trips::main_place(&t, &place_ids)),
-                    })
-                })
-                .collect(),
+            trips: self.trip_facets(&roll.trips, &inn, &place_ids),
             visits: visits(
                 &roll
                     .visits
@@ -329,6 +313,31 @@ impl Library {
             ),
             cleanup: self.cleanup(&inn, keys),
         }
+    }
+
+    /// The trips with photos in `inn`, each with the user's name if it has one (S7c).
+    fn trip_facets(
+        &self,
+        trips: &[crate::sorting::trips::Trip],
+        inn: &[bool],
+        place_ids: &[Option<u32>],
+    ) -> Vec<TripFacet> {
+        trips
+            .iter()
+            .filter_map(|t| {
+                let t = crate::sorting::trips::Trip {
+                    members: t.members.iter().copied().filter(|&m| inn[m]).collect(),
+                    ..t.clone()
+                };
+                (!t.members.is_empty()).then(|| TripFacet {
+                    name: self.trip_edits.names.get(&t.first_day).cloned(),
+                    first_day: day32(t.first_day),
+                    last_day: day32(t.last_day),
+                    count: count(t.members.len()),
+                    place: place_name(crate::sorting::trips::main_place(&t, place_ids)),
+                })
+            })
+            .collect()
     }
 
     /// The clean-up rows over the photos `inn` keeps (FR-141): each one's count and bytes, the

@@ -581,6 +581,7 @@ mod tests {
                 tz_minutes: Some(60),
             }],
             places: Vec::new(),
+            trips: crate::sorting::trips::TripEdits::default(),
             document: None,
             settings: None,
         }

@@ -43,6 +43,7 @@ Summary: 508 files, 79,362 production lines, **73.7 % of them in green files**; 
 | `bench/chart.mjs` | 1,538 | red | 55 % is the charts' words in 9 languages | FR-138 S5 |
 | `src-tauri/src/camera.rs` | 1,469 | orange | the Sony driver, session files, state, IPC and the thread; ~500 lines for `oscamera` and the core | FR-139 S1 |
 | `crates/core/src/sheet.rs` | 1,343 | orange | layout, render, card choice (4 places), credit (3 places); test setup repeated | FR-139 S3 |
+| `crates/core/src/project.rs` | 636 (1,536 with tests) | orange | production green; each schema version's test repeats the load, the panic and the round trip (checklist 6) | FR-139: a `fixture(v)` and a round-trip helper |
 | `crates/core/src/library.rs` | 1,270 | orange | edits, clocks, brand naming and the store | FR-139 S4 |
 | `crates/core/src/postcard.rs` | 1,158 | orange | faces, the European card, the tape, the shared parts; mm to px 8 times | FR-139 S4 |
 | `crates/core/src/settings.rs` | 1,158 | orange | every settings section and its sanitising | FR-139 S5 |

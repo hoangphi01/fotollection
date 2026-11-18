@@ -208,7 +208,7 @@ The quarter of each requirement lives in [ROADMAP.md](ROADMAP.md) ([ADR-0053](ad
 
 **P1 (v0.14.4, 2026-Q4, with [FR-141](#fr-141--sorting-a-phones-camera-roll); moved from 2027-Q1 by the owner, 2026-11-17).** Cluster photos into trips by GPS and time proximity, and suggest a name for each trip, for example "2026-07 Lisbon". Built in the core (FR-141 S4, `sorting/trips.rs`): home is the 0.1° cell with photos on the most days, and any cell visited in six different months or more is a home too (a family's town is no trip; owner, 2026-11-17), worked out in memory and never stored or shown; a trip is a run of days whose located photos are mostly more than 50 km from home (owner, 2026-11-17, after checking the first list), days without a location inside it kept, at most three days without photos, at least ten photos; named after the place met most often. **Visits to the other homes** (owner, 2026-11-17: "how many times this year, how many photos") are kept apart from trips: each stay at another home with its days and photos, and per year the number of visits and of photos, for a filter in the view (FR-141 S7); the main home is never one of them.
 
-- The user can merge, split and rename trips.
+- The user can merge, split and rename trips (S7c, 2026-11-18): kept in the project as cuts, joins and names (schema v17), applied on the trips found, so a re-read keeps them; a split after a day, a merge into the trip before, a name trimmed to 80 characters; each checked in the core (`library/trip_edit.rs`, ERR-IPC-0042 to 0044).
 
 ### FR-013 — Face-aware smart crop
 

@@ -119,6 +119,13 @@
       "total": 1555,
       "due": "FR-139, 2027-Q1",
       "cause": "ExportOptions written out 22 times; a test helper cuts ~250 lines"
+    },
+    "crates/core/src/project.rs": {
+      "level": "orange",
+      "production": 636,
+      "total": 1536,
+      "due": "FR-139, 2027-Q1",
+      "cause": "production is green (636); the tests repeat each schema version's load, panic and round trip (one fixture test per version, ~17): a fixture(v) helper and one round-trip helper"
     }
   }
 }

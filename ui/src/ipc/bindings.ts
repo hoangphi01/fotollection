@@ -865,6 +865,17 @@ export const commands = {
 	trashCheck: (ids: PhotoId[]) => typedError<TrashCheck, IpcError>(__TAURI_INVOKE("trash_check", { ids })),
 	/**  Stops a move to the Trash before its next file; the photos not moved stay marked. */
 	cancelTrash: () => __TAURI_INVOKE<void>("cancel_trash"),
+	/**
+	 *  Names the trip that starts on `first_day` (days since 1970); `None` brings back the
+	 *  suggested name. The core trims it and cuts it to 80 characters.
+	 */
+	renameTrip: (firstDay: number, name: string | null) => typedError<null, IpcError>(__TAURI_INVOKE("rename_trip", { firstDay, name })),
+	/**  Splits the trip that starts on `first_day` after the day `after_day`. */
+	splitTrip: (firstDay: number, afterDay: number) => typedError<null, IpcError>(__TAURI_INVOKE("split_trip", { firstDay, afterDay })),
+	/**  Merges the trip that starts on `first_day` into the trip before it. */
+	mergeTrip: (firstDay: number) => typedError<null, IpcError>(__TAURI_INVOKE("merge_trip", { firstDay })),
+	/**  The days of the trip that starts on `first_day`, for its page. */
+	tripDays: (firstDay: number) => typedError<TripDay[], IpcError>(__TAURI_INVOKE("trip_days", { firstDay })),
 	/**  Finds a camera, runs its handshake and starts the session. */
 	cameraConnect: () => typedError<CameraInfo, IpcError>(__TAURI_INVOKE("camera_connect")),
 	/**
@@ -2841,7 +2852,16 @@ export type TrashCheck = {
 	withoutTrash: number,
 };
 
+/**  One day of a trip, for its page (S7c): how many photos, and the place met most often. */
+export type TripDay = {
+	day: number,
+	count: number,
+	place: string | null,
+};
+
 export type TripFacet = {
+	/**  The name the user gave it (S7c), else none: the UI shows the suggested one. */
+	name: string | null,
 	firstDay: number,
 	lastDay: number,
 	count: number,
