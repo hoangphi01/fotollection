@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Archive, Images, ScanSearch } from 'lucide-react'
+import { Archive, Images, PencilLine, ScanSearch, ShoppingBasket } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton } from '@/components/forms/danger-button'
@@ -34,16 +34,18 @@ type RollSensePanelProps = {
   sense: RollSense
   picks: SortPick[]
   onPicks(picks: SortPick[]): void
-  /** The photos the pick shows in the grid, what the two actions take. */
+  /** The photos the pick shows in the grid, what the actions take. */
   shown: PhotoId[]
+  /** To Photos with the pick kept, to colour, print or export it (ADR-0057). */
+  onEdit(): void
 }
 
 /**
- * RollSense's side panel (FR-141, owner 2026-11-18: "sort, then delete or set aside; back in
- * Photos only the kept ones remain for colour and print"): the facets as cards, and under
- * them the pass's state and the two ends of a sort for the photos the pick shows.
+ * RollSense's side panel (FR-141): the facets as cards, and under them the pass's state and
+ * what a pick leads to (owner 2026-11-18, ADR-0057): edited in Photos with the pick kept, into
+ * the print basket, set aside, or deleted.
  */
-export function RollSensePanel({ sense, picks, onPicks, shown }: RollSensePanelProps) {
+export function RollSensePanel({ sense, picks, onPicks, shown, onEdit }: RollSensePanelProps) {
   const { t } = useTranslation()
   const { facets } = sense
   const [asking, setAsking] = useState<PhotoId[] | null>(null)
@@ -91,6 +93,12 @@ export function RollSensePanel({ sense, picks, onPicks, shown }: RollSensePanelP
             )}
             {picks.length > 0 && count > 0 && (
               <>
+                <Button onClick={onEdit}>
+                  <PencilLine data-icon="inline-start" /> {t('rollsense.edit', { count })}
+                </Button>
+                <Button variant="secondary" onClick={() => void sense.toBasket(shown)}>
+                  <ShoppingBasket data-icon="inline-start" /> {t('rollsense.toBasket', { count })}
+                </Button>
                 <Button variant="secondary" onClick={() => void sense.setAside(shown)}>
                   <Archive data-icon="inline-start" /> {t('rollsense.setAside', { count })}
                 </Button>

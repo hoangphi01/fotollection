@@ -201,7 +201,7 @@ export function ExportSection({
               : t('export.button')}
         </Button>
       )}
-      {!single && picked.length === 0 && (filter.flag !== 'all' || filter.minRating > 0) && !running && (
+      {!single && picked.length === 0 && (filter.flag !== 'all' || filter.minRating > 0 || (filter.sort?.length ?? 0) > 0) && !running && (
         <Hint>{t('export.filteredHint')}</Hint>
       )}
     </Stack>

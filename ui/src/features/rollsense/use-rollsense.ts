@@ -71,6 +71,12 @@ export function useRollSense(folders: number[], shown: boolean) {
     if (result.status === 'error') setError(errorText(result.error))
   }, [])
 
+  /** Into the print basket (FR-050): a pick gathered to print. */
+  const toBasket = useCallback(async (ids: PhotoId[]) => {
+    const result = await commands.setPhotoQueue(ids, 'print')
+    if (result.status === 'error') setError(errorText(result.error))
+  }, [])
+
   /** Moves the files to the Trash, or deletes them for good; what could not be moved comes back. */
   const remove = useCallback(async (ids: PhotoId[], forGood: boolean): Promise<DeleteReport | null> => {
     setError(null)
@@ -80,7 +86,7 @@ export function useRollSense(folders: number[], shown: boolean) {
     return null
   }, [])
 
-  return { facets, running: jobId !== null, error, analyze, open, cancel, setAside, remove }
+  return { facets, running: jobId !== null, error, analyze, open, cancel, setAside, toBasket, remove }
 }
 
 export type RollSense = ReturnType<typeof useRollSense>

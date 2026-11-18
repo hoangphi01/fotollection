@@ -1706,3 +1706,10 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Seen:** the release review (2026-11-18) found that ticking *Duplicates* and pressing *Delete* sent every copy to the Trash, the original included; on a NAS without a Trash, the second confirm deleted them for good.
 - **Why:** `set_duplicates` took every member of each proven group: a group is a relation, but a delete needs a keeper.
 - **Rule:** a facet that feeds a delete names what stays, not only what matches: one keeper per group, tested (`fr_141_duplicates_keep_one_copy_of_each_group`); and the permanent path is guarded in Rust, never by the interface alone.
+
+### A view's filter must reach every action on that view (FR-141)
+
+- **Area:** state-cache
+- **Seen:** opened from RollSense, the preview stepped through the pick with ←/→ while its export and colour took the whole folder (UX review, 2026-11-18).
+- **Why:** the grid got `viewFilter` and the preview and export panel got `filter`: two scopes for one screen.
+- **Rule:** one filter value per mode (`proFilter`) is passed to the grid, the preview and every panel that acts on "the photos shown"; a count shown and a scope acted on come from the same value.

@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - RollSense names what more photos show: trees, autumn leaves, parks and streets are scenery, a street with people is also people, and the edges of a photo count. Photos read before are read again once.
 - The update window at start closes only with one of its buttons, not with a click outside it or Esc. Settings → Updates shows the version that check found, with its red warning when there is one, without asking to check again.
 - RollSense's *Duplicates* holds only the extra copies, one of each picture always kept, and a photo is deleted for good only after the Trash refused it.
+- What RollSense picks can be worked on: **Edit in Photos** keeps the pick in Photos for colour, export and print, named by a violet chip in the toolbar that goes back to RollSense or clears it; **Add to the print basket** gathers it to print.
 - RollSense follows the folders: ticking more keeps it, over all the ticked ones; choosing another folder goes back to Photos. Its button, while shown, now reads pressed in.
 
 ## [0.14.3] - 2026-11-16 — Postcards, part 2

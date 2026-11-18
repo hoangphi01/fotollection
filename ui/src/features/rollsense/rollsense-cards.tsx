@@ -8,6 +8,7 @@ import { GroupRows } from '@/components/forms/group-rows'
 import { CheckRow, ListRows } from '@/components/forms/list-row'
 import { SectionCard } from '@/components/layout/section-card'
 import type { Facets, SortPick } from '@/ipc/bindings'
+import { useDay } from './pick-label'
 
 type PickProps = {
   facets: Facets
@@ -71,13 +72,6 @@ function FacetCard({ card, icon, title, picks, onPicks, children }: { card: numb
       <ListRows>{children}</ListRows>
     </SectionCard>
   )
-}
-
-/** A day (days since 1970) as the reader writes a short date. */
-function useDay() {
-  const { i18n } = useTranslation()
-  const format = new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'short', timeZone: 'UTC' })
-  return (day: number) => format.format(new Date(day * 86_400_000))
 }
 
 /** Where each photo came from (FR-141 S2). */

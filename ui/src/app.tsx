@@ -64,6 +64,7 @@ import { useCollage } from '@/features/collage/use-collage'
 import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
 import { RemoveButton } from '@/components/forms/danger-button'
+import { PickChip } from '@/features/rollsense/pick-chip'
 import { RollSensePanel } from '@/features/rollsense/rollsense-panel'
 import { useRollSense } from '@/features/rollsense/use-rollsense'
 
@@ -82,14 +83,16 @@ export function App() {
   const collageMode = mode === 'collage'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
   const [view, setView] = useState<'photos' | 'groups' | 'rollsense'>('photos')
-  // RollSense (FR-141): its pick narrows the grid on its own tab only, so Photos, colour and
-  // print never stay filtered by a sort left behind.
+  // RollSense (FR-141, ADR-0057, owner 2026-11-18): its pick narrows Pro's grid in Photos too,
+  // so what was picked is edited, exported and printed; the toolbar's chip always names it and
+  // clears it. Session state only, never saved in the project.
   const [picks, setPicks] = useState<SortPick[]>([])
   const rollsense = mode === 'professional' && view === 'rollsense'
+  // Pro's own filter, the pick within it: what the grid, the preview, colour and export take.
+  const proFilter: CullFilter = { ...filter, sort: picks }
   // Simple and Collage follow the sidebar only (folders, basket, set aside); Pro's star and
-  // flag filters stay in Pro, where they can be seen and cleared.
-  const viewFilter: CullFilter =
-    mode === 'professional' ? (rollsense ? { ...filter, sort: picks } : filter) : { ...filter, flag: 'all', minRating: 0 }
+  // flag filters and RollSense's pick stay in Pro, where they can be seen and cleared.
+  const viewFilter: CullFilter = mode === 'professional' ? proFilter : { ...filter, flag: 'all', minRating: 0 }
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(viewFilter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
@@ -389,6 +392,9 @@ export function App() {
               >
                 <ScanSearch data-icon="inline-start" /> {t('rollsense.view')}
               </Button>
+              {view === 'photos' && (
+                <PickChip picks={picks} facets={sense.facets} onOpen={() => setView('rollsense')} onClear={() => setPicks([])} />
+              )}
               {view !== 'groups' && (
                 <span className="shrink-0 font-medium whitespace-nowrap tabular-nums">
                   {/* RollSense counts within the tab chosen, not the whole library. */}
@@ -434,7 +440,7 @@ export function App() {
                 <RemoveButton
                   kind="clear"
                   label={t('app.showAll')}
-                  onClick={() => (rollsense ? setPicks([]) : setFilter({ ...ALL_PHOTOS, folders: filter.folders }))}
+                  onClick={() => (picks.length > 0 ? setPicks([]) : setFilter({ ...ALL_PHOTOS, folders: filter.folders }))}
                 />
               </div>
             ) : (
@@ -487,7 +493,7 @@ export function App() {
         frame={frame}
         fonts={fonts}
         exporter={exporter}
-        filter={filter}
+        filter={mode === 'professional' ? proFilter : filter}
         onIndexChange={setSelected}
         onClose={() => setViewing(false)}
         thumbVersions={thumbVersions}
@@ -565,6 +571,7 @@ export function App() {
             setSelected(0)
           }}
           shown={photos.map((p) => p.id)}
+          onEdit={() => setView('photos')}
         />
       ) : (
       <SettingsPanel
@@ -576,7 +583,7 @@ export function App() {
         photoCount={photos.length}
         folderCount={filter.folders?.length || folders.length}
         customStamps={customStamps}
-        filter={filter}
+        filter={mode === 'professional' ? proFilter : filter}
         photo={photos[current]}
         revision={revision}
         ticked={selectMode ? select.ordered : undefined}
