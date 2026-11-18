@@ -585,6 +585,9 @@ export function App() {
           shown={select.checked.size > 0 ? photos.filter((p) => select.checked.has(p.id)).map((p) => p.id) : photos.map((p) => p.id)}
           ticked={select.checked.size > 0}
           onEdit={() => setView('photos')}
+          onClearFilter={
+            filter.flag !== 'all' || filter.minRating > 0 ? () => setFilter({ ...filter, flag: 'all', minRating: 0 }, true) : undefined
+          }
         />
       ) : (
       <SettingsPanel

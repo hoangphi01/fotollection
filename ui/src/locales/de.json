@@ -1669,10 +1669,10 @@
     "trips": "Reisen",
     "visits": "Besuche zu Hause",
     "places": "Wo",
-    "more": "Duplikate und Stapel",
-    "noSubject": "Unklar",
+    "more": "Duplikate, Live Photos und Serien",
+    "noSubject": "Nicht erkannt",
     "duplicates": "Duplikate",
-    "stacks": "Stapel",
+    "stacks": "Live Photos und Serien",
     "visit_one": "{{year}} · {{place}} · {{count}} Besuch",
     "visit_other": "{{year}} · {{place}} · {{count}} Besuche",
     "unknownPlace": "Irgendwo",
@@ -1685,6 +1685,8 @@
     "forGoodBody": "Ihr Laufwerk hat keinen Papierkorb, wie oft ein Netzlaufwerk. Endgültig löschen? Das lässt sich nicht rückgängig machen.",
     "forGoodConfirm": "Endgültig löschen",
     "keep": "Behalten",
+    "alsoFiltered": "Der Sterne- und Markierungsfilter von Fotos ist an, daher zeigt RollSense weniger Fotos.",
+    "clearFilter": "Filter aufheben",
     "cleanup": "Aufräumen",
     "cleanupKind": {
       "duplicates": "Zusätzliche Kopien",
@@ -1710,7 +1712,7 @@
       "filmScan": "Filmscans",
       "otherCamera": "Andere Kameras",
       "anotherPhone": "Anderes Handy",
-      "unknown": "Gespeichert oder erhalten"
+      "unknown": "Aus Apps und Chats gespeichert"
     },
     "subject": {
       "people": "Menschen",

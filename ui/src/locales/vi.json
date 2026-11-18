@@ -1603,10 +1603,10 @@
     "trips": "Chuyến đi",
     "visits": "Về nhà",
     "places": "Nơi chụp",
-    "more": "Ảnh trùng và chồng",
-    "noSubject": "Chưa rõ",
+    "more": "Ảnh trùng, Live Photo và ảnh liên tiếp",
+    "noSubject": "Chưa nhận ra",
     "duplicates": "Ảnh trùng",
-    "stacks": "Chồng ảnh",
+    "stacks": "Live Photo và ảnh liên tiếp",
     "visit_other": "{{year}} · {{place}} · {{count}} lần",
     "unknownPlace": "Không rõ nơi",
     "deleteTitle_other": "Chuyển {{count}} ảnh vào Thùng rác?",
@@ -1616,6 +1616,8 @@
     "forGoodBody": "Ổ chứa chúng không có Thùng rác, như ổ mạng thường không có. Xoá hẳn? Việc này không hoàn tác được.",
     "forGoodConfirm": "Xoá hẳn",
     "keep": "Giữ lại",
+    "alsoFiltered": "Bộ lọc sao và cờ của tab Ảnh đang bật, nên RollSense hiện ít ảnh hơn.",
+    "clearFilter": "Bỏ lọc",
     "cleanup": "Dọn ảnh",
     "cleanupKind": {
       "duplicates": "Bản thừa",
@@ -1638,7 +1640,7 @@
       "filmScan": "Ảnh scan phim",
       "otherCamera": "Máy ảnh khác",
       "anotherPhone": "Điện thoại khác",
-      "unknown": "Lưu về hoặc nhận được"
+      "unknown": "Lưu từ ứng dụng và tin nhắn"
     },
     "subject": {
       "people": "Người",

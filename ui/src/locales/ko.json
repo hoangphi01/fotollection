@@ -1664,10 +1664,10 @@
     "trips": "여행",
     "visits": "고향 방문",
     "places": "장소",
-    "more": "중복과 스택",
-    "noSubject": "불확실",
+    "more": "중복, Live Photo와 연속 촬영",
+    "noSubject": "인식 안 됨",
     "duplicates": "중복",
-    "stacks": "스택",
+    "stacks": "Live Photo와 연속 촬영",
     "visit_other": "{{year}} · {{place}} · {{count}}회",
     "unknownPlace": "알 수 없는 장소",
     "deleteTitle_other": "{{count}}장을 휴지통으로 옮길까요?",
@@ -1677,6 +1677,8 @@
     "forGoodBody": "네트워크 드라이브처럼 이 드라이브에는 휴지통이 없습니다. 영구 삭제할까요? 되돌릴 수 없습니다.",
     "forGoodConfirm": "영구 삭제",
     "keep": "남겨 두기",
+    "alsoFiltered": "사진의 별점·플래그 필터가 켜져 있어 RollSense에 보이는 사진이 줄었습니다.",
+    "clearFilter": "필터 해제",
     "cleanup": "정리",
     "cleanupKind": {
       "duplicates": "남는 사본",
@@ -1699,7 +1701,7 @@
       "filmScan": "필름 스캔",
       "otherCamera": "다른 카메라",
       "anotherPhone": "다른 휴대폰",
-      "unknown": "저장하거나 받은 사진"
+      "unknown": "앱과 채팅에서 저장"
     },
     "subject": {
       "people": "사람",

@@ -1669,10 +1669,10 @@
     "trips": "Trips",
     "visits": "Visits home",
     "places": "Where",
-    "more": "Duplicates and stacks",
-    "noSubject": "Not sure",
+    "more": "Duplicates, Live Photos and bursts",
+    "noSubject": "Not recognised",
     "duplicates": "Duplicates",
-    "stacks": "Stacks",
+    "stacks": "Live Photos and bursts",
     "visit_one": "{{year}} · {{place}} · {{count}} visit",
     "visit_other": "{{year}} · {{place}} · {{count}} visits",
     "unknownPlace": "Somewhere",
@@ -1685,6 +1685,8 @@
     "forGoodBody": "Their drive has no Trash, as a network drive often has not. Delete them for good? This cannot be undone.",
     "forGoodConfirm": "Delete for good",
     "keep": "Keep them",
+    "alsoFiltered": "Photos' star and flag filter is on, so RollSense shows fewer photos.",
+    "clearFilter": "Clear the filter",
     "cleanup": "Clean up",
     "cleanupKind": {
       "duplicates": "Extra copies",
@@ -1710,7 +1712,7 @@
       "filmScan": "Film scans",
       "otherCamera": "Other cameras",
       "anotherPhone": "Another phone",
-      "unknown": "Saved or received"
+      "unknown": "Saved from apps and chats"
     },
     "subject": {
       "people": "People",

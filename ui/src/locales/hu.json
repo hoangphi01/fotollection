@@ -1669,10 +1669,10 @@
     "trips": "Utazások",
     "visits": "Látogatások otthon",
     "places": "Hol",
-    "more": "Ismétlődők és kötegek",
-    "noSubject": "Bizonytalan",
+    "more": "Ismétlődők, Live Photók és sorozatok",
+    "noSubject": "Nem felismert",
     "duplicates": "Ismétlődők",
-    "stacks": "Kötegek",
+    "stacks": "Live Photók és sorozatok",
     "visit_one": "{{year}} · {{place}} · {{count}} látogatás",
     "visit_other": "{{year}} · {{place}} · {{count}} látogatás",
     "unknownPlace": "Valahol",
@@ -1685,6 +1685,8 @@
     "forGoodBody": "A meghajtójuknak nincs Kukája, ahogy a hálózati meghajtóknak gyakran. Végleg törlöd? Ez nem vonható vissza.",
     "forGoodConfirm": "Végleges törlés",
     "keep": "Megtartás",
+    "alsoFiltered": "A Képek csillag- és jelölésszűrője be van kapcsolva, ezért a RollSense kevesebb képet mutat.",
+    "clearFilter": "Szűrő törlése",
     "cleanup": "Rendrakás",
     "cleanupKind": {
       "duplicates": "Fölösleges másolatok",
@@ -1710,7 +1712,7 @@
       "filmScan": "Filmszkennek",
       "otherCamera": "Más fényképezőgépek",
       "anotherPhone": "Másik telefon",
-      "unknown": "Mentett vagy kapott"
+      "unknown": "Alkalmazásokból és csevegésekből mentve"
     },
     "subject": {
       "people": "Emberek",

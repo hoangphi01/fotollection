@@ -31,6 +31,9 @@ type RollSensePanelProps = {
   ticked: boolean
   /** To Photos with the pick kept, to colour, print or export it (ADR-0057). */
   onEdit(): void
+  /** Photos' star or flag filter is on and narrows RollSense too: named here, with its clear
+   * (two UX reviews, 2026-11-18: a filter is never hidden). */
+  onClearFilter?: () => void
 }
 
 /**
@@ -38,7 +41,7 @@ type RollSensePanelProps = {
  * what a pick leads to (owner 2026-11-18, ADR-0057): edited in Photos with the pick kept, into
  * the print basket, set aside, or deleted.
  */
-export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit }: RollSensePanelProps) {
+export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit, onClearFilter }: RollSensePanelProps) {
   const { t } = useTranslation()
   const { facets } = sense
   const props = facets ? { facets, picks, onPicks } : null
@@ -92,6 +95,11 @@ export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit }:
     >
       {sense.error && <PanelNote danger>{sense.error}</PanelNote>}
       {!facets || (facets.analysed === 0 && sense.running) ? <PanelNote>{t('rollsense.reading')}</PanelNote> : null}
+      {onClearFilter && (
+        <PanelNote action={<RemoveButton kind="clear" small label={t('rollsense.clearFilter')} onClick={onClearFilter} />}>
+          {t('rollsense.alsoFiltered')}
+        </PanelNote>
+      )}
       <Hint>{t('rollsense.hint')}</Hint>
       <ListRow icon={<Images />} chosen={picks.length === 0} onClick={() => onPicks([])}>
         {t('rollsense.all')}
