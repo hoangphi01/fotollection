@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Blend, Bookmark, BookmarkPlus, FileInput, FolderInput, MoreHorizontal, Palette, Pencil, Plus, RefreshCw, TriangleAlert } from 'lucide-react'
+import { Blend, Bookmark, BookmarkPlus, FileInput, FolderInput, Palette, Pencil, Plus, RefreshCw, TriangleAlert } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton } from '@/components/forms/danger-button'
@@ -18,6 +18,7 @@ import { SaveLookDialog } from './save-look-dialog'
 import { lookName } from './use-looks'
 import { unappliedLines } from './unapplied'
 import { MenuContent } from '@/components/forms/menu-content'
+import { RowMenu } from '@/components/forms/row-menu'
 
 /** A list this long gets its filter, as Lightroom's panel. */
 const FILTER_FROM = 8
@@ -125,63 +126,55 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
   const row = (entry: LookEntry) => {
     const own = entry.kind === 'user'
     return (
+      // As Lightroom shows a preset on the photo while it is hovered (owner, 2026-11-08); one's
+      // own looks have a ⋯ and the same menu on a right click (FR-117, `RowMenu`).
       <div
         key={entry.id}
-        className="group/row flex items-center gap-1"
-        // As Lightroom shows a preset on the photo while it is hovered (owner, 2026-11-08).
         onMouseEnter={() => hover && menuFor === null && setHoverLook(entry.id)}
         onMouseLeave={() => hover && setHoverLook(null)}
-        onContextMenu={(e) => {
-          e.preventDefault()
-          if (own) setMenuFor(entry.id)
-        }}
       >
-        <div className="min-w-0 flex-1" data-hint={entry.unapplied.length ? `${lookName(entry)}\n${t('look.notApplied')}\n${unappliedLines(t, entry.unapplied.map((line) => ({ line, count: 1 }))).join('\n')}` : lookName(entry)}>
-          <ListRow
-            icon={entry.kind === 'builtIn' ? <Palette /> : entry.source === 'lut' ? <Blend /> : <Bookmark />}
-            chosen={chosenId === entry.id}
-            onClick={() => onPick(entry)}
-          >
-            {lookName(entry)}
-          </ListRow>
-        </div>
-        {own && (
-          <Popover open={menuFor === entry.id} onOpenChange={(open) => setMenuFor(open ? entry.id : null)}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                aria-label={t('look.actions')}
-                data-hint={t('look.actions')}
-                className="opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 aria-expanded:opacity-100"
-              >
-                <MoreHorizontal />
-              </Button>
-            </PopoverTrigger>
-            <MenuContent align="end">
-                <ListRow icon={<Pencil />} onClick={() => (setMenuFor(null), setAsking({ kind: 'rename', entry }))}>
-                  {t('look.rename')}
-                </ListRow>
-                {photoId !== undefined && (
-                  <ListRow
-                    icon={<RefreshCw />}
-                    onClick={() => {
-                      setMenuFor(null)
-                      void commands.getPhotoLook(photoId).then((c) => {
-                        if (c.status === 'ok') void commands.updateLook(entry.id, c.data.look).then(() => reload())
-                      })
-                    }}
-                  >
-                    {t('look.update')}
-                  </ListRow>
-                )}
-                <ListRow icon={<FolderInput />} onClick={() => (setMenuFor(null), setAsking({ kind: 'move', entry }))}>
-                  {t('look.move')}
-                </ListRow>
-                <RemoveButton wide label={t('look.remove')} onClick={() => (setMenuFor(null), remove(entry.id))} />
-              </MenuContent>
-          </Popover>
-        )}
+        <RowMenu
+          label={t('look.actions')}
+          onOpenChange={(open) => setMenuFor(open ? entry.id : null)}
+          menu={
+            own
+              ? (close) => (
+                  <>
+                    <ListRow icon={<Pencil />} onClick={() => (close(), setAsking({ kind: 'rename', entry }))}>
+                      {t('look.rename')}
+                    </ListRow>
+                    {photoId !== undefined && (
+                      <ListRow
+                        icon={<RefreshCw />}
+                        onClick={() => {
+                          close()
+                          void commands.getPhotoLook(photoId).then((c) => {
+                            if (c.status === 'ok') void commands.updateLook(entry.id, c.data.look).then(() => reload())
+                          })
+                        }}
+                      >
+                        {t('look.update')}
+                      </ListRow>
+                    )}
+                    <ListRow icon={<FolderInput />} onClick={() => (close(), setAsking({ kind: 'move', entry }))}>
+                      {t('look.move')}
+                    </ListRow>
+                    <RemoveButton wide label={t('look.remove')} onClick={() => (close(), remove(entry.id))} />
+                  </>
+                )
+              : null
+          }
+        >
+          <div className="min-w-0" data-hint={entry.unapplied.length ? `${lookName(entry)}\n${t('look.notApplied')}\n${unappliedLines(t, entry.unapplied.map((line) => ({ line, count: 1 }))).join('\n')}` : lookName(entry)}>
+            <ListRow
+              icon={entry.kind === 'builtIn' ? <Palette /> : entry.source === 'lut' ? <Blend /> : <Bookmark />}
+              chosen={chosenId === entry.id}
+              onClick={() => onPick(entry)}
+            >
+              {lookName(entry)}
+            </ListRow>
+          </div>
+        </RowMenu>
       </div>
     )
   }

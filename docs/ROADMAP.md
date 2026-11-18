@@ -86,6 +86,7 @@ v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadat
 | FR-012 | Trip auto-grouping |
 | FR-015 | Duplicate detection |
 | FR-143 | Suggested deletions after sorting: too soft, enlarged from a small image (its real resolution measured), saved from the web, memes; each with its reasons, to the system's Trash on the user's word ([ADR-0055](adr/0055-deleting-to-the-trash-on-the-users-word.md)) |
+| FR-117 | Right-click menus in more places (folders, photos, the filmstrip, collage slots, export presets), each holding only actions found elsewhere too, groups split by hairlines as Lightroom's; `MenuContent` and the style rules; the shared block and the trips' and looks' menus in v0.14.4, the rest one place at a time, each list chosen with the owner (owner, 2026-11-09; moved up 2026-11-18) |
 | FR-138 | Code health, part 1: no source file over 1,500 production lines when v1.0.0 ships, in stages (shared shell helpers, `commands.rs` by concern, logic to the core, `preview.rs` to a folder, the tooling scripts) ([CODE_HEALTH.md](CODE_HEALTH.md)) |
 
 ## 2027-Q1 — v1.1 "Core 2" and v1.2 "Smart culling"
@@ -99,7 +100,6 @@ v1.1 is the release once called v0.15.0: X-Trans, the GPU develop, the DNG kinds
 | FR-085 | Lens distortion correction in our own develop (Panasonic and Olympus maker data, DNG `WarpRectilinear`), so ImageIO is no longer first for RW2 and ORF on macOS |
 | FR-119 | Smooth on ARM, RISC-V tried: a Windows ARM64 build first (today emulated), every budget measured on a Raspberry Pi 5, an M-series Mac and a Snapdragon laptop, SIMD only where measured; riscv64 Linux cross-built and smoke-tested, experimental until a real board meets the budgets; v1.1, RISC-V later (owner, 2026-11-09) |
 | FR-111 | Lossless export in Pro mode: TIFF 16-bit by default or 32-bit float, through a 32-bit float path; v1.1 (owner, 2026-11-09) |
-| FR-117 | Right-click menus in more places (folders, photos, the filmstrip, collage slots, export presets), each holding only actions found elsewhere too, groups split by hairlines as Lightroom's; `MenuContent` and the style rules; v1.1 (owner, 2026-11-09) |
 | FR-014 | Export by trip |
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |

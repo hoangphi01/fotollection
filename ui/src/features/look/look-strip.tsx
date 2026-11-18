@@ -6,14 +6,13 @@ import { useTranslation } from 'react-i18next'
 import { RemoveButton } from '@/components/forms/danger-button'
 import { ListRow } from '@/components/forms/list-row'
 import { Filmstrip } from '@/components/layout/filmstrip'
-import { Popover, PopoverAnchor } from '@/components/ui/popover'
+import { PointMenu } from '@/components/forms/row-menu'
 import { cn } from '@/lib/utils'
 import { Kbd } from '@/components/ui/kbd'
 import { commands, type LookEntry, type PhotoId } from '@/ipc/bindings'
 import { lookTileUrl } from '@/lib/photo-url'
 import { SaveLookDialog } from './save-look-dialog'
 import { LOOK_KEYS, lookName, type LookPicker } from './use-looks'
-import { MenuContent } from '@/components/forms/menu-content'
 
 type LookStripProps = {
   photoId: PhotoId
@@ -44,25 +43,19 @@ export function LookStrip({ photoId, picker, numbered = true, folding = false }:
   const [renaming, setRenaming] = useState<LookEntry | null>(null)
   return (
     <>
-    <Popover open={menu !== null} onOpenChange={(o) => !o && setMenu(null)}>
-      {/* A point to open from: where the tile was right-clicked. */}
-      <PopoverAnchor asChild>
-        <span aria-hidden className="pointer-events-none fixed size-0" style={{ left: menu?.x ?? 0, top: menu?.y ?? 0 }} />
-      </PopoverAnchor>
-      <MenuContent align="start">
-          <ListRow icon={<Pencil />} onClick={() => (setRenaming(menu?.entry ?? null), setMenu(null))}>
-            {t('look.rename')}
-          </ListRow>
-          <RemoveButton
-            wide
-            label={t('look.remove')}
-            onClick={() => {
-              if (menu) picker.remove(menu.entry.id)
-              setMenu(null)
-            }}
-          />
-        </MenuContent>
-    </Popover>
+    <PointMenu at={menu} onClose={() => setMenu(null)}>
+      <ListRow icon={<Pencil />} onClick={() => (setRenaming(menu?.entry ?? null), setMenu(null))}>
+        {t('look.rename')}
+      </ListRow>
+      <RemoveButton
+        wide
+        label={t('look.remove')}
+        onClick={() => {
+          if (menu) picker.remove(menu.entry.id)
+          setMenu(null)
+        }}
+      />
+    </PointMenu>
     <SaveLookDialog
       open={renaming !== null}
       title={t('look.rename')}

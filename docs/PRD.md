@@ -1158,12 +1158,13 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-117 — Right-click menus in more places
 
-**P2 (planned for v1.1; owner's request 2026-11-09, shown with Lightroom's folder menu: "some features can be right-clicked but are laid out, so it costs scrolling").** A right click on what the user works on opens its actions where the pointer is, so a panel need not show every action as a button and the user scrolls less.
+**P2 (from v0.14.4, one place at a time; first planned for v1.1; owner's request 2026-11-09, shown with Lightroom's folder menu: "some features can be right-clicked but are laid out, so it costs scrolling").** A right click on what the user works on opens its actions where the pointer is, so a panel need not show every action as a button and the user scrolls less.
 
 - **Where:** a folder in the folder list (open, rename, remove, show in Finder or Explorer, export this folder), a photo in the gallery and the filmstrip (into or out of the basket, rotate, copy and paste its look, reset its colour, show in Finder or Explorer), a slot of a collage sheet (replace, take out), the rows of the export presets and of the looks (already: the looks strip, FR-079). The list of each is chosen with the owner before the code.
 - **What a menu holds:** only actions the panel or a shortcut also offers, so nothing is hidden in a menu alone; groups of related actions split by a hairline, as Lightroom's; an action that opens a dialog ends with "…"; a submenu (an arrow) only where a choice has many values (a colour label); the remove last, red.
 - **Style ([STYLE_RULE.md §4](STYLE_RULE.md#4-uiux)):** every menu is `MenuContent`, its rows `ListRow`s 32 px high with their Lucide icon, the red row `RemoveButton wide`, both themes and languages, measured; the web view's own menu stays off (`lib/no-web.ts`). Keys: the context-menu key and Shift+F10 open it on the focused item.
 - **Then:** with the menus in, the panels may drop buttons used rarely, one at a time, each by the owner's word.
+- **Built (2026-11-18, moved up from v1.1 by the owner):** one block, `RowMenu` (a row's ⋯ and the same menu on a right click where the pointer is, or Shift+F10 and the menu key on the row in focus) and `PointMenu` (a strip's tile), `MenuSeparator` for the hairlines; the looks' list and strip use them, the trips' menu next (FR-012); the other places follow one at a time.
 
 ### FR-118 — Every preset setting applied
 

@@ -223,6 +223,8 @@ const walkCode = (dir, out = []) => {
 // (components/forms/field.tsx) and fields; the web view's menu is refused in lib/no-web.ts only.
 const SELECT = /\bselect-(text|all)\b|user-select\s*:/
 const CONTEXT = /addEventListener\(\s*['"]contextmenu/
+const MENU_OK = new Set(['components/forms/row-menu.tsx', 'components/layout/filmstrip.tsx'])
+const ANCHOR_OK = new Set(['components/forms/row-menu.tsx', 'components/ui/popover.tsx'])
 // One motion system (FR-100, docs/TRANS_ANIMATION.md): every pace and curve is a token of
 // index.css, taken through its utilities (`motion-control`, `motion-move`, `motion-fade`,
 // `motion-fold`, `motion-in`/`-out`) or as `duration-(--motion-*)`, `delay-(--delay-*)`. Refused:
@@ -254,6 +256,12 @@ for (const path of walkCode(join(root, 'src'))) {
       problems.push(`${rel}:${i + 1}: selectable text by hand: use Selectable (an app selects only fields, facts and error codes)`)
     if (CONTEXT.test(line) && rel !== 'lib/no-web.ts')
       problems.push(`${rel}:${i + 1}: a context menu listener outside lib/no-web.ts (an element's own menu is onContextMenu)`)
+    // One right-click menu (FR-117): a row's through RowMenu, a strip tile's through the
+    // filmstrip's onMenu and PointMenu; never a menu opened at a point by hand.
+    if (!isComment(line) && /\bonContextMenu=/.test(line) && !MENU_OK.has(rel))
+      problems.push(`${rel}:${i + 1}: a right click handled by hand: use RowMenu or PointMenu (components/forms/row-menu.tsx) (FR-117)`)
+    if (!isComment(line) && /<PopoverAnchor\b/.test(line) && !ANCHOR_OK.has(rel))
+      problems.push(`${rel}:${i + 1}: a menu anchored by hand: use PointMenu (components/forms/row-menu.tsx) (FR-117)`)
   })
 }
 
