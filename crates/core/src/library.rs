@@ -635,7 +635,7 @@ pub struct Library {
     roll: std::sync::OnceLock<crate::sorting::Roll>,
     /// From the pixels' pass (FR-141 S6), in memory only: each photo's named subject (an
     /// index into `clip::subject_keys`) and difference hash, and the proven duplicates.
-    subject: Vec<Option<u8>>,
+    subject: Vec<u16>,
     hash: Vec<Option<u64>>,
     analysed: Vec<bool>,
     duplicate: Vec<bool>,
@@ -1034,7 +1034,7 @@ impl Library {
         self.my_phones = std::sync::OnceLock::new();
         self.stacks = std::sync::OnceLock::new();
         self.roll = std::sync::OnceLock::new();
-        self.subject.push(None);
+        self.subject.push(0);
         self.hash.push(None);
         self.analysed.push(false);
         self.duplicate.push(false);

@@ -18,7 +18,8 @@ use crate::library::PhotoRecord;
 use crate::thumbs::{ThumbCache, content_key, write_atomic};
 
 const MAGIC: &[u8; 4] = b"FSRT";
-const VERSION: u8 = 1;
+// 2: three cuts averaged (owner, 2026-11-18); a centre-only entry is read again.
+const VERSION: u8 = 2;
 const ENTRY_BYTES: usize = 8 + 8 + DIM * 4;
 /// The long edge decoded when no T1 is cached: CLIP needs 224, the hash 9.
 const DECODE_EDGE: u32 = 512;

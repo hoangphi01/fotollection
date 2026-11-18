@@ -48,6 +48,24 @@ fn day32(day: i64) -> i32 {
     i32::try_from(day).unwrap_or(if day < 0 { i32::MIN } else { i32::MAX })
 }
 
+/// The subjects a photo is named by, one bit each in `clip::subject_keys`' order: its likeliest
+/// at `subject_min_p` or more, and people too at `people_also_p` (a street with walkers).
+fn named(best: &[(&'static str, f32)]) -> u16 {
+    let keys = crate::sorting::clip::subject_keys();
+    let bit = |k: &str| keys.iter().position(|x| *x == k).map_or(0, |b| 1u16 << b);
+    let mut mask = best
+        .first()
+        .filter(|(_, p)| *p >= crate::sorting::subject_min_p())
+        .map_or(0, |(k, _)| bit(k));
+    if best
+        .iter()
+        .any(|(k, p)| *k == "people" && *p >= crate::sorting::people_also_p())
+    {
+        mask |= bit("people");
+    }
+    mask
+}
+
 fn count(n: usize) -> u32 {
     u32::try_from(n).unwrap_or(u32::MAX)
 }
@@ -62,13 +80,7 @@ impl Library {
         if self.record(id).is_none_or(|r| r.path != path) {
             return false;
         }
-        let keys = crate::sorting::clip::subject_keys();
-        let best = crate::sorting::clip::subjects(&pixels.embedding);
-        self.subject[i] = best
-            .first()
-            .filter(|(_, p)| *p >= crate::sorting::subject_min_p())
-            .and_then(|(k, _)| keys.iter().position(|x| x == k))
-            .and_then(|k| u8::try_from(k).ok());
+        self.subject[i] = named(&crate::sorting::clip::subjects(&pixels.embedding));
         self.hash[i] = Some(pixels.hash);
         self.analysed[i] = true;
         self.sort_index = std::sync::OnceLock::new();
@@ -176,9 +188,11 @@ impl Library {
             SortPick::Source { class } => self.source(id).is_some_and(|s| s.class == *class),
             SortPick::Subject { key } => {
                 let keys = crate::sorting::clip::subject_keys();
-                self.subject[i].is_some_and(|s| keys.get(usize::from(s)) == Some(&key.as_str()))
+                keys.iter()
+                    .position(|k| k == key)
+                    .is_some_and(|b| self.subject[i] & (1 << b) != 0)
             }
-            SortPick::NoSubject => self.analysed[i] && self.subject[i].is_none(),
+            SortPick::NoSubject => self.analysed[i] && self.subject[i] == 0,
             SortPick::Year { year } => idx.year[i] == *year,
             SortPick::Month { year, month } => idx.year[i] == *year && idx.month[i] == *month,
             SortPick::Event { first } => idx.event[i] == *first,
@@ -213,15 +227,17 @@ impl Library {
             }
         }
         let keys = crate::sorting::clip::subject_keys();
-        let mut subjects: BTreeMap<u8, usize> = BTreeMap::new();
-        for s in (0..n).filter(|&i| inn[i]).filter_map(|i| self.subject[i]) {
-            *subjects.entry(s).or_default() += 1;
+        let mut subjects: BTreeMap<usize, usize> = BTreeMap::new();
+        for mask in (0..n).filter(|&i| inn[i]).map(|i| self.subject[i]) {
+            for b in (0..keys.len()).filter(|b| mask & (1 << b) != 0) {
+                *subjects.entry(b).or_default() += 1;
+            }
         }
         let mut subjects: Vec<Count<String>> = subjects
             .into_iter()
             .filter_map(|(k, c)| {
                 Some(Count {
-                    value: (*keys.get(usize::from(k))?).to_string(),
+                    value: (*keys.get(k)?).to_string(),
                     count: count(c),
                 })
             })
@@ -241,7 +257,7 @@ impl Library {
             subjects,
             no_subject: count(
                 (0..n)
-                    .filter(|&i| inn[i] && self.analysed[i] && self.subject[i].is_none())
+                    .filter(|&i| inn[i] && self.analysed[i] && self.subject[i] == 0)
                     .count(),
             ),
             years: self.years(idx, &roll.events, &place_ids, &inn),
@@ -458,7 +474,7 @@ mod tests {
         filter.sort = vec![SortPick::Event { first }];
         assert_eq!(lib.filtered_ids(&filter).len(), 2);
         // A subject set by the pass, kept only for the photo still at that path.
-        let cat = crate::sorting::clip::labels().labels["cat"].clone();
+        let cat = crate::sorting::clip::labels().labels["cat"][0].clone();
         let pixels = Pixels {
             hash: 1,
             embedding: cat,
@@ -501,6 +517,27 @@ mod tests {
             (4, 3, 1)
         );
         assert_eq!(lib.facets(&[g]).subjects.len(), 0);
+        // A street with walkers is scenery and people; people alone below the subject's bar
+        // still name people; nothing near the bar names nothing.
+        let keys = crate::sorting::clip::subject_keys();
+        let bits = |mask: u16| -> Vec<&str> {
+            (0..keys.len())
+                .filter(|b| mask & (1 << b) != 0)
+                .map(|b| keys[b])
+                .collect()
+        };
+        assert_eq!(
+            bits(named(&[("scenery", 0.6), ("people", 0.35)])),
+            vec!["people", "scenery"]
+        );
+        assert_eq!(
+            bits(named(&[("people", 0.4), ("scenery", 0.35)])),
+            vec!["people"]
+        );
+        assert_eq!(
+            named(&[("scenery", 0.45), ("food", 0.3), ("people", 0.1)]),
+            0
+        );
         // Old filters without a pick still read.
         let old: super::super::CullFilter =
             serde_json::from_str(r#"{"flag":"all","minRating":0}"#).unwrap_or_default();

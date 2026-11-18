@@ -90,6 +90,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Measure one step of a gesture before and after a change; count pixels on a zoomed screenshot, never by eye. Kept by: `measure_preview LOOK_DRAG=1`.
 - A benchmark runs on a quiet machine, the median of five runs with their spread, and a change is kept only when it beats that spread (OPTIMIZATION §1, rule 6). Kept by: `scripts/resources.sh` (load against the cores).
 - A cheap similarity (a perceptual hash, a name, a date) finds candidates; a decision that hides or deletes a photo needs a proof on the pixels, scored on the owner's labels. Kept by: `fr_015_the_proof_tells_copies_colour_versions_and_two_screens_apart`.
+- A labelled set holds the kinds of photo users bring (a trip, a street, a forest), not only the roll it was tuned on; a broad zero-shot label keeps its kinds apart, never one mean of them. Kept by: `fr_141_clip_reads_a_subject_by_its_own_text` (autumn trees name scenery).
 
 ### checks
 
@@ -132,6 +133,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-18
+
+### An autumn trip read "not sure" (FR-141)
+
+- **Area:** measure
+- **Seen:** the owner's 196 photos of an autumn trip: 149 "not sure"; green and yellow trees named scenery, red maples and streets with walkers not.
+- **Why:** each label was the mean of its prompts, and scenery's (landscape, city street, sea, mountains) is near none of them, nor any autumn tree; with people a label of its own, a street with walkers split between the two near 0.5, under the 0.6 bar. The 200 labelled photos, tuned on, held 19 scenery and no trip. The model saw rightly: its top guess was scenery or people for 168 of the 196.
+- **Fix:** 56 prompts kept apart (forest, trees, autumn foliage, temple, park…), a softmax over all summed per label; three cuts averaged; the bar at 0.5, people beside the subject at 0.35. 93.6 % right and 86 % named on the labels (95.3 and 75 before), 0 "not sure" on the trip.
+- **Rule:** a label set is tried on the kinds of photo users bring, not only the roll it was tuned on; a broad label keeps its kinds apart.
 
 ### RollSense's column turned salmon and teal in light (FR-141)
 

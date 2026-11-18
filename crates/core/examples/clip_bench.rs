@@ -8,7 +8,8 @@
 //!
 //! `cargo run --release -p fotollection-core --example clip_bench -- --model m.onnx
 //!  --labels m.labels.json --images <roll> [--threads N] [--check m.check.json <dir>]
-//!  [--subjects subjects.csv] [--sources labels.csv] [--dump probs.jsonl]`
+//!  [--subjects subjects.csv] [--sources labels.csv] [--dump probs.jsonl] [--one-cut]`
+//! Each photo is read as the app reads it, three cuts averaged; `--one-cut` the centre alone.
 //! `… --synthetic N [--batch B] [--threads T]` times the model alone on random inputs.
 #![allow(
     clippy::unwrap_used,
@@ -25,7 +26,7 @@ use std::time::Instant;
 use fotollection_core::codec::{PureRustCodec, decode_for_screen};
 use fotollection_core::image::{RgbImage, apply_orientation};
 use fotollection_core::metadata;
-use fotollection_core::sorting::clip::{pixels, zero_shot};
+use fotollection_core::sorting::clip::{pixels, pixels_at, zero_shot};
 use rayon::prelude::*;
 use serde_json::{Value, json};
 use tract_onnx::prelude::*;
@@ -52,24 +53,77 @@ fn labels(path: &Path) -> Labels {
             .collect();
         [a[0], a[1], a[2]]
     };
-    let map = v["labels"].as_object().unwrap();
+    // One row per prompt, its label repeated (a label of one mean vector reads as one prompt).
+    let floats = |e: &Value| -> Vec<f32> {
+        e.as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap() as f32)
+            .collect()
+    };
+    let (mut keys, mut vectors) = (Vec::new(), Vec::new());
+    for (k, e) in v["labels"].as_object().unwrap() {
+        let rows = e.as_array().unwrap();
+        if rows.first().is_some_and(Value::is_array) {
+            for r in rows {
+                keys.push(k.clone());
+                vectors.push(floats(r));
+            }
+        } else {
+            keys.push(k.clone());
+            vectors.push(floats(e));
+        }
+    }
     Labels {
-        keys: map.keys().cloned().collect(),
-        vectors: map
-            .values()
-            .map(|e| {
-                e.as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|x| x.as_f64().unwrap() as f32)
-                    .collect()
-            })
-            .collect(),
+        keys,
+        vectors,
         mean: three("mean"),
         std: three("std"),
         size: v["size"].as_u64().unwrap() as u32,
         scale: v["logit_scale"].as_f64().unwrap() as f32,
     }
+}
+
+/// A photo's embedding as the app reads it, three cuts averaged (`clip::Embedder::embed`), or
+/// the centre alone; and when its input was ready, for the timing.
+fn read(
+    plan: &Plan,
+    labels: &Labels,
+    img: &RgbImage,
+    one_cut: bool,
+) -> Option<(Instant, Vec<f32>)> {
+    let cuts: &[f32] = if one_cut || img.width == img.height {
+        &[0.5]
+    } else {
+        &[0.5, 0.0, 1.0]
+    };
+    let px: Vec<Vec<f32>> = cuts
+        .iter()
+        .map(|&at| pixels_at(img, labels.size, labels.mean, labels.std, at))
+        .collect::<Option<_>>()?;
+    let ready = Instant::now();
+    let mut e = vec![0f32; 512];
+    for p in px {
+        let one = embed(plan, p, labels.size);
+        let n = one.iter().map(|v| v * v).sum::<f32>().sqrt();
+        for (s, v) in e.iter_mut().zip(one) {
+            *s += v / n;
+        }
+    }
+    let n = e.iter().map(|v| v * v).sum::<f32>().sqrt();
+    for v in &mut e {
+        *v /= n;
+    }
+    Some((ready, e))
+}
+
+/// The prompts' probabilities summed per label, as the app does (`clip::subjects`).
+fn by_label(labels: &Labels, which: &[usize], p: &[f32]) -> BTreeMap<String, f32> {
+    let mut out = BTreeMap::new();
+    for (&i, p) in which.iter().zip(p) {
+        *out.entry(labels.keys[i].clone()).or_insert(0.0) += p;
+    }
+    out
 }
 
 fn embed(plan: &Plan, px: Vec<f32>, size: u32) -> Vec<f32> {
@@ -184,12 +238,10 @@ fn score(
     let pick = |e: &[f32], which: &[usize]| -> (String, f32) {
         let vecs: Vec<Vec<f32>> = which.iter().map(|&i| labels.vectors[i].clone()).collect();
         let p = zero_shot(e, &vecs, labels.scale);
-        let (k, best) = p
-            .iter()
-            .enumerate()
-            .max_by(|a, b| a.1.total_cmp(b.1))
-            .unwrap();
-        (labels.keys[which[k]].clone(), *best)
+        by_label(labels, which, &p)
+            .into_iter()
+            .max_by(|a, b| a.1.total_cmp(&b.1))
+            .unwrap()
     };
     let mut subject_score: BTreeMap<String, [usize; 3]> = BTreeMap::new(); // right, predicted, actual
     let (mut s_right, mut s_all) = (0, 0);
@@ -277,10 +329,9 @@ fn dump(path: &str, results: &[(String, Vec<f32>, [f64; 3])], labels: &Labels) {
                 .collect();
             let vecs: Vec<Vec<f32>> = which.iter().map(|&i| labels.vectors[i].clone()).collect();
             let p = zero_shot(e, &vecs, labels.scale);
-            let m: serde_json::Map<String, Value> = which
-                .iter()
-                .zip(p)
-                .map(|(&i, p)| (labels.keys[i].clone(), json!(p)))
+            let m: serde_json::Map<String, Value> = by_label(labels, &which, &p)
+                .into_iter()
+                .map(|(k, p)| (k, json!(p)))
                 .collect();
             line.insert(
                 if src { "sources" } else { "subjects" }.into(),
@@ -356,6 +407,7 @@ fn main() {
         check(&plan, &labels, Path::new(c), Path::new(dir))
     });
     let (subjects, sources) = truths(flag("--subjects"), flag("--sources"));
+    let one_cut = args.iter().any(|a| a == "--one-cut");
     let names: BTreeSet<&String> = subjects.keys().chain(sources.keys()).collect();
 
     let t = Instant::now();
@@ -366,9 +418,7 @@ fn main() {
                 let a = Instant::now();
                 let img = photo(&images.join(name))?;
                 let b = Instant::now();
-                let px = pixels(&img, labels.size, labels.mean, labels.std)?;
-                let c = Instant::now();
-                let e = embed(&plan, px, labels.size);
+                let (c, e) = read(&plan, &labels, &img, one_cut)?;
                 let ms = |x: Instant, y: Instant| (y - x).as_secs_f64() * 1000.0;
                 Some((
                     (*name).clone(),

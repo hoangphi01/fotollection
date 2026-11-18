@@ -3,11 +3,12 @@
 
 For each model: the image tower with its projection to ONNX (fp32), a dynamic int8 copy,
 both checked against PyTorch on random inputs; the text side computed here, once, for the
-labels' prompts and written as `<name>.labels.json` (the app runs the image tower only).
+labels' prompts and written as `<name>.labels.json` (the app runs the image tower only);
+`--labels-only` writes that file alone, the models untouched.
 `--check <dir>` also writes the embeddings onnxruntime gives for the images in it, with the
 model's own preprocessing, for the Rust side to be compared against.
 
-    python clip_export.py <out-dir> [--check <images-dir>] [--only name,name]
+    python clip_export.py <out-dir> [--check <images-dir>] [--only name,name] [--labels-only]
 """
 
 import hashlib
@@ -28,7 +29,10 @@ MODELS = {
     "tinyclip-8m": "wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M",
 }
 
-# Each label is the mean of its prompts' embeddings (CLIP's prompt ensembling).
+# Each prompt keeps its own embedding: the app takes a softmax over every prompt and sums each
+# label's share, so a broad label (scenery) is near whichever of its kinds a photo shows, not a
+# blurred mean of them (owner 2026-11-18: autumn trees and streets read "not sure"; measured on
+# the labels and an autumn folder, OPTIMIZATION §5). The kinds are generic, never one trip's.
 LABELS = {
     # Where an undecided file came from.
     "src-camera": ["a photo taken with a phone camera", "a casual snapshot", "a family photo"],
@@ -36,12 +40,19 @@ LABELS = {
     "src-meme": ["a meme", "an internet meme with a caption", "a funny picture with text"],
     "src-web": ["a picture downloaded from the internet", "a stock photo", "a poster or an advertisement"],
     # What it shows.
-    "people": ["a photo of a person", "a photo of people", "a selfie"],
+    "people": ["a photo of a person", "a photo of people", "a selfie",
+               "a photo of people walking on a street", "a portrait of a person",
+               "a photo of a group of friends", "a photo of a crowd of people"],
     "dog": ["a photo of a dog"],
     "cat": ["a photo of a cat"],
     "animal": ["a photo of an animal", "a photo of a bird", "a photo of a fish"],
-    "scenery": ["a photo of a landscape", "a photo of a city street", "a photo of the sea", "a photo of mountains"],
-    "food": ["a photo of food", "a photo of a meal", "a photo of a drink"],
+    "scenery": ["a photo of a landscape", "a photo of a city street", "a photo of the sea", "a photo of mountains",
+                "a photo of a forest", "a photo of trees", "a photo of autumn foliage", "a photo of autumn leaves",
+                "a photo of a park", "a photo of a temple", "a photo of a building", "a photo of a palace",
+                "a photo of the sky", "a photo of a beach", "a photo of a lake", "a photo of a garden",
+                "a photo of flowers", "a photo of a city", "a photo of an alley", "a photo of a river",
+                "a photo of a bridge", "a travel photo"],
+    "food": ["a photo of food", "a photo of a meal", "a photo of a drink", "a photo of a dessert", "a photo of coffee"],
     "document": ["a photo of a document", "a photo of a receipt", "a photo of a paper with text"],
     "screen": ["a screenshot", "text on a screen", "a user interface"],
     "meme": ["a meme", "an internet meme with a caption"],
@@ -114,9 +125,27 @@ def cosine(a, b):
     return (a * b).sum(-1)
 
 
-def export(name, repo, out, check_dir):
+def write_labels(name, repo, out, model, proc):
+    """The text side, once: each prompt's unit embedding, under its label."""
+    labels = {}
+    with torch.no_grad():
+        for key, prompts in LABELS.items():
+            t = proc(text=prompts, return_tensors="pt", padding=True)
+            e = model.get_text_features(**t)
+            e = e / e.norm(dim=-1, keepdim=True)
+            labels[key] = e.tolist()
+    meta = {"name": name, "repo": repo, "mean": proc.image_processor.image_mean,
+            "std": proc.image_processor.image_std, "size": 224,
+            "logit_scale": float(model.logit_scale.exp()), "labels": labels}
+    json.dump(meta, open(os.path.join(out, f"{name}.labels.json"), "w"))
+
+
+def export(name, repo, out, check_dir, labels_only=False):
     model = CLIPModel.from_pretrained(repo).eval()
     proc = CLIPProcessor.from_pretrained(repo)
+    if labels_only:
+        write_labels(name, repo, out, model, proc)
+        return {"repo": repo, "labels": f"{name}.labels.json"}
     fp32 = os.path.join(out, f"{name}.onnx")
     x = torch.randn(1, 3, 224, 224)
     torch.onnx.export(Image_(model), x, fp32, input_names=["pixels"], output_names=["embedding"],
@@ -136,19 +165,7 @@ def export(name, repo, out, check_dir):
             "bytes": os.path.getsize(path), "sha256": sha256(path),
             "min_cosine_vs_torch": float(cosine(want, got).min()),
         }
-    # The text side, once.
-    labels = {}
-    with torch.no_grad():
-        for key, prompts in LABELS.items():
-            t = proc(text=prompts, return_tensors="pt", padding=True)
-            e = model.get_text_features(**t)
-            e = e / e.norm(dim=-1, keepdim=True)
-            m = e.mean(0)
-            labels[key] = (m / m.norm()).tolist()
-    meta = {"name": name, "repo": repo, "mean": proc.image_processor.image_mean,
-            "std": proc.image_processor.image_std, "size": 224,
-            "logit_scale": float(model.logit_scale.exp()), "labels": labels}
-    json.dump(meta, open(os.path.join(out, f"{name}.labels.json"), "w"))
+    write_labels(name, repo, out, model, proc)
     if check_dir:
         files = sorted(os.listdir(check_dir))[:20]
         sess = ort.InferenceSession(fp32)
@@ -166,7 +183,8 @@ def main():
     check_dir = sys.argv[sys.argv.index("--check") + 1] if "--check" in sys.argv else None
     os.makedirs(out, exist_ok=True)
     only = sys.argv[sys.argv.index("--only") + 1].split(",") if "--only" in sys.argv else list(MODELS)
-    reports = {name: export(name, MODELS[name], out, check_dir) for name in only}
+    labels_only = "--labels-only" in sys.argv
+    reports = {name: export(name, MODELS[name], out, check_dir, labels_only) for name in only}
     print(json.dumps(reports, indent=1))
 
 

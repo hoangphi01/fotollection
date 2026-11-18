@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! CLIP's input and output in Rust (FR-141 S6): a photo turned into the image tower's input
-//! as CLIP's own processor makes it (the short side to `size` by bicubic, the centre cut
-//! square, each channel scaled by its mean and spread), and the zero-shot reading of an
-//! embedding against the labels' text embeddings, computed once at build time. The model
+//! as CLIP's own processor makes it (the short side to `size` by bicubic, a square cut, each
+//! channel scaled by its mean and spread), three cuts along the long side averaged into one
+//! embedding, and the zero-shot reading of it against every prompt's text embedding, computed
+//! once at build time, each label's share summed. The model
 //! itself runs in tract (ADR-0018): TinyCLIP-39M (MIT), chosen by measurement (ADR-0056), its
 //! weights stored as int8 that tract folds back to f32 at load. The shell compiles the model
 //! in and hands its bytes over; the labels' text side, computed once, is compiled in here.
@@ -46,7 +47,8 @@ pub struct Labels {
     pub std: [f32; 3],
     pub size: u32,
     pub logit_scale: f32,
-    pub labels: std::collections::BTreeMap<String, Vec<f32>>,
+    /// Each label's prompts, one unit text embedding each.
+    pub labels: std::collections::BTreeMap<String, Vec<Vec<f32>>>,
 }
 
 /// The compiled-in labels of the bundled model.
@@ -83,19 +85,34 @@ impl Embedder {
         Ok(Self { plan })
     }
 
-    /// The photo's unit embedding, from its upright picture.
+    /// The photo's unit embedding, from its upright picture: the mean of three square cuts,
+    /// the centre and both ends of the long side, so people and trees at a photo's edges count
+    /// (owner, 2026-11-18; measured in OPTIMIZATION §5). A square photo is read once.
     pub fn embed(&self, image: &RgbImage) -> Result<Vec<f32>, ClipError> {
         let l = labels();
-        let s = l.size as usize;
-        let px = pixels(image, l.size, l.mean, l.std)
-            .ok_or_else(|| ClipError::Model("empty picture".into()))?;
+        let square = image.width == image.height;
+        let cuts: &[f32] = if square { &[0.5] } else { &[0.5, 0.0, 1.0] };
+        let mut sum = vec![0f32; DIM];
+        for &at in cuts {
+            let px = pixels_at(image, l.size, l.mean, l.std, at)
+                .ok_or_else(|| ClipError::Model("empty picture".into()))?;
+            for (s, v) in sum.iter_mut().zip(self.one(px)?) {
+                *s += v;
+            }
+        }
+        unit(sum)
+    }
+
+    /// One cut's unit embedding.
+    fn one(&self, px: Vec<f32>) -> Result<Vec<f32>, ClipError> {
+        let s = labels().size as usize;
         let input = tract_ndarray::Array4::from_shape_vec((1, 3, s, s), px)
             .map_err(|e| ClipError::Model(e.to_string()))?;
         let out = self
             .plan
             .run(tvec!(Tensor::from(input).into()))
             .map_err(|e| ClipError::Model(e.to_string()))?;
-        let mut e: Vec<f32> = out
+        let e: Vec<f32> = out
             .first()
             .ok_or_else(|| ClipError::Model("no output".into()))?
             .to_plain_array_view::<f32>()
@@ -103,15 +120,20 @@ impl Embedder {
             .iter()
             .copied()
             .collect();
-        let norm = e.iter().map(|v| v * v).sum::<f32>().sqrt();
-        if e.len() != DIM || !norm.is_finite() || norm == 0.0 {
-            return Err(ClipError::Model("a bad embedding".into()));
-        }
-        for v in &mut e {
-            *v /= norm;
-        }
-        Ok(e)
+        unit(e)
     }
+}
+
+/// `e` scaled to length one, or an error for a vector of the wrong length or none.
+fn unit(mut e: Vec<f32>) -> Result<Vec<f32>, ClipError> {
+    let norm = e.iter().map(|v| v * v).sum::<f32>().sqrt();
+    if e.len() != DIM || !norm.is_finite() || norm == 0.0 {
+        return Err(ClipError::Model("a bad embedding".into()));
+    }
+    for v in &mut e {
+        *v /= norm;
+    }
+    Ok(e)
 }
 
 /// The subject labels' keys in order, a subject's index into them being what the library keeps.
@@ -127,27 +149,47 @@ pub fn subject_keys() -> &'static [&'static str] {
     })
 }
 
-/// The subjects an embedding shows, most likely first, as probabilities over the subject
-/// labels (the `src-` labels, about where a file came from, apart).
+/// The subjects an embedding shows, most likely first: a softmax over every prompt of the
+/// subject labels (the `src-` labels, about where a file came from, apart), each label's
+/// prompts' shares summed, so a photo of autumn trees is near "trees", not a blur of scenery.
 pub fn subjects(embedding: &[f32]) -> Vec<(&'static str, f32)> {
     let l = labels();
-    let keys: Vec<&'static str> = l
-        .labels
-        .keys()
-        .filter(|k| !k.starts_with("src-"))
-        .map(String::as_str)
-        .collect();
-    let vecs: Vec<Vec<f32>> = keys.iter().map(|k| l.labels[*k].clone()).collect();
-    let mut out: Vec<(&'static str, f32)> = keys
+    let mut owner = Vec::new();
+    let mut vecs = Vec::new();
+    for (k, prompts) in l.labels.iter().filter(|(k, _)| !k.starts_with("src-")) {
+        for v in prompts {
+            owner.push(k.as_str());
+            vecs.push(v.clone());
+        }
+    }
+    let mut out: Vec<(&'static str, f32)> = Vec::new();
+    for (k, p) in owner
         .into_iter()
         .zip(zero_shot(embedding, &vecs, l.logit_scale))
-        .collect();
+    {
+        match out.last_mut() {
+            Some(last) if last.0 == k => last.1 += p,
+            _ => out.push((k, p)),
+        }
+    }
     out.sort_by(|a, b| b.1.total_cmp(&a.1));
     out
 }
 
-/// The model's input: `3 × size × size` floats, channel-major, as CLIP's processor makes it.
+/// The model's input: `3 × size × size` floats, channel-major, as CLIP's processor makes it
+/// (its centre cut).
 pub fn pixels(image: &RgbImage, size: u32, mean: [f32; 3], std: [f32; 3]) -> Option<Vec<f32>> {
+    pixels_at(image, size, mean, std, 0.5)
+}
+
+/// The same input cut `at` along the long side: 0 its start, 0.5 its centre, 1 its end.
+pub fn pixels_at(
+    image: &RgbImage,
+    size: u32,
+    mean: [f32; 3],
+    std: [f32; 3],
+    at: f32,
+) -> Option<Vec<f32>> {
     let (w, h) = (image.width, image.height);
     if w == 0 || h == 0 || size == 0 {
         return None;
@@ -175,7 +217,14 @@ pub fn pixels(image: &RgbImage, size: u32, mean: [f32; 3], std: [f32; 3]) -> Opt
         )
         .ok()?;
     let data = dst.into_vec();
-    let (x0, y0) = ((rw - size) / 2, (rh - size) / 2);
+    // Whole pixels: the slack times `at`, floored as CLIP's centre cut (`at` is 0, 0.5 or 1).
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss
+    )]
+    let cut = |slack: u32| ((slack as f32) * at.clamp(0.0, 1.0)).floor() as u32;
+    let (x0, y0) = (cut(rw - size), cut(rh - size));
     let n = (size * size) as usize;
     let mut out = vec![0f32; 3 * n];
     for y in 0..size {
@@ -239,6 +288,14 @@ mod tests {
         assert!((at(1, 19, 0) - 2.0).abs() < 0.05, "{}", at(1, 19, 0));
         // The red square sits in the centre: red channel high, green low.
         assert!(at(0, 10, 10) > 1.5 && at(1, 10, 10) < -1.5);
+        // The end cuts: the left end black, the right end white, the red square at their
+        // inner edges only.
+        let a = pixels_at(&img, 20, mean, std, 0.0).unwrap_or_default();
+        let b = pixels_at(&img, 20, mean, std, 1.0).unwrap_or_default();
+        let most = |px: &[f32], v: f32| {
+            px.iter().filter(|x| (*x - v).abs() < 0.05).count() * 10 > px.len() * 9
+        };
+        assert!(most(&a, -2.0) && most(&b, 2.0));
         let p = zero_shot(&[1.0, 0.0], &[vec![1.0, 0.0], vec![0.0, 1.0]], 100.0);
         assert!(p[0] > 0.99 && (p.iter().sum::<f32>() - 1.0).abs() < 1e-5);
     }
@@ -255,7 +312,9 @@ mod tests {
     fn fr_141_the_bundled_clip_model_loads_and_matches_its_checksum() {
         let l = labels();
         assert_eq!(l.size, 224);
-        assert!(l.labels.contains_key("cat") && l.labels.values().all(|v| v.len() == DIM));
+        assert!(
+            l.labels.contains_key("cat") && l.labels.values().flatten().all(|v| v.len() == DIM)
+        );
         let bytes = model();
         assert!(matches!(
             Embedder::load(&bytes[..bytes.len() / 2], MODEL_BLAKE3),
@@ -279,7 +338,10 @@ mod tests {
     #[test]
     fn fr_141_clip_reads_a_subject_by_its_own_text() {
         // The text embedding of "cat" read back as an image embedding names the cat.
-        let cat = labels().labels["cat"].clone();
+        let cat = labels().labels["cat"][0].clone();
         assert_eq!(subjects(&cat)[0].0, "cat");
+        // Autumn trees, one prompt among scenery's many, still name scenery.
+        let trees = labels().labels["scenery"][6].clone();
+        assert_eq!(subjects(&trees)[0].0, "scenery");
     }
 }
