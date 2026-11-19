@@ -11,7 +11,7 @@ Miễn phí · offline · mã nguồn mở · macOS, Windows và Linux
 
 **[⬇ Tải cho macOS, Windows hoặc Linux](https://fotollection.org/vi/download/)**
 
-[Trang giới thiệu](https://fotollection.org/vi/) · [Hướng dẫn](https://fotollection.org/vi/manual/) · [Releases](https://github.com/hoangphi01/fotollection/releases/latest) · [English](README.md) · **Tiếng Việt**
+[Trang giới thiệu](https://fotollection.org/vi/) · [Hướng dẫn](https://fotollection.org/vi/manual/) · [Releases](https://github.com/hoangphi01/fotollection/releases/latest) · [English](README.md) · **Tiếng Việt** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 </div>
 
