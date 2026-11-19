@@ -217,6 +217,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-IPC-0043` | v0.14.4 | `trip.bad_day` | `crates/core/src/library/trip_edit.rs` (`split_trip`) | A trip is split after one of its days but its last | The split point was outside the trip or on its last day; the interface offers only the days between. | Choose a day between two of the trip's days. |
 | `ERR-IPC-0044` | v0.14.4 | `trip.nothing_before` | `crates/core/src/library/trip_edit.rs` (`merge_trip`) | The first trip has none before it to merge with | The first trip was merged with the one before it; the interface hides that action there. | Merge the next trip into this one instead. |
 | `ERR-IPC-0045` | v0.14.4 | `settings.unknown_zone` | `src-tauri/src/places.rs` (`apply_home_zone`, from `set_ui_settings`) | This time zone is not known | The home zone sent is not an IANA zone name the app knows (FR-145); the settings are unchanged. A settings file with such a name loses only the zone. | Choose the zone again from *From this computer* or *Choose a place…*. |
+| `ERR-IPC-0046` | v0.14.4 | `calendar.bad_month` | `src-tauri/src/calendar.rs` (`month_grid`) | No such month or first day of the week | The calendar of RollSense's Time card asked for a month outside 1–12, a year outside 1900–2100 or a first weekday outside 0–6 (FR-141 C1); the interface only steps between real months. | Report it: the UI should never send it. |
 
 ### UI: The interface itself
 

@@ -4,6 +4,7 @@
 
 mod addassist;
 mod cache;
+mod calendar;
 mod camera;
 mod collage;
 mod commands;
@@ -198,6 +199,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             trips::merge_trip,
             trips::trip_days,
             trips::country_map,
+            calendar::month_grid,
             sorting::cancel_trash,
             camera::camera_connect,
             camera::camera_disconnect,

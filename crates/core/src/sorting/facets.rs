@@ -33,6 +33,10 @@ pub enum SortPick {
     Event {
         first: u32,
     },
+    /// One day (days since 1970, the place's local time; FR-145), ticked on the calendar.
+    Day {
+        day: i32,
+    },
     /// The trip that starts on this day (days since 1970, camera-local).
     Trip {
         #[serde(rename = "firstDay")]
@@ -65,7 +69,7 @@ impl SortPick {
         match self {
             Self::Source { .. } => 0,
             Self::Subject { .. } | Self::NoSubject => 1,
-            Self::Year { .. } | Self::Month { .. } | Self::Event { .. } => 2,
+            Self::Year { .. } | Self::Month { .. } | Self::Event { .. } | Self::Day { .. } => 2,
             Self::Trip { .. } => 3,
             Self::Visit { .. } => 4,
             Self::Place { .. } => 5,
@@ -90,6 +94,17 @@ pub struct EventFacet {
     pub last_day: i32,
     pub count: u32,
     pub place: Option<String>,
+    /// Minutes after local midnight of its first and last photo, in the place's time (FR-145).
+    pub start_min: u16,
+    pub end_min: u16,
+}
+
+/// A day with photos, for the calendar (C1): days since 1970, the place's local time.
+#[derive(Clone, Debug, PartialEq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct DayFacet {
+    pub day: i32,
+    pub count: u32,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Type)]
@@ -191,6 +206,8 @@ pub struct Facets {
     pub subjects: Vec<Count<String>>,
     pub no_subject: u32,
     pub years: Vec<YearFacet>,
+    /// The days with photos, oldest first, for the calendar's shading.
+    pub days: Vec<DayFacet>,
     pub trips: Vec<TripFacet>,
     pub visits: Vec<VisitFacet>,
     pub countries: Vec<CountryFacet>,

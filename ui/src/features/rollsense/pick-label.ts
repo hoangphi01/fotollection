@@ -30,6 +30,8 @@ export function usePickLabel(facets: Facets | null) {
         const e = facets?.years.flatMap((y) => y.months.flatMap((m) => m.events)).find((x) => x.first === p.first)
         return e ? day(e.firstDay) : t('rollsense.time')
       }
+      case 'day':
+        return day(p.day)
       case 'trip': {
         // The trip's own name when the user gave it one, as its row in the card says (S7c).
         const trip = facets?.trips.find((x) => x.firstDay === p.firstDay)

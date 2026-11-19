@@ -112,6 +112,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("trip.bad_day", "ERR-IPC-0043"),
     ("trip.nothing_before", "ERR-IPC-0044"),
     ("settings.unknown_zone", "ERR-IPC-0045"),
+    ("calendar.bad_month", "ERR-IPC-0046"),
     ("update.none", "ERR-NET-0001"),
     ("update.offline", "ERR-NET-0002"),
     ("update.unreadable", "ERR-NET-0003"),

@@ -891,6 +891,11 @@ export const commands = {
 	path: string,
 	pins: MapPin[],
 } | null, IpcError>(__TAURI_INVOKE("country_map", { folders, country })),
+	/**
+	 *  The weeks of `month` (1…12) in `year` (1900…2100), each starting on `first_weekday`
+	 *  (0 Monday … 6 Sunday): 4 to 6 rows of 7 days, the neighbour months' days marked.
+	 */
+	monthGrid: (year: number, month: number, firstWeekday: number) => typedError<[CalDay, CalDay, CalDay, CalDay, CalDay, CalDay, CalDay][], IpcError>(__TAURI_INVOKE("month_grid", { year, month, firstWeekday })),
 	/**  Stops a move to the Trash before its next file; the photos not moved stay marked. */
 	cancelTrash: () => __TAURI_INVOKE<void>("cancel_trash"),
 	/**  Finds a camera, runs its handshake and starts the session. */
@@ -1111,6 +1116,16 @@ export type CacheUsage = {
 	thumbnailsBytes: number | null,
 	previewsBytes: number | null,
 	analysesBytes: number | null,
+};
+
+/**  One cell of a month's grid. */
+export type CalDay = {
+	/**  Days since 1970. */
+	day: number,
+	/**  The day of its month, 1…31. */
+	date: number,
+	/**  False for the days of the months before and after that fill the first and last weeks. */
+	inMonth: boolean,
 };
 
 /**  A camera body and its clock, as listed in the settings (FR-030). */
@@ -1452,6 +1467,12 @@ export type DateFormat =
 /**  `'26 10 23`, as on 1990s film cameras */
 "retro";
 
+/**  A day with photos, for the calendar (C1): days since 1970, the place's local time. */
+export type DayFacet = {
+	day: number,
+	count: number,
+};
+
 /**
  *  The decoder that reads the file (ADR-0029, ADR-0030, ADR-0033), as the routing rules
  *  choose it: the first in line, before any fallback after an error.
@@ -1533,6 +1554,9 @@ export type EventFacet = {
 	lastDay: number,
 	count: number,
 	place: string | null,
+	/**  Minutes after local midnight of its first and last photo, in the place's time (FR-145). */
+	startMin: number,
+	endMin: number,
 };
 
 /**
@@ -1638,6 +1662,8 @@ export type Facets = {
 	subjects: Count<string>[],
 	noSubject: number,
 	years: YearFacet[],
+	/**  The days with photos, oldest first, for the calendar's shading. */
+	days: DayFacet[],
 	trips: TripFacet[],
 	visits: VisitFacet[],
 	countries: CountryFacet[],
@@ -2715,6 +2741,8 @@ export type SortPick = { kind: "source"; class: SourceClass } | { kind: "subject
 { kind: "noSubject" } | { kind: "year"; year: number } | { kind: "month"; year: number; month: number } | 
 /**  The event that starts with this photo. */
 { kind: "event"; first: number } | 
+/**  One day (days since 1970, the place's local time; FR-145), ticked on the calendar. */
+{ kind: "day"; day: number } | 
 /**  The trip that starts on this day (days since 1970, camera-local). */
 { kind: "trip"; firstDay: number } | 
 /**  The visits to one of the other homes in one year. */

@@ -32,6 +32,7 @@ function cardOf(p: SortPick): number {
     case 'year':
     case 'month':
     case 'event':
+    case 'day':
       return 2
     case 'trip':
       return 3

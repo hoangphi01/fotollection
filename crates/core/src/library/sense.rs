@@ -11,8 +11,8 @@ use chrono::Datelike;
 
 use super::{Library, PhotoId};
 use crate::sorting::facets::{
-    CleanupKind, CleanupRow, Count, CountryFacet, EventFacet, Facets, MonthFacet, PlaceFacet,
-    SortPick, TripFacet, VisitFacet, YearFacet,
+    CleanupKind, CleanupRow, Count, CountryFacet, DayFacet, EventFacet, Facets, MonthFacet,
+    PlaceFacet, SortPick, TripFacet, VisitFacet, YearFacet,
 };
 use crate::sorting::pass::Pixels;
 
@@ -22,6 +22,8 @@ pub(crate) struct SortIndex {
     pub(super) t: Vec<i64>,
     year: Vec<i32>,
     month: Vec<u8>,
+    /// The local day, days since 1970.
+    day: Vec<i32>,
     /// The id of its event's first photo, `u32::MAX` outside every event.
     event: Vec<u32>,
     trip: Vec<Option<i32>>,
@@ -145,6 +147,7 @@ impl Library {
             let mut idx = SortIndex {
                 year,
                 month,
+                day: t.iter().map(|&t| day32(t.div_euclid(86_400))).collect(),
                 event: vec![u32::MAX; n],
                 trip: vec![None; n],
                 visit: vec![None; n],
@@ -211,6 +214,7 @@ impl Library {
             SortPick::Year { year } => idx.year[i] == *year,
             SortPick::Month { year, month } => idx.year[i] == *year && idx.month[i] == *month,
             SortPick::Event { first } => idx.event[i] == *first,
+            SortPick::Day { day } => idx.day[i] == *day,
             SortPick::Trip { first_day } => idx.trip[i] == Some(*first_day),
             SortPick::Visit { home, year } => idx.visit[i] == Some((*home, *year)),
             SortPick::Place { id } => idx.place[i] == Some(*id),
@@ -276,6 +280,7 @@ impl Library {
                     .count(),
             ),
             years: self.years(idx, &roll.events, &place_ids, &inn),
+            days: days(idx, &inn),
             trips: self.trip_facets(&roll.trips, &inn, &place_ids),
             visits: visits(
                 &roll
@@ -422,6 +427,8 @@ impl Library {
                     last_day: day32(idx.t[last].div_euclid(86_400)),
                     count: count(e.len()),
                     place: place_name(place),
+                    start_min: minute_of_day(idx.t[first]),
+                    end_min: minute_of_day(idx.t[last]),
                 });
         }
         let mut years: BTreeMap<i32, YearFacet> = BTreeMap::new();
@@ -440,6 +447,25 @@ impl Library {
         }
         years.into_values().rev().collect()
     }
+}
+
+/// Minutes after midnight of local seconds.
+fn minute_of_day(t: i64) -> u16 {
+    u16::try_from(t.rem_euclid(86_400) / 60).unwrap_or(0)
+}
+
+/// The days with photos in `inn`, oldest first, with their counts.
+fn days(idx: &SortIndex, inn: &[bool]) -> Vec<DayFacet> {
+    let mut by: BTreeMap<i32, usize> = BTreeMap::new();
+    for (&d, _) in idx.day.iter().zip(inn).filter(|(_, inn)| **inn) {
+        *by.entry(d).or_default() += 1;
+    }
+    by.into_iter()
+        .map(|(day, c)| DayFacet {
+            day,
+            count: count(c),
+        })
+        .collect()
 }
 
 /// The visits to each other home, per year, with the home's most frequent place.
@@ -546,6 +572,103 @@ mod tests {
         assert_eq!(lib.facets(&[]).analysed, 1);
         assert!(lib.restore_sense(before));
         assert_eq!(lib.facets(&[]).analysed, 0);
+    }
+
+    fn roll(shots: &[PhotoMeta]) -> Library {
+        let mut lib = Library::new();
+        lib.set_home_zone(Some(chrono_tz::Tz::UTC));
+        let f = lib.add_folder(Path::new("/roll"));
+        for (k, meta) in shots.iter().enumerate() {
+            let file = ImportedFile {
+                path: PathBuf::from(format!("/roll/{k}.jpg")),
+                size: 1,
+                mtime: 0,
+            };
+            lib.push(f, &file, meta);
+        }
+        lib
+    }
+
+    fn july(day: u32) -> i32 {
+        crate::calendar::days_from_ymd(2022, 7, day).unwrap_or(0)
+    }
+
+    /// C1: the calendar's days count the photos of each local day, and a ticked day sits in
+    /// the Time card with years, months and events, so its ticks add up.
+    #[test]
+    fn fr_141_a_ticked_day_keeps_its_photos_and_adds_up_with_events() {
+        let lib = roll(&[shot(3, 9), shot(3, 10), shot(20, 9)]);
+        let facets = lib.facets(&[]);
+        assert_eq!(
+            facets.days,
+            vec![
+                DayFacet {
+                    day: july(3),
+                    count: 2
+                },
+                DayFacet {
+                    day: july(20),
+                    count: 1
+                },
+            ]
+        );
+        let mut filter = super::super::CullFilter {
+            sort: vec![SortPick::Day { day: july(20) }],
+            ..super::super::CullFilter::default()
+        };
+        assert_eq!(lib.filtered_ids(&filter), vec![PhotoId(2)]);
+        assert_eq!(
+            SortPick::Day { day: 0 }.card(),
+            SortPick::Event { first: 0 }.card()
+        );
+        // The 3 July event and the 20th: one card, so both.
+        let first = facets.years[0].months[0]
+            .events
+            .iter()
+            .find(|e| e.first_day == july(3))
+            .map_or(u32::MAX, |e| e.first);
+        filter.sort.push(SortPick::Event { first });
+        assert_eq!(lib.filtered_ids(&filter).len(), 3);
+        // Another card narrows: no photo of the 20th from another source class.
+        filter.sort = vec![
+            SortPick::Day { day: july(20) },
+            SortPick::Source {
+                class: SourceClass::Screenshot,
+            },
+        ];
+        assert_eq!(lib.filtered_ids(&filter), Vec::<PhotoId>::new());
+        // A day without photos keeps none, and the scope's days are the scope's.
+        filter.sort = vec![SortPick::Day { day: july(4) }];
+        assert_eq!(lib.filtered_ids(&filter), Vec::<PhotoId>::new());
+    }
+
+    /// C1, FR-145: an event's times are the place's: a camera on Budapest time in Seoul shot at
+    /// 10:00 and 11:30, which were 17:00 and 18:30 in Seoul.
+    #[test]
+    fn fr_141_event_times_are_the_places_local_time() {
+        let seoul = |hour, min| PhotoMeta {
+            capture: chrono::NaiveDate::from_ymd_opt(2019, 7, 10)
+                .and_then(|d| d.and_hms_opt(hour, min, 0)),
+            gps: Some((37.5665, 126.978)),
+            make: Some("Panasonic".into()),
+            orientation: 1,
+            ..PhotoMeta::default()
+        };
+        let mut lib = roll(&[seoul(10, 0), seoul(11, 30)]);
+        lib.set_home_zone(Some(chrono_tz::Tz::Europe__Budapest));
+        let facets = lib.facets(&[]);
+        let events: Vec<(u16, u16, u32)> = facets
+            .years
+            .iter()
+            .flat_map(|y| &y.months)
+            .flat_map(|m| &m.events)
+            .map(|e| (e.start_min, e.end_min, e.count))
+            .collect();
+        assert_eq!(events, vec![(17 * 60, 18 * 60 + 30, 2)]);
+        assert_eq!(
+            facets.days.iter().map(|d| d.count).collect::<Vec<_>>(),
+            vec![2]
+        );
     }
 
     #[test]
