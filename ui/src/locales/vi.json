@@ -1621,7 +1621,7 @@
     "places": "Địa điểm",
     "pin": "{{places}}: tick những ảnh này",
     "more": "Ảnh trùng, Live Photo và ảnh liên tiếp",
-    "noSubject": "Không nhận diện được",
+    "noSubject": "Khác",
     "duplicates": "Ảnh trùng",
     "stacks": "Live Photo và ảnh liên tiếp",
     "visit_other": "{{year}} · {{place}} · {{count}} lần",
@@ -1665,6 +1665,8 @@
       "unknown": "Lưu từ ứng dụng và tin nhắn"
     },
     "subject": {
+      "vehicle": "Phương tiện",
+      "building": "Kiến trúc",
       "people": "Người",
       "dog": "Chó",
       "cat": "Mèo",

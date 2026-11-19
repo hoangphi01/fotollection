@@ -51,14 +51,12 @@ pub(super) fn day32(day: i64) -> i32 {
 }
 
 /// The subjects a photo is named by, one bit each in `clip::subject_keys`' order: its likeliest
-/// at `subject_min_p` or more, and people too at `people_also_p` (a street with walkers).
+/// at `subject_min_p` or more (`clip::top_subject`), and people too at `people_also_p`.
 fn named(best: &[(&'static str, f32)]) -> u16 {
     let keys = crate::sorting::clip::subject_keys();
     let bit = |k: &str| keys.iter().position(|x| *x == k).map_or(0, |b| 1u16 << b);
-    let mut mask = best
-        .first()
-        .filter(|(_, p)| *p >= crate::sorting::subject_min_p())
-        .map_or(0, |(k, _)| bit(k));
+    let mut mask =
+        crate::sorting::clip::top_subject(best, crate::sorting::subject_min_p()).map_or(0, bit);
     if best
         .iter()
         .any(|(k, p)| *k == "people" && *p >= crate::sorting::people_also_p())
@@ -788,8 +786,9 @@ mod tests {
             bits(named(&[("people", 0.4), ("scenery", 0.35)])),
             vec!["people"]
         );
+        let under = crate::sorting::subject_min_p() - 0.01;
         assert_eq!(
-            named(&[("scenery", 0.45), ("food", 0.3), ("people", 0.1)]),
+            named(&[("scenery", under), ("food", 0.3), ("people", 0.1)]),
             0
         );
         // Old filters without a pick still read.

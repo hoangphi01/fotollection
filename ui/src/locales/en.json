@@ -1689,7 +1689,7 @@
     "places": "Where",
     "pin": "{{places}}: tick these photos",
     "more": "Duplicates, Live Photos and bursts",
-    "noSubject": "Not recognised",
+    "noSubject": "Other",
     "duplicates": "Duplicates",
     "stacks": "Live Photos and bursts",
     "visit_one": "{{year}} · {{place}} · {{count}} visit",
@@ -1734,6 +1734,8 @@
       "unknown": "Saved from apps and chats"
     },
     "subject": {
+      "vehicle": "Vehicles",
+      "building": "Buildings",
       "people": "People",
       "dog": "Dogs",
       "cat": "Cats",

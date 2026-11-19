@@ -1683,7 +1683,7 @@
     "places": "장소",
     "pin": "{{places}}: 이 사진 체크",
     "more": "중복, Live Photo와 연속 촬영",
-    "noSubject": "인식 안 됨",
+    "noSubject": "기타",
     "duplicates": "중복",
     "stacks": "Live Photo와 연속 촬영",
     "visit_other": "{{year}} · {{place}} · {{count}}회",
@@ -1727,6 +1727,8 @@
       "unknown": "앱과 채팅에서 저장"
     },
     "subject": {
+      "vehicle": "탈것",
+      "building": "건물",
       "people": "사람",
       "dog": "개",
       "cat": "고양이",

@@ -1,6 +1,6 @@
 # ADR-0056: TinyCLIP-39M bundled for sorting
 
-- **Status:** Accepted
+- **Status:** Accepted; its labels extended 2026-11-19 (vehicles and buildings, the threshold 0.45, measured on the owner's labels; the model unchanged, no cache bump)
 - **Date:** 2026-11-18
 - **Related:** FR-141, FR-015, NFR-008, NFR-022, ADR-0018, ADR-0054
 

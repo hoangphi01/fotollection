@@ -1689,7 +1689,7 @@
     "places": "Hol",
     "pin": "{{places}}: fotók kipipálása",
     "more": "Duplikátumok, Live Photók és sorozatok",
-    "noSubject": "Felismeretlen",
+    "noSubject": "Egyéb",
     "duplicates": "Duplikátumok",
     "stacks": "Live Photók és sorozatok",
     "visit_one": "{{year}} · {{place}} · {{count}} látogatás",
@@ -1734,6 +1734,8 @@
       "unknown": "Alkalmazásokból és csevegésekből mentve"
     },
     "subject": {
+      "vehicle": "Járművek",
+      "building": "Épületek",
       "people": "Emberek",
       "dog": "Kutyák",
       "cat": "Macskák",

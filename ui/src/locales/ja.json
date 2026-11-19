@@ -1683,7 +1683,7 @@
     "places": "場所",
     "pin": "{{places}}：これらの写真にチェック",
     "more": "重複、Live Photosと連写",
-    "noSubject": "未認識",
+    "noSubject": "その他",
     "duplicates": "重複",
     "stacks": "Live Photosと連写",
     "visit_other": "{{year}} · {{place}} · {{count}}回",
@@ -1727,6 +1727,8 @@
       "unknown": "アプリやチャットから保存"
     },
     "subject": {
+      "vehicle": "乗り物",
+      "building": "建物",
       "people": "人物",
       "dog": "犬",
       "cat": "猫",

@@ -176,6 +176,24 @@ pub fn subjects(embedding: &[f32]) -> Vec<(&'static str, f32)> {
     out
 }
 
+/// The subject a photo is named by: its likeliest at `min_p` or more; else, when buildings and
+/// scenery together reach it (an arcade, a door, a street split between the two), the larger
+/// of them (owner, 2026-11-19; on the owner's labels *Other* 57 → 40 of 759 photos, 90.2 % and
+/// 92.2 % right, OPTIMIZATION §5).
+pub fn top_subject(best: &[(&'static str, f32)], min_p: f32) -> Option<&'static str> {
+    let (k, p) = *best.first()?;
+    if p >= min_p {
+        return Some(k);
+    }
+    let of = |key: &str| best.iter().find(|x| x.0 == key).map_or(0.0, |x| x.1);
+    let (scenery, building) = (of("scenery"), of("building"));
+    (scenery + building >= min_p).then_some(if building > scenery {
+        "building"
+    } else {
+        "scenery"
+    })
+}
+
 /// The model's input: `3 × size × size` floats, channel-major, as CLIP's processor makes it
 /// (its centre cut).
 pub fn pixels(image: &RgbImage, size: u32, mean: [f32; 3], std: [f32; 3]) -> Option<Vec<f32>> {
@@ -343,5 +361,15 @@ mod tests {
         // Autumn trees, one prompt among scenery's many, still name scenery.
         let trees = labels().labels["scenery"][6].clone();
         assert_eq!(subjects(&trees)[0].0, "scenery");
+        // Buildings and scenery together name the larger; a split elsewhere names nothing.
+        let split = [("people", 0.3), ("building", 0.26), ("scenery", 0.24)];
+        assert_eq!(top_subject(&split, 0.45), Some("building"));
+        assert_eq!(top_subject(&[("people", 0.3), ("food", 0.3)], 0.45), None);
+        assert_eq!(top_subject(&[("cat", 0.5)], 0.45), Some("cat"));
+        // The subjects added on 2026-11-19: a tram and a church read as themselves.
+        let tram = labels().labels["vehicle"][0].clone();
+        assert_eq!(subjects(&tram)[0].0, "vehicle");
+        let church = labels().labels["building"][1].clone();
+        assert_eq!(subjects(&church)[0].0, "building");
     }
 }

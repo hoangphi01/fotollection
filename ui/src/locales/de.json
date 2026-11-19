@@ -1689,7 +1689,7 @@
     "places": "Wo",
     "pin": "{{places}}: diese Fotos markieren",
     "more": "Duplikate, Live Photos und Serien",
-    "noSubject": "Nicht erkannt",
+    "noSubject": "Sonstiges",
     "duplicates": "Duplikate",
     "stacks": "Live Photos und Serien",
     "visit_one": "{{year}} · {{place}} · {{count}} Besuch",
@@ -1734,6 +1734,8 @@
       "unknown": "Aus Apps und Chats gespeichert"
     },
     "subject": {
+      "vehicle": "Fahrzeuge",
+      "building": "Gebäude",
       "people": "Menschen",
       "dog": "Hunde",
       "cat": "Katzen",

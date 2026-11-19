@@ -56,6 +56,13 @@ LABELS = {
     "document": ["a photo of a document", "a photo of a receipt", "a photo of a paper with text"],
     "screen": ["a screenshot", "text on a screen", "a user interface"],
     "meme": ["a meme", "an internet meme with a caption"],
+    # Added 2026-11-19 (owner: trams and the metro read "not recognised"), chosen by measurement on
+    # the owner's 200 labelled trip photos; night, festival and close-up objects were tried and
+    # stayed under 85 % right (OPTIMIZATION §5).
+    "vehicle": ["a photo of a tram", "a photo of a train", "a photo of a funicular railway",
+                "a photo of a bus", "a photo of a car", "a photo of an airplane", "a photo of a boat"],
+    "building": ["a photo of architecture", "a photo of a church", "a photo of an old town square",
+                 "a photo of the facade of a building"],
 }
 
 

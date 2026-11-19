@@ -90,6 +90,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### measure
 
+- A zero-shot label set is measured on every kind of roll it meets, counting the unnamed and the catch-all's share, its misses looked at before a label is dropped. Kept by: OPTIMIZATION §5 (2026-11-19), `clip_bench`.
 - Measure or observe before guessing; read the checker's or dependency's source before a third guess. Kept by: no machine check yet.
 - Check that a benchmark measures what the app does, and time each stage of one item, before optimizing a number. Kept by: `measure_folder` mirrors the app.
 - Measure one step of a gesture before and after a change; count pixels on a zoomed screenshot, never by eye. Kept by: `measure_preview LOOK_DRAG=1`.
@@ -140,6 +141,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-19
+
+### "The model is not smart": the labels were too few, not the model (FR-141)
+
+- **Area:** measure, spec-request
+- **Seen:** RollSense put 66 of the owner's trip photos under *Not recognised*: trams, the metro, a funicular, Halloween lanterns (owner, 2026-11-19: "the model is not that smart yet").
+- **Why:** TinyCLIP could only choose among nine subjects written for a phone's roll; a photo near none of them stayed under the bar, and *scenery* took 594 of 759 photos as a catch-all. The subjects had been measured on the phone sample only (mostly screenshots), never on a trip roll.
+- **Rule:** a zero-shot label set is measured on each kind of roll it will meet (a phone's and a camera's trip), counting the share left unnamed and the catch-all's share, not only precision; a subject is added by the written rule (fewest *Other*, ≤ 2 points lost on the other set, ≥ 85 % right each) and a label's "misses" are looked at before it is dropped (the metro read as a vehicle, tagged as a building). The group of the unnamed is called *Other*, never "not recognised".
 
 ### A reset button hung below its field, and no scene opened the tab that showed it (FR-005, UI)
 

@@ -6,7 +6,7 @@ The models used by best-shot suggestions and by sorting ([FR-041](../../../../do
 |------|--------------|--------|---------|
 | `yunet.onnx` | Face detector with 5 landmarks, input 1×3×640×640 | OpenCV Zoo, `models/face_detection_yunet/face_detection_yunet_2023mar.onnx`, used as published | MIT, © 2020 Shiqi Yu (`LICENSE-YuNet.txt`) |
 | `tinyclip-39m.w8.onnx` | CLIP image tower: a 224 × 224 photo to a 512-float embedding, for sorting (FR-141, ADR-0056); its weights int8 behind `DequantizeLinear` | `wkcn/TinyCLIP-ViT-39M-16-Text-19M-YFCC15M` (commit `07a4b0bc`), exported by `scripts/models/clip-export.sh` | MIT, © Microsoft (`LICENSE-TinyCLIP.txt`) |
-| `tinyclip-39m.labels.json` | Each label's prompts' text embeddings, one per prompt, the model's mean, spread and scale | Computed by the same export | MIT, as above |
+| `tinyclip-39m.labels.json` | Each label's prompts' text embeddings, one per prompt, the model's mean, spread and scale; 11 subjects since 2026-11-19 (*vehicle* and *building* added, measured on the owner's labels, OPTIMIZATION §5) | Computed by the same export (`--labels-only`) | MIT, as above |
 | `facemesh.onnx` | 478 3D face landmarks from a 256×256 face crop, used to measure eye openness | MediaPipe Face Landmarker bundle (`face_landmarker.task`, float16), file `face_landmarks_detector.tflite` (FaceMesh V2), converted to ONNX | Apache-2.0, © Google (`LICENSE-MediaPipe.txt`; model card "MediaPipe FaceMesh", licensed under Apache License 2.0) |
 
 ## Checksums
@@ -16,7 +16,7 @@ The models used by best-shot suggestions and by sorting ([FR-041](../../../../do
 | `yunet.onnx` | `3d5938c4cd5a02dc416f1cd1f7fc1f662a22adc370477112c871954587e63431` | `8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4` |
 | `facemesh.onnx` | `e01c5f5c50e4dc2020947037d2a08cada1df73a9dc7f14f0c9d464c4ba2c23fa` | `1ff6e0d1e52d4e2c29bb7d138020374b1db2c24f47e69e72fb8f9a10728d3738` |
 | `tinyclip-39m.w8.onnx` | `f036302b86db489db3837c693dd46aea77ec946dd63e75808f5e77f2fe497dbc` | `95f0808c9f1dab521e3c3155abcf128bf2cb10ae9b7973736acde714a6349394` |
-| `tinyclip-39m.labels.json` | `00eb9515612d421fd84b3b23b2860c3dc7f97744321c0ef9fe9c5a4e5d42c68f` | `959b615ffb74fcd80bb0867f926d244c6d71a8b67c04a7af5c00341d057abcb3` |
+| `tinyclip-39m.labels.json` | `eb2a9bdd63c5ce1aa3848938dfdd02e298454edb9652e680aa9eb4e6601a42b4` | `5875c9cae984e4c8326b0791ce92c047b5d93d6519a69bd36b1ae27fc14c48fb` |
 
 Upstream downloads used on 2026-10-24:
 
