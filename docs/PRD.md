@@ -1457,6 +1457,10 @@ Stages, each one ending with the app as it was plus that stage (CODE_HEALTH §4)
 
 Measured first: the owner's labelling page gains *delete: soft*, *upscaled*, *meme*, *web*; a synthetic set (sharp photos scaled down by a known k, enlarged back, screenshotted) gives ground truth. A re-save is offered for deletion only below a stricter residual than FR-015's proof (the labels put the colour versions that kept their colours between 9 and 13 levels). Done when the suggestions are right at least 95 % of the time on the owner's labels (a wrong suggestion costs the user's time) and k is estimated within ±0.5 on the synthetic set.
 
+### FR-144 — Vertical straighten
+
+**P2 (v1.7 "Pro", 2027-Q4; owner, 2026-11-19: "add vertical levelling later", beside the straighten slider the interface calls *Cân ngang*).** A second slider beside [FR-006](#fr-006--crop-to-print-ratio)'s straighten corrects converging verticals (a building shot from below, the keystone effect), as Lightroom's Vertical transform does: the photo is warped by a perspective transform in the core, its crop kept as large as it can be without an empty corner, the same keys and reset as the straighten; *Cân dọc* in Vietnamese. Saved in the project beside `straighten`, undoable, lossless when 0. Method studied first (Lightroom's Upright, RawTherapee's perspective tool, papers; never their GPL code) and measured.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

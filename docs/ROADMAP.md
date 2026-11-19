@@ -151,6 +151,7 @@ Project history, XMP written back, per-photo overrides, cards in one's own order
 | FR-058 | Lightroom compatibility: read XMP sidecars on import, write `.xmp` as an opt-in, photos never touched |
 | FR-044 | Per-photo overrides |
 | FR-080 | The panel's cards in an order of one's own, the same in the gallery and the previews, with *Reset order* |
+| FR-144 | Vertical straighten (*Cân dọc*): converging verticals corrected by a perspective warp beside the straighten slider, as Lightroom's Vertical (owner, 2026-11-19) |
 
 ## 2028-Q1 — v1.8 "Retouch"
 
