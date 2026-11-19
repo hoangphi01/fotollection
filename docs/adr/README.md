@@ -61,6 +61,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0055](0055-deleting-to-the-trash-on-the-users-word.md) | Deleting to the Trash on the user's word: suggested deletions (FR-143) move files to the system's Trash after the user confirms; never on its own; amends ADR-0054 | Accepted | 2026-11-17 |
 | [0056](0056-tinyclip-39m-bundled-for-sorting.md) | TinyCLIP-39M (MIT) bundled for sorting, chosen by a written rule on the M3; int8 weights run at f32 speed; never downloaded; embeddings cached, not labels | Accepted | 2026-11-18 |
 | [0057](0057-rollsense-pick-carries-into-photos.md) | RollSense's pick carries into Photos, always named by a violet chip in the toolbar; export and colour follow it; session state only | Accepted | 2026-11-18 |
+| [0058](0058-time-model-utc-instant-zone-anchors.md) | Time model: a UTC instant per photo from anchors in the photo (GPS time, its offset, the corrected camera clock), shown in the place's zone; a home zone for clocks without one; never the computer's clock | Accepted | 2026-11-19 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

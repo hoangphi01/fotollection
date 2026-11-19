@@ -86,6 +86,7 @@ v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadat
 | FR-012 | Trip auto-grouping |
 | FR-015 | Duplicate detection |
 | FR-143 | Suggested deletions after sorting: too soft, enlarged from a small image (its real resolution measured), saved from the web, memes; each with its reasons, to the system's Trash on the user's word ([ADR-0055](adr/0055-deleting-to-the-trash-on-the-users-word.md)) |
+| FR-145 | One time base: a UTC instant per photo from anchors in the photo, shown in the place's local time, a home zone chosen on the welcome and in Settings; the calendar and trips on one local day ([ADR-0058](adr/0058-time-model-utc-instant-zone-anchors.md); owner, 2026-11-19) |
 | FR-117 | Right-click menus in more places (folders, photos, the filmstrip, collage slots, export presets), each holding only actions found elsewhere too, groups split by hairlines as Lightroom's; `MenuContent` and the style rules; the shared block and the trips' and looks' menus in v0.14.4, the rest one place at a time, each list chosen with the owner (owner, 2026-11-09; moved up 2026-11-18) |
 | FR-138 | Code health, part 1: no source file over 1,500 production lines when v1.0.0 ships, in stages (shared shell helpers, `commands.rs` by concern, logic to the core, `preview.rs` to a folder, the tooling scripts) ([CODE_HEALTH.md](CODE_HEALTH.md)) |
 
