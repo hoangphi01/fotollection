@@ -1029,7 +1029,7 @@ pub fn set_ui_settings(
     ui: UiSettings,
 ) -> Result<UiSettings, IpcError> {
     // Validated here, whatever the webview sent (SECURITY.md §2).
-    let mut ui = ui.sanitized();
+    let mut ui = crate::places::apply_home_zone(&state, ui)?;
     let mut current = state
         .ui
         .write()

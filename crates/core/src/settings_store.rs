@@ -47,7 +47,9 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v21 (FR-133, `AddAssist` 1.1): `saved_addresses`, the postcard address book, and
 /// `recent_recipients`, the Japanese and Korean recipients last used, each absent before (none);
 /// each entry read on its own, a bad one dropped alone.
-pub const SCHEMA_VERSION: u32 = 21;
+/// v22 (FR-145): `ui.homeZone`, the home zone's IANA name, absent before (the system's zone);
+/// a name not known is dropped on load.
+pub const SCHEMA_VERSION: u32 = 22;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -1101,6 +1103,34 @@ mod tests {
             panic!("a v20 file still loads");
         };
         assert!(old.saved_addresses.is_empty() && old.recent_recipients.is_empty());
+        Ok(())
+    }
+
+    /// FR-145: a v22 file keeps its home zone through a save; a name no zone has is dropped
+    /// alone, and a v21 file loads with none (the system's zone).
+    #[test]
+    fn fr_145_v22_keeps_the_home_zone() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        let v22 = include_str!("../tests/fixtures/settings/v22.json");
+        std::fs::write(&path, v22)?;
+        let Loaded::Ok(read) = load(&path) else {
+            panic!("v22 should load");
+        };
+        assert_eq!(read.ui.home_zone.as_deref(), Some("Asia/Seoul"));
+        save(&path, &read)?;
+        assert_eq!(load(&path), Loaded::Ok(read.clone()));
+        std::fs::write(&path, v22.replace("Asia/Seoul", "Mars/Olympus"))?;
+        let Loaded::Ok(bad) = load(&path) else {
+            panic!("an unknown zone loses only the zone");
+        };
+        assert_eq!(bad.ui.home_zone, None);
+        assert_eq!(bad.saved_addresses, read.saved_addresses);
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v21.json"))?;
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("a v21 file still loads");
+        };
+        assert_eq!(old.ui.home_zone, None);
         Ok(())
     }
 

@@ -402,9 +402,29 @@ impl AppState {
             last_export: Mutex::new(None),
             copied: Mutex::new(None),
         };
-        state.sync_print_credit();
-        state.resolve_card();
+        state.sync_from_settings();
         Ok(state)
+    }
+
+    /// What the settings set beyond themselves: the print credit, the card, the home zone.
+    fn sync_from_settings(&self) {
+        self.sync_print_credit();
+        self.resolve_card();
+        self.sync_home_zone();
+    }
+
+    /// The library reads clocks without a zone in the home zone the settings name (FR-145),
+    /// the system's while none is chosen. Called wherever the settings or the library change.
+    pub fn sync_home_zone(&self) {
+        let home = self
+            .ui
+            .read()
+            .ok()
+            .and_then(|u| u.home_zone.clone())
+            .and_then(|z| fotollection_core::time_base::zone(&z));
+        if let Ok(mut library) = self.library.write() {
+            library.set_home_zone(home);
+        }
     }
 
     /// The card the interface's language makes (FR-130, FR-132: a はがき in Japanese, a

@@ -547,7 +547,8 @@
       "recovered": "Some settings were unreadable and reset to defaults; the damaged file was kept beside them.",
       "restored": "The settings file was damaged; the last good copy was used.",
       "newer": "These settings are from a newer Fotollection; defaults are used and the file is kept. Update Fotollection to use them.",
-      "corrupt": "The settings file could not be read; defaults are used and the file was kept as settings.json.corrupt."
+      "corrupt": "The settings file could not be read; defaults are used and the file was kept as settings.json.corrupt.",
+      "unknown_zone": "This time zone is not known."
     },
     "project": {
       "not_a_project": "This is not a Fotollection project.",

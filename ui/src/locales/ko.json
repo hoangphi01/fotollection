@@ -547,7 +547,8 @@
       "recovered": "일부 설정을 읽을 수 없어 기본값으로 재설정했습니다. 손상된 파일은 같은 위치에 보관했습니다.",
       "restored": "설정 파일이 손상되어 마지막 정상 사본을 사용했습니다.",
       "newer": "이 설정은 최신 버전의 Fotollection에서 저장되었습니다. 기본값을 사용하며 파일은 유지됩니다. 이 설정을 사용하려면 Fotollection을 업데이트하세요.",
-      "corrupt": "설정 파일을 읽지 못했습니다. 기본값을 사용하며, 파일은 settings.json.corrupt로 보관했습니다."
+      "corrupt": "설정 파일을 읽지 못했습니다. 기본값을 사용하며, 파일은 settings.json.corrupt로 보관했습니다.",
+      "unknown_zone": "알 수 없는 시간대입니다."
     },
     "project": {
       "not_a_project": "Fotollection 프로젝트가 아닙니다.",

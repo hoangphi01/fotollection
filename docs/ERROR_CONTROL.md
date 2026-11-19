@@ -216,6 +216,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-IPC-0042` | v0.14.4 | `trip.unknown` | `crates/core/src/library/trip_edit.rs` | No trip starts on that day | A trip was renamed, split or merged after it changed, for example in another window or after photos left. | Open RollSense again. |
 | `ERR-IPC-0043` | v0.14.4 | `trip.bad_day` | `crates/core/src/library/trip_edit.rs` (`split_trip`) | A trip is split after one of its days but its last | The split point was outside the trip or on its last day; the interface offers only the days between. | Choose a day between two of the trip's days. |
 | `ERR-IPC-0044` | v0.14.4 | `trip.nothing_before` | `crates/core/src/library/trip_edit.rs` (`merge_trip`) | The first trip has none before it to merge with | The first trip was merged with the one before it; the interface hides that action there. | Merge the next trip into this one instead. |
+| `ERR-IPC-0045` | v0.14.4 | `settings.unknown_zone` | `src-tauri/src/places.rs` (`apply_home_zone`, from `set_ui_settings`) | This time zone is not known | The home zone sent is not an IANA zone name the app knows (FR-145); the settings are unchanged. A settings file with such a name loses only the zone. | Choose the zone again from *From this computer* or *Choose a place…*. |
 
 ### UI: The interface itself
 

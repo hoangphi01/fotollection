@@ -19,7 +19,7 @@ use crate::sorting::pass::Pixels;
 /// What each photo is under RollSense's picks, by index.
 #[derive(Debug, Default)]
 pub(crate) struct SortIndex {
-    t: Vec<i64>,
+    pub(super) t: Vec<i64>,
     year: Vec<i32>,
     month: Vec<u8>,
     /// The id of its event's first photo, `u32::MAX` outside every event.
@@ -139,7 +139,8 @@ impl Library {
         self.sort_index.get_or_init(|| {
             let n = self.len();
             let roll = self.roll();
-            let t: Vec<i64> = (0..n).map(|i| self.effective(i)).collect();
+            // The place's local time (FR-145): years and months where the photo was taken.
+            let t: Vec<i64> = (0..n).map(|i| self.local_seconds(i)).collect();
             let (year, month) = t.iter().map(|&t| year_month(t)).unzip();
             let mut idx = SortIndex {
                 year,

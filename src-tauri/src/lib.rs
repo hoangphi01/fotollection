@@ -136,6 +136,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             addassist::addassist_lookup,
             addassist::addassist_search,
             places::search_places,
+            places::home_zone_guess,
+            places::zone_search,
             places::set_photo_date,
             places::set_photo_place,
             places::list_places,

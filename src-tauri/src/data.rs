@@ -429,6 +429,7 @@ fn install(
     if let Ok(mut ui) = state.ui.write() {
         *ui = local.ui;
     }
+    state.sync_home_zone();
     if let Ok(mut looks) = state.saved_looks.lock() {
         *looks = local.looks;
     }

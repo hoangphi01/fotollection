@@ -527,7 +527,8 @@
       "recovered": "Một số cài đặt không đọc được và đã về mặc định; tệp hỏng được giữ bên cạnh.",
       "restored": "Tệp cài đặt bị hỏng; đã dùng bản sao lưu gần nhất.",
       "newer": "Cài đặt này từ bản Fotollection mới hơn; đang dùng mặc định, tệp được giữ nguyên. Cập nhật Fotollection để dùng.",
-      "corrupt": "Không đọc được tệp cài đặt; đang dùng mặc định, tệp được giữ thành settings.json.corrupt."
+      "corrupt": "Không đọc được tệp cài đặt; đang dùng mặc định, tệp được giữ thành settings.json.corrupt.",
+      "unknown_zone": "Không nhận ra múi giờ này."
     },
     "project": {
       "not_a_project": "Đây không phải dự án Fotollection.",

@@ -125,9 +125,10 @@ The library loads into **columnar arenas**: a structure of arrays indexed by a d
 | `lat`, `lon` | `f32` (≈ 1 m precision, plenty for stamping) | 8 |
 | `flags` | `u16` bitfield: has GPS, GPS inferred, manual date, DPI band, missing file… | 2 |
 | `facts` | `ImageFacts` (FR-071): chroma, coding, bits, colour space, sensor, Bayer pattern, DNG kind, decoder; read at import, **never saved** (N4) | 12 |
+| `gps_utc` | `i64`, the GPS time in UTC (FR-145), `i64::MIN` for none; read at import, **never saved** (N4) | 8 |
 | Sparse `overrides` | `HashMap<PhotoIdx, OverrideIdx>` → a separate arena | 0 for photos without overrides |
 
-That is **about 42 bytes per photo, plus the path**: roughly 1 MB for 10,000 photos. Filters such as "pick + ≥ 3 stars + has GPS" are evaluated as **bitsets** over these columns. Undo/redo stores **inverse operations** (for example `SetRating { idx, old, new }`), never snapshots.
+That is **about 50 bytes per photo, plus the path**: roughly 1 MB for 10,000 photos. Each photo's instant, offset and place (FR-145, `library/time.rs`) are worked out from these columns when RollSense first asks, about 24 bytes a photo, and dropped with RollSense's caches on a change of a time, a place, a clock or the home zone. Filters such as "pick + ≥ 3 stars + has GPS" are evaluated as **bitsets** over these columns. Undo/redo stores **inverse operations** (for example `SetRating { idx, old, new }`), never snapshots.
 
 ## 4. Project file schema
 
@@ -291,6 +292,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | Built-in presets (planned) | `presets/builtin/*.fotopreset`, embedded with `include_str!` | Same schema as user presets ([§7](#7-presets)) | < 100 KB | Lab, stamp and Photo Style presets, including "C200 Natural" ([FR-039](PRD.md#fr-039--photo-style-looks)). Never fetched from the network |
 | Fonts | `assets/fonts/` | TTF/OTF | 9.5 MB | OFL/MIT only |
 | Country outlines | Natural Earth 1:50m admin-0 countries, v5.1.2 (public domain) | `assets/geo/countries.bin`, packed by `crates/geodata` (magic `FCTY`, version header, BLAKE3-checked at load; [GEODATA.md](../crates/core/assets/geo/GEODATA.md)), compiled in | 127 KB | RollSense's map in the Where card ([FR-141](PRD.md#fr-141--sorting-a-phones-camera-roll)): 235 countries, Vietnam's with Hoàng Sa and Trường Sa |
+| Time zones of the places | GeoNames `cities1000` (CC BY 4.0), each place's IANA zone; the zones' rules from the IANA database (public domain) compiled into `chrono-tz` | `assets/geo/zones.bin`, packed by `crates/geodata`'s `zones` from the bundled `places.bin`'s ids, in its order (magic `FZON`, version header, the BLAKE3 and record count of `places.bin`, BLAKE3-checked at load; [GEODATA.md](../crates/core/assets/geo/GEODATA.md)), compiled in | 330 KB (+1.9 MB of rules in the binary) | Each photo's local time from its place's zone ([FR-145](PRD.md#fr-145--one-time-base-utc-instants-the-places-local-time-a-home-zone)); the home zone's search by city or country. Never downloaded |
 | Sorting rules | `assets/sorting/rules.json` | JSON compiled in with `include_str!`, checked by its test | 1.4 KB | Where a photo came from and the duplicates' thresholds as data ([ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md)) |
 | TinyCLIP-39M and its labels | `wkcn/TinyCLIP-ViT-39M-16-Text-19M-YFCC15M` (MIT, © Microsoft), exported by `scripts/models/clip-export.sh` | `assets/models/tinyclip-39m.w8.onnx` (int8 weights, BLAKE3-checked at load) and `tinyclip-39m.labels.json` (the prompts' text embeddings, checked by its test), compiled in; [MODELS.md](../crates/core/assets/models/MODELS.md) | 40.8 MB + 0.7 MB | RollSense's subjects and sources ([ADR-0056](adr/0056-tinyclip-39m-bundled-for-sorting.md)); never downloaded |
 
@@ -301,14 +303,15 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 21,
+  "schema_version": 22,
   "ui": { "language": "vi", "theme": "system", "mode": "professional", "exportFolders": "oneFolder",
           "previewMemoryPercent": 25, "cacheLimitGb": 5, "preparePreviews": true,
           "filmstrip": true, "previewLayout": "dialog",
           "exportQuality": 90, "exportAsk": true, "exportSeparate": false, "exportDestination": null,
           "exportSubfolder": null, "exportNaming": { "template": "original", "text": "", "start": 1 },
           "exportExisting": "addNumber", "exportMetadata": "camera", "exportLimitKb": null,
-          "checkUpdatesAtStart": true, "motion": "system", "printCredit": true },
+          "checkUpdatesAtStart": true, "motion": "system", "printCredit": true,
+          "homeZone": "Asia/Ho_Chi_Minh" },
   "render": {
     "printSize": "custom-1",
     "stamp": { "enabled": true, "format": "retro", "corner": "bottomRight", "color": "retroOrange",
@@ -378,6 +381,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | 19 | 0.14.1 | `ui.printCredit` (FR-121): the small "fotollection.org" on every print, `true` \| `false`, kept per machine (never in a project or its bundle; carried by `.fotosettings` with the rest of `ui`). **Migration v18 → v19:** absent means `true`, as the owner decided. Fixture `settings/v19.json` (`printCredit: false`), test `fr_121_v18_files_print_the_credit_and_v19_keeps_it_off`. Also `ui.language` may be `"hu"` (FR-123) or `"de"` (FR-127), tests `fr_123_hungarian_survives_a_round_trip` and `fr_127_german_survives_a_round_trip`; with no file yet, the language comes from the system's locale (FR-124). And in every saved look (`look`, `looks[]`): `adjust.grain.roughness` (50) and `adjust.vignetteShape` (`midpoint` 50, `roundness` 0, `feather` 50, `highlights` 0), FR-079 session 13, absent before: those defaults. And `collage.postcard.postalUse` (FR-073), the post's zone kept free on a card made to be posted, absent before: `true` |
 | 20 | 0.14.2 | `ui.language` may be `"ja"` or `"ko"` (FR-128); `render.collage.postcard.destination` (`"europe"`, `"japan"`, `"korea"`: where an English or Vietnamese card goes, FR-130, FR-132; Japanese always prints a はがき, Korean a 우편엽서), `senderOn` and `senders` (one sender a country, each an `Address`, so a Korean sender never prints on a はがき: `country`, `filledBy`, `code` (digits only, 7 or 5), `region`, `city`, `town`, `road`, `line` (two lines, 120 characters), `name` (each field 60 characters), `honorific`, `latin`; sanitized on load), `assisted` (AddAssist fills the fields, FR-133); `face` `"nanumPen"` or `"gaegu"` (a Korean card's faces). **Migration v19 → v20:** none, every v19 file reads as it is: Europe, no sender, assisted. An older app meets a v20 file as a newer one (`Loaded::NewerVersion`): its defaults, the file left untouched. Fixture `settings/v20.json`, test `fr_128_japanese_survives_a_round_trip` (`"ko"` too, and v19 still loads) |
 | 21 | 0.14.3 | `saved_addresses` (FR-133, AddAssist 1.1): the postcard address book, at most 100 entries `{ id, label, recipient }`, `label` 1 to 60 characters, `recipient` either `{ "kind": "free", "value": "<a European address as typed, 5 lines, 200 characters>" }` or `{ "kind": "assisted", "value": <Address, as in v20's senders> }`, one entry per recipient; `recent_recipients`: the Japanese and Korean recipients last used (`Address`), newest first, at most 8 per country. This machine's only: never in a project; in a `.fotosettings` only when *Include saved and recent addresses* is ticked. Each entry is read on its own (`each_entry`): one that does not parse or breaks a limit is dropped alone. **Migration v20 → v21:** none, both absent mean empty. An older app meets a v21 file as a newer one. Fixture `settings/v21.json` (with a malformed entry and an unnamed one), test `fr_133_v21_files_keep_the_book_and_drop_bad_entries_alone` |
+| 22 | 0.14.4 | `ui.homeZone` (FR-145, [ADR-0058](adr/0058-time-model-utc-instant-zone-anchors.md)): the home zone, an IANA name (`"Asia/Ho_Chi_Minh"`), the zone a camera clock without one is read in; `null` or absent until the user chooses one, and then the system's zone is used without being written. A name the compiled zone rules (`chrono-tz`) do not know is dropped on load, and refused over IPC (`ERR-IPC-0045`). This machine's only, carried by `.fotosettings` with the rest of `ui`. **Migration v21 → v22:** none, absent means the system's zone. An older app meets a v22 file as a newer one. Fixture `settings/v22.json` (`"Asia/Seoul"`), test `fr_145_v22_keeps_the_home_zone` (an unknown name dropped alone, v21 still loads) |
 
 ## 7. Presets
 

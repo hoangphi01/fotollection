@@ -547,7 +547,8 @@
       "recovered": "Néhány beállítás olvashatatlan volt, és visszaállt az alapértékre; a sérült fájl külön megmaradt.",
       "restored": "A beállításfájl sérült; az utolsó ép másolat betöltve.",
       "newer": "Ezek a beállítások egy újabb Fotollectionből származnak; az alapértékek vannak érvényben, a fájl megmarad. Frissítsd a Fotollectiont a használatukhoz.",
-      "corrupt": "A beállításfájl nem olvasható; az alapértékek érvényesek, a fájl settings.json.corrupt néven megmaradt."
+      "corrupt": "A beállításfájl nem olvasható; az alapértékek érvényesek, a fájl settings.json.corrupt néven megmaradt.",
+      "unknown_zone": "Ez az időzóna ismeretlen."
     },
     "project": {
       "not_a_project": "Ez nem Fotollection-projekt.",

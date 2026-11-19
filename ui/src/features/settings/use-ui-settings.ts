@@ -37,6 +37,8 @@ let current: Required<UiSettings> = {
   motion: 'system',
   // The small "fotollection.org" on each print (FR-121): on until the user turns it off.
   printCredit: true,
+  // The home zone (FR-145): none until the user chooses one, the system's zone meanwhile.
+  homeZone: null,
 }
 let requested = false
 // The file's values have arrived: what depends on them (the welcome screen) waits for this.

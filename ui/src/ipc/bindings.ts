@@ -520,6 +520,13 @@ export const commands = {
 	addassistSearch: (country: Country, query: string, limit: number) => typedError<Found[], IpcError>(__TAURI_INVOKE("addassist_search", { country, query, limit })),
 	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */
 	searchPlaces: (query: string, limit: number) => typedError<Place[], IpcError>(__TAURI_INVOKE("search_places", { query, limit })),
+	/**  The zone the system reports, offered as the home zone (FR-145); never saved unasked. */
+	homeZoneGuess: () => __TAURI_INVOKE<string | null>("home_zone_guess"),
+	/**
+	 *  The zones of the places and countries whose name starts with `query`, each once, for
+	 *  *Choose a place…* (FR-145).
+	 */
+	zoneSearch: (query: string) => typedError<ZoneHit[], IpcError>(__TAURI_INVOKE("zone_search", { query })),
 	/**
 	 *  Sets a date by hand on photos (FR-032), or (`None`) goes back to the camera's. One
 	 *  undoable step; the photos move in the grid, and stamps and day folders follow.
@@ -2995,6 +3002,12 @@ export type UiSettings = {
 	 *  the owner decided (2026-11-10), until the user turns it off.
 	 */
 	printCredit?: boolean,
+	/**
+	 *  The home zone, an IANA name (FR-145): clocks that carry no zone are read in it.
+	 *  Absent before settings v22, and until the user chooses: the system's zone, never
+	 *  written unasked. A name `chrono-tz` does not know is dropped on load.
+	 */
+	homeZone?: string | null,
 };
 
 /**  A setting no look holds, as `Clarity2012: local contrast…`, and how many presets had it. */
@@ -3075,6 +3088,16 @@ export type YearFacet = {
 	year: number,
 	count: number,
 	months: MonthFacet[],
+};
+
+/**  A zone found by a search: its IANA name and the largest place found in it. */
+export type ZoneHit = {
+	/**  `Asia/Ho_Chi_Minh`. */
+	zone: string,
+	/**  `Ho Chi Minh City`. */
+	place: string,
+	/**  `Vietnam`. */
+	country: string,
 };
 
 /* Tauri Specta runtime */

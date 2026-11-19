@@ -161,12 +161,9 @@ impl Library {
             .collect())
     }
 
-    /// A photo's day (days since 1970, camera-local, its clock corrected), as the trips count it.
+    /// A photo's day (days since 1970, in its place's local time, FR-145), as the trips count it.
     fn member_day(&self) -> impl Fn(usize) -> i64 + '_ {
-        move |i| {
-            let t = if i < self.len() { self.effective(i) } else { 0 };
-            t.div_euclid(86_400)
-        }
+        move |i| self.local_seconds(i).div_euclid(86_400)
     }
 }
 

@@ -51,30 +51,23 @@ impl Library {
                     .map(|i| (self.capture[i], self.mtime[i])),
             );
             let gps = |i: usize| (!self.lat[i].is_nan()).then_some((self.lat[i], self.lon[i]));
+            // The place's local time (FR-145), so a day is the day where the photo was taken.
             let moments: Vec<Moment> = (0..n)
                 .map(|i| Moment {
-                    t: self.effective(i),
+                    t: self.local_seconds(i),
                     gps: gps(i),
                 })
                 .collect();
             let firm: Vec<bool> = (0..n)
                 .map(|i| confirmed || self.flags[i] & flags::DATE_FROM_FILE == 0)
                 .collect();
-            let places = (0..n)
-                .map(|i| {
-                    let own = self
-                        .edits
-                        .get(&PhotoId(u32::try_from(i).ok()?))
-                        .and_then(|e| e.place.as_ref());
-                    let id = own.map(|p| p.geonames_id).or_else(|| {
-                        let (lat, lon) = gps(i)?;
-                        crate::geocode::reverse(f64::from(lat), f64::from(lon))
-                            .ok()??
-                            .geonames_id
-                            .into()
-                    })?;
-                    Some(Located {
-                        place_id: id,
+            let places = self
+                .time_table()
+                .places
+                .iter()
+                .map(|p| {
+                    p.map(|place_id| Located {
+                        place_id,
                         borrowed: false,
                     })
                 })

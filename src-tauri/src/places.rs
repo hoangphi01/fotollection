@@ -14,6 +14,7 @@ use fotollection_core::library::{
     MAX_MANUAL_DATE, MIN_MANUAL_DATE, PhotoEdits, PhotoId, PhotoPlace, PlaceSource,
 };
 use fotollection_core::places::{self, Borrow, Confidence};
+use fotollection_core::settings::UiSettings;
 use rayon::prelude::*;
 use serde::Serialize;
 use specta::Type;
@@ -38,6 +39,43 @@ pub fn search_places(query: String, limit: u32) -> Result<Vec<Place>, IpcError> 
     }
     geocode::search(&query, limit.min(MAX_RESULTS) as usize)
         .map_err(|e| IpcError::internal(e.to_string()))
+}
+
+/// The zone the system reports, offered as the home zone (FR-145); never saved unasked.
+#[tauri::command]
+#[specta::specta]
+pub fn home_zone_guess() -> Option<String> {
+    fotollection_core::time_base::system_zone().map(|z| z.name().to_owned())
+}
+
+/// The zones of the places and countries whose name starts with `query`, each once, for
+/// *Choose a place…* (FR-145).
+#[tauri::command]
+#[specta::specta]
+pub fn zone_search(query: String) -> Result<Vec<fotollection_core::zones::ZoneHit>, IpcError> {
+    if query.chars().count() > MAX_QUERY {
+        return Err(IpcError::new(
+            "place.query_too_long",
+            "The search is too long",
+        ));
+    }
+    fotollection_core::zones::search(&query).map_err(|e| IpcError::internal(e.to_string()))
+}
+
+/// `ui` sanitized, its home zone checked first (FR-145): an unknown name is refused, a known
+/// one (or none, the system's) is the zone the library reads clocks in from now on.
+pub fn apply_home_zone(state: &AppState, ui: UiSettings) -> Result<UiSettings, IpcError> {
+    let zone = match ui.home_zone.as_deref() {
+        Some(name) => Some(
+            fotollection_core::time_base::zone(name)
+                .ok_or_else(|| IpcError::new("settings.unknown_zone", "Unknown time zone"))?,
+        ),
+        None => None,
+    };
+    if let Ok(mut library) = state.library.write() {
+        library.set_home_zone(zone);
+    }
+    Ok(ui.sanitized())
 }
 
 /// `YYYY-MM-DDTHH:MM` or `YYYY-MM-DDTHH:MM:SS` within 1826–2100, as library seconds.

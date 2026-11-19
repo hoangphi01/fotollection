@@ -18,6 +18,9 @@ pub struct PhotoMeta {
     pub offset_minutes: Option<i16>,
     /// `(latitude, longitude)` in degrees.
     pub gps: Option<(f64, f64)>,
+    /// The GPS receiver's time, UTC seconds since 1970, from `GPSDateStamp` and
+    /// `GPSTimeStamp` (FR-145): the most trusted anchor of the photo's instant.
+    pub gps_utc: Option<i64>,
     /// EXIF orientation 1–8 (1 when absent or invalid).
     pub orientation: u8,
     pub make: Option<String>,
@@ -323,6 +326,7 @@ fn from_fields<'a>(
         capture,
         offset_minutes,
         gps,
+        gps_utc: gps_utc(field(Tag::GPSDateStamp), field(Tag::GPSTimeStamp)),
         orientation,
         make: field(Tag::Make).and_then(clean_string),
         model: field(Tag::Model).and_then(clean_string),
@@ -473,6 +477,42 @@ fn parse_datetime(field: &Field, offset: Option<&Field>) -> Option<(NaiveDateTim
     Some((time, offset))
 }
 
+/// The GPS time in UTC seconds (FR-145): `GPSDateStamp` (`YYYY:MM:DD`) and `GPSTimeStamp`
+/// (hours, minutes, seconds as three rationals). Bounded (SECURITY.md §3, Layer 3): a year
+/// outside 1990–2100 (GPS dates start in 1980; no camera wrote one before 1990), an hour past
+/// 23, a minute past 59, a second past 60 (a leap second) or a zero denominator is no time.
+fn gps_utc(date: Option<&Field>, time: Option<&Field>) -> Option<i64> {
+    let text = std::str::from_utf8(ascii(date?)?).ok()?;
+    let text = text.trim_end_matches('\0').trim();
+    let mut parts = text.split([':', '-']);
+    let mut number = |len: usize| -> Option<u32> {
+        let p = parts.next()?;
+        (p.len() == len && p.bytes().all(|b| b.is_ascii_digit()))
+            .then(|| p.parse().ok())
+            .flatten()
+    };
+    let (year, month, day) = (number(4)?, number(2)?, number(2)?);
+    if parts.next().is_some() || !(1990..=2100).contains(&year) {
+        return None;
+    }
+    let date = NaiveDate::from_ymd_opt(i32::try_from(year).ok()?, month, day)?;
+    let Value::Rational(hms) = &time?.value else {
+        return None;
+    };
+    let part = |i: usize, below: f64| -> Option<f64> {
+        let r = hms.get(i)?;
+        if r.denom == 0 {
+            return None;
+        }
+        let v = f64::from(r.num) / f64::from(r.denom);
+        (v < below).then_some(v)
+    };
+    let seconds = part(0, 24.0)? * 3600.0 + part(1, 60.0)? * 60.0 + part(2, 61.0)?;
+    #[allow(clippy::cast_possible_truncation)] // below 86,461 by the bounds above
+    let seconds = seconds.floor() as i64;
+    Some(date.and_hms_opt(0, 0, 0)?.and_utc().timestamp() + seconds)
+}
+
 fn parse_gps(exif: &Exif) -> Option<(f64, f64)> {
     let coord = |value_tag, ref_tag, negative: u8| -> Option<f64> {
         let field = exif.get_field(value_tag, In::PRIMARY)?;
@@ -528,6 +568,138 @@ fn thumbnail_bytes(exif: &Exif) -> Option<&[u8]> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn ascii_field(tag: Tag, text: &[u8]) -> Field {
+        Field {
+            tag,
+            ifd_num: In::PRIMARY,
+            value: Value::Ascii(vec![text.to_vec()]),
+        }
+    }
+
+    fn hms(parts: [(u32, u32); 3]) -> Field {
+        Field {
+            tag: Tag::GPSTimeStamp,
+            ifd_num: In::PRIMARY,
+            value: Value::Rational(
+                parts
+                    .iter()
+                    .map(|&(num, denom)| exif::Rational { num, denom })
+                    .collect(),
+            ),
+        }
+    }
+
+    /// FR-145: the GPS date and time read as UTC; a fractional second is dropped.
+    #[test]
+    fn fr_145_gps_time_is_read_as_utc() {
+        let date = ascii_field(Tag::GPSDateStamp, b"2019:07:10\0");
+        let time = hms([(6, 1), (30, 1), (1250, 100)]);
+        let expected = NaiveDate::from_ymd_opt(2019, 7, 10)
+            .and_then(|d| d.and_hms_opt(6, 30, 12))
+            .map(|t| t.and_utc().timestamp());
+        assert!(expected.is_some());
+        assert_eq!(gps_utc(Some(&date), Some(&time)), expected);
+        // The leap second 60 is a time; no time stamp, or no date, is none.
+        assert!(gps_utc(Some(&date), Some(&hms([(23, 1), (59, 1), (60, 1)]))).is_some());
+        assert_eq!(gps_utc(Some(&date), None), None);
+        assert_eq!(gps_utc(None, Some(&time)), None);
+    }
+
+    /// FR-145: impossible GPS times are refused, never wrapped into another day.
+    #[test]
+    fn fr_145_malformed_gps_times_are_refused() {
+        let time = hms([(6, 1), (30, 1), (0, 1)]);
+        for bad in [
+            &b"1989:12:31"[..],
+            b"2101:01:01",
+            b"2019:13:01",
+            b"2019:02:30",
+            b"2019:7:10",
+            b"2019:07:10:01",
+            b"20190710",
+            b"",
+            b"\xff\xfe",
+            b"+019:07:10",
+        ] {
+            let date = ascii_field(Tag::GPSDateStamp, bad);
+            assert_eq!(gps_utc(Some(&date), Some(&time)), None, "{bad:?}");
+        }
+        let date = ascii_field(Tag::GPSDateStamp, b"2019:07:10");
+        for bad in [
+            [(24, 1), (0, 1), (0, 1)],
+            [(6, 1), (60, 1), (0, 1)],
+            [(6, 1), (0, 1), (61, 1)],
+            [(6, 0), (0, 1), (0, 1)],
+            [(6, 1), (0, 0), (0, 1)],
+            [(6, 1), (0, 1), (0, 0)],
+            [(u32::MAX, 1), (0, 1), (0, 1)],
+        ] {
+            assert_eq!(gps_utc(Some(&date), Some(&hms(bad))), None, "{bad:?}");
+        }
+        let short = Field {
+            tag: Tag::GPSTimeStamp,
+            ifd_num: In::PRIMARY,
+            value: Value::Rational(vec![exif::Rational { num: 6, denom: 1 }]),
+        };
+        assert_eq!(gps_utc(Some(&date), Some(&short)), None);
+    }
+
+    /// FR-145, the parser's mutation test (LESSONS, a parser of a file is mutation-tested):
+    /// 200,000 random dates and time stamps never panic and never give a time outside the
+    /// bounds.
+    #[test]
+    fn fr_145_gps_time_mutate() {
+        let mut state = 0x9E37_79B9_7F4A_7C15_u64;
+        let mut next = move || {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state
+        };
+        let low = NaiveDate::from_ymd_opt(1990, 1, 1)
+            .and_then(|d| d.and_hms_opt(0, 0, 0))
+            .map_or(0, |t| t.and_utc().timestamp());
+        let high = NaiveDate::from_ymd_opt(2101, 1, 1)
+            .and_then(|d| d.and_hms_opt(0, 0, 0))
+            .map_or(0, |t| t.and_utc().timestamp());
+        let mut accepted = 0;
+        for _ in 0..200_000 {
+            let mut text = b"2019:07:10".to_vec();
+            for _ in 0..(next() % 3) {
+                let at = usize::try_from(next() % 11).unwrap_or(0);
+                let byte = u8::try_from(next() % 256).unwrap_or(0);
+                if at < text.len() {
+                    text[at] = byte;
+                } else {
+                    text.push(byte);
+                }
+            }
+            let small = |v: u64| u32::try_from(v % 100).unwrap_or(0);
+            let any = |v: u64| u32::try_from(v & 0xFFFF_FFFF).unwrap_or(0);
+            let pick = |v: u64, w: u64| {
+                if w.is_multiple_of(4) {
+                    any(v)
+                } else {
+                    small(v)
+                }
+            };
+            let parts = [
+                (pick(next(), next()), pick(next(), next())),
+                (pick(next(), next()), pick(next(), next())),
+                (pick(next(), next()), pick(next(), next())),
+            ];
+            let date = ascii_field(Tag::GPSDateStamp, &text);
+            if let Some(t) = gps_utc(Some(&date), Some(&hms(parts))) {
+                accepted += 1;
+                assert!(
+                    (low..high + 86_400).contains(&t),
+                    "{text:?} {parts:?} → {t}"
+                );
+            }
+        }
+        assert!(accepted > 0);
+    }
 
     /// The CC0 samples from `scripts/fetch-raw-samples.py`, when `FOTOLLECTION_RAW_SAMPLES`
     /// names their folder: every one gives its camera and capture time (FR-016).

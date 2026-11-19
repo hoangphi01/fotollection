@@ -253,8 +253,8 @@ pub fn reverse(lat: f64, lon: f64) -> Result<Option<Place>, GeoError> {
     Ok(best.map(|(_, r)| place(d, r)))
 }
 
-/// The place with this GeoNames id, for a place stored in a project (FR-032).
-pub fn by_id(geonames_id: u32) -> Result<Option<Place>, GeoError> {
+/// The index of the record with this GeoNames id, in the data's order.
+pub(crate) fn record_index(geonames_id: u32) -> Result<Option<u32>, GeoError> {
     static INDEX: OnceLock<HashMap<u32, u32>> = OnceLock::new();
     let d = dataset()?;
     let index = INDEX.get_or_init(|| {
@@ -264,10 +264,44 @@ pub fn by_id(geonames_id: u32) -> Result<Option<Place>, GeoError> {
             .filter_map(|(i, r)| Some((r.id, u32::try_from(i).ok()?)))
             .collect()
     });
-    Ok(index
-        .get(&geonames_id)
-        .and_then(|&i| d.records.get(i as usize))
+    Ok(index.get(&geonames_id).copied())
+}
+
+/// The number of places and the pinned BLAKE3 of their data, which the zone index beside them
+/// must name (FR-145).
+pub(crate) fn records() -> Result<(usize, &'static str), GeoError> {
+    Ok((dataset()?.records.len(), PLACES_BLAKE3))
+}
+
+/// The place with this GeoNames id, for a place stored in a project (FR-032).
+pub fn by_id(geonames_id: u32) -> Result<Option<Place>, GeoError> {
+    let d = dataset()?;
+    Ok(record_index(geonames_id)?
+        .and_then(|i| d.records.get(i as usize))
         .map(|r| place(d, r)))
+}
+
+/// The largest places of each country whose English name starts with `query` (diacritics
+/// and spaces ignored), largest first, with their record index (FR-145: a home zone chosen by
+/// country).
+pub(crate) fn in_countries(query: &str, limit: usize) -> Result<Vec<(u32, Place)>, GeoError> {
+    let d = dataset()?;
+    let q = fold(query);
+    if q.is_empty() {
+        return Ok(Vec::new());
+    }
+    let hit: Vec<bool> = d
+        .countries
+        .iter()
+        .map(|(_, n)| fold(n).starts_with(&q))
+        .collect();
+    Ok(d.records
+        .iter()
+        .enumerate()
+        .filter(|(_, r)| hit.get(usize::from(r.country)).copied().unwrap_or(false))
+        .take(limit)
+        .filter_map(|(i, r)| Some((u32::try_from(i).ok()?, place(d, r))))
+        .collect())
 }
 
 /// Lower-case ASCII with diacritics removed and spaces dropped, so "Hà Nội", "ha noi" and

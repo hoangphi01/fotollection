@@ -547,7 +547,8 @@
       "recovered": "Einige Einstellungen waren nicht lesbar und wurden auf Standard zurückgesetzt; die beschädigte Datei liegt daneben.",
       "restored": "Die Einstellungsdatei war beschädigt; die letzte gute Kopie wurde verwendet.",
       "newer": "Diese Einstellungen stammen aus einer neueren Fotollection-Version; es gelten die Standardwerte, die Datei bleibt erhalten. Aktualisiere Fotollection, um sie zu verwenden.",
-      "corrupt": "Die Einstellungsdatei konnte nicht gelesen werden; es gelten die Standardwerte, und die Datei wurde als settings.json.corrupt behalten."
+      "corrupt": "Die Einstellungsdatei konnte nicht gelesen werden; es gelten die Standardwerte, und die Datei wurde als settings.json.corrupt behalten.",
+      "unknown_zone": "Diese Zeitzone ist unbekannt."
     },
     "project": {
       "not_a_project": "Das ist kein Fotollection-Projekt.",

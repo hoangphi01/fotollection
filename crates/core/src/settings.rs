@@ -157,6 +157,11 @@ pub struct UiSettings {
     /// the owner decided (2026-11-10), until the user turns it off.
     #[serde(default = "default_print_credit")]
     pub print_credit: bool,
+    /// The home zone, an IANA name (FR-145): clocks that carry no zone are read in it.
+    /// Absent before settings v22, and until the user chooses: the system's zone, never
+    /// written unasked. A name `chrono-tz` does not know is dropped on load.
+    #[serde(default)]
+    pub home_zone: Option<String>,
 }
 
 /// What an export does when a file of the same name is already there (FR-009, Lightroom's
@@ -276,6 +281,7 @@ impl Default for UiSettings {
             welcome_every_start: false,
             motion: MotionPreference::default(),
             print_credit: default_print_credit(),
+            home_zone: None,
         }
     }
 }
@@ -312,6 +318,9 @@ impl UiSettings {
         self.export_limit_kb = self
             .export_limit_kb
             .map(|kb| kb.clamp(*EXPORT_LIMIT_KB_RANGE.start(), *EXPORT_LIMIT_KB_RANGE.end()));
+        self.home_zone = self
+            .home_zone
+            .filter(|z| crate::time_base::zone(z).is_some());
         self
     }
 

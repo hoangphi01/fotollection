@@ -8,6 +8,7 @@ use std::collections::HashMap;
 mod map;
 mod sense;
 mod sorted;
+mod time;
 mod trip_edit;
 
 use std::path::{Path, PathBuf};
@@ -627,6 +628,8 @@ pub struct Library {
     /// The date set by hand (FR-032), or `NO_DATE`; a column so sorting stays a plain read.
     manual_date: Vec<i64>,
     offset: Vec<i16>,
+    /// The GPS time, UTC (FR-145), or `NO_GPS_TIME`: read at import, never saved.
+    gps_utc: Vec<i64>,
     orientation: Vec<u8>,
     flags: Vec<u16>,
     lat: Vec<f32>,
@@ -660,9 +663,16 @@ pub struct Library {
     duplicate: Vec<bool>,
     /// What each photo is under RollSense's picks, worked out once after a change.
     sort_index: std::sync::OnceLock<sense::SortIndex>,
+    /// The zone a clock without one is read in (FR-145), set by the app from the settings;
+    /// `None` reads the system's zone.
+    home: Option<chrono_tz::Tz>,
+    /// Each photo's instant and place (FR-145), worked out once after a change of a time, a
+    /// place, a clock or the home zone; `roll` and `sort_index` are built from it.
+    times: std::sync::OnceLock<time::TimeTable>,
 }
 
 const NONE_U16: u16 = u16::MAX;
+const NO_GPS_TIME: i64 = i64::MIN;
 
 /// A camera clock is corrected by at most a month (FR-030); a date further off is set by
 /// hand (FR-032).
@@ -913,6 +923,7 @@ impl Library {
         // RollSense's days, events and trips read the corrected time.
         self.roll = std::sync::OnceLock::new();
         self.sort_index = std::sync::OnceLock::new();
+        self.times = std::sync::OnceLock::new();
         Ok(())
     }
 
@@ -941,6 +952,7 @@ impl Library {
             body.tz_minutes = clock.tz_minutes;
             self.roll = std::sync::OnceLock::new();
             self.sort_index = std::sync::OnceLock::new();
+            self.times = std::sync::OnceLock::new();
         }
     }
 
@@ -1026,6 +1038,7 @@ impl Library {
         self.capture.push(capture);
         self.manual_date.push(NO_DATE);
         self.offset.push(offset);
+        self.gps_utc.push(meta.gps_utc.unwrap_or(NO_GPS_TIME));
         self.orientation.push(meta.orientation);
         self.flags.push(f);
         self.lat.push(lat);
@@ -1058,6 +1071,7 @@ impl Library {
         self.my_phones = std::sync::OnceLock::new();
         self.stacks = std::sync::OnceLock::new();
         self.roll = std::sync::OnceLock::new();
+        self.times = std::sync::OnceLock::new();
         self.subject.push(0);
         self.hash.push(None);
         self.analysed.push(false);
@@ -1136,6 +1150,7 @@ impl Library {
         if old.date != edits.date || old.place != edits.place {
             self.roll = std::sync::OnceLock::new();
             self.sort_index = std::sync::OnceLock::new();
+            self.times = std::sync::OnceLock::new();
         }
         if let Some(i) = self.index(id) {
             self.manual_date[i] = edits
