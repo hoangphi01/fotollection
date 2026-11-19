@@ -71,7 +71,8 @@ Read this table in full before any task; then read in full every entry whose Are
 ### release-ci
 
 - After every push, look at every workflow it started (`gh run list`), CI and pages too, not only the one expected (learnt three times). Kept by: no machine check yet.
-- Every check CI runs also runs locally before a push; when one fails only in CI, its twin joins the local checks. Kept by: `check-lego`, `check-docs.sh`, `check-docs-with-code.sh`, `cargo deny check licenses bans sources` in the pre-push hook.
+- Every check CI runs also runs locally before a push; when one fails only in CI, its twin joins the local checks. Kept by: `check-lego`, `check-docs.sh`, `check-docs-with-code.sh`, `cargo deny check advisories licenses bans sources` in the pre-push hook.
+- A new crate passes `cargo deny check advisories` before its first commit; one that calls the OS is read for its Windows path, and a crate with its data bundled, the same on every system, is preferred. Kept by: the pre-push hook (advisories when a manifest changes).
 - What only CI, the bundler or a release runs is proved before the release: installers workflow, dry run, a green push. Kept by: the `installers` workflow.
 - Never write "supports" before it is tried on every system; `cfg(windows)` code is grepped, since this Mac cannot compile it. Kept by: CI's `build (windows-latest)`.
 - A page and its stylesheet and scripts ship as one: every `/assets/css` and `/assets/js` link carries its content's hash (`| bust`), so no visitor sees a new page on old CSS. Kept by: `check-docs.sh` (no such link through `relative_url`).
@@ -134,6 +135,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-19
+
+### Two time-zone crates went to CI unchecked, and CI failed twice (FR-145)
+
+- **Area:** release-ci, decode-third-party
+- **Seen:** CI on `dde7ea36` failed twice: `cargo deny check advisories` refused `chrono-tz` (RUSTSEC-2026-0555, unmaintained, no safe upgrade), and Windows' `cargo test -p fotollection-core --lib` died with `STATUS_ACCESS_VIOLATION` just after the new `fr_141`/`fr_145` tests began, naming no test; Linux passed.
+- **Why:** `chrono-tz` and `iana-time-zone` were added with only the offline `cargo deny check licenses bans sources` of the pre-push hook, never `advisories`, and pushed before Windows had run them. Our code has no `unsafe`; `iana-time-zone` reads the zone on Windows through WinRT (COM), called from parallel test threads by `time_base::system_zone`: the likely fault.
+- **Fix:** both replaced by `jiff` 0.2.38 (Unlicense OR MIT) with `tzdb-bundle-always`: its own IANA copy on every system, the system's zone name from `/etc/localtime` or `GetDynamicTimeZoneInformation` (plain Win32, cached behind a lock); the core's own `time_base::Zone` wraps it. The pre-push hook runs `cargo deny check advisories licenses bans sources` when a manifest changes.
+- **Rule:** a new crate passes `cargo deny check advisories` before its first commit, and one that calls the OS is read for its Windows path first; prefer a crate whose data is bundled and the same on every system.
 
 ### RollSense read the camera's raw clock, not the corrected time (FR-030, FR-141)
 

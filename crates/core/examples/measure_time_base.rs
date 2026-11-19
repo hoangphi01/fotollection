@@ -14,11 +14,10 @@
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use chrono_tz::Tz;
 use fotollection_core::import::ImportedFile;
 use fotollection_core::library::{Library, PhotoId};
 use fotollection_core::metadata::PhotoMeta;
-use fotollection_core::time_base::{self, TimeFacts};
+use fotollection_core::time_base::{self, TimeFacts, Zone};
 
 /// Cities the photos are taken around: (latitude, longitude, zone offset in minutes).
 const CITIES: [(f64, f64, i16); 6] = [
@@ -71,16 +70,18 @@ fn main() {
     let mut table = Vec::new();
     for run in 0..5 {
         let home = if run % 2 == 0 {
-            Tz::Europe__Budapest
+            "Europe/Budapest"
         } else {
-            Tz::Asia__Ho_Chi_Minh
+            "Asia/Ho_Chi_Minh"
         };
-        lib.set_home_zone(Some(home));
+        lib.set_home_zone(time_base::zone(home));
         let t = Instant::now();
         std::hint::black_box(lib.photo_time(PhotoId(0)));
         table.push(t.elapsed().as_secs_f64() * 1000.0);
     }
-    let facts: Vec<(TimeFacts, Option<Tz>)> = (0..n)
+    let seoul = time_base::zone("Asia/Seoul").unwrap();
+    let budapest = time_base::zone("Europe/Budapest").unwrap();
+    let facts: Vec<(TimeFacts, Option<&Zone>)> = (0..n)
         .map(|i| {
             let local = i64::from(i) * 37 * 60 + 1_546_300_800;
             let f = TimeFacts {
@@ -89,14 +90,14 @@ fn main() {
                 gps_utc: (i % 3 == 0).then_some(local - 32_400),
                 ..TimeFacts::default()
             };
-            (f, (i % 4 != 3).then_some(Tz::Asia__Seoul))
+            (f, (i % 4 != 3).then_some(&seoul))
         })
         .collect();
     let mut resolve = Vec::new();
     for _ in 0..5 {
         let t = Instant::now();
         for (f, zone) in &facts {
-            std::hint::black_box(time_base::resolve(f, *zone, Tz::Europe__Budapest));
+            std::hint::black_box(time_base::resolve(f, *zone, &budapest));
         }
         resolve.push(t.elapsed().as_secs_f64() * 1000.0);
     }

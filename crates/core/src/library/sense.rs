@@ -576,7 +576,7 @@ mod tests {
 
     fn roll(shots: &[PhotoMeta]) -> Library {
         let mut lib = Library::new();
-        lib.set_home_zone(Some(chrono_tz::Tz::UTC));
+        lib.set_home_zone(Some(crate::time_base::Zone::UTC));
         let f = lib.add_folder(Path::new("/roll"));
         for (k, meta) in shots.iter().enumerate() {
             let file = ImportedFile {
@@ -655,7 +655,7 @@ mod tests {
             ..PhotoMeta::default()
         };
         let mut lib = roll(&[seoul(10, 0), seoul(11, 30)]);
-        lib.set_home_zone(Some(chrono_tz::Tz::Europe__Budapest));
+        lib.set_home_zone(crate::time_base::zone("Europe/Budapest"));
         let facets = lib.facets(&[]);
         let events: Vec<(u16, u16, u32)> = facets
             .years

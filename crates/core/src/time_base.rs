@@ -3,10 +3,8 @@
 //! came from, and is shown in the local time of the place it was taken. Pure functions: the
 //! home zone is passed in, so nothing here reads the process's zone or the computer's clock.
 
-use std::str::FromStr;
-
-use chrono::{DateTime, LocalResult, Offset, TimeZone};
-use chrono_tz::Tz;
+use jiff::Timestamp;
+use jiff::tz::{Offset, TimeZone};
 
 /// A GPS time further than this from the camera's clock is not the shot's: some receivers
 /// write the time of their last fix, days old. Every real offset lies within UTC−12…+14, so a
@@ -76,14 +74,24 @@ pub struct TimeFacts {
     pub manual: bool,
 }
 
+/// An IANA time zone, its rules from the IANA database bundled in the binary (never the
+/// system's copy, so every computer reads a photo the same way).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Zone(TimeZone);
+
+impl Zone {
+    pub const UTC: Zone = Zone(TimeZone::UTC);
+
+    /// The IANA name, `Asia/Ho_Chi_Minh`.
+    pub fn name(&self) -> &str {
+        self.0.iana_name().unwrap_or("UTC")
+    }
+}
+
 /// The offset of `zone` at the instant `utc`, in minutes.
-pub fn offset_at(zone: Tz, utc: i64) -> i16 {
-    DateTime::from_timestamp(utc, 0).map_or(0, |t| {
-        let s = zone
-            .offset_from_utc_datetime(&t.naive_utc())
-            .fix()
-            .local_minus_utc();
-        i16::try_from(s / 60).unwrap_or(0)
+pub fn offset_at(zone: &Zone, utc: i64) -> i16 {
+    Timestamp::from_second(utc).map_or(0, |t| {
+        i16::try_from(zone.0.to_offset(t).seconds() / 60).unwrap_or(0)
     })
 }
 
@@ -91,22 +99,21 @@ pub fn offset_at(zone: Tz, utc: i64) -> i16 {
 /// summer time ends) is the earlier instant; one that never occurs (the hour skipped when it
 /// starts) is read with the offset before the change, landing after it, as a clock moved on
 /// by hand would.
-pub fn local_to_utc(local: i64, zone: Tz) -> i64 {
-    let Some(naive) = DateTime::from_timestamp(local, 0).map(|t| t.naive_utc()) else {
+pub fn local_to_utc(local: i64, zone: &Zone) -> i64 {
+    let Ok(wall) = Timestamp::from_second(local).map(|t| Offset::UTC.to_datetime(t)) else {
         return local;
     };
-    match zone.from_local_datetime(&naive) {
-        LocalResult::Single(t) => t.timestamp(),
-        LocalResult::Ambiguous(a, b) => a.timestamp().min(b.timestamp()),
-        // No zone changes twice in a day: a day before is the offset before the gap.
-        LocalResult::None => local - i64::from(offset_at(zone, local - 86_400)) * 60,
-    }
+    // `compatible`: the earlier instant in a fold, the offset before the change in a gap.
+    zone.0
+        .to_ambiguous_timestamp(wall)
+        .compatible()
+        .map_or(local, Timestamp::as_second)
 }
 
 /// A photo's instant, from the most trusted anchor it has (ADR-0058): a date set by hand;
 /// the file's time; the GPS time within [`GPS_TRUST_S`] of the clock; the photo's offset; the
 /// camera's zone; else the home zone. `place` is the zone of the photo's place, if any.
-pub fn resolve(f: &TimeFacts, place: Option<Tz>, home: Tz) -> PhotoTime {
+pub fn resolve(f: &TimeFacts, place: Option<&Zone>, home: &Zone) -> PhotoTime {
     let (utc, came_with, source) = if f.manual {
         (
             local_to_utc(f.local, place.unwrap_or(home)),
@@ -149,18 +156,21 @@ pub fn resolve(f: &TimeFacts, place: Option<Tz>, home: Tz) -> PhotoTime {
     }
 }
 
-/// The zone of an IANA name (`Asia/Ho_Chi_Minh`), `None` for anything else.
-pub fn zone(name: &str) -> Option<Tz> {
+/// The zone of an IANA name (`Asia/Ho_Chi_Minh`), spelt exactly, `None` for anything else.
+/// The bundled database parses each zone once and keeps it.
+pub fn zone(name: &str) -> Option<Zone> {
     if name.is_empty() || name.len() > MAX_ZONE_NAME {
         return None;
     }
-    Tz::from_str(name).ok()
+    let tz = jiff::tz::db().get(name).ok()?;
+    (tz.iana_name() == Some(name) && !tz.is_unknown()).then_some(Zone(tz))
 }
 
 /// The zone the system reports, if it is an IANA name we know: only a suggestion for the
-/// home zone, never saved unasked (FR-145).
-pub fn system_zone() -> Option<Tz> {
-    zone(&iana_time_zone::get_timezone().ok()?)
+/// home zone, never saved unasked (FR-145). Read with plain system calls (the `/etc/localtime`
+/// link, `GetDynamicTimeZoneInformation` on Windows) and cached by jiff behind a lock.
+pub fn system_zone() -> Option<Zone> {
+    zone(TimeZone::try_system().ok()?.iana_name()?)
 }
 
 #[cfg(test)]
@@ -177,8 +187,9 @@ mod tests {
         at(y, mo, d, 0, 0).div_euclid(86_400)
     }
 
-    const BUDAPEST: Tz = Tz::Europe__Budapest;
-    const SEOUL: Tz = Tz::Asia__Seoul;
+    fn z(name: &str) -> Zone {
+        zone(name).unwrap_or(Zone::UTC)
+    }
 
     /// FR-145: the GPS time wins over a camera's clock, even one set to another zone; a GPS
     /// time days away from the clock is a stale fix and is ignored.
@@ -190,17 +201,17 @@ mod tests {
             camera_tz: Some(60),
             ..TimeFacts::default()
         };
-        let t = resolve(&f, Some(SEOUL), BUDAPEST);
+        let t = resolve(&f, Some(&z("Asia/Seoul")), &z("Europe/Budapest"));
         assert_eq!((t.utc, t.source), (at(2019, 7, 10, 1, 0), TimeAnchor::Gps));
         assert_eq!(t.offset_min, 9 * 60);
         // No place: the offset the clock showed, to the quarter hour.
-        assert_eq!(resolve(&f, None, BUDAPEST).offset_min, 9 * 60);
+        assert_eq!(resolve(&f, None, &z("Europe/Budapest")).offset_min, 9 * 60);
         let stale = TimeFacts {
             gps_utc: Some(at(2019, 7, 7, 1, 0)),
             ..f
         };
         assert_eq!(
-            resolve(&stale, None, BUDAPEST).source,
+            resolve(&stale, None, &z("Europe/Budapest")).source,
             TimeAnchor::CameraZone
         );
     }
@@ -213,13 +224,16 @@ mod tests {
             local: at(2019, 7, 10, 20, 0),
             ..TimeFacts::default()
         };
-        let t = resolve(&f, Some(SEOUL), BUDAPEST);
+        let t = resolve(&f, Some(&z("Asia/Seoul")), &z("Europe/Budapest"));
         assert_eq!(t.source, TimeAnchor::HomeZone);
         assert_eq!(t.utc, at(2019, 7, 10, 18, 0));
         assert_eq!(t.local_seconds(), at(2019, 7, 11, 3, 0));
         assert_eq!(t.local_day(), day(2019, 7, 11));
         // Without a place it stays on the clock's day.
-        assert_eq!(resolve(&f, None, BUDAPEST).local_day(), day(2019, 7, 10));
+        assert_eq!(
+            resolve(&f, None, &z("Europe/Budapest")).local_day(),
+            day(2019, 7, 10)
+        );
     }
 
     /// FR-145: European summer time of 2019 from the compiled rules: Budapest is UTC+2 in
@@ -230,21 +244,21 @@ mod tests {
             local: at(2019, 7, 10, 12, 0),
             ..TimeFacts::default()
         };
-        let t = resolve(&july, None, BUDAPEST);
+        let t = resolve(&july, None, &z("Europe/Budapest"));
         assert_eq!((t.utc, t.offset_min), (at(2019, 7, 10, 10, 0), 120));
         let january = TimeFacts {
             local: at(2019, 1, 10, 12, 0),
             ..TimeFacts::default()
         };
-        let t = resolve(&january, None, BUDAPEST);
+        let t = resolve(&january, None, &z("Europe/Budapest"));
         assert_eq!((t.utc, t.offset_min), (at(2019, 1, 10, 11, 0), 60));
         // The clocks went forward on 31 March 2019 at 02:00 and back on 27 October at 03:00.
         assert_eq!(
-            local_to_utc(at(2019, 3, 31, 2, 30), BUDAPEST),
+            local_to_utc(at(2019, 3, 31, 2, 30), &z("Europe/Budapest")),
             at(2019, 3, 31, 1, 30)
         );
         assert_eq!(
-            local_to_utc(at(2019, 10, 27, 2, 30), BUDAPEST),
+            local_to_utc(at(2019, 10, 27, 2, 30), &z("Europe/Budapest")),
             at(2019, 10, 27, 0, 30)
         );
     }
@@ -257,10 +271,13 @@ mod tests {
             photo_offset: Some(9 * 60),
             ..TimeFacts::default()
         };
-        let t = resolve(&f, Some(SEOUL), BUDAPEST);
+        let t = resolve(&f, Some(&z("Asia/Seoul")), &z("Europe/Budapest"));
         assert_eq!(t.utc.div_euclid(86_400), day(2019, 7, 10));
         assert_eq!(t.local_day(), day(2019, 7, 11));
-        assert_eq!(resolve(&f, None, BUDAPEST).local_day(), day(2019, 7, 11));
+        assert_eq!(
+            resolve(&f, None, &z("Europe/Budapest")).local_day(),
+            day(2019, 7, 11)
+        );
     }
 
     /// FR-145: the result depends only on what is passed: a photo with its own offset or a
@@ -274,12 +291,13 @@ mod tests {
             ..TimeFacts::default()
         };
         let homes = [
-            BUDAPEST,
-            Tz::America__New_York,
-            Tz::Asia__Ho_Chi_Minh,
-            Tz::UTC,
+            z("Europe/Budapest"),
+            z("America/New_York"),
+            z("Asia/Ho_Chi_Minh"),
+            Zone::UTC,
         ];
-        let all: Vec<PhotoTime> = homes.iter().map(|&h| resolve(&f, Some(SEOUL), h)).collect();
+        let seoul = z("Asia/Seoul");
+        let all: Vec<PhotoTime> = homes.iter().map(|h| resolve(&f, Some(&seoul), h)).collect();
         assert!(all.windows(2).all(|w| w[0] == w[1]), "{all:?}");
         let source = include_str!("time_base.rs");
         assert!(!source.contains(concat!("chrono::", "Local")));
@@ -293,7 +311,7 @@ mod tests {
             from_file: true,
             ..TimeFacts::default()
         };
-        let t = resolve(&file, Some(SEOUL), BUDAPEST);
+        let t = resolve(&file, Some(&z("Asia/Seoul")), &z("Europe/Budapest"));
         assert_eq!(
             (t.utc, t.source),
             (at(2019, 7, 10, 22, 0), TimeAnchor::FileTime)
@@ -305,7 +323,7 @@ mod tests {
             gps_utc: Some(at(2019, 7, 10, 1, 0)),
             ..TimeFacts::default()
         };
-        let t = resolve(&hand, Some(SEOUL), BUDAPEST);
+        let t = resolve(&hand, Some(&z("Asia/Seoul")), &z("Europe/Budapest"));
         assert_eq!(
             (t.utc, t.source),
             (at(2019, 7, 10, 3, 0), TimeAnchor::Manual)
@@ -315,11 +333,17 @@ mod tests {
 
     #[test]
     fn fr_145_zone_names_are_checked() {
-        assert_eq!(zone("Asia/Ho_Chi_Minh"), Some(Tz::Asia__Ho_Chi_Minh));
+        assert_eq!(
+            zone("Asia/Ho_Chi_Minh").as_ref().map(Zone::name),
+            Some("Asia/Ho_Chi_Minh")
+        );
+        assert_eq!(zone("UTC"), Some(Zone::UTC));
         for bad in [
             "",
             "Mars/Olympus",
             "asia/seoul ",
+            "asia/seoul",
+            "Etc/Unknown",
             &"A".repeat(200),
             "Europe/Budapest\0",
         ] {

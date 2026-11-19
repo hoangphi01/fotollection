@@ -665,7 +665,7 @@ pub struct Library {
     sort_index: std::sync::OnceLock<sense::SortIndex>,
     /// The zone a clock without one is read in (FR-145), set by the app from the settings;
     /// `None` reads the system's zone.
-    home: Option<chrono_tz::Tz>,
+    home: Option<crate::time_base::Zone>,
     /// Each photo's instant and place (FR-145), worked out once after a change of a time, a
     /// place, a clock or the home zone; `roll` and `sort_index` are built from it.
     times: std::sync::OnceLock<time::TimeTable>,

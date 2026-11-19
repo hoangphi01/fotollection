@@ -2,16 +2,15 @@
 //! Each bundled place's time zone (FR-145, ADR-0058): `zones.bin`, packed by `crates/geodata`'s
 //! `zones` from GeoNames (CC BY 4.0) beside `places.bin` and in its order, compiled in and
 //! checked against a pinned BLAKE3 sum and against the places it names. The zones' rules
-//! come from `chrono-tz`. Nothing is ever downloaded.
+//! come from the IANA database bundled by `jiff`. Nothing is ever downloaded.
 
-use std::str::FromStr;
 use std::sync::OnceLock;
 
-use chrono_tz::Tz;
 use serde::Serialize;
 use specta::Type;
 
 use crate::geocode::{self, GeoError};
+use crate::time_base::{self, Zone};
 
 const ZONES: &[u8] = include_bytes!("../assets/geo/zones.bin");
 const ZONES_BLAKE3: &str = "60b1a138dd66b6d272ad03ed35c234ecab1f8493aaa3cac174c69b0ed84ad9d8";
@@ -25,8 +24,8 @@ pub const MAX_HITS: usize = 20;
 
 /// The zone of each place, by record index.
 struct ZoneIndex {
-    /// Each zone of the table; `None` for a name `chrono-tz` does not know.
-    zones: Vec<Option<Tz>>,
+    /// Each zone of the table; `None` for a name the bundled database does not know.
+    zones: Vec<Option<Zone>>,
     of_place: Vec<u16>,
 }
 
@@ -59,7 +58,7 @@ fn parse(bytes: &[u8], places: usize, places_hash: &str) -> Result<ZoneIndex, Ge
     for _ in 0..n_zones {
         let len = usize::from(take(1)?[0]);
         let name = std::str::from_utf8(take(len)?).map_err(|_| GeoError::Malformed)?;
-        zones.push(Tz::from_str(name).ok());
+        zones.push(time_base::zone(name));
     }
     let table = take(places.checked_mul(2).ok_or(GeoError::Malformed)?)?;
     let of_place: Vec<u16> = table
@@ -91,15 +90,15 @@ fn index() -> Result<&'static ZoneIndex, GeoError> {
     .map_err(Clone::clone)
 }
 
-fn of_record(i: u32) -> Option<Tz> {
+fn of_record(i: u32) -> Option<&'static Zone> {
     let index = index().ok()?;
     let z = *index.of_place.get(usize::try_from(i).ok()?)?;
-    index.zones.get(usize::from(z)).copied().flatten()
+    index.zones.get(usize::from(z))?.as_ref()
 }
 
 /// The time zone of the place with this GeoNames id; `None` for an unknown place or one
 /// without a zone, or when the bundled data fails its checks.
-pub fn of_place(geonames_id: u32) -> Option<Tz> {
+pub fn of_place(geonames_id: u32) -> Option<&'static Zone> {
     of_record(geocode::record_index(geonames_id).ok()??)
 }
 
@@ -167,7 +166,7 @@ mod tests {
         geocode::records().unwrap_or((0, ""))
     }
 
-    /// FR-145: the bundled index matches places.bin, every zone in it is one `chrono-tz` knows,
+    /// FR-145: the bundled index matches places.bin, every zone in it is one the bundled database knows,
     /// and almost every place has one.
     #[test]
     fn fr_145_the_bundled_zones_match_the_places() -> Result<(), GeoError> {
@@ -175,7 +174,7 @@ mod tests {
         let index = parse(ZONES, n, hash)?;
         assert!(
             index.zones.iter().all(Option::is_some),
-            "a zone chrono-tz lacks"
+            "a zone the bundled database lacks"
         );
         let missing = index.of_place.iter().filter(|&&z| z == NO_ZONE).count();
         assert!(missing < 100, "{missing} places without a zone");
@@ -185,14 +184,14 @@ mod tests {
     /// FR-145: places find their zone, by GeoNames id.
     #[test]
     fn fr_145_places_have_their_zone() -> Result<(), GeoError> {
-        let zone = |name: &str, cc: &str| -> Result<Option<Tz>, GeoError> {
+        let zone = |name: &str, cc: &str| -> Result<Option<&str>, GeoError> {
             let p = geocode::search(name, 20)?
                 .into_iter()
                 .find(|p| p.country_code == cc);
-            Ok(p.and_then(|p| of_place(p.geonames_id)))
+            Ok(p.and_then(|p| of_place(p.geonames_id)).map(Zone::name))
         };
-        assert_eq!(zone("Seoul", "KR")?, Some(Tz::Asia__Seoul));
-        assert_eq!(zone("Debrecen", "HU")?, Some(Tz::Europe__Budapest));
+        assert_eq!(zone("Seoul", "KR")?, Some("Asia/Seoul"));
+        assert_eq!(zone("Debrecen", "HU")?, Some("Europe/Budapest"));
         assert_eq!(of_place(u32::MAX), None);
         Ok(())
     }

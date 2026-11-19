@@ -895,7 +895,7 @@ export const commands = {
 	 *  The weeks of `month` (1…12) in `year` (1900…2100), each starting on `first_weekday`
 	 *  (0 Monday … 6 Sunday): 4 to 6 rows of 7 days, the neighbour months' days marked.
 	 */
-	monthGrid: (year: number, month: number, firstWeekday: number) => typedError<[CalDay, CalDay, CalDay, CalDay, CalDay, CalDay, CalDay][], IpcError>(__TAURI_INVOKE("month_grid", { year, month, firstWeekday })),
+	monthGrid: (year: number, month: number, firstWeekday: number) => typedError<([CalDay, CalDay, CalDay, CalDay, CalDay, CalDay, CalDay])[], IpcError>(__TAURI_INVOKE("month_grid", { year, month, firstWeekday })),
 	/**  Stops a move to the Trash before its next file; the photos not moved stay marked. */
 	cancelTrash: () => __TAURI_INVOKE<void>("cancel_trash"),
 	/**  Finds a camera, runs its handshake and starts the session. */
@@ -3033,7 +3033,7 @@ export type UiSettings = {
 	/**
 	 *  The home zone, an IANA name (FR-145): clocks that carry no zone are read in it.
 	 *  Absent before settings v22, and until the user chooses: the system's zone, never
-	 *  written unasked. A name `chrono-tz` does not know is dropped on load.
+	 *  written unasked. A name the bundled zone database does not know is dropped on load.
 	 */
 	homeZone?: string | null,
 };

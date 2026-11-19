@@ -5,10 +5,8 @@
 //! [`Library::local_seconds`]; sorting and stamps keep `effective` (ADR-0027).
 //! A child of `library` so it reads the columns without making them public.
 
-use chrono_tz::Tz;
-
 use super::{Library, NO_DATE, NO_GPS_TIME, NO_OFFSET, PhotoId, flags};
-use crate::time_base::{self, PhotoTime, TimeFacts};
+use crate::time_base::{self, PhotoTime, TimeFacts, Zone};
 
 /// Each photo's instant and the GeoNames id of its place, by photo index. Owned by the
 /// library (`times`): about 24 bytes a photo, emptied with `roll` and `sort_index`.
@@ -20,7 +18,7 @@ pub(super) struct TimeTable {
 impl Library {
     /// The zone clocks without one are read in (FR-145): `None` follows the system's.
     /// A change works every photo's time out again.
-    pub fn set_home_zone(&mut self, home: Option<Tz>) {
+    pub fn set_home_zone(&mut self, home: Option<Zone>) {
         if self.home != home {
             self.home = home;
             self.times = std::sync::OnceLock::new();
@@ -63,14 +61,18 @@ impl Library {
 
     pub(super) fn time_table(&self) -> &TimeTable {
         self.times.get_or_init(|| {
-            let home = self.home.or_else(time_base::system_zone).unwrap_or(Tz::UTC);
+            let home = self
+                .home
+                .clone()
+                .or_else(time_base::system_zone)
+                .unwrap_or(Zone::UTC);
             let places: Vec<Option<u32>> = (0..self.len()).map(|i| self.place_id(i)).collect();
             let times = places
                 .iter()
                 .enumerate()
                 .map(|(i, p)| {
                     let zone = p.and_then(crate::zones::of_place);
-                    time_base::resolve(&self.facts(i), zone, home)
+                    time_base::resolve(&self.facts(i), zone, &home)
                 })
                 .collect();
             TimeTable { times, places }
@@ -134,7 +136,7 @@ mod tests {
     #[test]
     fn fr_145_a_camera_on_home_time_in_seoul_counts_seoul_days() {
         let mut lib = Library::new();
-        lib.set_home_zone(Some(Tz::Europe__Budapest));
+        lib.set_home_zone(time_base::zone("Europe/Budapest"));
         let f = lib.add_folder(Path::new("/trip"));
         let ids: Vec<PhotoId> = [
             lib.push(f, &file("/trip/a.jpg"), &shot(10, 10, Some(SEOUL))),
@@ -157,7 +159,7 @@ mod tests {
             assert_eq!((first, last), (day(10), day(11)));
         }
         // Read in Seoul's zone the clock is Seoul time: both shots on the 10th.
-        lib.set_home_zone(Some(Tz::Asia__Seoul));
+        lib.set_home_zone(time_base::zone("Asia/Seoul"));
         assert_eq!(lib.photo_time(ids[1]).map(|t| t.local_day()), Some(day(10)));
         assert_eq!(lib.sort_index().t[1].div_euclid(86_400), day(10));
     }
@@ -167,7 +169,7 @@ mod tests {
     #[test]
     fn fr_145_gps_time_and_the_cameras_zone_in_the_library() {
         let mut lib = Library::new();
-        lib.set_home_zone(Some(Tz::Europe__Budapest));
+        lib.set_home_zone(time_base::zone("Europe/Budapest"));
         let f = lib.add_folder(Path::new("/trip"));
         let gps_utc = chrono::NaiveDate::from_ymd_opt(2019, 7, 10)
             .and_then(|d| d.and_hms_opt(1, 0, 0))

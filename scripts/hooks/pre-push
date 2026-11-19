@@ -4,7 +4,7 @@
 # refuse, refused here first, and the UI cases run while they still help. Installed by
 # scripts/bootstrap.sh (`git config core.hooksPath scripts/hooks`).
 #
-#   always:            cargo fmt, clippy (Rust changed), cargo deny licenses (a manifest changed),
+#   always:            cargo fmt, clippy (Rust changed), cargo deny (a manifest changed),
 #                      UI lint (ui/ or a short manual changed), check-docs,
 #                      check-docs-with-code over what is pushed
 #   UI changed:        QUICK=2 scripts/ui-check.sh (English and Hungarian, every UI- case)
@@ -46,9 +46,10 @@ if changed '\.rs$|Cargo\.(toml|lock)$'; then
   CARGO_BUILD_JOBS=4 cargo clippy --workspace --all-targets -- -D warnings
 fi
 if changed 'Cargo\.(toml|lock)$|^deny\.toml$'; then
-  # CI's security job, its offline part (LESSONS 2026-11-15: a new crate without its exception).
-  step "cargo deny (licenses, bans, sources)"
-  cargo deny check licenses bans sources
+  # CI's security job (LESSONS 2026-11-15: a new crate without its exception; 2026-11-19: an
+  # unmaintained crate found only by CI's advisories).
+  step "cargo deny (advisories, licenses, bans, sources)"
+  cargo deny check advisories licenses bans sources
 fi
 # check-i18n reads the short manuals too: their letters must be in the CJK faces (LESSONS 2026-11-16).
 if changed '^ui/|^site/_includes/manual-short-'; then

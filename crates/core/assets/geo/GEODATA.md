@@ -40,7 +40,7 @@ Format (version 1, little-endian): `FCTY`, `u16` version, `u16` country count; p
 
 ## Time zones (`zones.bin`)
 
-`crates/geodata`'s `zones` packer (`scripts/geodata/fetch-and-pack.sh zones`) reads the GeoNames ids from the bundled `places.bin`, in its order, and each id's IANA zone from a fresh `cities1000.txt`, so `places.bin` is not packed again; a place gone from the newer dump gets no zone. The zones' rules, past summer times included, come from the IANA time zone database (public domain) compiled into `chrono-tz` (MIT OR Apache-2.0, tzdb 2025b); nothing is downloaded at runtime. Checked against its BLAKE3 sum at load by `crates/core/src/zones.rs`, and against `places.bin`: the file names the BLAKE3 of the `places.bin` it was packed for and its record count, and is refused when either differs.
+`crates/geodata`'s `zones` packer (`scripts/geodata/fetch-and-pack.sh zones`) reads the GeoNames ids from the bundled `places.bin`, in its order, and each id's IANA zone from a fresh `cities1000.txt`, so `places.bin` is not packed again; a place gone from the newer dump gets no zone. The zones' rules, past summer times included, come from the IANA time zone database (public domain) bundled by `jiff` (Unlicense OR MIT, `jiff-tzdb` 0.1.9, tzdb 2026e); nothing is downloaded at runtime. Checked against its BLAKE3 sum at load by `crates/core/src/zones.rs`, and against `places.bin`: the file names the BLAKE3 of the `places.bin` it was packed for and its record count, and is refused when either differs.
 
 | File | Size | BLAKE3 (checked at load) |
 |------|-----:|--------------------------|
@@ -48,4 +48,4 @@ Format (version 1, little-endian): `FCTY`, `u16` version, `u16` country count; p
 
 Download used (SHA-256): `cities1000.zip` (2026-11-19) `1dcfe6ea1731529fe53d54c8c524add5a8f4b198cff7ff0ab5e5b774d528db17`.
 
-Format (version 1, little-endian): `FZON`, `u16` version, the 32-byte BLAKE3 of `places.bin`, `u32` place count (equal to `places.bin`'s), `u16` zone count (at most 1,024); per zone a `u8` length and its IANA name (ASCII); then one `u16` per place in `places.bin`'s order, the zone's index or `0xFFFF` for none. The reader refuses a wrong magic, version, hash or count, a zone index past the table, and a file shorter or longer than its counts; a name `chrono-tz` does not know gives no zone.
+Format (version 1, little-endian): `FZON`, `u16` version, the 32-byte BLAKE3 of `places.bin`, `u32` place count (equal to `places.bin`'s), `u16` zone count (at most 1,024); per zone a `u8` length and its IANA name (ASCII); then one `u16` per place in `places.bin`'s order, the zone's index or `0xFFFF` for none. The reader refuses a wrong magic, version, hash or count, a zone index past the table, and a file shorter or longer than its counts; a name the bundled database does not know gives no zone.

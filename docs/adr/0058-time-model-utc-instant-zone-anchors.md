@@ -16,7 +16,7 @@ Photo times were camera-local seconds stored as if they were UTC, while a photo 
 
 ## Decision
 
-Option 3. Each photo's instant is resolved in the core from, in order: the EXIF GPS time; the photo's offset; the camera's clock plus its FR-030 correction read in that camera's zone or else the home zone; the file's time. It is shown in the zone of its place when it has one, else in the offset it came with. The home zone is an IANA name kept in the settings, suggested from the system at first run and changed only by the user. `chrono-tz` (MIT or Apache-2.0) holds the rules; a zone index beside `places.bin` gives each GeoNames place its zone.
+Option 3. Each photo's instant is resolved in the core from, in order: the EXIF GPS time; the photo's offset; the camera's clock plus its FR-030 correction read in that camera's zone or else the home zone; the file's time. It is shown in the zone of its place when it has one, else in the offset it came with. The home zone is an IANA name kept in the settings, suggested from the system at first run and changed only by the user. `jiff` (Unlicense or MIT) holds the rules, always from the IANA database it bundles, never the system's, and reads the system's zone name (amended 2026-11-19: `chrono-tz` was unmaintained, RUSTSEC-2026-0555, and `iana-time-zone`'s Windows path was the suspect of a crash in CI); a zone index beside `places.bin` gives each GeoNames place its zone.
 
 ## Consequences
 

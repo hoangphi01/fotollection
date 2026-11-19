@@ -159,7 +159,7 @@ pub struct UiSettings {
     pub print_credit: bool,
     /// The home zone, an IANA name (FR-145): clocks that carry no zone are read in it.
     /// Absent before settings v22, and until the user chooses: the system's zone, never
-    /// written unasked. A name `chrono-tz` does not know is dropped on load.
+    /// written unasked. A name the bundled zone database does not know is dropped on load.
     #[serde(default)]
     pub home_zone: Option<String>,
 }
