@@ -55,7 +55,8 @@
     "analyze": "Đang tìm ảnh đẹp nhất",
     "sort": "Đang phân tích ảnh cho RollSense",
     "looks": "Đang áp dụng màu",
-    "trash": "Đang chuyển ảnh vào Thùng rác"
+    "trash": "Đang chuyển ảnh vào Thùng rác",
+    "duplicates": "Đang kiểm ảnh trùng"
   },
   "culling": {
     "keysHint": "0–5 sao · P chọn · X loại · U bỏ cờ · [ ] xoay",
@@ -1591,19 +1592,19 @@
     "typeCount_other": "Gõ {{count}} để xoá vĩnh viễn."
   },
   "rollsense": {
+    "picked_other": "Đã chọn {{count}} ảnh",
+    "nonePicked": "Tick nhóm để chọn ảnh",
+    "editInPhotos": "Chỉnh trong Ảnh",
     "wholeMonth": "Chọn cả tháng.",
     "wholeYear": "Chọn cả năm.",
-    "wholeDay": "Cả ngày {{day}}",
     "reset": "Bỏ tick nhóm này",
     "view": "RollSense",
     "title": "RollSense",
     "all": "Tất cả ảnh",
     "hint": "Tick ảnh, rồi chỉnh trong Ảnh, cho vào giỏ in, để riêng hoặc đánh dấu xoá.",
     "reading": "Đang phân tích ảnh…",
-    "read": "Đã phân tích {{done}}/{{total}} ảnh",
     "analyze": "Phân tích ảnh",
     "stop": "Dừng",
-    "setAside_other": "Để riêng {{count}} ảnh",
     "sources": "Nguồn",
     "subjects": "Nội dung",
     "time": "Thời gian",
@@ -1641,9 +1642,6 @@
       "saved": "Lưu từ ứng dụng và tin nhắn",
       "memes": "Meme (AI nhận diện)"
     },
-    "delete_other": "Đánh dấu xoá {{count}} ảnh",
-    "edit_other": "Chỉnh {{count}} ảnh trong Ảnh",
-    "toBasket_other": "Cho {{count}} ảnh vào giỏ in",
     "backToPick": "Về RollSense (giữ các tick)",
     "clearPick": "Bỏ các tick của RollSense",
     "source": {

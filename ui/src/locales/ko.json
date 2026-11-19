@@ -58,7 +58,8 @@
     "analyze": "베스트 샷 찾는 중",
     "sort": "RollSense용 사진 분석 중",
     "looks": "색 적용 중",
-    "trash": "사진을 휴지통으로 옮기는 중"
+    "trash": "사진을 휴지통으로 옮기는 중",
+    "duplicates": "중복 확인 중"
   },
   "culling": {
     "keysHint": "0–5 별점 · P 채택 · X 제외 · U 플래그 해제 · [ ] 회전",
@@ -1652,19 +1653,20 @@
     "typeCount_other": "영구 삭제하려면 {{count}}을(를) 입력하세요."
   },
   "rollsense": {
+    "picked_one": "{{count}}장 선택됨",
+    "picked_other": "{{count}}장 선택됨",
+    "nonePicked": "그룹을 체크해 사진 선택",
+    "editInPhotos": "사진에서 편집",
     "wholeMonth": "한 달 전체를 선택합니다.",
     "wholeYear": "한 해 전체를 선택합니다.",
-    "wholeDay": "{{day}} 전체",
     "reset": "이 그룹 체크 해제",
     "view": "RollSense",
     "title": "RollSense",
     "all": "모든 사진",
     "hint": "사진을 체크한 뒤 ‘사진’에서 편집하거나, 프린트 바구니에 추가하거나, 보류하거나, 삭제 예정으로 표시하세요.",
     "reading": "사진 분석 중…",
-    "read": "{{total}}장 중 {{done}}장 분석됨",
     "analyze": "사진 분석",
     "stop": "중지",
-    "setAside_other": "{{count}}장 보류",
     "sources": "출처",
     "subjects": "피사체",
     "time": "날짜",
@@ -1702,9 +1704,6 @@
       "saved": "앱과 채팅에서 저장",
       "memes": "밈(AI 감지)"
     },
-    "delete_other": "{{count}}장을 삭제 예정으로 표시",
-    "edit_other": "{{count}}장을 사진에서 편집",
-    "toBasket_other": "{{count}}장을 프린트 바구니에 추가",
     "backToPick": "RollSense로 돌아가기(체크 유지)",
     "clearPick": "RollSense 체크 해제",
     "source": {

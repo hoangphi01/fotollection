@@ -384,6 +384,7 @@ Commands marked † are implemented.
 | `keep_one(group, photo) -> HistoryState` † | Keeps the chosen photo of one group and rejects the others, one undoable step (for "Too close to call" or a different preference) | FR-041, FR-022 |
 | `analyze_sorting(folders) -> JobId` † | RollSense's pixels pass (`src-tauri/src/sorting.rs`) over the photos of `folders` (all when empty) on its own pool on every core: TinyCLIP-39M's subjects and the duplicates proven on their pictures, cached photos at once, written to the library in batches of 256; cancel with `cancel_job`, which keeps nothing. A second call while one runs returns the running job | FR-141, FR-015 |
 | `sort_facets(folders) -> Facets` † | Everything RollSense lists, with counts, over the photos of `folders` (all when empty) | FR-141 |
+| `gallery_sections(filter) -> GallerySection[]` | The grid's runs under RollSense's time picks: a ticked day's events, a month's or a year's days, each with its local times and place (`library/sections.rs`) | FR-141 |
 | `trash_check(ids ≤ 100,000) -> TrashCheck` † | The summary before a move to the Trash: the photos' bytes, and how many seem to sit on a volume without a Trash (a network share), whose files would be deleted for good | FR-141, ADR-0055 |
 | `trash_photos(ids ≤ 100,000) -> DeleteReport` † / `cancel_trash()` † | Moves the photos' files to the system's Trash (the `trash` crate), paths from the library, never the webview, then rebuilds the library from its folders with every other photo's edits; `{ removed, notRemoved }`, the photos a volume without a Trash refused. `cancel_trash` stops before the next file | FR-141, ADR-0055 |
 | `delete_photos(ids ≤ 100,000) -> DeleteReport` † | Deletes for good, after the user said so a second time, only photos the Trash refused (`photo.not_refused` otherwise), then rebuilds the library | FR-141, ADR-0055 |
@@ -422,7 +423,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `camera-shot-failed` † | `{ issue }`: a press did not give a photo (`camera.no_shot`), or a step or format change was refused |
 | `open-photo` † | `{ id, folder }`: a photo handed over by the OS is in the library; the UI takes it with `take_photo_request`, shows its folder's tab and opens the preview once that folder is listed |
 | `startup-finished` † | The last session is back (or there was none): the start-up screen fades out (FR-060) |
-| `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze" \| "previews" \| "looks" \| "sort" \| "trash", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
+| `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze" \| "previews" \| "looks" \| "sort" \| "trash" \| "duplicates", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
 | `analysis-finished` † | `{ jobId, analyzed, failed, groups, cancelled }`. The UI refetches `list_groups` |
 | `sorting-read` † | `{ jobId, analysed }`: RollSense's pass has read more photos (every 2 seconds at most); the UI refetches the facets, so the cards fill as it reads (FR-141) |
 | `sorting-finished` † | `{ jobId, analysed, failed, cancelled }`: RollSense's pass finished or was cancelled; the UI refetches the facets (FR-141) |

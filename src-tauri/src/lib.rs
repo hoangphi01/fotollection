@@ -191,6 +191,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             culling::keep_one,
             sorting::analyze_sorting,
             sorting::sort_facets,
+            sorting::gallery_sections,
             sorting::trash_photos,
             sorting::delete_photos,
             sorting::trash_check,

@@ -14,7 +14,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { Toggle } from '@/components/ui/toggle'
 import { commands, type Facets, type SortPick, type TripFacet } from '@/ipc/bindings'
 import { CountryMapView } from './country-map'
-import { useDay, useTripName } from './pick-label'
+import { useTripName } from './pick-label'
 
 type PickProps = {
   facets: Facets
@@ -121,77 +121,42 @@ function monthsOf(facets: Facets) {
   return facets.years.flatMap((y) => y.months.map((m) => ({ year: y.year, month: m.month }))).sort((a, b) => a.year * 12 + a.month - (b.year * 12 + b.month))
 }
 
-/** A month as a calendar (FR-141 C1–C2, owner 2026-11-19): days shaded by their photos, the
- * month and the year picked from the title; a day chosen shows its events under it with their
- * local times (FR-145), and the whole day, each a pick of this card. */
+/** A month as a calendar (FR-141 C1–C2, owner 2026-11-19): days shaded by their photos, a day
+ * ticked by a press, the month and the year from the title; the grid then splits the day by its
+ * events (`GallerySections`). */
 export function TimeCard({ facets, picks, onPicks }: PickProps) {
   const { t, i18n } = useTranslation()
-  const day = useDay()
   const [shown, setShown] = useState<{ year: number; month: number } | null>(null)
-  const [chosen, setChosen] = useState<number | null>(null)
   const months = monthsOf(facets)
   if (months.length === 0) return null
   const found = shown ? months.findIndex((m) => m.year === shown.year && m.month === shown.month) : -1
   const index = found >= 0 ? found : months.length - 1
   const { year, month } = months[index] ?? { year: 1970, month: 1 }
-  const go = (i: number) => {
-    setShown(months[i] ?? null)
-    setChosen(null)
-  }
-  const counts = new Map(facets.days.map((d) => [d.day, d.count]))
-  const events = facets.years.flatMap((y) => y.months.flatMap((m) => m.events))
   const ticked = (p: SortPick) => picks.some((x) => same(x, p))
-  const pressed = (d: number) => {
-    const date = new Date(d * 86_400_000)
-    return (
-      ticked({ kind: 'day', day: d }) ||
-      ticked({ kind: 'month', year: date.getUTCFullYear(), month: date.getUTCMonth() + 1 }) ||
-      ticked({ kind: 'year', year: date.getUTCFullYear() }) ||
-      events.some((e) => d >= e.firstDay && d <= e.lastDay && ticked({ kind: 'event', first: e.first }))
-    )
-  }
   const flip = (p: SortPick) => onPicks(ticked(p) ? picks.filter((x) => !same(x, p)) : [...picks, p])
   const monthPick: SortPick = { kind: 'month', year, month }
   const yearPick: SortPick = { kind: 'year', year }
-  const clock = new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
-  const time = (min: number) => clock.format(new Date(min * 60_000))
-  const ofDay = chosen === null ? [] : events.filter((e) => chosen >= e.firstDay && chosen <= e.lastDay)
-  const row = { picks, onPicks }
   return (
-    <FacetCard card={2} icon={<CalendarDays />} title={t('rollsense.time')} {...row}>
+    <FacetCard card={2} icon={<CalendarDays />} title={t('rollsense.time')} picks={picks} onPicks={onPicks}>
       <CalendarMonth
         year={year}
         month={month}
         title={
           <>
-            <Toggle size="sm" pressed={ticked(monthPick)} onPressedChange={() => flip(monthPick)} data-hint={t('rollsense.wholeMonth')}>
+            <Toggle variant="outline" size="sm" pressed={ticked(monthPick)} onPressedChange={() => flip(monthPick)} data-hint={t('rollsense.wholeMonth')}>
               {new Intl.DateTimeFormat(i18n.language, { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)))}
             </Toggle>
-            <Toggle size="sm" pressed={ticked(yearPick)} onPressedChange={() => flip(yearPick)} data-hint={t('rollsense.wholeYear')}>
+            <Toggle variant="outline" size="sm" pressed={ticked(yearPick)} onPressedChange={() => flip(yearPick)} data-hint={t('rollsense.wholeYear')}>
               {year}
             </Toggle>
           </>
         }
-        counts={counts}
-        pressed={pressed}
-        chosen={chosen}
-        onDay={(d) => setChosen(chosen === d ? null : d)}
-        onPrev={index > 0 ? () => go(index - 1) : undefined}
-        onNext={index < months.length - 1 ? () => go(index + 1) : undefined}
+        counts={new Map(facets.days.map((d) => [d.day, d.count]))}
+        pressed={(day) => ticked({ kind: 'day', day })}
+        onDay={(day) => flip({ kind: 'day', day })}
+        onPrev={index > 0 ? () => setShown(months[index - 1] ?? null) : undefined}
+        onNext={index < months.length - 1 ? () => setShown(months[index + 1] ?? null) : undefined}
       />
-      {chosen !== null && (
-        <>
-          <PickRow value={{ kind: 'day', day: chosen }} count={counts.get(chosen) ?? 0} {...row}>
-            {t('rollsense.wholeDay', { day: day(chosen) })}
-          </PickRow>
-          {ofDay.map((e) => (
-              <PickRow key={e.first} value={{ kind: 'event', first: e.first }} count={e.count} {...row}>
-                {e.firstDay === e.lastDay ? (e.startMin === e.endMin ? time(e.startMin) : `${time(e.startMin)}–${time(e.endMin)}`) : `${day(e.firstDay)} ${time(e.startMin)} – ${day(e.lastDay)} ${time(e.endMin)}`}
-                {e.place ? ` · ${e.place}` : ''}
-              </PickRow>
-            ))}
-        </>
-      )}
     </FacetCard>
   )
 }

@@ -5,6 +5,7 @@ import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import type { Queue, QueueView } from '@/ipc/bindings'
 import { RemoveButton } from '@/components/forms/danger-button'
+import { SubToolbar } from '@/components/layout/sub-toolbar'
 
 type SelectionBarProps = {
   count: number
@@ -32,15 +33,17 @@ type SelectionBarProps = {
 export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, onDatePlace, onPasteSettings, onSelectAll, onClear }: SelectionBarProps) {
   const { t } = useTranslation()
   const none = count === 0
-  // One line of a fixed height (STYLE_RULE §4: a toolbar never wraps, nothing jumps): the
-  // actions are toolbar buttons that keep only their icons in a narrow window.
   return (
-    <div className="@container flex h-12 shrink-0 items-center gap-2 overflow-x-auto overflow-y-hidden border-b bg-primary/5 px-4 text-sm [scrollbar-width:thin] [&>*]:shrink-0">
-      <span className="font-medium whitespace-nowrap tabular-nums">{t(unit === 'sheets' ? 'select.countSheets' : 'select.count', { count })}</span>
-      {elsewhere > 0 && (
-        <span className="text-xs whitespace-nowrap text-muted-foreground tabular-nums">{t('select.elsewhere', { count: elsewhere })}</span>
-      )}
-      <div className="ml-auto flex items-center gap-2">
+    <SubToolbar
+      label={
+        <>
+          <span className="font-medium whitespace-nowrap tabular-nums">{t(unit === 'sheets' ? 'select.countSheets' : 'select.count', { count })}</span>
+          {elsewhere > 0 && (
+            <span className="text-xs whitespace-nowrap text-muted-foreground tabular-nums">{t('select.elsewhere', { count: elsewhere })}</span>
+          )}
+        </>
+      }
+    >
         {/* Where the ticked photos go, then what they get, each joined (owner, 2026-11-08);
             the red clear stands apart. */}
         <ButtonGroup ariaLabel={t('toolbar.move')}>
@@ -65,7 +68,6 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         </ButtonGroup>
         <ToolbarButton icon={<CheckCheck />} label={t('select.all')} labelFrom="5xl" variant="default" data-hint={t('select.all')} onClick={onSelectAll} />
         <RemoveButton kind="clear" disabled={none} label={t('select.clear')} onClick={onClear} />
-      </div>
-    </div>
+    </SubToolbar>
   )
 }

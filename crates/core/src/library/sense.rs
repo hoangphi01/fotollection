@@ -23,12 +23,12 @@ pub(crate) struct SortIndex {
     year: Vec<i32>,
     month: Vec<u8>,
     /// The local day, days since 1970.
-    day: Vec<i32>,
+    pub(super) day: Vec<i32>,
     /// The id of its event's first photo, `u32::MAX` outside every event.
-    event: Vec<u32>,
+    pub(super) event: Vec<u32>,
     trip: Vec<Option<i32>>,
     visit: Vec<Option<(u8, i32)>>,
-    place: Vec<Option<u32>>,
+    pub(super) place: Vec<Option<u32>>,
     in_stack: Vec<bool>,
     /// Not in a stack, or its cover.
     shown: Vec<bool>,
@@ -450,7 +450,7 @@ impl Library {
 }
 
 /// Minutes after midnight of local seconds.
-fn minute_of_day(t: i64) -> u16 {
+pub(super) fn minute_of_day(t: i64) -> u16 {
     u16::try_from(t.rem_euclid(86_400) / 60).unwrap_or(0)
 }
 

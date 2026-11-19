@@ -14,6 +14,7 @@ import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
 import { commands, events, type CullFilter, type OpenPhoto, type SortPick } from '@/ipc/bindings'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
+import { useGallerySections } from '@/features/rollsense/use-gallery-sections'
 import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
 import { useTaskProgress } from '@/features/library/use-task-progress'
@@ -67,6 +68,7 @@ import { ToDeletePanel } from '@/features/library/to-delete-panel'
 import { FitText } from '@/components/forms/fit-text'
 import { PickChip } from '@/features/rollsense/pick-chip'
 import { RollSensePanel } from '@/features/rollsense/rollsense-panel'
+import { SenseBar } from '@/features/rollsense/sense-bar'
 import { useRollSense } from '@/features/rollsense/use-rollsense'
 
 export function App() {
@@ -96,6 +98,8 @@ export function App() {
   const viewFilter: CullFilter = mode === 'professional' ? proFilter : { ...filter, flag: 'all', minRating: 0 }
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(viewFilter)
+  // The grid's headers under RollSense's time picks (FR-141 C2).
+  const grid = useGallerySections(viewFilter, photos)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
   // Render and frame changes bump the same Rust counter; the newest one wins.
   const [frameRevision, setFrameRevision] = useState(0)
@@ -134,6 +138,8 @@ export function App() {
   const [hovered, setHovered] = useState<number | null>(null)
   // Esc closes Quick-preview first, and only then leaves select mode.
   const select = useSelectMode(photos, () => document.querySelector('[data-quick-preview]') !== null)
+  // What RollSense's actions take: the photos ticked in select mode, else those the pick shows.
+  const senseTargets = select.checked.size > 0 ? photos.filter((p) => select.checked.has(p.id)).map((p) => p.id) : photos.map((p) => p.id)
   const selectMode = select.active
   // Copy, paste and reset of develop settings (FR-097): one set of keys and menu items, the
   // ticked photos for a paste to many.
@@ -310,7 +316,7 @@ export function App() {
             />
           )}
           {taskProgress && (
-            <TaskProgressBar progress={taskProgress} onCancel={taskProgress.task === 'sort' && sorting ? cancelSorting : taskProgress.task === 'trash' ? () => void commands.cancelTrash() : undefined} />
+            <TaskProgressBar progress={taskProgress} onCancel={(taskProgress.task === 'sort' || taskProgress.task === 'duplicates') && sorting ? cancelSorting : taskProgress.task === 'trash' ? () => void commands.cancelTrash() : undefined} />
           )}
         </NoticeStack>
         {/* The main view fails alone, its notices above it stay (ADR-0048). */}
@@ -424,7 +430,22 @@ export function App() {
                 </div>
               )}
             </div>
-            {view !== 'groups' && selectMode && (
+            {/* RollSense's bar, always there while it is open (owner 2026-11-19): ticking never
+                moves the column or the grid; in select mode it stands for the selection bar. */}
+            {rollsense && (
+              <SenseBar
+                count={senseTargets.length}
+                live={picks.length > 0 || select.checked.size > 0}
+                ticked={select.checked.size > 0}
+                onAnalyze={!sense.running && sense.facets && sense.facets.analysed < sense.facets.total ? () => void sense.analyze() : undefined}
+                onEdit={() => setView('photos')}
+                onBasket={() => void sense.toBasket(senseTargets)}
+                onAside={() => void sense.setAside(senseTargets)}
+                onDelete={() => void sense.markDelete(senseTargets)}
+                select={selectMode ? { onSelectAll: select.tickAll, onClear: select.clear } : undefined}
+              />
+            )}
+            {view !== 'groups' && !rollsense && selectMode && (
               <SelectionBar
                 count={select.checked.size}
                 elsewhere={select.checked.size - photos.filter((p) => select.checked.has(p.id)).length}
@@ -455,7 +476,7 @@ export function App() {
               </div>
             ) : (
               <LibraryGrid
-                photos={photos}
+                photos={grid.photos}
                 thumbVersions={thumbVersions}
                 generation={project.document.generation}
                 selected={current}
@@ -466,6 +487,7 @@ export function App() {
                 onToggle={select.toggle}
                 onToggleAll={select.tickAll}
                 onHover={setHovered}
+                sections={grid.sections}
               />
             )}
           </>
@@ -588,9 +610,6 @@ export function App() {
             setPicks(next)
             setSelected(0)
           }}
-          shown={select.checked.size > 0 ? photos.filter((p) => select.checked.has(p.id)).map((p) => p.id) : photos.map((p) => p.id)}
-          ticked={select.checked.size > 0}
-          onEdit={() => setView('photos')}
           onClearFilter={
             filter.flag !== 'all' || filter.minRating > 0 ? () => setFilter({ ...filter, flag: 'all', minRating: 0 }, true) : undefined
           }

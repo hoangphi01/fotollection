@@ -16,6 +16,13 @@ export function senseAnswers() {
       const weeks = Math.ceil((Date.UTC(year, month, 1) / 864e5 - start) / 7)
       return Array.from({ length: weeks }, (_, w) => Array.from({ length: 7 }, (_, i) => cell(start + w * 7 + i, month)))
     },
+    // The grid's headers (FR-141 C2): the demo's photos as one event, the list as the bridge
+    // answers it, so the run covers the grid.
+    gallery_sections: async ({ filter }) => {
+      const list = await window.__TAURI_INTERNALS__.invoke('list_photos', { filter })
+      const count = list?.photos?.length ?? 0
+      return count ? [{ kind: 'event', start: 0, count, day: 18802, startMin: 600, endMin: 642, place: 'Praha' }] : []
+    },
     // The home time (FR-145): a fixed system zone, and one search hit.
     home_zone_guess: () => 'Europe/Prague',
     zone_search: () => [{ zone: 'Asia/Seoul', place: 'Seoul', country: 'South Korea' }],
@@ -35,11 +42,26 @@ export async function measureSidePanels({ open, settle, measure, allChecks, say,
   rows.push(['RollSense panel', await measure(page, 'aside.border-l')])
   extra.push(...(await allChecks(page, 'RollSense panel')))
   await page.screenshot({ path: path.join(outDir, 'measure-rollsense.png') })
-  // The When calendar with its last day chosen, the day's rows under it (FR-141 C1–C2).
-  await page.locator('[data-day]:not(:disabled)').last().click()
-  await page.locator('aside.border-l').getByText(/\d:\d\d/).last().scrollIntoViewIfNeeded()
+  // UI-STABLE-003 (FR-141, owner 2026-11-19: "the actions jumped over the calendar, then it
+  // scrolled by itself"): ticking a day moves neither the day, nor the column's foot, nor the
+  // grid's scroll, and the grid then shows its event headers.
+  const day = page.locator('[data-day]:not(:disabled)').last()
+  await day.scrollIntoViewIfNeeded()
   await settle(page)
-  extra.push(...(await allChecks(page, 'RollSense, a day chosen')))
-  await page.locator('aside.border-l').screenshot({ path: path.join(outDir, 'measure-rollsense-when.png') })
+  const foot = page.locator('aside.border-l > div').last()
+  const grid = page.getByLabel(say('library.gridLabel'))
+  const before = { day: await day.boundingBox(), foot: await foot.boundingBox() }
+  await day.click()
+  await settle(page)
+  const after = { day: await day.boundingBox(), foot: await foot.boundingBox(), top: await grid.evaluate((e) => e.scrollTop) }
+  await page.waitForTimeout(2000)
+  const later = await grid.evaluate((e) => e.scrollTop)
+  const moved = (a, b) => Math.abs((a?.y ?? 0) - (b?.y ?? 0)) > 1 || Math.abs((a?.height ?? 0) - (b?.height ?? 0)) > 1
+  if (moved(before.day, after.day)) extra.push(`UI-STABLE-003 ticking a day moved it from ${before.day?.y} to ${after.day?.y}`)
+  if (moved(before.foot, after.foot)) extra.push('UI-STABLE-003 ticking a day resized the column\'s foot')
+  if (after.top !== later) extra.push(`UI-STABLE-003 the grid scrolled by itself, ${after.top} to ${later} px`)
+  if ((await page.locator('[data-slot="grid-section-header"]').count()) === 0) extra.push('UI-STABLE-003 a ticked day shows no event header in the grid')
+  extra.push(...(await allChecks(page, 'RollSense, a day ticked')))
+  await page.screenshot({ path: path.join(outDir, 'measure-rollsense-when.png') })
   await context.close()
 }

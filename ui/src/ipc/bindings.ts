@@ -855,6 +855,11 @@ export const commands = {
 	/**  Everything RollSense lists, with counts, over the photos of `folders` (all when empty). */
 	sortFacets: (folders: number[]) => typedError<Facets, IpcError>(__TAURI_INVOKE("sort_facets", { folders })),
 	/**
+	 *  The grid's sections under RollSense's time picks (FR-141 C2): its events when a day is
+	 *  ticked, its days for a month or a year, none otherwise.
+	 */
+	gallerySections: (filter: CullFilter) => typedError<GallerySection[], IpcError>(__TAURI_INVOKE("gallery_sections", { filter })),
+	/**
 	 *  Moves the chosen photos' files to the system's Trash (FR-141, ADR-0055), then rebuilds the
 	 *  library from its folders so they leave it; every other photo keeps its edits. The paths
 	 *  come from the library, never from the webview.
@@ -1780,6 +1785,21 @@ export type FrameSettings = {
 	logoScale?: number | null,
 };
 
+/**  A run of the grid's photos under one header. */
+export type GallerySection = {
+	kind: SectionKind,
+	/**  Its first photo's position in the grid, and how many follow under the header. */
+	start: number,
+	count: number,
+	/**  Its local day, days since 1970. */
+	day: number,
+	/**  Minutes after local midnight of its first and last photo, in the place's time. */
+	startMin: number,
+	endMin: number,
+	/**  The place most of its photos were taken. */
+	place: string | null,
+};
+
 export type GpsPoint = {
 	lat: number | null,
 	lon: number | null,
@@ -2636,6 +2656,9 @@ export type SavedAddress = {
 	recipient: Recipient,
 };
 
+/**  What a section's header names. */
+export type SectionKind = "day" | "event";
+
 /**  The colour filter in front of a RAW's sensor. */
 export type Sensor = "bayer" | "xTrans" | 
 /**  Another pattern, such as four colours. */
@@ -2865,7 +2888,9 @@ export type TaskKind =
 /**  RollSense's pixels pass: subjects and duplicates (FR-141). */
 "sort" | 
 /**  Photos marked to delete, moved to the Trash at once (FR-141). */
-"trash";
+"trash" | 
+/**  RollSense's pass, last: candidate duplicates proven on their pictures (FR-015, FR-141). */
+"duplicates";
 
 /**  Progress of a background task, for the progress bar (coalesced to ≤ 30 per second). */
 export type TaskProgress = {

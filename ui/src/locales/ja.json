@@ -58,7 +58,8 @@
     "analyze": "ベストショットを検索中",
     "sort": "RollSense用に写真を分析中",
     "looks": "色を適用中",
-    "trash": "写真をゴミ箱へ移動中"
+    "trash": "写真をゴミ箱へ移動中",
+    "duplicates": "重複を確認中"
   },
   "culling": {
     "keysHint": "0–5 レーティング · P 採用 · X 除外 · U フラグを解除 · [ ] 回転",
@@ -1652,19 +1653,20 @@
     "typeCount_other": "完全に削除するには{{count}}と入力してください。"
   },
   "rollsense": {
+    "picked_one": "{{count}} 枚を選択",
+    "picked_other": "{{count}} 枚を選択",
+    "nonePicked": "グループにチェックして写真を選択",
+    "editInPhotos": "写真で編集",
     "wholeMonth": "月全体を選択します。",
     "wholeYear": "年全体を選択します。",
-    "wholeDay": "{{day}}の全体",
     "reset": "このグループのチェックを解除",
     "view": "RollSense",
     "title": "RollSense",
     "all": "すべての写真",
     "hint": "写真にチェックを入れ、「写真」で編集、プリントバスケットに追加、保留、または削除予定にします。",
     "reading": "写真を分析中…",
-    "read": "{{done}} / {{total}}枚を分析済み",
     "analyze": "写真を分析",
     "stop": "停止",
-    "setAside_other": "{{count}}枚を保留にする",
     "sources": "入手元",
     "subjects": "被写体",
     "time": "日付",
@@ -1702,9 +1704,6 @@
       "saved": "アプリやチャットから保存",
       "memes": "ミーム（AI検出）"
     },
-    "delete_other": "{{count}}枚を削除予定にする",
-    "edit_other": "{{count}}枚を「写真」で編集",
-    "toBasket_other": "{{count}}枚をプリントバスケットへ",
     "backToPick": "RollSenseに戻る（チェックを保持）",
     "clearPick": "RollSenseのチェックを解除",
     "source": {

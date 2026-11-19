@@ -79,6 +79,8 @@ table, or the two side panels differ in width. It also opens the gallery and Col
 
 **A new block is reached by a scene.** A card, panel or state the change adds is opened by a scene of `site/screenshots/shoot.mjs` (each view is checked folded and with every card open), in English and Hungarian; a block no scene reaches is checked by no machine (the process review, 2026-11-12).
 
+**A new control is pressed, not only shot** (owner, 2026-11-19: RollSense's calendar passed every still shot, then its first click moved the column and the grid scrolled by itself). Every control the change adds is clicked in a scene, and the scene asserts that what was pressed stays within 1 px, that no panel's foot or bar changes size, and that no scroll moves on its own for 2 s (UI-STABLE-003 is the model, in `site/screenshots/side-panels.mjs`). A still screenshot never proves "nothing jumps".
+
 ## 5. Look at it
 
 Open the `measure-*.png` shots it writes (and the running app when the change is

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { Toggle } from '@/components/ui/toggle'
 import { commands, type CalDay } from '@/ipc/bindings'
 import { cn } from '@/lib/utils'
 
@@ -37,11 +38,13 @@ function useMonthGrid(year: number, month: number, first: number) {
   return weeks
 }
 
-/** How dark a day with photos is shaded, in three steps of the month's busiest day. */
+/** How dark a day with photos is shaded, in three neutral steps of the month's busiest day, a
+ * step darker under the pointer: only a ticked day wears the accent (owner, 2026-11-19: the
+ * busiest days read as ticked). */
 function shade(count: number, most: number): string {
-  if (count >= most * 0.5) return 'bg-primary/45'
-  if (count >= most * 0.15) return 'bg-primary/25'
-  return 'bg-primary/12'
+  if (count >= most * 0.5) return 'bg-foreground/28 hover:bg-foreground/36'
+  if (count >= most * 0.15) return 'bg-foreground/16 hover:bg-foreground/28'
+  return 'bg-foreground/8 hover:bg-foreground/16'
 }
 
 type CalendarMonthProps = {
@@ -54,8 +57,7 @@ type CalendarMonthProps = {
   counts: Map<number, number>
   /** The days switched on, pressed in as every switched-on control. */
   pressed(day: number): boolean
-  /** The day whose rows show under the calendar. */
-  chosen: number | null
+  /** A day with photos switched on or off. */
   onDay(day: number): void
   /** The month before or after; none when there is no other. */
   onPrev?: () => void
@@ -65,10 +67,12 @@ type CalendarMonthProps = {
 /**
  * One month as a grid of days (FR-141 C1–C2; STYLE_RULE §4, the calendar block): the arrows and
  * a title, the weekdays in the interface language from its first day of the week, then the
- * days laid out by the core, 32 px tall, shaded by how many photos they hold. Arrow keys move
- * between the days; Enter or Space chooses one. Every calendar is this block.
+ * days laid out by the core, each a `Toggle` 32 px tall, 4 px apart as the parts of one control,
+ * shaded in a neutral grey by how many photos it holds,
+ * pressed in once switched on as every toggle. Arrow keys move between the days; Enter or Space
+ * switches one. Every calendar is this block.
  */
-export function CalendarMonth({ year, month, title, counts, pressed, chosen, onDay, onPrev, onNext }: CalendarMonthProps) {
+export function CalendarMonth({ year, month, title, counts, pressed, onDay, onPrev, onNext }: CalendarMonthProps) {
   const { t, i18n } = useTranslation()
   const first = firstWeekday(i18n.language)
   const weeks = useMonthGrid(year, month, first)
@@ -93,46 +97,44 @@ export function CalendarMonth({ year, month, title, counts, pressed, chosen, onD
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-1">
-        <Button variant="outline" size="icon-sm" aria-label={t('calendar.prev')} data-hint={onPrev && t('calendar.prev')} disabled={!onPrev} onClick={onPrev}>
-          <ChevronLeft />
-        </Button>
+        {/* The hint on a wrapper, so a disabled arrow still names itself (STYLE_RULE §4). */}
+        <span data-hint={t('calendar.prev')}>
+          <Button variant="outline" size="icon-sm" aria-label={t('calendar.prev')} disabled={!onPrev} onClick={onPrev}>
+            <ChevronLeft />
+          </Button>
+        </span>
         <div className="flex min-w-0 flex-1 items-center justify-center gap-1">{title}</div>
-        <Button variant="outline" size="icon-sm" aria-label={t('calendar.next')} data-hint={onNext && t('calendar.next')} disabled={!onNext} onClick={onNext}>
-          <ChevronRight />
-        </Button>
+        {/* The hint on a wrapper, so a disabled arrow still names itself (STYLE_RULE §4). */}
+        <span data-hint={t('calendar.next')}>
+          <Button variant="outline" size="icon-sm" aria-label={t('calendar.next')} disabled={!onNext} onClick={onNext}>
+            <ChevronRight />
+          </Button>
+        </span>
       </div>
-      <div className="grid grid-cols-7 gap-0.5 text-center text-2xs text-muted-foreground" aria-hidden>
+      <div className="grid grid-cols-7 gap-1 text-center text-2xs text-muted-foreground" aria-hidden>
         {names.map((n, i) => (
           <span key={i}>{n}</span>
         ))}
       </div>
-      <div role="group" aria-label={new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)))} className="grid grid-cols-7 gap-0.5" onKeyDown={move}>
+      <div role="group" aria-label={new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)))} className="grid grid-cols-7 gap-1" onKeyDown={move}>
         {weeks.map((week) => (
           <div key={week[0]?.day} className="contents">
             {week.map((d) => {
               const count = d.inMonth ? (counts.get(d.day) ?? 0) : 0
               const on = count > 0 && pressed(d.day)
               return (
-                <button
+                <Toggle
                   key={d.day}
-                  type="button"
+                  size="sm"
                   data-day={d.day}
                   disabled={count === 0}
-                  aria-pressed={on}
-                  aria-current={chosen === d.day ? 'true' : undefined}
+                  pressed={on}
+                  onPressedChange={() => onDay(d.day)}
                   aria-label={count > 0 ? `${d.date} · ${count.toLocaleString(i18n.language)}` : undefined}
-                  onClick={() => onDay(d.day)}
-                  className={cn(
-                    'h-8 rounded-md text-xs tabular-nums motion-control outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
-                    !d.inMonth && 'invisible',
-                    count === 0 && 'text-muted-foreground',
-                    count > 0 && !on && cn(shade(count, most), 'font-medium hover:bg-primary/60'),
-                    on && 'bg-pressed font-medium text-primary-foreground pressed-in',
-                    chosen === d.day && 'ring-2 ring-primary ring-offset-1 ring-offset-card',
-                  )}
+                  className={cn('w-full min-w-0 px-0 tabular-nums', !d.inMonth && 'invisible', count > 0 && !on && shade(count, most))}
                 >
                   {d.date}
-                </button>
+                </Toggle>
               )
             })}
           </div>

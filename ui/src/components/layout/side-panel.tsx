@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { PartBoundary } from './part-boundary'
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
+import { useScrollAnchor } from '@/lib/scroll-anchor'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 
@@ -20,6 +21,9 @@ type SidePanelProps = {
  * scrolling cards over a fixed footer, so the three never drift apart (STYLE_RULE §4).
  */
 export function SidePanel({ title, children, footer, tabs }: SidePanelProps) {
+  // What the user looks at stays put when a card above it grows (RollSense filling, 2026-11-19).
+  const cards = useRef<HTMLDivElement>(null)
+  useScrollAnchor(cards)
   return (
     <aside className="flex w-panel shrink-0 flex-col border-l chrome-lit text-sidebar-foreground">
       <div className="flex h-header shrink-0 items-center px-4">
@@ -34,7 +38,7 @@ export function SidePanel({ title, children, footer, tabs }: SidePanelProps) {
       )}
       {/* An overlay scrollbar, as in the folder list, so the cards keep the panel's width. */}
       <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
-        <div className="space-y-3 p-3">
+        <div ref={cards} className="space-y-3 p-3">
           <PartBoundary part="panel">{children}</PartBoundary>
         </div>
       </ScrollArea>

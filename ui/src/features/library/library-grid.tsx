@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
 import { handleCullKey } from '@/features/culling/cull-keys'
+import type { GridSection } from '@/features/rollsense/use-gallery-sections'
+import { GridSectionHeader } from '@/components/layout/grid-section-header'
 import { ThumbTile } from './thumb-tile'
 
 /** Ids of the photos ticked in select mode (FR-050). */
@@ -11,6 +13,11 @@ type Checked = ReadonlySet<number>
 
 const TILE = 168
 const GAP = 8
+/** A section's header row (FR-141 C2, `GridSectionHeader`), 8 px of it the gap to its photos. */
+const HEADER = 32
+
+/** A row of the grid: a section's header, or photos `start` to `end` (exclusive). */
+type Row = { header: GridSection } | { start: number; end: number }
 
 type LibraryGridProps = {
   photos: PhotoSummary[]
@@ -27,6 +34,8 @@ type LibraryGridProps = {
   onToggleAll: () => void
   /** The photo under the pointer, for Quick-preview (FR-059). */
   onHover: (index: number | null) => void
+  /** Runs of photos under a header each (RollSense's time picks, FR-141 C2); none, one grid. */
+  sections?: GridSection[]
 }
 
 /** Virtualized thumbnail grid (FR-003, NFR-001): only visible rows are in the DOM. */
@@ -42,6 +51,7 @@ export function LibraryGrid({
   onToggle,
   onToggleAll,
   onHover,
+  sections = [],
 }: LibraryGridProps) {
   const { t } = useTranslation()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -56,32 +66,62 @@ export function LibraryGrid({
   }, [])
 
   const columns = Math.max(1, Math.floor((width - GAP) / (TILE + GAP)))
-  const rows = Math.ceil(photos.length / columns)
+  // Each section starts a new row under its header; without sections, one run of every photo.
+  const model: Row[] = []
+  for (const run of sections.length ? sections : [null]) {
+    if (run) model.push({ header: run })
+    const [from, to] = run ? [run.start, run.start + run.count] : [0, photos.length]
+    for (let s = from; s < to; s += columns) model.push({ start: s, end: Math.min(s + columns, to) })
+  }
+  const rowOf = (index: number) => model.findIndex((r) => 'start' in r && index >= r.start && index < r.end)
   // TanStack Virtual returns non-memoizable functions by design; the grid re-renders
   // on scroll anyway, so skipping React Compiler memoization here is fine.
   // oxlint-disable-next-line react/incompatible-library
   const virtualizer = useVirtualizer({
-    count: rows,
+    count: model.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => TILE + GAP,
+    estimateSize: (i) => (model[i] && 'header' in model[i] ? HEADER : TILE + GAP),
     overscan: 4,
   })
+  // The rows' heights change with the sections.
+  const shape = sections.map((s) => s.count).join()
+  useEffect(() => virtualizer.measure(), [shape, columns, virtualizer])
 
+  const selectedRow = rowOf(selected)
+  // Scrolls only when the selected photo itself changes (or the columns do), never because
+  // headers arrived and moved its row (owner, 2026-11-19: the grid scrolled by itself); the
+  // first photo brings the top into view, its header with it.
+  const selectedId = photos[selected]?.id
+  const scrollTo = useRef({ selected, selectedRow, virtualizer })
+  scrollTo.current = { selected, selectedRow, virtualizer }
   useEffect(() => {
-    virtualizer.scrollToIndex(Math.floor(selected / columns), { align: 'auto' })
-  }, [selected, columns, virtualizer])
+    const { selected: index, selectedRow: row, virtualizer: v } = scrollTo.current
+    if (index === 0) v.scrollToOffset(0)
+    else if (row >= 0) v.scrollToIndex(row, { align: 'auto' })
+  }, [selectedId, columns])
+
+  /** The photo a row up or down, in the same column or the row's last, past headers. */
+  const vertical = (step: number) => {
+    const at = model[selectedRow]
+    if (!at || !('start' in at)) return selected
+    for (let r = selectedRow + step; r >= 0 && r < model.length; r += step) {
+      const row = model[r]
+      if (row && 'start' in row) return Math.min(row.start + (selected - at.start), row.end - 1)
+    }
+    return selected
+  }
 
   const onKeyDown = (event: KeyboardEvent) => {
-    const moves: Record<string, number> = {
-      ArrowRight: 1,
-      ArrowLeft: -1,
-      ArrowDown: columns,
-      ArrowUp: -columns,
+    const moves: Record<string, () => number> = {
+      ArrowRight: () => selected + 1,
+      ArrowLeft: () => selected - 1,
+      ArrowDown: () => vertical(1),
+      ArrowUp: () => vertical(-1),
     }
-    const delta = moves[event.key]
-    if (delta !== undefined) {
+    const move = moves[event.key]
+    if (move !== undefined) {
       event.preventDefault()
-      onSelect(Math.min(photos.length - 1, Math.max(0, selected + delta)))
+      onSelect(Math.min(photos.length - 1, Math.max(0, move())))
     } else if (selectMode && event.key === 'Enter') {
       event.preventDefault()
       onToggle(selected, false)
@@ -108,35 +148,44 @@ export function LibraryGrid({
       aria-label={t('library.gridLabel')}
     >
       <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
-        {virtualizer.getVirtualItems().map((row) => (
-          <div
-            key={row.key}
-            className="absolute left-0 flex w-full"
-            style={{ top: row.start, gap: GAP, paddingLeft: GAP }}
-          >
-            {photos.slice(row.index * columns, row.index * columns + columns).map((photo, i) => {
-              const index = row.index * columns + i
-              return (
-                <ThumbTile
-                  key={photo.id}
-                  photo={photo}
-                  version={thumbVersions[photo.id] ?? 0}
-                  generation={generation}
-                  size={TILE}
-                  selected={index === selected}
-                  selectMode={selectMode}
-                  checked={checked.has(photo.id)}
-                  onSelect={(e) => {
-                    onSelect(index)
-                    if (selectMode) onToggle(index, e.shiftKey)
-                  }}
-                  onOpen={() => onOpen(index)}
-                  onHover={(over) => onHover(over ? index : null)}
-                />
-              )
-            })}
-          </div>
-        ))}
+        {virtualizer.getVirtualItems().map((item) => {
+          const row = model[item.index]
+          if (!row) return null
+          if ('header' in row)
+            return (
+              <GridSectionHeader
+                key={item.key}
+                label={row.header.label}
+                trailing={row.header.trailing}
+                style={{ top: item.start, left: GAP, height: HEADER - GAP, width: `calc(100% - ${2 * GAP}px)` }}
+              />
+            )
+          return (
+            <div key={item.key} className="absolute left-0 flex w-full" style={{ top: item.start, gap: GAP, paddingLeft: GAP }}>
+              {photos.slice(row.start, row.end).map((photo, i) => {
+                const index = row.start + i
+                return (
+                  <ThumbTile
+                    key={photo.id}
+                    photo={photo}
+                    version={thumbVersions[photo.id] ?? 0}
+                    generation={generation}
+                    size={TILE}
+                    selected={index === selected}
+                    selectMode={selectMode}
+                    checked={checked.has(photo.id)}
+                    onSelect={(e) => {
+                      onSelect(index)
+                      if (selectMode) onToggle(index, e.shiftKey)
+                    }}
+                    onOpen={() => onOpen(index)}
+                    onHover={(over) => onHover(over ? index : null)}
+                  />
+                )
+              })}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

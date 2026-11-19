@@ -58,7 +58,8 @@
     "analyze": "Legjobb képek keresése",
     "sort": "Fotók elemzése a RollSense-hez",
     "looks": "Színek alkalmazása",
-    "trash": "Fotók áthelyezése a Kukába"
+    "trash": "Fotók áthelyezése a Kukába",
+    "duplicates": "Ismétlődések ellenőrzése"
   },
   "culling": {
     "keysHint": "0–5 csillag · P kiválasztás · X elvetés · U jelölő törlése · [ ] forgatás",
@@ -1658,20 +1659,20 @@
     "typeCount_other": "A végleges törléshez írd be: {{count}}"
   },
   "rollsense": {
+    "picked_one": "{{count}} fotó kiválasztva",
+    "picked_other": "{{count}} fotó kiválasztva",
+    "nonePicked": "Jelöljön be csoportokat a fotók kiválasztásához",
+    "editInPhotos": "Szerkesztés a Fotókban",
     "wholeMonth": "Az egész hónapot kijelöli.",
     "wholeYear": "Az egész évet kijelöli.",
-    "wholeDay": "{{day}} egész nap",
     "reset": "Csoport pipáinak törlése",
     "view": "RollSense",
     "title": "RollSense",
     "all": "Minden fotó",
     "hint": "Pipáld ki a fotókat, majd szerkeszd őket a Fotókban, tedd a nyomtatási kosárba, tedd félre vagy jelöld meg törlésre.",
     "reading": "Fotók elemzése…",
-    "read": "{{done}} / {{total}} fotó elemezve",
     "analyze": "Fotók elemzése",
     "stop": "Leállítás",
-    "setAside_one": "{{count}} fotó félretétele",
-    "setAside_other": "{{count}} fotó félretétele",
     "sources": "Forrás",
     "subjects": "Téma",
     "time": "Mikor",
@@ -1710,12 +1711,6 @@
       "saved": "Alkalmazásokból és csevegésekből mentve",
       "memes": "Mémek (MI-felismerés)"
     },
-    "delete_one": "{{count}} fotó megjelölése törlésre",
-    "delete_other": "{{count}} fotó megjelölése törlésre",
-    "edit_one": "{{count}} fotó szerkesztése a Fotókban",
-    "edit_other": "{{count}} fotó szerkesztése a Fotókban",
-    "toBasket_one": "{{count}} fotó a nyomtatási kosárba",
-    "toBasket_other": "{{count}} fotó a nyomtatási kosárba",
     "backToPick": "Vissza a RollSense-be (a pipák megmaradnak)",
     "clearPick": "RollSense-pipák törlése",
     "source": {

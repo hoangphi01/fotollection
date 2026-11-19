@@ -1755,3 +1755,17 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Seen:** the first `CalendarMonth` (FR-141 C1, 2026-11-19) gave its days `role="grid"` and `gridcell` buttons with `aria-pressed`; axe failed every day twice: a gridcell needs a `row` parent, and a gridcell may not carry `aria-pressed`. The measure's picture then looked unchanged after each fix: `shoot.mjs` already wrote `measure-rollsense.png` from another view, so the new one was overwritten.
 - **Why:** an ARIA grid is a table to move through, not a set of switches; and two views of one run shared a file name.
 - **Rule:** days that switch on and off are toggle buttons (`aria-pressed`) in a `role="group"` named by the month, with arrow keys handled by the block; the chosen day is `aria-current`. Every `measure-*.png` a run writes has its own name (`grep` the name before adding a shot).
+
+### Static shots passed, the first click jumped: the calendar, the column's foot and the grid (FR-141, UI)
+
+- **Area:** ui-layout, checks
+- **Seen:** the owner ticked a day in RollSense's new calendar (2026-11-19): four action buttons appeared in the column's foot and covered the calendar, the column drifted while the reading pass filled the cards above it, and the grid scrolled by itself; an independent UI/UX review traced each one.
+- **Why:** three faults of the kind "nothing jumps" forbids, none seen by the checks: the actions were mounted only once something was picked, so the foot grew by 176 px and took the scroll area's room; each `sortingRead` reloaded the cards above the calendar, so it moved down; the grid's headers came after its photos and the scroll effect followed the selected photo's *row*, which the headers moved. The style audit measured still screenshots only; no scene clicked the new control. The busiest days were also shaded in the same violet as a ticked day.
+- **Rule:** a bar or foot that holds actions is always there, its actions disabled until there is something to act on (`SubToolbar`); a scroll area keeps what the user looks at when content above it changes (`useScrollAnchor` in `SidePanel`); a grid draws its headers with its photos and scrolls only when the selected photo changes; only a switched-on control wears the accent. Every new control is clicked in a scene that asserts nothing moved (UI-STABLE-003, the style-audit skill §4).
+
+### A progress bar stuck at 1/16: counted photos the task never ticked (FR-141)
+
+- **Area:** state-cache
+- **Seen:** the new *Checking duplicates* notice stayed at 1/16 after RollSense had finished, and its ✕ did nothing (owner, 2026-11-19).
+- **Why:** the total counted every photo of the candidate pairs, but a pair can reach a photo of another folder, which the pass's scope does not hold; those were skipped before their tick, so `done` never reached `total`, the notice never hid, and the stop had no running job to end.
+- **Rule:** a task's total is the items it will tick, filtered first; every item is ticked on every path (skipped, failed, cancelled), so a progress always ends.

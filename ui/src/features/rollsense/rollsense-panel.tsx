@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Archive, ChevronLeft, Images, PencilLine, ScanSearch, ShoppingBasket, Trash } from 'lucide-react'
+import { ChevronLeft, Images, ScanSearch } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton } from '@/components/forms/danger-button'
-import { Hint, Stack } from '@/components/forms/field'
+import { Hint } from '@/components/forms/field'
 import { ListRow } from '@/components/forms/list-row'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SidePanel } from '@/components/layout/side-panel'
 import { Button } from '@/components/ui/button'
-import type { PhotoId, SortPick, TripFacet } from '@/ipc/bindings'
+import type { SortPick, TripFacet } from '@/ipc/bindings'
 import { TripPage } from './trip-page'
 import { useTripName } from './pick-label'
 import { PanelFooter } from '@/features/about/panel-footer'
@@ -28,23 +28,16 @@ type RollSensePanelProps = {
   sense: RollSense
   picks: SortPick[]
   onPicks(picks: SortPick[]): void
-  /** What the actions take: the photos ticked in select mode, else those the pick shows. */
-  shown: PhotoId[]
-  /** Photos are ticked in select mode: the actions show even with no pick. */
-  ticked: boolean
-  /** To Photos with the pick kept, to colour, print or export it (ADR-0057). */
-  onEdit(): void
   /** Photos' star or flag filter is on and narrows RollSense too: named here, with its clear
    * (two UX reviews, 2026-11-18: a filter is never hidden). */
   onClearFilter?: () => void
 }
 
 /**
- * RollSense's side panel (FR-141): the facets as cards, and under them the pass's state and
- * what a pick leads to (owner 2026-11-18, ADR-0057): edited in Photos with the pick kept, into
- * the print basket, set aside, or deleted.
+ * RollSense's side panel (FR-141): the facets as cards. What a pick leads to (ADR-0057) is on
+ * `SenseBar`, over the grid (owner, 2026-11-19).
  */
-export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit, onClearFilter }: RollSensePanelProps) {
+export function RollSensePanel({ sense, picks, onPicks, onClearFilter }: RollSensePanelProps) {
   const { t } = useTranslation()
   const { facets } = sense
   // A trip's page in place of the cards (S7c): its days, a split, a merge.
@@ -53,7 +46,6 @@ export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit, o
   const trips = facets?.trips ?? []
   const at = tripOpen ? trips.findIndex((x) => x.firstDay === tripOpen.firstDay) : -1
   const props = facets ? { facets, picks, onPicks } : null
-  const count = shown.length
 
   return (
     // RollSense's column: violet on its small solid things, from `.theme-sense`'s tokens.
@@ -77,41 +69,9 @@ export function RollSensePanel({ sense, picks, onPicks, shown, ticked, onEdit, o
           </span>
         )
       }
-      footer={
-        <>
-          <Stack>
-            {facets && facets.analysed < facets.total && <Hint>{t('rollsense.read', { done: facets.analysed, total: facets.total })}</Hint>}
-            {sense.running ? (
-              <RemoveButton kind="stop" wide label={t('rollsense.stop')} onClick={sense.cancel} />
-            ) : (
-              facets &&
-              facets.analysed < facets.total && (
-                <Button variant="outline" onClick={() => void sense.analyze()}>
-                  <ScanSearch data-icon="inline-start" /> {t('rollsense.analyze')}
-                </Button>
-              )
-            )}
-            {(picks.length > 0 || ticked) && count > 0 && (
-              <>
-                <Button onClick={onEdit}>
-                  <PencilLine data-icon="inline-start" /> {t('rollsense.edit', { count })}
-                </Button>
-                <Button variant="secondary" onClick={() => void sense.toBasket(shown)}>
-                  <ShoppingBasket data-icon="inline-start" /> {t('rollsense.toBasket', { count })}
-                </Button>
-                <Button variant="secondary" onClick={() => void sense.setAside(shown)}>
-                  <Archive data-icon="inline-start" /> {t('rollsense.setAside', { count })}
-                </Button>
-                {/* Marking can be undone, as setting aside: neutral; red is only the move to the Trash. */}
-                <Button variant="secondary" onClick={() => void sense.markDelete(shown)}>
-                  <Trash data-icon="inline-start" /> {t('rollsense.delete', { count })}
-                </Button>
-              </>
-            )}
-          </Stack>
-          <PanelFooter />
-        </>
-      }
+      // Only the panel's foot: the actions are on RollSense's bar over the grid, the pass's
+      // progress and its stop in the notices, so ticking never resizes the cards' room.
+      footer={<PanelFooter />}
     >
       {sense.error && <PanelNote danger>{sense.error}</PanelNote>}
       {tripOpen && at >= 0 ? (

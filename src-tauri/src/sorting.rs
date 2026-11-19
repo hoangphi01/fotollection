@@ -11,7 +11,7 @@ use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use fotollection_core::cancel::CancellationToken;
-use fotollection_core::library::{PhotoId, PhotoRecord};
+use fotollection_core::library::{CullFilter, GallerySection, PhotoId, PhotoRecord};
 use fotollection_core::sorting::clip::{Embedder, MODEL_BLAKE3};
 use fotollection_core::sorting::dupes::{self, DupKind};
 use fotollection_core::sorting::facets::Facets;
@@ -108,14 +108,14 @@ pub fn analyze_sorting(
             let state = app.state::<AppState>();
             let (analysed, failed) =
                 read_batches(&app, &state, pool, embedder, &records, &cancel, job_id);
-            let cancelled = cancel.is_cancelled();
-            if !cancelled {
+            if !cancel.is_cancelled() {
                 let candidates = state
                     .library
                     .read()
                     .map_or_else(|_| Vec::new(), |library| library.duplicate_candidates());
-                prove_duplicates(&state, pool, &records, &candidates);
+                prove_duplicates(&app, &state, pool, &records, &candidates, &cancel);
             }
+            let cancelled = cancel.is_cancelled();
             if let Ok(mut running) = state.sorting.lock() {
                 *running = None;
             }
@@ -199,28 +199,54 @@ fn read_batches(
 }
 
 /// Each candidate pair proven on its two pictures (FR-015: a re-save or a colour version,
-/// never two screens of one app); the proven photos kept in the library.
+/// never two screens of one app); the proven photos kept in the library. Its progress is shown
+/// as its own task, with the pass's stop (owner, 2026-11-19: a stop with no word of what runs);
+/// stopped, the duplicates stay as they were.
 fn prove_duplicates(
+    app: &AppHandle,
     state: &AppState,
     pool: &rayon::ThreadPool,
     records: &[PhotoRecord],
     candidates: &[(PhotoId, PhotoId)],
+    cancel: &CancellationToken,
 ) {
     let rules = fotollection_core::sorting::dup_rules();
     let by_id: std::collections::HashMap<PhotoId, &PhotoRecord> =
         records.iter().map(|r| (r.id, r)).collect();
-    let mut wanted: Vec<PhotoId> = candidates.iter().flat_map(|&(a, b)| [a, b]).collect();
+    // Only the scope's photos: a candidate pair may reach a photo of another folder, which this
+    // pass does not read; every photo counted is ticked, so the progress always ends (a bar
+    // stuck at 1/16, 2026-11-19).
+    let mut wanted: Vec<PhotoId> = candidates
+        .iter()
+        .flat_map(|&(a, b)| [a, b])
+        .filter(|id| by_id.contains_key(id))
+        .collect();
     wanted.sort_unstable();
     wanted.dedup();
+    let tick = progress_reporter(
+        app,
+        TaskKind::Duplicates,
+        u32::try_from(wanted.len()).unwrap_or(u32::MAX),
+    );
     let prints: std::collections::HashMap<PhotoId, dupes::Fingerprint> = pool.install(|| {
         wanted
             .par_iter()
             .filter_map(|id| {
-                let image = picture(by_id.get(id)?, &state.thumbs, state.codec.as_ref()).ok()?;
-                Some((*id, dupes::fingerprint(&image, rules.grid)?))
+                let print = (!cancel.is_cancelled())
+                    .then(|| {
+                        let image =
+                            picture(by_id.get(id)?, &state.thumbs, state.codec.as_ref()).ok()?;
+                        dupes::fingerprint(&image, rules.grid)
+                    })
+                    .flatten();
+                tick();
+                Some((*id, print?))
             })
             .collect()
     });
+    if cancel.is_cancelled() {
+        return;
+    }
     let proven: Vec<(usize, usize, DupKind)> = candidates
         .iter()
         .filter_map(|(a, b)| {
@@ -274,6 +300,21 @@ fn sorting_ended(app: &AppHandle, job_id: u32, total: u32) -> impl FnOnce() + Se
 #[specta::specta]
 pub fn sort_facets(state: State<'_, AppState>, folders: Vec<u16>) -> Result<Facets, IpcError> {
     Ok(state.library.read().map_err(poisoned)?.facets(&folders))
+}
+
+/// The grid's sections under RollSense's time picks (FR-141 C2): its events when a day is
+/// ticked, its days for a month or a year, none otherwise.
+#[tauri::command]
+#[specta::specta]
+pub fn gallery_sections(
+    state: State<'_, AppState>,
+    filter: CullFilter,
+) -> Result<Vec<GallerySection>, IpcError> {
+    Ok(state
+        .library
+        .read()
+        .map_err(poisoned)?
+        .gallery_sections(&filter))
 }
 
 /// Most photos one delete may take (IPC input bound, SECURITY.md §2): a whole roll.

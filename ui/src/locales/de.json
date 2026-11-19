@@ -58,7 +58,8 @@
     "analyze": "Beste Aufnahmen werden gesucht",
     "sort": "Fotos werden für RollSense analysiert",
     "looks": "Farbe wird angewendet",
-    "trash": "Fotos werden in den Papierkorb verschoben"
+    "trash": "Fotos werden in den Papierkorb verschoben",
+    "duplicates": "Duplikate werden geprüft"
   },
   "culling": {
     "keysHint": "0–5 Sterne · P Auswahl · X verwerfen · U Markierung aufheben · [ ] drehen",
@@ -1658,20 +1659,20 @@
     "typeCount_other": "Gib {{count}} ein, um sie endgültig zu löschen."
   },
   "rollsense": {
+    "picked_one": "{{count}} Foto ausgewählt",
+    "picked_other": "{{count}} Fotos ausgewählt",
+    "nonePicked": "Gruppen ankreuzen, um Fotos zu wählen",
+    "editInPhotos": "In Fotos bearbeiten",
     "wholeMonth": "Wählt den ganzen Monat.",
     "wholeYear": "Wählt das ganze Jahr.",
-    "wholeDay": "Ganzer {{day}}",
     "reset": "Markierungen dieser Gruppe aufheben",
     "view": "RollSense",
     "title": "RollSense",
     "all": "Alle Fotos",
     "hint": "Fotos markieren, dann unter Fotos bearbeiten, in den Druckkorb legen, zurücklegen oder zum Löschen vormerken.",
     "reading": "Fotos werden analysiert…",
-    "read": "{{done}} von {{total}} Fotos analysiert",
     "analyze": "Fotos analysieren",
     "stop": "Anhalten",
-    "setAside_one": "{{count}} Foto zurücklegen",
-    "setAside_other": "{{count}} Fotos zurücklegen",
     "sources": "Quelle",
     "subjects": "Motiv",
     "time": "Wann",
@@ -1710,12 +1711,6 @@
       "saved": "Aus Apps und Chats gespeichert",
       "memes": "Memes (KI-erkannt)"
     },
-    "delete_one": "{{count}} Foto zum Löschen vormerken",
-    "delete_other": "{{count}} Fotos zum Löschen vormerken",
-    "edit_one": "{{count}} Foto unter Fotos bearbeiten",
-    "edit_other": "{{count}} Fotos unter Fotos bearbeiten",
-    "toBasket_one": "{{count}} Foto in den Druckkorb legen",
-    "toBasket_other": "{{count}} Fotos in den Druckkorb legen",
     "backToPick": "Zurück zu RollSense (Markierungen bleiben)",
     "clearPick": "RollSense-Markierungen aufheben",
     "source": {
