@@ -641,7 +641,7 @@
     "replaces": "Cài đè lên bản này: bộ cài thay ứng dụng và giữ nguyên cài đặt, dự án của bạn.",
     "privacy": "Nhấp để kiểm tra ngay; app cũng kiểm tra một lần khi mở, trừ khi bạn tắt ở trên.",
     "popupTitle": "Đã có Fotollection {{version}}",
-    "popupBody": "Bạn đang dùng {{current}}. Không có gì được tải về cho tới khi bạn chọn.",
+    "popupBody": "Phiên bản đang cài: {{current}}.",
     "belowMinSafe": "Các phiên bản trước {{version}} nên được cập nhật.",
     "later": "Để sau",
     "whatsNew": "Có gì mới",

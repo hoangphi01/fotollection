@@ -663,7 +663,7 @@
     "replaces": "Telepítsd erre a verzióra: lecseréli a programot, a beállításaid és projektjeid megmaradnak.",
     "privacy": "Kattints a kereséshez most; a program induláskor is keres egyszer, hacsak fent ki nem kapcsolod.",
     "popupTitle": "Megjelent a Fotollection {{version}}",
-    "popupBody": "Neked a(z) {{current}} van meg. Semmi sem töltődik le, amíg nem döntesz.",
+    "popupBody": "Telepített verzió: {{current}}.",
     "belowMinSafe": "A(z) {{version}} előtti verziókat érdemes frissíteni.",
     "later": "Később",
     "whatsNew": "Újdonságok",

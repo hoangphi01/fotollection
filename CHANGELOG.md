@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - In a sheet's preview, the note that the narrow window folded *Presets & LUTs* shows on the Edit tab only, no longer taking room on the Postcard and Print tabs.
 - The hint on writing a postcard by hand is one sentence: a fine permanent marker, tried in the stamp box first, or the text typed in the preview.
 - RollSense names what more photos show: trees, autumn leaves, parks and streets are scenery, a street with people is also people, and the edges of a photo count. Photos read before are read again once.
-- The update window at start closes only with one of its buttons, not with a click outside it or Esc. Settings → Updates shows the version that check found, with its red warning when there is one, without asking to check again.
+- The update window at start closes only with one of its buttons, not with a click outside it or Esc. It says the installed version in plain terms. Settings → Updates shows the version that check found, with its red warning when there is one, without asking to check again.
 - RollSense names a star or flag filter left on in Photos, with its clear, and says *Live Photos and bursts*, *Saved from apps and chats* and *Not recognised* in plainer words.
 - RollSense no longer holds the window while it reads: its groups fill as the photos are read, and a stop still keeps nothing.
 - **Select** works in RollSense too: its buttons take the ticked photos when there are some.

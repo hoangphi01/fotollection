@@ -663,7 +663,7 @@
     "replaces": "Install it over this version: it replaces the app and keeps your settings and projects.",
     "privacy": "Click to look now; the app also looks once at start unless that is turned off above.",
     "popupTitle": "Fotollection {{version}} is out",
-    "popupBody": "You have {{current}}. Nothing is downloaded until you choose.",
+    "popupBody": "Installed version: {{current}}.",
     "belowMinSafe": "Versions before {{version}} should be updated.",
     "later": "Later",
     "whatsNew": "What's new",

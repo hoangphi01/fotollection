@@ -663,7 +663,7 @@
     "replaces": "Installiere es über diese Version: Es ersetzt die App und behält deine Einstellungen und Projekte.",
     "privacy": "Klick, um jetzt zu suchen; die App sucht auch einmal beim Start, außer das ist oben ausgeschaltet.",
     "popupTitle": "Fotollection {{version}} ist da",
-    "popupBody": "Du hast {{current}}. Nichts wird geladen, bis du es wählst.",
+    "popupBody": "Installierte Version: {{current}}.",
     "belowMinSafe": "Versionen vor {{version}} sollten aktualisiert werden.",
     "later": "Später",
     "whatsNew": "Neuigkeiten",
