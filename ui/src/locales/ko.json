@@ -1652,6 +1652,9 @@
     "typeCount_other": "영구 삭제하려면 {{count}}을(를) 입력하세요."
   },
   "rollsense": {
+    "wholeMonth": "한 달 전체를 선택합니다.",
+    "wholeYear": "한 해 전체를 선택합니다.",
+    "wholeDay": "{{day}} 전체",
     "reset": "이 그룹 체크 해제",
     "view": "RollSense",
     "title": "RollSense",
@@ -1727,5 +1730,17 @@
       "screen": "화면과 글자",
       "meme": "밈"
     }
+  },
+  "calendar": {
+    "prev": "이전 달",
+    "next": "다음 달"
+  },
+  "homeZone": {
+    "label": "홈 시간",
+    "computer": "이 컴퓨터",
+    "other": "다른 장소",
+    "search": "국가 또는 도시",
+    "readIn": "시간대가 없는 시계는 {{zone}} 기준으로 읽습니다.",
+    "differs": "이 컴퓨터의 시간대는 {{zone}}입니다."
   }
 }

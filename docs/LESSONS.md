@@ -1748,3 +1748,10 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Seen:** after a day of RollSense features the owner sent two screenshots (2026-11-18): the select bar's basket a flat tan slab beside lipped cells, and the pressed Select button reading as raised; an audit then found 10 more slips (the pick chip carrying the column's violet lips into the toolbar, a mark-to-delete red in one place and neutral in another, a split toggle with no pressed look, notes with the wrong action size).
 - **Why:** each feature passed `tsc`, lint and ui-check, but no check knew these rules: a solid button inside a `ButtonGroup`, `aria-pressed` on an outline button, `theme-sense` outside its column, a note's action size; and the pressed face kept the plain accent, which in dark reads as an edge, not a hollow.
 - **Rule:** a UI feature is not done before the `style-audit` skill ran on it, even when features ship fast; every slip it finds that code can catch becomes a `check-lego` rule in the same commit (seven added that day), and the pressed look is one recipe, `bg-pressed`, for every control.
+
+### A calendar of toggle days is a group, not an ARIA grid (UI)
+
+- **Area:** ui-blocks, checks
+- **Seen:** the first `CalendarMonth` (FR-141 C1, 2026-11-19) gave its days `role="grid"` and `gridcell` buttons with `aria-pressed`; axe failed every day twice: a gridcell needs a `row` parent, and a gridcell may not carry `aria-pressed`. The measure's picture then looked unchanged after each fix: `shoot.mjs` already wrote `measure-rollsense.png` from another view, so the new one was overwritten.
+- **Why:** an ARIA grid is a table to move through, not a set of switches; and two views of one run shared a file name.
+- **Rule:** days that switch on and off are toggle buttons (`aria-pressed`) in a `role="group"` named by the month, with arrow keys handled by the block; the chosen day is `aria-current`. Every `measure-*.png` a run writes has its own name (`grep` the name before adding a shot).

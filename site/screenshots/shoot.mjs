@@ -9,7 +9,7 @@
 // network: every request outside the two local hosts is refused.
 
 import { axeChecks, baseline, fitReport, layoutChecks, stableChecks } from './checks.mjs'
-import { measureSidePanels } from './side-panels.mjs'
+import { measureSidePanels, senseAnswers } from './side-panels.mjs'
 import { readFile } from 'node:fs/promises'
 import { existsSync, writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
@@ -233,6 +233,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     list_groups: () => common.list_groups,
     sort_facets: () => common.sort_facets, // RollSense (FR-141): recorded; its pass is done
     analyze_sorting: () => 1,
+    ...window.__senseAnswers, // RollSense's calendar and the home time (side-panels.mjs)
     // Dumps recorded before FR-056 have no folder list: count it from the photos. A few
     // photos sit in the print basket and set aside (FR-050), as after a culling session.
     list_photos: (a) => {
@@ -437,6 +438,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
   await context.addInitScript((words) => {
     globalThis.__englishWords = words
   }, ENGLISH_WORDS)
+  await context.addInitScript(senseAnswers)
   await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict, profile: { tabRules: PROFILE.tabRules, tabElse: PROFILE.tabElse, exportName: PROFILE.exportName, recent: PROFILE.recent, book: PROFILE.book } })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))

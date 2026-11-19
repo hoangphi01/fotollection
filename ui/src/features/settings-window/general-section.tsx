@@ -10,6 +10,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
 import { showWelcome } from '@/features/welcome/welcome-store'
 import { LanguageSetting } from '@/features/about/language-setting'
+import { HomeZoneSetting } from '@/features/settings/home-zone-setting'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { commands, type MotionPreference, type PreviewLayout, type ThemePreference } from '@/ipc/bindings'
 
@@ -42,6 +43,7 @@ export function GeneralSection() {
     <>
     <SectionCard icon={<SlidersHorizontal />} title={t('settingsWindow.interface')}>
       <LanguageSetting />
+      <HomeZoneSetting />
       <Field label={t('theme.label')} hint={t(`theme.${ui.theme}`)}>
         <SegmentedToggle<ThemePreference>
           value={ui.theme}

@@ -1591,6 +1591,9 @@
     "typeCount_other": "Gõ {{count}} để xoá vĩnh viễn."
   },
   "rollsense": {
+    "wholeMonth": "Chọn cả tháng.",
+    "wholeYear": "Chọn cả năm.",
+    "wholeDay": "Cả ngày {{day}}",
     "reset": "Bỏ tick nhóm này",
     "view": "RollSense",
     "title": "RollSense",
@@ -1666,5 +1669,17 @@
       "screen": "Màn hình và chữ",
       "meme": "Meme"
     }
+  },
+  "calendar": {
+    "prev": "Tháng trước",
+    "next": "Tháng sau"
+  },
+  "homeZone": {
+    "label": "Giờ nhà",
+    "computer": "Theo máy tính",
+    "other": "Nơi khác",
+    "search": "Nước hoặc thành phố",
+    "readIn": "Giờ máy ảnh không ghi múi giờ được đọc theo {{zone}}.",
+    "differs": "Máy tính đang đặt múi giờ {{zone}}."
   }
 }

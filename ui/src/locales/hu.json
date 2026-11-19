@@ -1658,6 +1658,9 @@
     "typeCount_other": "A végleges törléshez írd be: {{count}}"
   },
   "rollsense": {
+    "wholeMonth": "Az egész hónapot kijelöli.",
+    "wholeYear": "Az egész évet kijelöli.",
+    "wholeDay": "{{day}} egész nap",
     "reset": "Csoport pipáinak törlése",
     "view": "RollSense",
     "title": "RollSense",
@@ -1738,5 +1741,17 @@
       "screen": "Képernyők és szöveg",
       "meme": "Mémek"
     }
+  },
+  "calendar": {
+    "prev": "Előző hónap",
+    "next": "Következő hónap"
+  },
+  "homeZone": {
+    "label": "Otthoni idő",
+    "computer": "Ez a számítógép",
+    "other": "Másik hely",
+    "search": "Ország vagy város",
+    "readIn": "Az időzóna nélküli órák időzónája: {{zone}}.",
+    "differs": "A számítógép időzónája: {{zone}}."
   }
 }

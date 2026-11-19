@@ -24,7 +24,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - RollSense's *Duplicates* holds only the extra copies, one of each picture always kept, and a photo is deleted for good only after the Trash refused it.
 - What RollSense picks can be worked on: **Edit in Photos** keeps the pick in Photos for colour, export and print, named by a violet chip in the toolbar that goes back to RollSense or clears it; **Add to the print basket** gathers it to print.
 - RollSense follows the folders: ticking more keeps it, over all the ticked ones; choosing another folder goes back to Photos. Its button, while shown, now reads pressed in.
-- Photos keep the local time of the place where they were taken: each gets one UTC instant from its GPS time, its own offset or its camera's clock, read in that camera's zone or else in a home time zone (the system's for now), with past summer times; RollSense's days, events and trips follow it, so a photo at 00:30 in Seoul is on that Seoul day. Offline, from the IANA zone rules and a zone for each bundled place.
+- Photos keep the local time of the place where they were taken: each gets one UTC instant from its GPS time, its own offset or its camera's clock, read in that camera's zone or else in the home time, with past summer times; RollSense's days, events and trips follow it, so a photo at 00:30 in Seoul is on that Seoul day. Offline, from the IANA zone rules and a zone for each bundled place.
+- **Home time**, on the welcome's first page and in Settings › General: this computer's zone, or another place's found by its country or city. It is kept when the computer is set to another zone, and a hint then names the computer's.
+- RollSense's **When** is a month calendar: days shaded by their photos, the month and the year ticked from its title, and a day chosen shows the whole day and each of its events with its local times (*08:10–10:40 · Seoul*).
 - A photo with no date of its own takes the date written in its file name (`2020-06-18 21-51-22.jpg`, `PXL_20230105_093012.jpg`, `IMG-20220127-WA0001.jpg`) before the file's time.
 
 ### Changed

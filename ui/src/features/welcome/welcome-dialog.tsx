@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { languageInfo } from '@/i18n'
+import { useSystemZone } from '@/features/settings/use-system-zone'
 import { LanguagePage } from './language-page'
 import { closeWelcome, decideWelcome, useWelcomeOpen } from './welcome-store'
 
@@ -32,6 +33,7 @@ const PAGES = [
 export function WelcomeDialog() {
   const { t, i18n } = useTranslation()
   const { ui, update, loaded } = useUiSettings()
+  const systemZone = useSystemZone()
   if (loaded) decideWelcome(ui.welcomeSeen, ui.welcomeEveryStart)
   const open = useWelcomeOpen()
   const [page, setPage] = useState(0)
@@ -45,7 +47,8 @@ export function WelcomeDialog() {
     closeWelcome()
     setPage(0)
     setTick(null)
-    void update({ welcomeSeen: true, welcomeEveryStart: everyStart })
+    // The home zone is kept from here on (FR-145), so a laptop taken abroad keeps it.
+    void update({ welcomeSeen: true, welcomeEveryStart: everyStart, homeZone: ui.homeZone ?? systemZone })
   }
   const current = PAGES[page] ?? PAGES[0]
   const last = page === PAGES.length - 1

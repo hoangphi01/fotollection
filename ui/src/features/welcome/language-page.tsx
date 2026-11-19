@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useState } from 'react'
 import { ListRow, ListRows } from '@/components/forms/list-row'
+import { HomeZoneSetting } from '@/features/settings/home-zone-setting'
 import { useLanguage } from '@/features/settings/use-language'
 import { LANGUAGES } from '@/i18n'
 import { useReducedMotion } from '@/lib/motion'
@@ -61,6 +62,10 @@ export function LanguagePage() {
             </ListRow>
           ))}
         </ListRows>
+      </div>
+      {/* The home time (FR-145): the computer's, or a place's. */}
+      <div className="relative w-72 rounded-2xl border bg-background/40 p-3 backdrop-blur-lg backdrop-saturate-150 lifted">
+        <HomeZoneSetting />
       </div>
     </div>
   )

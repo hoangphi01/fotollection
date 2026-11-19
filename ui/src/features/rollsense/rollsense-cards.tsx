@@ -3,6 +3,7 @@
 import { CalendarDays, Copy, House, MapPin, Merge, Pencil, Plane, Scissors, Smartphone, Tags } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CalendarMonth } from '@/components/forms/calendar-month'
 import { ResetButton } from '@/components/forms/danger-button'
 import { GroupRows } from '@/components/forms/group-rows'
 import { CommitInput } from '@/components/forms/commit-input'
@@ -10,6 +11,7 @@ import { CheckRow, ListRow, ListRows } from '@/components/forms/list-row'
 import { MenuSeparator } from '@/components/forms/menu-content'
 import { RowMenu } from '@/components/forms/row-menu'
 import { SectionCard } from '@/components/layout/section-card'
+import { Toggle } from '@/components/ui/toggle'
 import { commands, type Facets, type SortPick, type TripFacet } from '@/ipc/bindings'
 import { CountryMapView } from './country-map'
 import { useDay, useTripName } from './pick-label'
@@ -114,49 +116,82 @@ export function SubjectsCard({ facets, picks, onPicks }: PickProps) {
   )
 }
 
-/** Years › months › events (FR-141 S4), the newest first, each folded until opened. */
+/** The months with photos, oldest first. */
+function monthsOf(facets: Facets) {
+  return facets.years.flatMap((y) => y.months.map((m) => ({ year: y.year, month: m.month }))).sort((a, b) => a.year * 12 + a.month - (b.year * 12 + b.month))
+}
+
+/** A month as a calendar (FR-141 C1–C2, owner 2026-11-19): days shaded by their photos, the
+ * month and the year picked from the title; a day chosen shows its events under it with their
+ * local times (FR-145), and the whole day, each a pick of this card. */
 export function TimeCard({ facets, picks, onPicks }: PickProps) {
   const { t, i18n } = useTranslation()
   const day = useDay()
-  const [open, setOpen] = useState<Set<string>>(new Set())
-  if (facets.years.length === 0) return null
-  const monthName = new Intl.DateTimeFormat(i18n.language, { month: 'long', timeZone: 'UTC' })
-  const toggle = (key: string) =>
-    setOpen((o) => {
-      const next = new Set(o)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
+  const [shown, setShown] = useState<{ year: number; month: number } | null>(null)
+  const [chosen, setChosen] = useState<number | null>(null)
+  const months = monthsOf(facets)
+  if (months.length === 0) return null
+  const found = shown ? months.findIndex((m) => m.year === shown.year && m.month === shown.month) : -1
+  const index = found >= 0 ? found : months.length - 1
+  const { year, month } = months[index] ?? { year: 1970, month: 1 }
+  const go = (i: number) => {
+    setShown(months[i] ?? null)
+    setChosen(null)
+  }
+  const counts = new Map(facets.days.map((d) => [d.day, d.count]))
+  const events = facets.years.flatMap((y) => y.months.flatMap((m) => m.events))
+  const ticked = (p: SortPick) => picks.some((x) => same(x, p))
+  const pressed = (d: number) => {
+    const date = new Date(d * 86_400_000)
+    return (
+      ticked({ kind: 'day', day: d }) ||
+      ticked({ kind: 'month', year: date.getUTCFullYear(), month: date.getUTCMonth() + 1 }) ||
+      ticked({ kind: 'year', year: date.getUTCFullYear() }) ||
+      events.some((e) => d >= e.firstDay && d <= e.lastDay && ticked({ kind: 'event', first: e.first }))
+    )
+  }
+  const flip = (p: SortPick) => onPicks(ticked(p) ? picks.filter((x) => !same(x, p)) : [...picks, p])
+  const monthPick: SortPick = { kind: 'month', year, month }
+  const yearPick: SortPick = { kind: 'year', year }
+  const clock = new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
+  const time = (min: number) => clock.format(new Date(min * 60_000))
+  const ofDay = chosen === null ? [] : events.filter((e) => chosen >= e.firstDay && chosen <= e.lastDay)
   const row = { picks, onPicks }
   return (
     <FacetCard card={2} icon={<CalendarDays />} title={t('rollsense.time')} {...row}>
-      {facets.years.map((y) => (
-        <GroupRows key={y.year} title={String(y.year)} count={y.count} open={open.has(`${y.year}`)} onToggle={() => toggle(`${y.year}`)}>
-          <PickRow value={{ kind: 'year', year: y.year }} count={y.count} {...row}>
-            {t('rollsense.all')}
+      <CalendarMonth
+        year={year}
+        month={month}
+        title={
+          <>
+            <Toggle size="sm" pressed={ticked(monthPick)} onPressedChange={() => flip(monthPick)} data-hint={t('rollsense.wholeMonth')}>
+              {new Intl.DateTimeFormat(i18n.language, { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)))}
+            </Toggle>
+            <Toggle size="sm" pressed={ticked(yearPick)} onPressedChange={() => flip(yearPick)} data-hint={t('rollsense.wholeYear')}>
+              {year}
+            </Toggle>
+          </>
+        }
+        counts={counts}
+        pressed={pressed}
+        chosen={chosen}
+        onDay={(d) => setChosen(chosen === d ? null : d)}
+        onPrev={index > 0 ? () => go(index - 1) : undefined}
+        onNext={index < months.length - 1 ? () => go(index + 1) : undefined}
+      />
+      {chosen !== null && (
+        <>
+          <PickRow value={{ kind: 'day', day: chosen }} count={counts.get(chosen) ?? 0} {...row}>
+            {t('rollsense.wholeDay', { day: day(chosen) })}
           </PickRow>
-          {y.months.map((m) => (
-            <GroupRows
-              key={m.month}
-              title={monthName.format(new Date(Date.UTC(y.year, m.month - 1, 1)))}
-              count={m.count}
-              open={open.has(`${y.year}-${m.month}`)}
-              onToggle={() => toggle(`${y.year}-${m.month}`)}
-            >
-              <PickRow value={{ kind: 'month', year: y.year, month: m.month }} count={m.count} {...row}>
-                {t('rollsense.all')}
+          {ofDay.map((e) => (
+              <PickRow key={e.first} value={{ kind: 'event', first: e.first }} count={e.count} {...row}>
+                {e.firstDay === e.lastDay ? (e.startMin === e.endMin ? time(e.startMin) : `${time(e.startMin)}–${time(e.endMin)}`) : `${day(e.firstDay)} ${time(e.startMin)} – ${day(e.lastDay)} ${time(e.endMin)}`}
+                {e.place ? ` · ${e.place}` : ''}
               </PickRow>
-              {m.events.map((e) => (
-                <PickRow key={e.first} value={{ kind: 'event', first: e.first }} count={e.count} {...row}>
-                  {e.firstDay === e.lastDay ? day(e.firstDay) : `${day(e.firstDay)} – ${day(e.lastDay)}`}
-                  {e.place ? ` · ${e.place}` : ''}
-                </PickRow>
-              ))}
-            </GroupRows>
-          ))}
-        </GroupRows>
-      ))}
+            ))}
+        </>
+      )}
     </FacetCard>
   )
 }

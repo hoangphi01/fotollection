@@ -1658,6 +1658,9 @@
     "typeCount_other": "Type {{count}} to delete them permanently."
   },
   "rollsense": {
+    "wholeMonth": "Picks the whole month.",
+    "wholeYear": "Picks the whole year.",
+    "wholeDay": "All of {{day}}",
     "reset": "Clear this group's ticks",
     "view": "RollSense",
     "title": "RollSense",
@@ -1738,5 +1741,17 @@
       "screen": "Screens and text",
       "meme": "Memes"
     }
+  },
+  "calendar": {
+    "prev": "Previous month",
+    "next": "Next month"
+  },
+  "homeZone": {
+    "label": "Home time",
+    "computer": "This computer",
+    "other": "Another place",
+    "search": "Country or city",
+    "readIn": "Clocks without a zone are read in {{zone}}.",
+    "differs": "This computer is set to {{zone}}."
   }
 }

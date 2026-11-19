@@ -1658,6 +1658,9 @@
     "typeCount_other": "Gib {{count}} ein, um sie endgültig zu löschen."
   },
   "rollsense": {
+    "wholeMonth": "Wählt den ganzen Monat.",
+    "wholeYear": "Wählt das ganze Jahr.",
+    "wholeDay": "Ganzer {{day}}",
     "reset": "Markierungen dieser Gruppe aufheben",
     "view": "RollSense",
     "title": "RollSense",
@@ -1738,5 +1741,17 @@
       "screen": "Bildschirme und Text",
       "meme": "Memes"
     }
+  },
+  "calendar": {
+    "prev": "Vorheriger Monat",
+    "next": "Nächster Monat"
+  },
+  "homeZone": {
+    "label": "Heimatzeit",
+    "computer": "Dieser Computer",
+    "other": "Anderer Ort",
+    "search": "Land oder Stadt",
+    "readIn": "Uhren ohne Zeitzone gelten in {{zone}}.",
+    "differs": "Dieser Computer ist auf {{zone}} eingestellt."
   }
 }

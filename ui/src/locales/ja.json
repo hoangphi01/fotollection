@@ -1652,6 +1652,9 @@
     "typeCount_other": "完全に削除するには{{count}}と入力してください。"
   },
   "rollsense": {
+    "wholeMonth": "月全体を選択します。",
+    "wholeYear": "年全体を選択します。",
+    "wholeDay": "{{day}}の全体",
     "reset": "このグループのチェックを解除",
     "view": "RollSense",
     "title": "RollSense",
@@ -1727,5 +1730,17 @@
       "screen": "画面と文字",
       "meme": "ミーム"
     }
+  },
+  "calendar": {
+    "prev": "前の月",
+    "next": "次の月"
+  },
+  "homeZone": {
+    "label": "ホームタイム",
+    "computer": "このコンピューター",
+    "other": "別の場所",
+    "search": "国または都市",
+    "readIn": "タイムゾーンのない時計は {{zone}} として読み取ります。",
+    "differs": "このコンピューターのタイムゾーンは {{zone}} です。"
   }
 }
