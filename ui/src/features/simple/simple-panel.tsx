@@ -27,6 +27,8 @@ type SimplePanelProps = {
   photoId: PhotoId | undefined
   /** After "Apply to all" changed the shared settings. */
   onSettingsReload: () => void
+  /** The folders shown (all when empty): the right column is theirs (owner, 2026-11-19). */
+  folders: number[]
   /** RollSense's clean-up rows for the folder shown (FR-141): a phone's roll is offered a tidy-up. */
   cleanup?: CleanupRow[]
   onCleanup(): void
@@ -40,7 +42,7 @@ const BASKET: CullFilter = { ...ALL_PHOTOS, queue: 'print' }
  * border, the date stamp, and Export, with the same controls as Pro so both
  * stay in step.
  */
-export function SimplePanel({ settings, onChange, exporter, basketCount, customStamps, revision, photoId, onSettingsReload, cleanup, onCleanup }: SimplePanelProps) {
+export function SimplePanel({ settings, onChange, exporter, basketCount, customStamps, folders, revision, photoId, onSettingsReload, cleanup, onCleanup }: SimplePanelProps) {
   const { t } = useTranslation()
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const countOf = (kind: CleanupRow['kind']) => cleanup?.find((r) => r.kind === kind)?.count ?? 0
@@ -60,7 +62,7 @@ export function SimplePanel({ settings, onChange, exporter, basketCount, customS
       {/* The photo's colour, after its size as in the previews (STYLE_RULE §4): the strip's look,
           its amount, and Faves (owner, 2026-11-07). */}
       {photoId !== undefined && <PhotoLookCards photoId={photoId} simple revision={revision} onAppliedToAll={onSettingsReload} />}
-      <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
+      <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} folders={folders} />
       <PanelNote icon={<ShoppingBasket />}>{t('simple.exportHint', { count: basketCount })}</PanelNote>
       {/* A roll with screenshots or extra copies is offered a tidy-up first (FR-141, owner 2026-11-18). */}
       {tidy && (

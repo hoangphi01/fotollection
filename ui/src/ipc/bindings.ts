@@ -247,8 +247,11 @@ export const commands = {
 	 *  logo kind are kept from the stored row; logos change only through the logo commands.
 	 */
 	setCameraProfile: (profile: CameraProfile) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("set_camera_profile", { profile })),
-	/**  The camera bodies in the library and their clocks (FR-030). */
-	listCameras: () => typedError<CameraClock[], IpcError>(__TAURI_INVOKE("list_cameras")),
+	/**
+	 *  The camera bodies with photos in `folders` (all when empty) and their clocks (FR-030): the
+	 *  right column is the folders shown's (owner, 2026-11-19).
+	 */
+	listCameras: (folders: number[]) => typedError<CameraClock[], IpcError>(__TAURI_INVOKE("list_cameras", { folders })),
 	/**
 	 *  Corrects one camera body's clock (FR-030): every photo it took moves by `offset_s`, and
 	 *  the grid, groups and stamps follow. The time zone is optional (for GPX tracks, FR-031).
@@ -540,8 +543,11 @@ export const commands = {
 	 *  undoable step.
 	 */
 	setPhotoPlace: (ids: PhotoId[], geonamesId: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_place", { ids, geonamesId })),
-	/**  Every place the library's photos have (set, borrowed or from GPS), most photos first. */
-	listPlaces: () => typedError<PlaceUse[], IpcError>(__TAURI_INVOKE("list_places")),
+	/**
+	 *  Every place the photos of `folders` (all when empty) have (set, borrowed or from GPS), most
+	 *  photos first.
+	 */
+	listPlaces: (folders: number[]) => typedError<PlaceUse[], IpcError>(__TAURI_INVOKE("list_places", { folders })),
 	/**  Renames a place everywhere it is printed (FR-005), or (`None`) back to the dataset's name. */
 	renamePlace: (geonamesId: number, name: string | null) => typedError<null, IpcError>(__TAURI_INVOKE("rename_place", { geonamesId, name })),
 	/**
@@ -763,8 +769,11 @@ export const commands = {
 	 *  undoable step.
 	 */
 	applyRawLookToAll: (look: RawLook) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_raw_look_to_all", { look })),
-	/**  "Reset" in the gallery: every photo follows the settings' stamp again; undoable. */
-	resetPhotoStamps: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_stamps")),
+	/**
+	 *  "Reset" in the gallery: every photo of `folders` (all when empty) follows the settings' stamp
+	 *  again; undoable.
+	 */
+	resetPhotoStamps: (folders: number[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_stamps", { folders })),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
 	redo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("redo")),
 	/**

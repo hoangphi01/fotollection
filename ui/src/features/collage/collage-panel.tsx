@@ -92,7 +92,7 @@ export function CollagePanel({
             ticked={tickedSheets > 0 ? ticked : undefined}
           />
           <CollageCellsCard settings={settings} onChange={onChange} cell={cell} />
-          <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
+          <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} folders={filter.folders ?? []} />
         </>
       )}
     </SidePanel>

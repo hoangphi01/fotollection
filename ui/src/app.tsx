@@ -592,6 +592,7 @@ export function App() {
           exporter={exporter}
           basketCount={queueCounts.print}
           customStamps={customStamps}
+          folders={filter.folders ?? []}
           revision={revision}
           photoId={photos[current]?.id}
           onSettingsReload={reload}

@@ -6,6 +6,7 @@
 use std::collections::HashMap;
 
 mod map;
+mod scope;
 mod sections;
 pub use sections::{GallerySection, SectionKind};
 mod sense;

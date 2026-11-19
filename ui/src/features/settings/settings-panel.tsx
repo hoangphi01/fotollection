@@ -88,10 +88,10 @@ export function SettingsPanel({
       ) : (
         <>
           <PrintSizeCard settings={settings} onChange={onChange} printSizes={printSizes} photo={photo} advice={advice} revision={revision} orientationIds={ticked?.length ? ticked : photo ? [photo.id] : undefined} />
-          <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
+          <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} folders={filter.folders ?? []} />
           <FrameSection frame={frame} fonts={fonts} />
-          <CameraClocksCard />
-          <PlacesCard />
+          <CameraClocksCard folders={filter.folders ?? []} />
+          <PlacesCard folders={filter.folders ?? []} />
         </>
       )}
     </SidePanel>

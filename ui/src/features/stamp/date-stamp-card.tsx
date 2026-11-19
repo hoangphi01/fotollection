@@ -19,8 +19,11 @@ const PLACE_FORMATS: PlaceFormat[] = ['city', 'cityCountryCode', 'cityCountry']
 type DateStampCardProps = {
   settings: RenderSettings | null
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
-  /** Photos with their own stamp from the preview (FR-044): they offer a reset. */
+  /** Photos of the folders shown with their own stamp from the preview (FR-044): they offer a
+   * reset, of those photos only. */
   customStamps: number
+  /** The folders shown (all when empty): the right column is theirs (owner, 2026-11-19). */
+  folders: number[]
   /** The photos of an open collage sheet: each may have its own line under the date. */
   photos?: { id: PhotoId; name: string }[]
   /** Bumps on every edit and undo, for those photos' own lines. */
@@ -33,7 +36,7 @@ type DateStampCardProps = {
  * that brings them back to it. One card, so every mode offers the same stamp (STYLE_RULE §4,
  * same tools, same order).
  */
-export function DateStampCard({ settings, onChange, customStamps, photos, revision }: DateStampCardProps) {
+export function DateStampCard({ settings, onChange, customStamps, folders, photos, revision }: DateStampCardProps) {
   const { t } = useTranslation()
   const id = useId()
   const stamp = settings?.stamp
@@ -50,7 +53,7 @@ export function DateStampCard({ settings, onChange, customStamps, photos, revisi
       open={stamp?.enabled ?? false}
       footer={
         customStamps > 0 && (
-          <ResetButton wide label={t('settings.resetCustomStamps', { count: customStamps })} onClick={() => void commands.resetPhotoStamps()} />
+          <ResetButton wide label={t('settings.resetCustomStamps', { count: customStamps })} onClick={() => void commands.resetPhotoStamps(folders)} />
         )
       }
     >

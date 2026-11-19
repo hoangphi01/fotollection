@@ -36,7 +36,8 @@ type ClockMatchDialogProps = {
  */
 export function ClockMatchDialog({ photoId, clockId, open, onClose }: ClockMatchDialogProps) {
   const { t } = useTranslation()
-  const { clocks, setOffset } = useCameraClocks()
+  // Every body: the photo shown may come from any folder.
+  const { clocks, setOffset } = useCameraClocks([])
   const [candidates, setCandidates] = useState<PhotoSummary[]>([])
   const [picked, setPicked] = useState<number | null>(null)
   const [offset, setOffsetValue] = useState<number | null>(null)

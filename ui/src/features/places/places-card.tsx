@@ -15,9 +15,9 @@ import { ResetButton } from '@/components/forms/danger-button'
  * Places (FR-005): every place on the library's photos, with the name printed for it. Type
  * a new one ("Praha 1" → "Prague", or "Grandma's") and every stamp and frame follows.
  */
-export function PlacesCard() {
+export function PlacesCard({ folders }: { folders: number[] }) {
   const { t } = useTranslation()
-  const { places, error, rename } = usePlaces()
+  const { places, error, rename } = usePlaces(folders)
   const [borrowing, setBorrowing] = useState(false)
   if (places.length === 0) return null
   return (

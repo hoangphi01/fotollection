@@ -47,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- The right column covers the folders chosen only: **Camera clocks** lists the cameras of those photos, **Places** their places, and the stamps' **Reset** counts and resets those photos, not the whole library.
 - A camera's clock correction now also moves its photos in RollSense: a photo taken just before midnight on a slow clock falls on its true day, month, event and trip.
 
 ## [0.14.3] - 2026-11-16 — Postcards, part 2

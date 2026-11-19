@@ -22,9 +22,9 @@ function bodyName(clock: CameraClock, clocks: CameraClock[], unknown: string): s
  * `+1:02:00`. The helper that reads the offset from two photos of one moment lives in the
  * preview's Captured card.
  */
-export function CameraClocksCard() {
+export function CameraClocksCard({ folders }: { folders: number[] }) {
   const { t } = useTranslation()
-  const { clocks, error, setOffset } = useCameraClocks()
+  const { clocks, error, setOffset } = useCameraClocks(folders)
   if (clocks.length === 0) return null
   return (
     <SectionCard icon={<Clock />} title={t('cameras.title')}>

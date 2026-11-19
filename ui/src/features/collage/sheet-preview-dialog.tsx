@@ -538,6 +538,7 @@ export function SheetPreviewDialog({
         settings={settings}
         onChange={onSettingsChange}
         customStamps={customStamps}
+        folders={filter.folders ?? []}
         photos={cells.flatMap(([id]) => (id === null ? [] : [{ id, name: summary(id)?.fileName ?? '' }]))}
         revision={revision}
       />

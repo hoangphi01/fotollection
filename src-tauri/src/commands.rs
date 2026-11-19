@@ -502,10 +502,8 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
-    let custom_stamps = library
-        .edited()
-        .filter(|(_, e)| e.stamp.is_some() || e.caption.is_some())
-        .count();
+    // The right column's count is the folders shown's (owner, 2026-11-19).
+    let custom_stamps = library.custom_stamps_in(&filter.folders).len();
     // Each photo's colour key (FR-114): its own look, or the shared one it follows.
     let settings = state
         .settings
@@ -702,24 +700,23 @@ pub fn apply_stamp_to_all(
         .0
         .stamp = stamp;
     state.persist();
-    reset_photo_stamps(app, state)
+    reset_photo_stamps(app, state, Vec::new())
 }
 
-/// "Reset" in the gallery: every photo follows the settings' stamp again; undoable.
+/// "Reset" in the gallery: every photo of `folders` (all when empty) follows the settings' stamp
+/// again; undoable.
 #[tauri::command]
 #[specta::specta]
 pub fn reset_photo_stamps(
     app: AppHandle,
     state: State<'_, AppState>,
+    folders: Vec<u16>,
 ) -> Result<HistoryState, IpcError> {
     let ids: Vec<PhotoId> = state
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?
-        .edited()
-        .filter(|(_, e)| e.stamp.is_some() || e.caption.is_some())
-        .map(|(id, _)| id)
-        .collect();
+        .custom_stamps_in(&folders);
     if ids.is_empty() {
         return Ok(changed(&app, &state));
     }
@@ -2390,15 +2387,19 @@ pub fn clear_camera_logo(
     frame_config(&state)
 }
 
-/// The camera bodies in the library and their clocks (FR-030).
+/// The camera bodies with photos in `folders` (all when empty) and their clocks (FR-030): the
+/// right column is the folders shown's (owner, 2026-11-19).
 #[tauri::command]
 #[specta::specta]
-pub fn list_cameras(state: State<'_, AppState>) -> Result<Vec<CameraClock>, IpcError> {
+pub fn list_cameras(
+    state: State<'_, AppState>,
+    folders: Vec<u16>,
+) -> Result<Vec<CameraClock>, IpcError> {
     Ok(state
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?
-        .clocks())
+        .clocks_in(&folders))
 }
 
 fn clock_error(e: ClockError) -> IpcError {

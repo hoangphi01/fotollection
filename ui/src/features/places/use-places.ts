@@ -4,19 +4,21 @@ import { commands, events, type PlaceUse } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 
 /**
- * The places of the library's photos and the user's names for them (FR-005). A rename shows
- * on every stamp and frame at once, through `LibraryChanged`.
+ * The places of the photos in `folders` (all when empty: the Workspace) and the user's names
+ * for them (FR-005): the right column is the folders shown's (owner, 2026-11-19). A rename
+ * shows on every stamp and frame at once, through `LibraryChanged`.
  */
-export function usePlaces() {
+export function usePlaces(folders: number[]) {
+  const scope = folders.join()
   const [places, setPlaces] = useState<PlaceUse[]>([])
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(
     () =>
-      commands.listPlaces().then((r) => {
+      commands.listPlaces(scope ? scope.split(',').map(Number) : []).then((r) => {
         if (r.status === 'ok') setPlaces(r.data)
       }),
-    [],
+    [scope],
   )
 
   useEffect(() => {

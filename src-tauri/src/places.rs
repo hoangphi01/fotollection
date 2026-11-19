@@ -142,10 +142,11 @@ pub struct PlaceUse {
     pub photos: u32,
 }
 
-/// Every place the library's photos have (set, borrowed or from GPS), most photos first.
+/// Every place the photos of `folders` (all when empty) have (set, borrowed or from GPS), most
+/// photos first.
 #[tauri::command]
 #[specta::specta]
-pub async fn list_places(app: AppHandle) -> Result<Vec<PlaceUse>, IpcError> {
+pub async fn list_places(app: AppHandle, folders: Vec<u16>) -> Result<Vec<PlaceUse>, IpcError> {
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
         let library = state
@@ -154,7 +155,10 @@ pub async fn list_places(app: AppHandle) -> Result<Vec<PlaceUse>, IpcError> {
             .map_err(|e| IpcError::internal(e.to_string()))?;
         let names = library.place_names();
         let mut counts: HashMap<u32, u32> = HashMap::new();
-        for id in library.sorted_ids() {
+        // The folders shown only (all when empty): the right column is theirs (2026-11-19).
+        let shown =
+            |id| folders.is_empty() || library.folder_of(id).is_some_and(|f| folders.contains(&f));
+        for id in library.sorted_ids().into_iter().filter(|&id| shown(id)) {
             let Some(record) = library.record(id) else {
                 continue;
             };

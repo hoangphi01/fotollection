@@ -185,6 +185,7 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
         "list_places",
         ok(tauri::async_runtime::block_on(crate::places::list_places(
             app.clone(),
+            Vec::new(),
         )))?,
     );
     common.insert(

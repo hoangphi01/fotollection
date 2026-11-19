@@ -116,6 +116,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### state-cache
 
+- The right column is the folders shown's: every command that feeds it takes `folders` (empty is the Workspace). Kept by: `fr_030_the_camera_clocks_are_the_folders_shown`; STYLE_RULE §4.
 - A task's progress total counts only what it will tick, every item ticked on every path (skipped, failed, cancelled), so a progress always ends. Kept by: no machine check yet (`prove_duplicates`, 2026-11-19).
 - Cached state names its owner, bound and evictor; a value made in two places is made in one function; test every consumer with the cache empty. Kept by: the per-caller cache tests.
 - A fix that changes the pixels of files already seen bumps the cache version; a thumbnail's key carries its look. Kept by: `thumbs::CACHE_VERSION`.
@@ -138,6 +139,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-19
+
+### The right column listed every folder's cameras while one folder was shown (FR-030, FR-005)
+
+- **Area:** state-cache
+- **Seen:** with the iPhone folder chosen, *Camera clocks* listed the Panasonic, Canon, Sony and Fujifilm bodies of the other folders (owner, 2026-11-19, a screenshot); *Places* and the stamps' *Reset* counted the whole library too.
+- **Why:** `list_cameras`, `list_places` and `reset_photo_stamps` took no scope: written when the app showed one folder, they stayed library-wide after FR-056 added folder tabs, while colour and export moved to the view's filter.
+- **Rule:** every command that feeds a mode's right column takes `folders` (empty is the Workspace) and the panel passes the sidebar's choice; a dialog about one photo (the clock match) may take every folder, and says so.
 
 ### A calendar of toggle days is a group, not an ARIA grid (UI)
 
