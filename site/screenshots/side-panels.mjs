@@ -36,6 +36,18 @@ export async function measureSidePanels({ open, settle, measure, allChecks, say,
   rows.push(['Simple panel', await measure(page, 'aside.border-l')])
   await page.screenshot({ path: path.join(outDir, 'measure-simple.png') })
   await context.close()
+  // Pro's gallery panel, its Print tab: the date stamp, camera clocks and places cards, every
+  // row checked (UI-LAYOUT-025, owner 2026-11-19: no scene opened this tab, so the Places card's
+  // reset hung below its field unseen).
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+  await page.locator('aside.border-l [data-slot="inspector-tabs"] button').nth(1).click()
+  await settle(page)
+  // Every folded card opened, so its rows are checked too.
+  for (const fold of await page.locator('aside.border-l section > header button[aria-expanded="false"]').all()) await fold.click()
+  await settle(page)
+  extra.push(...(await allChecks(page, 'Pro panel: Print')))
+  await page.locator('aside.border-l').screenshot({ path: path.join(outDir, 'measure-pro-print.png') })
+  await context.close()
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
   await page.getByRole('button', { name: say('rollsense.view') }).click()
   await settle(page)

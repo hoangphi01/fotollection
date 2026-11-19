@@ -68,6 +68,7 @@ Only the recording needs `tauri dev` quit (the app runs once at a time, and the 
 | UI-LAYOUT-022 | A dialog's words clear its close button | No word of a dialog, cut where its ellipsis cuts it, comes within 8 px of its close button; *Copy settings* opened in every run | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-023 | The previews' toolbars agree | The groups and *Before* the sheet preview's toolbar shares with the photo preview's come in the same order, and it has none the photo's lacks | A `shoot.mjs` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-024 | A badge is seen whole | No badge passes the box that clips it; the photo preview's Print tab is opened with every size *acceptable* (the bridge's `verdict`), the longest verdict in both languages | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
+| UI-LAYOUT-025 | A button beside a field sits on its line | A button in a row beside a text field, select or combobox has its centre within 1 px of the field's (owner, 2026-11-19: the Places card's ↺ hung below its field) | A `layoutChecks` | every UI change | STYLE_RULE §4 |
 
 ### Text
 

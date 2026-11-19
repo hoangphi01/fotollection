@@ -273,7 +273,7 @@ Một dải trắng hoặc đen dưới ảnh, với logo và thông số máy �
 
 **Mượn nơi chụp từ điện thoại** ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track)): máy ảnh không có GPS (như Lumix GX9) có thể lấy nơi chụp của ảnh điện thoại chụp cùng cảnh, cách vài phút. Hãy chỉnh đồng hồ máy ảnh trước nếu nó lệch (chương 11). Trong thẻ **Địa điểm** của bảng cài đặt, nhấp **Tìm địa điểm…**, chọn khoảng cách thời gian (5, 10 hoặc 30 phút) rồi **Tìm địa điểm**. Cặp chắc chắn được điền ngay; các cặp còn lại hiện cạnh ảnh điện thoại, đã tích sẵn, bạn bỏ tích cặp sai rồi xác nhận. Cặp chắc chắn cũng được điền sau mỗi lần phân tích ảnh đẹp nhất. Nơi đã mượn hiện một ghim có dấu tích trên ảnh nhỏ và chữ *Từ điện thoại* trong bản xem trước; nó không bao giờ thay nơi bạn đã đặt hay GPS của chính ảnh, và Hoàn tác lấy lại được.
 
-**Đổi tên nơi chụp** ([FR-005](PRD.md#fr-005--location-stamp-offline)): thẻ **Địa điểm** trong bảng cài đặt liệt kê mọi nơi có trên ảnh của bạn. Gõ tên bạn muốn in, như `Prague` thay cho `Praha 1` hay `Nhà bà ngoại`, và mọi dấu ngày, khung thông tin có nơi đó đổi theo; nút mũi tên đưa về tên gốc.
+**Đổi tên nơi chụp** ([FR-005](PRD.md#fr-005--location-stamp-offline)): thẻ **Địa điểm** trong bảng cài đặt liệt kê mọi nơi có trên ảnh của các thư mục bạn chọn, kèm quốc gia và số ảnh. Bấm vào một nơi (hoặc nút **⋯** hay chuột phải, **Đổi tên**) rồi gõ tên bạn muốn in, như `Prague` thay cho `Praha 1` hay `Nhà bà ngoại`; mọi dấu ngày, khung thông tin có nơi đó đổi theo. Nút đỏ **Về tên gốc** trong cùng menu chỉ hiện khi nơi đó đã được đổi tên.
 
 <!-- shot: manual-places | Thẻ Địa điểm trong cài đặt: mọi nơi có trên ảnh, mỗi nơi một tên để in -->
 

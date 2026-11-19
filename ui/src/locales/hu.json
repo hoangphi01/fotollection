@@ -775,8 +775,10 @@
     "quitBody_other": "A Fotollection bezárul, és {{count}} felvétel még csak az ideiglenes mappájában van. Mentsd el őket egy mappába, vagy töröld őket."
   },
   "places": {
+    "actions": "Hely műveletei",
+    "rename": "Átnevezés",
     "title": "Helyszínek",
-    "hint": "A bélyegekre és keretekre nyomtatott nevek; új név beírásával lecserélhetők (pl. „Prága” a „Praha 1” helyett).",
+    "hint": "A bélyegzőkre és keretekre nyomtatott nevek; átnevezés kattintással, a ⋯ gombbal vagy jobb kattintással.",
     "renameLabel": "Nyomtatott név: {{place}}",
     "resetName": "Eredeti név visszaállítása",
     "pick": "Helyszín választása…",

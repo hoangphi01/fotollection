@@ -315,6 +315,35 @@ export async function layoutChecks(page, where) {
       }
     }
 
+    // UI-LAYOUT-025: a button beside a field sits on the field's line (owner, 2026-11-19: the
+    // Places card's ↺ hung below its text field, centred on the field and its count together).
+    const FIELD = 'input:not([type="checkbox"]):not([type="radio"]), [role="combobox"], textarea, [data-slot="select-trigger"]'
+    for (const button of document.querySelectorAll('button')) {
+      if (!vis(button)) continue
+      // Up through a wrapper that holds the button alone (a disabled button's hint holder,
+      // `inline-flex`, which a flex row computes as `flex`).
+      let item = button
+      while (item.parentElement && item.parentElement.childElementCount === 1) {
+        const p = item.parentElement.getBoundingClientRect()
+        const own = button.getBoundingClientRect()
+        if (p.height > own.height + 2 || p.width > own.width + 2) break
+        item = item.parentElement
+      }
+      const row = item.parentElement
+      if (!row || getComputedStyle(row).display !== 'flex' || getComputedStyle(row).flexDirection !== 'row') continue
+      for (const side of row.children) {
+        if (side === item || side.contains(button)) continue
+        const field = side.matches(FIELD) ? side : side.querySelector(FIELD)
+        if (!field || !vis(field)) continue
+        const f = field.getBoundingClientRect()
+        const b = button.getBoundingClientRect()
+        // A field's own box (the field, its label or count line), not a column that holds one.
+        if (side.getBoundingClientRect().height > Math.max(f.height, b.height) * 3) continue
+        const off = Math.abs(f.top + f.height / 2 - (b.top + b.height / 2))
+        if (off > 1) out.push(`UI-LAYOUT-025 "${name(button)}" sits ${off.toFixed(1)} px off the line of "${name(field)}" beside it`)
+      }
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

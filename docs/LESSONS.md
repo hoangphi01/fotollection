@@ -18,6 +18,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### ui-layout
 
+- A button beside a field sits on the field's line; every tab of every panel has a scene, its folded cards opened. Kept by: UI-LAYOUT-025, the `Pro panel: Print` scene (`side-panels.mjs`).
 - Measure every new row, column, control or summary at 1180 px and the narrowest panel, in Vietnamese and Hungarian, with its longest text, before keeping it. Kept by: `MEASURE=1` (UI-LAYOUT-001).
 - Words in a flex row get `min-w-0`, `truncate` gets a width (`w-full min-w-0`), a button stops at its container (`max-w-full`). Kept by: UI-LAYOUT-001 and the long custom size stress fixture.
 - Nothing jumps: a box that holds something that comes and goes has a fixed size, and what a first change reveals is there from the start, off. Kept by: UI-STABLE-001.
@@ -139,6 +140,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-19
+
+### A reset button hung below its field, and no scene opened the tab that showed it (FR-005, UI)
+
+- **Area:** ui-layout, checks
+- **Seen:** in the Places card, each red ↺ sat 12 px below its text field, centred on the field and its count line together (owner, 2026-11-19: "I thought the style rule checked this elementary fault"); every row had a reset, disabled and pink when nothing was renamed.
+- **Why:** no rule measured a button against the field beside it, and no scene of the measure opened the gallery panel's Print tab, where the card lives; a first detector found nothing because the button's hint wrapper (`inline-flex`, computed `flex` in a flex row) looked like the row.
+- **Rule:** a row's button is centred on its field (UI-LAYOUT-025, which climbs a wrapper that holds the button alone); every tab of every panel has a scene with its folded cards opened; a detector is proven on the old code first (it found the 12 px before the fix, nothing after).
 
 ### The right column listed every folder's cameras while one folder was shown (FR-030, FR-005)
 

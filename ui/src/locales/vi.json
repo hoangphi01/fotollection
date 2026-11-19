@@ -747,8 +747,10 @@
     "quitBody_other": "Fotollection sắp đóng; {{count}} ảnh vẫn chỉ nằm trong thư mục tạm. Hãy lưu vào một thư mục, hoặc xoá."
   },
   "places": {
+    "actions": "Thao tác với địa điểm",
+    "rename": "Đổi tên",
     "title": "Địa điểm",
-    "hint": "Tên in trên dấu ngày và khung; gõ tên mới để thay (VD: “Prague” cho “Praha 1”).",
+    "hint": "Tên in trên dấu ngày và khung; bấm vào một dòng, nút ⋯ hoặc chuột phải để đổi tên.",
     "renameLabel": "Tên in cho {{place}}",
     "resetName": "Về tên gốc",
     "pick": "Chọn địa điểm…",

@@ -775,8 +775,10 @@
     "quitBody_other": "Fotollection wird beendet; {{count}} Aufnahmen liegen nur im temporären Ordner. Speichere sie in einem Ordner oder lösche sie."
   },
   "places": {
+    "actions": "Aktionen für den Ort",
+    "rename": "Umbenennen",
     "title": "Orte",
-    "hint": "Auf Stempel und Rahmen gedruckte Namen; einen neuen Namen eingeben, um ihn zu ersetzen (z. B. „Prag“ für „Praha 1“).",
+    "hint": "Auf Stempel und Rahmen gedruckte Namen; umbenennen per Klick, über ⋯ oder mit Rechtsklick.",
     "renameLabel": "Gedruckter Name für {{place}}",
     "resetName": "Ursprünglichen Namen wiederherstellen",
     "pick": "Ort wählen…",

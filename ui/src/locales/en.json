@@ -775,8 +775,10 @@
     "quitBody_other": "Fotollection is closing, and {{count}} shots are still only in its temporary folder. Save them to a folder, or delete them."
   },
   "places": {
+    "actions": "Place actions",
+    "rename": "Rename",
     "title": "Places",
-    "hint": "Names printed on stamps and frames; type a new name to replace one (e.g. “Prague” for “Praha 1”).",
+    "hint": "Names printed on stamps and frames; rename one with a click, its ⋯ or a right click.",
     "renameLabel": "Name printed for {{place}}",
     "resetName": "Back to the original name",
     "pick": "Choose a place…",
