@@ -35,6 +35,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Every switched-on button now sinks the same way, its face darker, so a pressed button no longer reads as raised; the select bar's three moves sit flat in their bar; marking to delete is neutral everywhere, red only for the move to the Trash.
 - Right-click menus share one block: a row's ⋯ and its right click open the same menu, Shift+F10 or the menu key open it from the keyboard, and groups are split by a hairline; the looks' list and strip use it first.
 
+### Fixed
+
+- A camera's clock correction now also moves its photos in RollSense: a photo taken just before midnight on a slow clock falls on its true day, month, event and trip.
+
 ## [0.14.3] - 2026-11-16 — Postcards, part 2
 
 ### Highlights

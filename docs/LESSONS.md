@@ -135,6 +135,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-19
 
+### RollSense read the camera's raw clock, not the corrected time (FR-030, FR-141)
+
+- **Area:** state-cache
+- **Seen:** a code survey for the calendar found that `roll()`, `SortIndex` and the trips' `member_day` each read `manual_date` or the raw `capture`, so a camera clock corrected in FR-030 left its photos on the wrong day, month, event and trip; `set_clock` did not reset RollSense's caches either.
+- **Why:** ADR-0027 names one time, `effective(i)`, but each RollSense stage wrote its own "date set by hand, else the camera's time" and skipped the offset; the caches built from it had no owner for clock changes.
+- **Fix:** all three read `effective(i)`; `set_clock` and `restore_clock` reset `roll` and `sort_index`. `fr_030_a_clock_correction_moves_a_photo_to_its_true_year_and_day` failed on the old code (2022 against 2023).
+- **Rule:** a photo's time is read only through `effective(i)`; a cache built from a value is reset wherever that value changes.
+
 ### The app's words read as spoken stories, and ⌘ showed on Windows (FR-020)
 
 - **Area:** text-i18n

@@ -161,18 +161,10 @@ impl Library {
             .collect())
     }
 
-    /// A photo's day (days since 1970, camera-local), as the trips count it.
+    /// A photo's day (days since 1970, camera-local, its clock corrected), as the trips count it.
     fn member_day(&self) -> impl Fn(usize) -> i64 + '_ {
         move |i| {
-            let t = if self
-                .manual_date
-                .get(i)
-                .is_some_and(|&d| d != super::NO_DATE)
-            {
-                self.manual_date[i]
-            } else {
-                self.capture.get(i).copied().unwrap_or(0)
-            };
+            let t = if i < self.len() { self.effective(i) } else { 0 };
             t.div_euclid(86_400)
         }
     }
@@ -244,5 +236,34 @@ mod tests {
         assert!(lib.trip_edits().cuts.is_empty() && lib.trip_edits().joins.is_empty());
         lib.rename_trip(first, None).ok();
         assert!(lib.trip_edits().is_empty());
+    }
+
+    #[test]
+    fn fr_030_a_clock_correction_moves_a_photo_to_its_true_year_and_day() {
+        // A camera two hours slow: 23:00 on New Year's Eve was really 01:00 on 1 January.
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/cam"));
+        let meta = PhotoMeta {
+            capture: chrono::NaiveDate::from_ymd_opt(2022, 12, 31)
+                .and_then(|d| d.and_hms_opt(23, 0, 0)),
+            make: Some("Panasonic".into()),
+            model: Some("DC-GX9".into()),
+            orientation: 1,
+            ..PhotoMeta::default()
+        };
+        let file = ImportedFile {
+            path: PathBuf::from("/cam/a.jpg"),
+            size: 1,
+            mtime: 0,
+        };
+        let id = lib
+            .push(f, &file, &meta)
+            .unwrap_or_else(|| panic!("pushed"));
+        assert_eq!(lib.facets(&[]).years[0].year, 2022);
+        let body = lib.clock_of(id).unwrap_or_else(|| panic!("a body"));
+        lib.set_clock(body, 7_200, None).ok();
+        let years = lib.facets(&[]).years;
+        assert_eq!(years[0].year, 2023);
+        assert_eq!(years[0].months[0].month, 1);
     }
 }

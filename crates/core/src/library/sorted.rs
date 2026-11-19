@@ -5,7 +5,7 @@
 
 use std::collections::HashMap;
 
-use super::{Library, NO_DATE, NO_OFFSET, PhotoId, flags};
+use super::{Library, NO_OFFSET, PhotoId, flags};
 
 impl Library {
     /// Where a photo came from (FR-141): its class at import, a camera shot from a model this
@@ -53,11 +53,7 @@ impl Library {
             let gps = |i: usize| (!self.lat[i].is_nan()).then_some((self.lat[i], self.lon[i]));
             let moments: Vec<Moment> = (0..n)
                 .map(|i| Moment {
-                    t: if self.manual_date[i] == NO_DATE {
-                        self.capture[i]
-                    } else {
-                        self.manual_date[i]
-                    },
+                    t: self.effective(i),
                     gps: gps(i),
                 })
                 .collect();

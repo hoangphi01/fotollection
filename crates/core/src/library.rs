@@ -910,6 +910,9 @@ impl Library {
             .ok_or(ClockError::UnknownCamera)?;
         body.offset_s = offset_s;
         body.tz_minutes = tz_minutes;
+        // RollSense's days, events and trips read the corrected time.
+        self.roll = std::sync::OnceLock::new();
+        self.sort_index = std::sync::OnceLock::new();
         Ok(())
     }
 
@@ -936,6 +939,8 @@ impl Library {
         {
             body.offset_s = clock.offset_s;
             body.tz_minutes = clock.tz_minutes;
+            self.roll = std::sync::OnceLock::new();
+            self.sort_index = std::sync::OnceLock::new();
         }
     }
 

@@ -9,7 +9,7 @@ use std::path::Path;
 
 use chrono::Datelike;
 
-use super::{Library, NO_DATE, PhotoId};
+use super::{Library, PhotoId};
 use crate::sorting::facets::{
     CleanupKind, CleanupRow, Count, CountryFacet, EventFacet, Facets, MonthFacet, PlaceFacet,
     SortPick, TripFacet, VisitFacet, YearFacet,
@@ -139,15 +139,7 @@ impl Library {
         self.sort_index.get_or_init(|| {
             let n = self.len();
             let roll = self.roll();
-            let t: Vec<i64> = (0..n)
-                .map(|i| {
-                    if self.manual_date[i] == NO_DATE {
-                        self.capture[i]
-                    } else {
-                        self.manual_date[i]
-                    }
-                })
-                .collect();
+            let t: Vec<i64> = (0..n).map(|i| self.effective(i)).collect();
             let (year, month) = t.iter().map(|&t| year_month(t)).unzip();
             let mut idx = SortIndex {
                 year,
