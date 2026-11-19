@@ -84,10 +84,10 @@ const EN: Strings = Strings {
     untitled: "Untitled",
     edited: "Edited",
     project_filter: "Fotollection project",
-    open_title: "Open a project",
-    save_title: "Save the project",
-    relink_title: "Locate the folder",
-    camera_save_title: "Save the photos to",
+    open_title: "Open project",
+    save_title: "Save project",
+    relink_title: "Locate folder",
+    camera_save_title: "Save photos to",
 };
 
 const VI: Strings = Strings {
@@ -105,7 +105,7 @@ const VI: Strings = Strings {
     select_all: "Chọn tất cả",
     copy_settings: "Sao chép thiết lập…",
     paste_settings: "Dán thiết lập",
-    paste_settings_ticked: "Dán thiết lập cho các ảnh đã chọn",
+    paste_settings_ticked: "Dán thiết lập cho ảnh đã tick",
     reset_settings: "Đặt lại thiết lập",
     window: "Cửa sổ",
     view: "Xem",
@@ -114,7 +114,7 @@ const VI: Strings = Strings {
     mode_professional: "Pro",
     minimize: "Thu nhỏ",
     close_window: "Đóng cửa sổ",
-    about: "Giới thiệu Fotollection",
+    about: "Giới thiệu về Fotollection",
     settings: "Cài đặt…",
     help: "Trợ giúp",
     manual: "Hướng dẫn sử dụng Fotollection",
@@ -250,7 +250,7 @@ const JA: Strings = Strings {
     project_filter: "Fotollectionプロジェクト",
     open_title: "プロジェクトを開く",
     save_title: "プロジェクトを保存",
-    relink_title: "フォルダーを探す",
+    relink_title: "フォルダーの場所を指定",
     camera_save_title: "写真の保存先",
 };
 
@@ -286,7 +286,7 @@ const KO: Strings = Strings {
     hide_others: "기타 가리기",
     show_all: "모두 보기",
     quit: "Fotollection 종료",
-    untitled: "무제",
+    untitled: "제목 없음",
     edited: "편집됨",
     project_filter: "Fotollection 프로젝트",
     open_title: "프로젝트 열기",

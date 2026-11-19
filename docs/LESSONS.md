@@ -44,6 +44,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A measure of text is redone when the fonts load; a change of face is checked on Vietnamese at its smallest size, two lines deep. Kept by: `FitText` refit on `document.fonts`.
 - Every site text is checked in every published language from the built pages, with every optional data file present. Kept by: `scripts/check-site-i18n.mjs --build`.
 - Website words are polite and neutral: a headline names Fotollection, never "the app"; each lead and caption one complete sentence, never a clipped phrase before a colon. Kept by: `check-site-i18n` (`scripts/site-register.json`).
+- The interface speaks in labels and one technical sentence, never a story, a reassurance or a roadmap; a shortcut is `{{mod}}`. Kept by: `check-i18n` (interface-voice list on en.json).
 
 ### rust-concurrency
 
@@ -131,6 +132,16 @@ Read this table in full before any task; then read in full every entry whose Are
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - A layout with a chosen board copies the board's measured numbers and has a test per part against them. Kept by: `fr_130_the_upright_card_matches_board_a` and its siblings.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
+
+## 2026-11-19
+
+### The app's words read as spoken stories, and ⌘ showed on Windows (FR-020)
+
+- **Area:** text-i18n
+- **Seen:** the owner found many hints and notes "told like a story": "Nothing is downloaded until you choose", "as film cameras did", "ready to come back", "for good", "RAW coming soon" long after RAW shipped. One expert per language (en, vi, hu, de, ja, ko, and cs for the website) found about 200 such English strings, terms with two names (ticked and selected, give and apply), and ⌘Z written into strings that Windows shows.
+- **Why:** each feature wrote its own hint in the voice of the moment, with no written rule for the interface's register (the website had one since 2026-11-15) and nothing that checked it; translations copied the English story, and the shortcut was typed instead of passed.
+- **Fix:** every locale rewritten to one register (LOCALIZATION §3 rule 11), `{{mod}}` an i18next default variable, four unused keys removed, the Czech website to *vy*; `check-i18n` refuses the banned English phrases.
+- **Rule:** a new string is a label or one present-tense sentence about what the control does; a shortcut is `{{mod}}`.
 
 ## 2026-11-18
 

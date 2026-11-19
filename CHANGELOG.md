@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- The interface's words in every language are rewritten to one technical register: labels are nouns or verbs, a hint is one sentence on what the control does, errors say what to do, one term per thing (*ticked*, *apply*, *duplicates*), and shortcuts show ⌘ on macOS and Ctrl elsewhere. The Czech website addresses the reader with *vy*.
 - In a sheet's preview, the note that the narrow window folded *Presets & LUTs* shows on the Edit tab only, no longer taking room on the Postcard and Print tabs.
 - The hint on writing a postcard by hand is one sentence: a fine permanent marker, tried in the stamp box first, or the text typed in the preview.
 - RollSense names what more photos show: trees, autumn leaves, parks and streets are scenery, a street with people is also people, and the edges of a photo count. Photos read before are read again once.

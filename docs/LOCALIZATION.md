@@ -1,6 +1,6 @@
 # Localization — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-16
+> **Status:** Living · **Last reviewed:** 2026-11-19
 >
 > This page is the single source of truth for the app's languages. It covers:
 >
@@ -63,6 +63,16 @@ The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.
     - **Words are spaced** (띄어쓰기), unlike Japanese: a true compound is written whole, the rest as the 국립국어원 dictionary spaces it (미리 보기). The interface sets `word-break: keep-all`, so a line never breaks inside a word.
     - **The develop sliders take Adobe's Korean names** (노출, 대비, 밝은 영역, 어두운 영역, 흰색 계열, 검정 계열, 부분 대비, 디헤이즈, 생동감, 채도, 색온도, 색조, 비네팅, 그레인). The native macOS menu follows Apple's own words (윈도우, 실행 복귀, 별도 저장…, 가리기).
     - Loanwords as the website writes them (폴더, 필터, 프린트, 프리셋); "…" ends a label that opens a dialog. A Hangul syllable is nearly 1 em wide: `npm run text-widths` measures it in the bundled Korean face.
+11. **The interface's voice: technical, never told as a story** (owner, 2026-11-19, after a review by one language expert per locale). It holds in every language:
+    - **A label** is a noun or a verb, with no article ("Clear filters", not "Clear the filters"); sentence case in the app, Title Case only in the macOS menu.
+    - **A hint** is one present-tense sentence about what the control does ("Lightens or darkens the midtones"); a second sentence only for a fact the user needs: a shortcut, an undo, that something is permanent. Never why, never a simile ("as film cameras did"), never an idiom ("for good" is "permanently").
+    - **No reassurance or chat:** no "Nothing is … until you …", "never touched", "ready to come back", "by itself", "just", "simply", "you will".
+    - **No roadmap words:** no "yet", "soon", "for now", "comes next"; the app says what works today.
+    - **An error** says what failed, then what to do, as a sentence with a full stop; never "Something went wrong" alone.
+    - **A shortcut** is written with `{{mod}}` (⌘ on macOS, Ctrl elsewhere; an i18next default variable, `ui/src/i18n/index.ts`), never a hard-coded ⌘ or "Cmd/Ctrl+", and comes last ("Undo: {{mod}} Z.").
+    - **Numbers and units plain** ("90°", "10 %"), never "a quarter"; "…" ends a label that opens a dialog, a picker or a confirmation; one term per thing, as the glossary below.
+
+    `check-i18n` refuses the English phrases these rules ban (its interface-voice list); the other languages follow the English and the reviews of 2026-11-19.
 
 ## 4. Glossary
 
@@ -74,7 +84,7 @@ These are the core terms, as the interface shows them. The Hungarian, German, Ja
 | print | bản in | nyomat | Abzug | プリント | 프린트 | tirage |
 | print size | khổ in | nyomatméret | Druckformat | プリントサイズ | 프린트 크기 | format d'impression |
 | crop | cắt ảnh | vágás | Zuschnitt | トリミング | 자르기 | recadrage |
-| straighten | làm thẳng | kiegyenesítés | Geraderichten | 傾き補正 | 수평 맞추기 | redressement |
+| straighten | cân ngang | kiegyenesítés | Geraderichten | 傾き補正 | 수평 맞추기 | redressement |
 | date stamp | đóng dấu ngày | dátumbélyeg | Datumsstempel | 日付スタンプ | 날짜 표시 | date incrustée |
 | info frame | khung thông tin | adatkeret | Info-Rahmen | 情報フレーム | 정보 프레임 | cadre d'infos |
 | look | look | look | Look | ルック | 룩 | look |

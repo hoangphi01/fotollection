@@ -4,7 +4,8 @@
 //  2. no hard-coded user-visible text in components (JSX text or title / aria-label /
 //     placeholder / label / alt attributes), outside the shadcn primitives in components/ui;
 //  3. every Japanese and Korean character the interface and its manual show is in the bundled
-//     face (FR-128), or `scripts/cjk-font.sh <code>` must cut it again.
+//     face (FR-128), or `scripts/cjk-font.sh <code>` must cut it again;
+//  4. the English source keeps the interface's voice (LOCALIZATION.md §3 rule 11).
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -54,6 +55,22 @@ for (const file of readdirSync(locales).filter((f) => f.endsWith('.json') && f !
   }
 }
 for (const [k, v] of en) if (typeof v !== 'string' || v.trim() === '') problems.push(`en.json: empty value for ${k}`)
+
+// The interface's voice (docs/LOCALIZATION.md §3 rule 11): no reassurance, story, idiom or
+// roadmap words in the English source, and no shortcut written for one system only ({{mod}}).
+const VOICE = [
+  [/(^|[.;:] )Nothing (is|changes|was)\b/, 'reassurance'],
+  [/\b(you'll|you will|you can just|simply|don't worry|no worries)\b/i, 'chat'],
+  [/\bnever (touched|deleted)\b|\bare not touched\b|ready to come back/i, 'reassurance'],
+  [/⌘|Cmd\/Ctrl\+/, 'a shortcut for one system: use {{mod}}'],
+  [/\bfor good\b/i, 'idiom: "permanently"'],
+  [/\b(coming soon|comes? next|for now)\b/i, 'roadmap words'],
+  [/\bby (it|them)sel(f|ves)\b/i, 'chat'],
+  [/something went wrong|hit an error/i, 'an error without what to do'],
+  [/^Tip:/, 'prefix chatter'],
+]
+for (const [k, v] of en)
+  for (const [re, why] of VOICE) if (re.test(String(v))) problems.push(`en.json: ${k} breaks the interface voice (${why}): "${v}"`)
 
 // Each bundled CJK face covers what its language shows (docs/LOCALIZATION.md §5); both faces are
 // in every page's font stack, so a Korean word in the Japanese interface (a 우편엽서's labels,

@@ -10,6 +10,7 @@ import ja from '@/locales/ja.json'
 import ko from '@/locales/ko.json'
 import vi from '@/locales/vi.json'
 import { pseudo } from './pseudo'
+import { MOD } from '@/lib/platform'
 import flagDe from '@/assets/flags/de.svg'
 import flagGb from '@/assets/flags/gb.svg'
 import flagHu from '@/assets/flags/hu.svg'
@@ -67,7 +68,8 @@ void i18n.use(initReactI18next).init({
   lng: 'en',
   fallbackLng: 'en',
   // React escapes every interpolated value; nothing is ever rendered as HTML (SECURITY.md).
-  interpolation: { escapeValue: false },
+  // {{mod}} is this system's modifier (⌘ or Ctrl) in every string, so no shortcut is written for one system only.
+  interpolation: { escapeValue: false, defaultVariables: { mod: MOD } },
   returnNull: false,
 })
 
