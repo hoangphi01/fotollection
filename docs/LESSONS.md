@@ -1,6 +1,6 @@
 # Lessons — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-12
+> **Status:** Living · **Last reviewed:** 2026-11-19
 >
 > What each debugging session taught us, so the same mistake is not made twice. The [Rules](#rules) table comes first and is read in full at every task; each entry below carries an **Area**, so the entries for a task are found by area. Every bug that took more than one look to find gets an entry here in the same commit as its fix ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2). Newest first. Each entry says what we saw, why it happened, the fix, and the rule to follow from now on. Performance-only lessons stay in [OPTIMIZATION.md](OPTIMIZATION.md) (for example §4.3.1, interactive work off background queues).
 
@@ -150,7 +150,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Area:** measure
 - **Seen:** the owner's 196 photos of an autumn trip: 149 "not sure"; green and yellow trees named scenery, red maples and streets with walkers not.
 - **Why:** each label was the mean of its prompts, and scenery's (landscape, city street, sea, mountains) is near none of them, nor any autumn tree; with people a label of its own, a street with walkers split between the two near 0.5, under the 0.6 bar. The 200 labelled photos, tuned on, held 19 scenery and no trip. The model saw rightly: its top guess was scenery or people for 168 of the 196.
-- **Fix:** 56 prompts kept apart (forest, trees, autumn foliage, temple, park…), a softmax over all summed per label; three cuts averaged; the bar at 0.5, people beside the subject at 0.35. 93.6 % right and 86 % named on the labels (95.3 and 75 before), 0 "not sure" on the trip.
+- **Fix:** the 47 subject prompts kept apart (forest, trees, autumn foliage, temple, park…), a softmax over all of them summed per label (the 12 source prompts apart); three cuts averaged; the bar at 0.5, people beside the subject at 0.35. 93.6 % right and 86 % named on the labels (95.3 and 75 before), 0 "not sure" on the trip.
 - **Rule:** a label set is tried on the kinds of photo users bring, not only the roll it was tuned on; a broad label keeps its kinds apart.
 
 ### RollSense's column turned salmon and teal in light (FR-141)

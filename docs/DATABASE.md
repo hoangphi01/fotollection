@@ -1,6 +1,6 @@
 # Data & Persistence — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-16
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-19
 >
 > This document is the single source of truth for **everything Fotollection stores**: where it lives, the **normalized data model**, the schemas, versioning and migration, safe writes, the in-memory layout, and retention.
 > Fotollection has **no database server and no embedded SQL database** ([ADR-0010](adr/0010-project-file-format.md)). Persistent state is a small set of versioned files, modelled **as if they were relational tables** and normalized to 3NF ([§2](#2-normalization-rules)).
@@ -290,6 +290,9 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | Postal codes, Korea | The Ministry of the Interior's 도로명주소 한글 전체분 | `assets/addassist/kr.bin`, packed the same way (magic `FADK`) | 6.5 MB | AddAssist, as above |
 | Built-in presets (planned) | `presets/builtin/*.fotopreset`, embedded with `include_str!` | Same schema as user presets ([§7](#7-presets)) | < 100 KB | Lab, stamp and Photo Style presets, including "C200 Natural" ([FR-039](PRD.md#fr-039--photo-style-looks)). Never fetched from the network |
 | Fonts | `assets/fonts/` | TTF/OTF | 9.5 MB | OFL/MIT only |
+| Country outlines | Natural Earth 1:50m admin-0 countries, v5.1.2 (public domain) | `assets/geo/countries.bin`, packed by `crates/geodata` (magic `FCTY`, version header, BLAKE3-checked at load; [GEODATA.md](../crates/core/assets/geo/GEODATA.md)), compiled in | 127 KB | RollSense's map in the Where card ([FR-141](PRD.md#fr-141--sorting-a-phones-camera-roll)): 235 countries, Vietnam's with Hoàng Sa and Trường Sa |
+| Sorting rules | `assets/sorting/rules.json` | JSON compiled in with `include_str!`, checked by its test | 1.4 KB | Where a photo came from and the duplicates' thresholds as data ([ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md)) |
+| TinyCLIP-39M and its labels | `wkcn/TinyCLIP-ViT-39M-16-Text-19M-YFCC15M` (MIT, © Microsoft), exported by `scripts/models/clip-export.sh` | `assets/models/tinyclip-39m.w8.onnx` (int8 weights, BLAKE3-checked at load) and `tinyclip-39m.labels.json` (the prompts' text embeddings, checked by its test), compiled in; [MODELS.md](../crates/core/assets/models/MODELS.md) | 40.8 MB + 0.7 MB | RollSense's subjects and sources ([ADR-0056](adr/0056-tinyclip-39m-bundled-for-sorting.md)); never downloaded |
 
 ## 6. App settings
 

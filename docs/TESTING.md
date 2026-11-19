@@ -1,6 +1,6 @@
 # Testing Strategy — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-16
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-19
 >
 > How we prove that Fotollection is correct, robust and fast. Performance benchmarks are specified in [OPTIMIZATION.md](OPTIMIZATION.md).
 
@@ -130,4 +130,5 @@ Before tagging a release, on both `REF-MAC` and `REF-WIN`. Linux has no referenc
 10. Looks and presets (FR-079, FR-070, FR-089, v0.14.0): pick each built-in look and set its amount; *Import LUT…* a `.cube` from LUMIX Lab (its V-Log note) and a HaldCLUT; *Import presets…* an `.xmp`, an `.lrtemplate` and a `.zip` pack, and read the *not applied* lines in every language; Dehaze and the Color Mixer; give a look to many photos from the gallery's Colour tab and undo it in one step.
 11. Hold to see the original (FR-096): press and hold the photo in the preview, and *Before* on a collage sheet; on Windows, the look drawn on the GPU while a slider moves (WebView2) and the photo exact when it stops.
 12. Moving computers (FR-082, FR-116): *Export settings* on one machine, *Import settings* on the other, once with **Merge** and once with **Replace** (macOS to Windows and back); a project with a LUT look opened there keeps its colour; *Remove unused LUTs*, *Forget recent addresses*, *Reset settings* and *Erase data* each do what they say and nothing more.
-13. Upgrade (DATABASE): install over the previous release with a project and settings of its own; settings v20 → v21 and project v14 → v15 load, nothing is lost, and the previous version refuses the newer project with its message.
+13. Upgrade (DATABASE): install over the previous release with a project and settings of its own; settings v21 and project v15 → v17 load, nothing is lost, and the previous version refuses the newer project with its message.
+14. RollSense and the Trash (FR-141, ADR-0055): on macOS and Windows, analyse a phone's folder in RollSense, *Mark n photos to delete* from a card, keep some in the sidebar's *To delete* and *Move n photos to the Trash…*: one confirmation, the files in the system's Trash and restorable from it, every other photo's edits kept. On a network drive without a Trash, the summary warns that those photos would be deleted permanently and asks to type their count first.

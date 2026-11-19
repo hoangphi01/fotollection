@@ -13,6 +13,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - **RollSense**, Pro mode's third tab beside Photos and Groups, sorts a phone's camera roll on this computer: by source (camera, screenshots, apps, edited copies, film scans, saved or received), by what the photos show, by year, month and event, by trip, by visits home and by place, with duplicates and stacks of one capture. It reads the chosen folder only (the Workspace: all of them), and its red square on the progress bar stops it. Tick groups, several in a card or across cards, then set their photos aside or delete them to the system's Trash; back in Photos only the kept photos remain for colour and print.
+- RollSense names what more photos show: trees, autumn leaves, parks and streets are scenery, a street with people is also people, and the edges of a photo count. Photos read before are read again once.
+- RollSense names a star or flag filter left on in Photos, with its clear, and says *Live Photos and bursts*, *Saved from apps and chats* and *Not recognised* in plainer words.
+- RollSense no longer holds the window while it reads: its groups fill as the photos are read, and a stop still keeps nothing.
+- **Select** works in RollSense too: its buttons take the ticked photos when there are some.
+- RollSense opens with **Clean up**: extra copies, screenshots, photos saved from apps and chats, and memes, each with its count and the space it takes, one press to review them; Simple mode offers it for a phone's roll.
+- RollSense's **Where** opens with a map of one country in the theme's own colour, a violet pin for each place with photos; pressing a pin ticks its photos. Offline, from Natural Earth's outlines (127 KB); Vietnam's map holds the Hoàng Sa and Trường Sa archipelagos.
+- RollSense's trips can be renamed, split between two days on the trip's own page, and merged, from **⋯** or a right click; the changes are kept in the project.
+- Deleting is now one place, **To delete** in the sidebar: **Delete** on a photo, *Mark to delete* in select mode, or RollSense's *Mark n photos to delete* move photos there, undoable; its column shows the count, the space freed and any drive without a Trash, the photos to keep are brought back, and one press moves the rest to the Trash with a progress bar and a stop.
+- RollSense's *Duplicates* holds only the extra copies, one of each picture always kept, and a photo is deleted for good only after the Trash refused it.
+- What RollSense picks can be worked on: **Edit in Photos** keeps the pick in Photos for colour, export and print, named by a violet chip in the toolbar that goes back to RollSense or clears it; **Add to the print basket** gathers it to print.
+- RollSense follows the folders: ticking more keeps it, over all the ticked ones; choosing another folder goes back to Photos. Its button, while shown, now reads pressed in.
 - A photo with no date of its own takes the date written in its file name (`2020-06-18 21-51-22.jpg`, `PXL_20230105_093012.jpg`, `IMG-20220127-WA0001.jpg`) before the file's time.
 
 ### Changed
@@ -20,20 +31,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The interface's words in every language are rewritten to one technical register: labels are nouns or verbs, a hint is one sentence on what the control does, errors say what to do, one term per thing (*ticked*, *apply*, *duplicates*), and shortcuts show ⌘ on macOS and Ctrl elsewhere. The Czech website addresses the reader with *vy*.
 - In a sheet's preview, the note that the narrow window folded *Presets & LUTs* shows on the Edit tab only, no longer taking room on the Postcard and Print tabs.
 - The hint on writing a postcard by hand is one sentence: a fine permanent marker, tried in the stamp box first, or the text typed in the preview.
-- RollSense names what more photos show: trees, autumn leaves, parks and streets are scenery, a street with people is also people, and the edges of a photo count. Photos read before are read again once.
-- The update window at start closes only with one of its buttons, not with a click outside it or Esc. It says the installed version in plain terms. Settings → Updates shows the version that check found, with its red warning when there is one, without asking to check again.
-- RollSense names a star or flag filter left on in Photos, with its clear, and says *Live Photos and bursts*, *Saved from apps and chats* and *Not recognised* in plainer words.
-- RollSense no longer holds the window while it reads: its groups fill as the photos are read, and a stop still keeps nothing.
-- **Select** works in RollSense too: its buttons take the ticked photos when there are some.
-- RollSense opens with **Clean up**: extra copies, screenshots, photos saved from apps and chats, and memes, each with its count and the space it takes, one press to review them; Simple mode offers it for a phone's roll.
-- RollSense's **Where** opens with a map of one country in the theme's own colour, a violet pin for each place with photos; pressing a pin ticks its photos. Offline, from Natural Earth's outlines (127 KB); Vietnam's map holds the Hoàng Sa and Trường Sa archipelagos.
+- The update window at start closes only with one of its buttons, not with a click outside it or Esc. It says the installed version in technical terms. Settings → Updates shows the version that check found, with its red warning when there is one, without asking to check again.
 - Every switched-on button now sinks the same way, its face darker, so a pressed button no longer reads as raised; the select bar's three moves sit flat in their bar; marking to delete is neutral everywhere, red only for the move to the Trash.
-- RollSense's trips can be renamed, split between two days on the trip's own page, and merged, from **⋯** or a right click; the changes are kept in the project.
 - Right-click menus share one block: a row's ⋯ and its right click open the same menu, Shift+F10 or the menu key open it from the keyboard, and groups are split by a hairline; the looks' list and strip use it first.
-- Deleting is now one place, **To delete** in the sidebar: **Delete** on a photo, *Mark to delete* in select mode, or RollSense's *Mark n photos to delete* move photos there, undoable; its column shows the count, the space freed and any drive without a Trash, the photos to keep are brought back, and one press moves the rest to the Trash with a progress bar and a stop.
-- RollSense's *Duplicates* holds only the extra copies, one of each picture always kept, and a photo is deleted for good only after the Trash refused it.
-- What RollSense picks can be worked on: **Edit in Photos** keeps the pick in Photos for colour, export and print, named by a violet chip in the toolbar that goes back to RollSense or clears it; **Add to the print basket** gathers it to print.
-- RollSense follows the folders: ticking more keeps it, over all the ticked ones; choosing another folder goes back to Photos. Its button, while shown, now reads pressed in.
 
 ## [0.14.3] - 2026-11-16 — Postcards, part 2
 

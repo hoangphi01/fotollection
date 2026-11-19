@@ -1,6 +1,6 @@
 # Architecture — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-16
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-19
 >
 > This document describes **how** the system is built. Requirements live in [PRD.md](PRD.md).
 > Performance design rationale lives in [OPTIMIZATION.md](OPTIMIZATION.md).
@@ -95,14 +95,16 @@ crates/
                            # score.rs (robust z within the group + reasons), cache.rs (analysis/)
       addassist/         † # AddAssist 1.1 (FR-133, ADR-0051): a postal code or a search fills an address from the post's own data, bundled, BLAKE3-checked, parsed at first use; jp.rs (Japan Post's table), kr.rs (Korea's road-name table: a road and a building number to the code, a code to its roads), romaji.rs (Hepburn from the kana, Revised Romanization from the Hangul, the search's folding), address.rs (a Japanese or Korean address, checked), book.rs (the address book and the recent recipients); one interface: countries, lookup, search
       geocode.rs         † # offline reverse geocoder + place search: bundled GeoNames, BLAKE3-checked, 1° grid index (FR-005/032)
-      geo_shapes.rs        # RollSense's map: bundled Natural Earth outlines (BLAKE3-checked), one country projected to 275 px with pins (FR-141)
+      geo_shapes.rs      † # RollSense's map: bundled Natural Earth outlines (BLAKE3-checked), one country projected to 275 px with pins (FR-141)
       xmp.rs             † # XMP sidecars of other apps, read only on import: `xmp:Rating` → stars or reject; ≤ 1 MB, no DTD (FR-058)
       places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places; borrowing from another device's photo of the same scene (FR-005/031/032). GPX tracks are planned (FR-066)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag, date set by hand); the effective time with each body's clock offset (FR-030, ADR-0027)
       library/sorted.rs  † # the library's sorting (FR-141): `source`, `stacks`, `stack_of`, `roll` (events, trips, places), `time_source`, worked out when first asked
       library/sense.rs   † # RollSense in the library (FR-141 S7): the pass's subjects, hashes and duplicates in memory, `SortIndex`, the filter's `picks` (`CullFilter::sort`), `facets`
-      project.rs         † # project tables v15: snapshot/restore by folder+path, FK validation, relocate/resolve folders
+      library/trip_edit.rs † # the user's changes to the trips (FR-012, FR-141 S7c): rename, split after a day, merge with the trip before, kept in the project and applied on the trips found each time
+      library/map.rs †      # the country map of the photos in view: places counted per pin (FR-141, geo_shapes.rs)
+      project.rs         † # project tables v17: snapshot/restore by folder+path, FK validation, relocate/resolve folders
       bundle.rs          † # .fotollection ZIP bundle: its allowlist and parts' readers (ADR-0016), on zip_parts.rs
       zip_parts.rs       † # the ZIP both bundles share: manifest + BLAKE3, two-pass read under each part's limit, zip-bomb caps, deterministic write
       cache_limit.rs     † # the disk cache's limit (`ui.cacheLimitGb`, 5 GB by default): usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
@@ -146,6 +148,8 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/culling.rs         † # best-shot commands: analyse in the background, list groups, keep the best (FR-041)
   src/sorting.rs         † # RollSense commands (FR-141): the pixels pass on its own pool on every core (the model compiled in here), duplicates proven on their pictures, the facets
   src/collage.rs         † # Collage mode: sheets, their order, turning, Auto turn and Revert, sheet facts, the `sheet` preview (FR-035)
+  src/trips.rs           † # RollSense's trips (FR-012, FR-141 S7c): rename, split, merge, a trip's days, one country's map; every input checked in the core
+  src/addassist.rs       † # AddAssist's commands (FR-133): the countries with data, a code's places and a search, offline; the query and results bounded here
   src/places.rs          † # place search, dates and places set by hand, renamed places (FR-005, FR-032); every input checked here
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
   src/menu.rs            † # native File/Edit/View/Window/Help menu (macOS), rebuilt on language change; Help → the manual (FR-110, `Action::Manual`)
@@ -167,7 +171,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
     components/layout/   † # shared layout pieces (STYLE_RULE §4): side-panel, section-card, inspector-section, panel-note, collapse, viewer-frame (with a `toolbar` slot above the stage and a `below` slot under it), filmstrip (the strip of thumbnails under a viewer's stage, FR-090), stage-spinner, hint-layer, key-hints, keys-info (the keys popover behind the info button), notice-stack (the main view's notices: an error with its dismiss button, a camera session, a task's progress), toolbar-row (a preview's row of tools above the stage), inspector-tabs, settings-frame (the Settings window's list and page), stage-nav (the stage's previous and next buttons), part-boundary (one part failing alone, ADR-0048), manual-text (the manual's text, keys shown as keys)
     components/forms/    † # the lego blocks (STYLE_RULE §4): commit-input, field (Field, FieldLabel, Hint, Inset, ValueRow, RowList, FactLines, Stack), switch-field, segmented-toggle, swatch-toggle, fit-text and fit-children (a control's words fit: a step smaller, then cut with a hint, FR-125), list-row (the chosen row of any list), addassist (the AddAssist postal code and search fields, FR-133)
-    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, settings-window/ (FR-086), stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, appearance/, about/, print-advice/, modes/, simple/, collage/, develop/ (copy, paste and reset settings, FR-097), welcome/ (the first launch's welcome, FR-109), manual/ (the manual inside the app, FR-110: `ManualSection` and `ManualSteps` in Settings → *Manual*, loaded on first open), rollsense/ (RollSense, FR-141: `use-rollsense.ts`, `rollsense-panel.tsx` in the right column, `rollsense-cards.tsx`), look/ (looks, LUTs and presets; colour-print-tabs.tsx, a gallery panel's Colour and Print tabs), window/ (the title bar). Among them: about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035), collage/postcard-reuse.ts (a card's message or recipient put on the other cards, FR-077, FR-133), viewer/side-column.tsx and viewer/use-side-column.ts (a preview's left column, folded in a narrow window, FR-095)
+    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, settings-window/ (FR-086), stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, appearance/, about/, print-advice/, modes/, simple/, collage/, develop/ (copy, paste and reset settings, FR-097), welcome/ (the first launch's welcome, FR-109), manual/ (the manual inside the app, FR-110: `ManualSection` and `ManualSteps` in Settings → *Manual*, loaded on first open), rollsense/ (RollSense, FR-141: `use-rollsense.ts`, `rollsense-panel.tsx` in the right column, `rollsense-cards.tsx`, `cleanup-card.tsx` (*Clean up*), `country-map.tsx` (the Where card's map), `trip-page.tsx` (a trip's page), `pick-chip.tsx` (the violet chip of the pick in Photos, ADR-0057)), look/ (looks, LUTs and presets; colour-print-tabs.tsx, a gallery panel's Colour and Print tabs), window/ (the title bar). Among them: library/to-delete-panel.tsx (the right column while the sidebar's *To delete* is chosen, FR-141), about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035), collage/postcard-reuse.ts (a card's message or recipient put on the other cards, FR-077, FR-133), viewer/side-column.tsx and viewer/use-side-column.ts (a preview's left column, folded in a narrow window, FR-095)
     i18n/                † # i18next setup + typed keys (FR-020, ADR-0015); `LANGUAGES`, the one description of each language; pseudo.ts, the pseudo-locale en-XA of a `VITE_PSEUDO=1` build (FR-125); [LOCALIZATION.md](LOCALIZATION.md)
     locales/             † # en.json (default), de.json, hu.json, ja.json, ko.json, vi.json — bundled, never fetched
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
@@ -357,6 +361,7 @@ Commands marked † are implemented.
 | `check_for_update() -> UpdateCheck` † / `open_update_download()` † | On click: asks GitHub for the latest release (`{ current, latest, newer, pageUrl, minSafe, belowMinSafe, reasonEn, reasonVi }`; the minimum safe version from the hidden `fotollection-update` note in the release body) and keeps the installer link for this system in Rust; the second opens it in the browser. Errors: `update.offline`, `update.unreadable`, `update.none` | FR-061 |
 | `check_for_update_at_start() -> UpdateCheck?` † / `open_update_page()` † | Once at start when `ui.checkUpdatesAtStart` is on (FR-103): the same check, `None` when nothing is newer or the network does not answer; the second opens the release page the check found. Debug builds read `FOTOLLECTION_UPDATE_FEED` instead of GitHub | FR-103 |
 | `update_source() -> UpdateSource` † | How this copy gets new versions, for Settings → *Updates*: `releases`, or `softwareCentre` in a Flatpak, which never asks GitHub (`updates.rs`) | FR-061 |
+| `last_update_check() -> UpdateCheck?` † | The newer version the last check found (most often the one at start), or `None`, with no network call, so Settings opens on what is already known | FR-103 |
 | `open_issue_page()` † | Report a problem: opens the project's issue page in the browser; the address is fixed in Rust, so the webview cannot open another, and the app sends nothing | FR-069 |
 | `open_website()` † | A click on the app's mark beside its name: opens fotollection.org in the browser; the address is fixed in Rust, as `open_issue_page`'s, and the app sends nothing | FR-099 |
 | `diagnostics() -> string` † | Copy diagnostics: the version, the system and the last 20 lines of the error log, without paths ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)) | FR-069 |
@@ -370,6 +375,14 @@ Commands marked † are implemented.
 | `list_groups() -> [Group]` † | Groups of similar shots from the last analysis: `{ id, result: { photos (best first, with score parts, closed eyes, faces), reasons, tooClose } }`. `id` is the group's first photo | FR-041 |
 | `keep_best(groups) -> HistoryState` † | Picks each group's best photo and rejects the rest as one undoable step; 1–5,000 groups, unknown groups are rejected | FR-041, FR-022 |
 | `keep_one(group, photo) -> HistoryState` † | Keeps the chosen photo of one group and rejects the others, one undoable step (for "Too close to call" or a different preference) | FR-041, FR-022 |
+| `analyze_sorting(folders) -> JobId` † | RollSense's pixels pass (`src-tauri/src/sorting.rs`) over the photos of `folders` (all when empty) on its own pool on every core: TinyCLIP-39M's subjects and the duplicates proven on their pictures, cached photos at once, written to the library in batches of 256; cancel with `cancel_job`, which keeps nothing. A second call while one runs returns the running job | FR-141, FR-015 |
+| `sort_facets(folders) -> Facets` † | Everything RollSense lists, with counts, over the photos of `folders` (all when empty) | FR-141 |
+| `trash_check(ids ≤ 100,000) -> TrashCheck` † | The summary before a move to the Trash: the photos' bytes, and how many seem to sit on a volume without a Trash (a network share), whose files would be deleted for good | FR-141, ADR-0055 |
+| `trash_photos(ids ≤ 100,000) -> DeleteReport` † / `cancel_trash()` † | Moves the photos' files to the system's Trash (the `trash` crate), paths from the library, never the webview, then rebuilds the library from its folders with every other photo's edits; `{ removed, notRemoved }`, the photos a volume without a Trash refused. `cancel_trash` stops before the next file | FR-141, ADR-0055 |
+| `delete_photos(ids ≤ 100,000) -> DeleteReport` † | Deletes for good, after the user said so a second time, only photos the Trash refused (`photo.not_refused` otherwise), then rebuilds the library | FR-141, ADR-0055 |
+| `rename_trip(first_day, name?)` † / `split_trip(first_day, after_day)` † / `merge_trip(first_day)` † | The user's changes to a trip (`src-tauri/src/trips.rs`, `library/trip_edit.rs`), named by its first day (days since 1970): a name (trimmed, ≤ 80 characters; `None` back to the suggested one), a split after a day, a merge into the trip before; checked in the core against the trips found and kept in the project (v17) | FR-012, FR-141 |
+| `trip_days(first_day) -> TripDay[]` † | The days of a trip, for its page in RollSense | FR-012, FR-141 |
+| `country_map(folders, country ≤ 100 bytes) -> CountryMap?` † | One country's outline (Natural Earth, `geo_shapes.rs`) and a pin per place of the photos of `folders`, for the top of the Where card; `None` without an outline | FR-141 |
 | Filters by date, camera, GPS, DPI in `list_photos` | Planned culling filters | FR-022, FR-026 |
 | `set_copies(ids, n)` / `order_summary() -> OrderSummary` | Copies and cost estimate | FR-024 |
 | `set_print_size(ids, size_id)` | Per-photo print size | FR-025 |
@@ -401,8 +414,10 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `camera-shot-failed` † | `{ issue }`: a press did not give a photo (`camera.no_shot`), or a step or format change was refused |
 | `open-photo` † | `{ id, folder }`: a photo handed over by the OS is in the library; the UI takes it with `take_photo_request`, shows its folder's tab and opens the preview once that folder is listed |
 | `startup-finished` † | The last session is back (or there was none): the start-up screen fades out (FR-060) |
-| `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze" \| "previews" \| "looks", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
+| `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze" \| "previews" \| "looks" \| "sort" \| "trash", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
 | `analysis-finished` † | `{ jobId, analyzed, failed, groups, cancelled }`. The UI refetches `list_groups` |
+| `sorting-read` † | `{ jobId, analysed }`: RollSense's pass has read more photos (every 2 seconds at most); the UI refetches the facets, so the cards fill as it reads (FR-141) |
+| `sorting-finished` † | `{ jobId, analysed, failed, cancelled }`: RollSense's pass finished or was cancelled; the UI refetches the facets (FR-141) |
 | `project://saved` | `{ path, at }`, for the autosave indicator |
 | `history://changed` | `{ can_undo, can_redo }` |
 

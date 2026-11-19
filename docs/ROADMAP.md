@@ -1,6 +1,6 @@
 # Roadmap — Fotollection
 
-> **Status:** v0.2, by quarter ([ADR-0053](adr/0053-roadmap-by-quarter.md)) · **Last reviewed:** 2026-11-16
+> **Status:** v0.2, by quarter ([ADR-0053](adr/0053-roadmap-by-quarter.md)) · **Last reviewed:** 2026-11-19
 >
 > This file defines **when**: every requirement has one quarter, or *Shipped*. What each requirement means is defined in [PRD.md](PRD.md); its priority (P0–P3) stays there. Progress is tracked in [STATUS.md](STATUS.md), whose *When* column matches the quarter here. `scripts/check-docs.sh` enforces both.
 
@@ -82,7 +82,7 @@ v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadat
 | FR-130 | The Japanese postcard: a はがき (100 × 148 mm, 「郵便はがき」 at the top, Japan Post's address side with its vermilion 3 + 4 code boxes) in Collage mode, the only card in Japanese and a switch in English and Vietnamese for a card sent to Japan, its layout on the style board first; v0.14.2 (owner, 2026-11-14) |
 | FR-132 | The Korean postcard's address side (five code boxes, the 17 mm machine strip) on the 10 × 15 card, and Korea's print sizes (6 × 8, 5 × 7, 3 × 5, 8 × 10, 4 × 4 in); v0.14.2 (owner, 2026-11-15) |
 | FR-133 | AddAssist, assisted address entry: a switch between typing by hand and the postal code filling what the country's bundled data knows (Japan, Korea, Hungary, the Czech Republic, Germany researched), name, street, number and an optional phone typed; shown on the website once it ships; v0.14.2 with FR-130 or later (owner, 2026-11-15) |
-| FR-141 | Sorting a phone's camera roll: camera, app, screenshot, saved or received, edited, by metadata first and CLIP ViT-B/32 for the rest; Live Photo, burst and HEIC/JPG stacks; time with its source; events ([ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md)) |
+| FR-141 | Sorting a phone's camera roll: camera, app, screenshot, saved or received, edited, by metadata first and TinyCLIP-39M for the rest ([ADR-0056](adr/0056-tinyclip-39m-bundled-for-sorting.md)); Live Photo, burst and HEIC/JPG stacks; time with its source; events ([ADR-0054](adr/0054-sorting-metadata-first-then-pixels.md)) |
 | FR-012 | Trip auto-grouping |
 | FR-015 | Duplicate detection |
 | FR-143 | Suggested deletions after sorting: too soft, enlarged from a small image (its real resolution measured), saved from the web, memes; each with its reasons, to the system's Trash on the user's word ([ADR-0055](adr/0055-deleting-to-the-trash-on-the-users-word.md)) |
