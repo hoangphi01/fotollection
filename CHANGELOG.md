@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: **RollSense** sorts a phone's camera roll on this computer: by source, subject, date, trip and place, with duplicates and a clean-up.
+- New: a **month calendar** for RollSense's dates; a ticked day splits the gallery by its events, in the local time of the place.
+- New: **Home time**, chosen on the welcome, so photos keep the right time when the computer travels.
+- UI update: deleting is one place, **To delete**, moved to the Trash at once.
+
 ### Added
 
 - **RollSense**, Pro mode's third tab beside Photos and Groups, sorts a phone's camera roll on this computer: by source (camera, screenshots, apps, edited copies, film scans, saved or received), by what the photos show, by year, month and event, by trip, by visits home and by place, with duplicates and stacks of one capture. It reads the chosen folder only (the Workspace: all of them), and its red square on the progress bar stops it. Tick groups, several in a card or across cards, then set their photos aside or delete them to the system's Trash; back in Photos only the kept photos remain for colour and print.
@@ -20,14 +27,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - RollSense opens with **Clean up**: extra copies, screenshots, photos saved from apps and chats, and memes, each with its count and the space it takes, one press to review them; Simple mode offers it for a phone's roll.
 - RollSense's **Where** opens with a map of one country in the theme's own colour, a violet pin for each place with photos; pressing a pin ticks its photos. Offline, from Natural Earth's outlines (127 KB); Vietnam's map holds the Hoàng Sa and Trường Sa archipelagos.
 - RollSense's trips can be renamed, split between two days on the trip's own page, and merged, from **⋯** or a right click; the changes are kept in the project.
-- Deleting is now one place, **To delete** in the sidebar: **Delete** on a photo, *Mark to delete* in select mode, or RollSense's *Mark n photos to delete* move photos there, undoable; its column shows the count, the space freed and any drive without a Trash, the photos to keep are brought back, and one press moves the rest to the Trash with a progress bar and a stop.
+- Deleting is now one place, **To delete** in the sidebar: **Delete** on a photo, *Mark to delete* in select mode, or RollSense's *Mark to delete* move photos there, undoable; its column shows the count, the space freed and any drive without a Trash, the photos to keep are brought back, and one press moves the rest to the Trash with a progress bar and a stop.
 - RollSense's *Duplicates* holds only the extra copies, one of each picture always kept, and a photo is deleted for good only after the Trash refused it.
-- What RollSense picks can be worked on: **Edit in Photos** keeps the pick in Photos for colour, export and print, named by a violet chip in the toolbar that goes back to RollSense or clears it; **Add to the print basket** gathers it to print.
 - RollSense follows the folders: ticking more keeps it, over all the ticked ones; choosing another folder goes back to Photos. Its button, while shown, now reads pressed in.
 - Photos keep the local time of the place where they were taken: each gets one UTC instant from its GPS time, its own offset or its camera's clock, read in that camera's zone or else in the home time, with past summer times; RollSense's days, events and trips follow it, so a photo at 00:30 in Seoul is on that Seoul day. Offline, from the IANA zone rules and a zone for each bundled place.
 - **Home time**, on the welcome's first page and in Settings › General: this computer's zone, or another place's found by its country or city. It is kept when the computer is set to another zone, and a hint then names the computer's.
 - RollSense's **When** is a month calendar: days shaded in grey by their photos, a day ticked by a press, the month and the year from its title; the gallery then splits a ticked day by its events with their local times (*08:10–10:40 · Seoul*), and a month or a year by its days.
-- RollSense's actions sit on a bar under the gallery's toolbar, always there and waiting until something is picked: **Edit in Photos**, **Print basket**, **Set aside** and **Mark to delete**, on the ticked photos in select mode; ticking a group no longer moves the column or the grid. The last step of its reading shows as *Checking duplicates*, with its stop.
+- RollSense's actions sit on a bar under the gallery's toolbar, always there and waiting until something is picked: **Edit in Photos** keeps the pick in Photos for colour, export and print, named by a violet chip in the toolbar that goes back to RollSense or clears it; **Print basket** gathers it to print; **Set aside** and **Mark to delete**, on the ticked photos in select mode. Ticking a group no longer moves the column or the grid. The last step of its reading shows as *Checking duplicates*, with its stop.
 - A photo with no date of its own takes the date written in its file name (`2020-06-18 21-51-22.jpg`, `PXL_20230105_093012.jpg`, `IMG-20220127-WA0001.jpg`) before the file's time.
 
 ### Changed

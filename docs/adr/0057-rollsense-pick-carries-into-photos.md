@@ -1,8 +1,9 @@
 # ADR-0057: RollSense's pick carries into Photos
 
-- **Status:** Accepted
+- **Status:** Accepted; amended 2026-11-19 (where the actions sit)
 - **Date:** 2026-11-18
 - **Related:** FR-141, FR-050, FR-115, ADR-0055
+- **Amended (2026-11-19, the owner's test and a UI/UX review):** the actions left RollSense's footer, which grew over the calendar when something was picked, for a bar under the gallery's toolbar (`SenseBar`, a `SubToolbar`), always there and disabled until something is picked: *Edit in Photos*, *Print basket*, *Set aside*, *Mark to delete*. *Mark to delete* moves photos to *To delete* (ADR-0055); nothing is deleted from RollSense itself.
 
 ## Context
 

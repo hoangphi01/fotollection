@@ -520,11 +520,14 @@ export const commands = {
 	addassistSearch: (country: Country, query: string, limit: number) => typedError<Found[], IpcError>(__TAURI_INVOKE("addassist_search", { country, query, limit })),
 	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */
 	searchPlaces: (query: string, limit: number) => typedError<Place[], IpcError>(__TAURI_INVOKE("search_places", { query, limit })),
-	/**  The zone the system reports, offered as the home zone (FR-145); never saved unasked. */
+	/**
+	 *  The zone the system reports, offered as the home zone (FR-145); written to the settings
+	 *  only when the welcome's *Start* is pressed with *This computer* chosen.
+	 */
 	homeZoneGuess: () => __TAURI_INVOKE<string | null>("home_zone_guess"),
 	/**
 	 *  The zones of the places and countries whose name starts with `query`, each once, for
-	 *  *Choose a place…* (FR-145).
+	 *  *Another place* (FR-145).
 	 */
 	zoneSearch: (query: string) => typedError<ZoneHit[], IpcError>(__TAURI_INVOKE("zone_search", { query })),
 	/**

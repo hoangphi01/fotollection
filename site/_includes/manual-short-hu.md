@@ -371,7 +371,7 @@ A gép minden beállítása egyetlen ablakban van: kattints a fogaskerékre az o
 
 Egy telefon képei között vannak kamerás fotók, képernyőképek, alkalmazásokból és csevegésekből mentett képek, szerkesztett másolatok és ismétlődők. A **RollSense** ezen a gépen rendezi őket, hogy színezés és nyomtatás előtt rendet tegyél. Soha nem módosít fotót, és csak azt törli, amit kiválasztasz, a Kukába.
 
-1. Pro módban válaszd az eszköztáron a **RollSense** lehetőséget, a **Fotók** és a **Csoportok** mellett. Első alkalommal minden képet beolvas; a **Leállítás** megszakítja.
-2. A jobb oszlop sorolja a csoportokat, mindegyiket a képei számával: **Forrás**, **Mit ábrázolnak**, **Mikor**, **Utazások**, **Látogatások otthon**, **Hol**, **Ismétlődők és kötegek**. Válassz egyet: a rács a képeit mutatja.
-3. Ezután **Képek félretétele** (visszahozható, **Cmd/Ctrl+Z**) vagy **Képek törlése…**: megerősítés után a rendszer Kukájába; Kuka nélküli meghajtón a Fotollection még egyszer rákérdez, mielőtt végleg törölne.
-4. Vissza a **Fotók** nézetbe: csak a megtartott képek maradnak, színezésre és nyomtatásra.
+1. Pro módban válaszd az eszköztáron a **RollSense** lehetőséget, a **Fotók** és a **Csoportok** mellett. Első alkalommal minden képet beolvas; a haladás a galéria fölött látszik, a piros négyzet leállítja.
+2. A jobb oszlop sorolja a csoportokat a képek számával: **Forrás**, **Téma**, **Mikor** (havi naptár: egy napra kattintva bejelölöd), **Utazások**, **Hazalátogatások**, **Hol**, **Duplikátumok, Live Photók és sorozatok**. Jelölj be egyet: a rács a képeit mutatja, egy bejelölt nap eseményenként tagolva, helyi idővel.
+3. Az eszköztár alatti sáv dolgozik velük: **Szerkesztés a Fotókban**, **Nyomtatási kosár**, **Félretétel** (visszahozható, **Cmd/Ctrl+Z**) vagy **Megjelölés törlésre**: a képek az oldalsáv **Törlendő** részébe kerülnek, onnan egyszerre a rendszer Kukájába.
+4. A **Szerkesztés a Fotókban** megtartja a kijelölést a **Fotók** nézetben színezésre és nyomtatásra; az eszköztár címkéje törli.

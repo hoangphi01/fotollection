@@ -41,7 +41,8 @@ pub fn search_places(query: String, limit: u32) -> Result<Vec<Place>, IpcError> 
         .map_err(|e| IpcError::internal(e.to_string()))
 }
 
-/// The zone the system reports, offered as the home zone (FR-145); never saved unasked.
+/// The zone the system reports, offered as the home zone (FR-145); written to the settings
+/// only when the welcome's *Start* is pressed with *This computer* chosen.
 #[tauri::command]
 #[specta::specta]
 pub fn home_zone_guess() -> Option<String> {
@@ -49,7 +50,7 @@ pub fn home_zone_guess() -> Option<String> {
 }
 
 /// The zones of the places and countries whose name starts with `query`, each once, for
-/// *Choose a place…* (FR-145).
+/// *Another place* (FR-145).
 #[tauri::command]
 #[specta::specta]
 pub fn zone_search(query: String) -> Result<Vec<fotollection_core::zones::ZoneHit>, IpcError> {

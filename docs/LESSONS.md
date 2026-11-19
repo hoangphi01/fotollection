@@ -21,6 +21,8 @@ Read this table in full before any task; then read in full every entry whose Are
 - Measure every new row, column, control or summary at 1180 px and the narrowest panel, in Vietnamese and Hungarian, with its longest text, before keeping it. Kept by: `MEASURE=1` (UI-LAYOUT-001).
 - Words in a flex row get `min-w-0`, `truncate` gets a width (`w-full min-w-0`), a button stops at its container (`max-w-full`). Kept by: UI-LAYOUT-001 and the long custom size stress fixture.
 - Nothing jumps: a box that holds something that comes and goes has a fixed size, and what a first change reveals is there from the start, off. Kept by: UI-STABLE-001.
+- A new control is pressed in a scene, not only shot: what was pressed stays within 1 px, no panel's foot or bar resizes, no scroll moves on its own for 2 s. Kept by: UI-STABLE-003 (`site/screenshots/side-panels.mjs`), the style-audit skill §4.
+- A bar or foot that holds actions is always there, its actions disabled until there is something to act on; a side panel keeps what the user looks at when content above it grows. Kept by: UI-STABLE-003; `SubToolbar`, `useScrollAnchor` in `SidePanel`.
 - A card whose height depends on an answer from Rust shows the last answer (`.data`, kept across remounts), never `return null` per photo. Kept by: no machine check yet.
 - A box that clips is sized for everything it draws (rings, knobs, the scroll bar); a popup is placed after measuring it, the title bar a collision edge. Kept by: UI-LAYOUT-016, UI-LAYOUT-021.
 - A picture is checked in the frame that shows it, on the built page; a carousel picture is the whole window at 1600 × 1000. Kept by: `check-site-i18n` (carousel sizes).
@@ -114,6 +116,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### state-cache
 
+- A task's progress total counts only what it will tick, every item ticked on every path (skipped, failed, cancelled), so a progress always ends. Kept by: no machine check yet (`prove_duplicates`, 2026-11-19).
 - Cached state names its owner, bound and evictor; a value made in two places is made in one function; test every consumer with the cache empty. Kept by: the per-caller cache tests.
 - A fix that changes the pixels of files already seen bumps the cache version; a thumbnail's key carries its look. Kept by: `thumbs::CACHE_VERSION`.
 - Data more than one component shows is a shared store; a setting that changes a list is announced by Rust once stored. Kept by: no machine check yet.
@@ -135,6 +138,27 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-19
+
+### A calendar of toggle days is a group, not an ARIA grid (UI)
+
+- **Area:** ui-blocks, checks
+- **Seen:** the first `CalendarMonth` (FR-141 C1, 2026-11-19) gave its days `role="grid"` and `gridcell` buttons with `aria-pressed`; axe failed every day twice: a gridcell needs a `row` parent, and a gridcell may not carry `aria-pressed`. The measure's picture then looked unchanged after each fix: `shoot.mjs` already wrote `measure-rollsense.png` from another view, so the new one was overwritten.
+- **Why:** an ARIA grid is a table to move through, not a set of switches; and two views of one run shared a file name.
+- **Rule:** days that switch on and off are toggle buttons (`aria-pressed`) in a `role="group"` named by the month, with arrow keys handled by the block; today is `aria-current="date"`. Every `measure-*.png` a run writes has its own name (`grep` the name before adding a shot).
+
+### Static shots passed, the first click jumped: the calendar, the column's foot and the grid (FR-141, UI)
+
+- **Area:** ui-layout, checks
+- **Seen:** the owner ticked a day in RollSense's new calendar (2026-11-19): four action buttons appeared in the column's foot and covered the calendar, the column drifted while the reading pass filled the cards above it, and the grid scrolled by itself; an independent UI/UX review traced each one.
+- **Why:** three faults of the kind "nothing jumps" forbids, none seen by the checks: the actions were mounted only once something was picked, so the foot grew by 176 px and took the scroll area's room; each `sortingRead` reloaded the cards above the calendar, so it moved down; the grid's headers came after its photos and the scroll effect followed the selected photo's *row*, which the headers moved. The style audit measured still screenshots only; no scene clicked the new control. The busiest days were also shaded in the same violet as a ticked day.
+- **Rule:** a bar or foot that holds actions is always there, its actions disabled until there is something to act on (`SubToolbar`); a scroll area keeps what the user looks at when content above it changes (`useScrollAnchor` in `SidePanel`); a grid draws its headers with its photos and scrolls only when the selected photo changes; only a switched-on control wears the accent. Every new control is clicked in a scene that asserts nothing moved (UI-STABLE-003, the style-audit skill §4).
+
+### A progress bar stuck at 1/16: counted photos the task never ticked (FR-141)
+
+- **Area:** state-cache
+- **Seen:** the new *Checking duplicates* notice stayed at 1/16 after RollSense had finished, and its ✕ did nothing (owner, 2026-11-19).
+- **Why:** the total counted every photo of the candidate pairs, but a pair can reach a photo of another folder, which the pass's scope does not hold; those were skipped before their tick, so `done` never reached `total`, the notice never hid, and the stop had no running job to end.
+- **Rule:** a task's total is the items it will tick, filtered first; every item is ticked on every path (skipped, failed, cancelled), so a progress always ends.
 
 ### Two time-zone crates went to CI unchecked, and CI failed twice (FR-145)
 
@@ -1748,24 +1772,3 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Seen:** after a day of RollSense features the owner sent two screenshots (2026-11-18): the select bar's basket a flat tan slab beside lipped cells, and the pressed Select button reading as raised; an audit then found 10 more slips (the pick chip carrying the column's violet lips into the toolbar, a mark-to-delete red in one place and neutral in another, a split toggle with no pressed look, notes with the wrong action size).
 - **Why:** each feature passed `tsc`, lint and ui-check, but no check knew these rules: a solid button inside a `ButtonGroup`, `aria-pressed` on an outline button, `theme-sense` outside its column, a note's action size; and the pressed face kept the plain accent, which in dark reads as an edge, not a hollow.
 - **Rule:** a UI feature is not done before the `style-audit` skill ran on it, even when features ship fast; every slip it finds that code can catch becomes a `check-lego` rule in the same commit (seven added that day), and the pressed look is one recipe, `bg-pressed`, for every control.
-
-### A calendar of toggle days is a group, not an ARIA grid (UI)
-
-- **Area:** ui-blocks, checks
-- **Seen:** the first `CalendarMonth` (FR-141 C1, 2026-11-19) gave its days `role="grid"` and `gridcell` buttons with `aria-pressed`; axe failed every day twice: a gridcell needs a `row` parent, and a gridcell may not carry `aria-pressed`. The measure's picture then looked unchanged after each fix: `shoot.mjs` already wrote `measure-rollsense.png` from another view, so the new one was overwritten.
-- **Why:** an ARIA grid is a table to move through, not a set of switches; and two views of one run shared a file name.
-- **Rule:** days that switch on and off are toggle buttons (`aria-pressed`) in a `role="group"` named by the month, with arrow keys handled by the block; the chosen day is `aria-current`. Every `measure-*.png` a run writes has its own name (`grep` the name before adding a shot).
-
-### Static shots passed, the first click jumped: the calendar, the column's foot and the grid (FR-141, UI)
-
-- **Area:** ui-layout, checks
-- **Seen:** the owner ticked a day in RollSense's new calendar (2026-11-19): four action buttons appeared in the column's foot and covered the calendar, the column drifted while the reading pass filled the cards above it, and the grid scrolled by itself; an independent UI/UX review traced each one.
-- **Why:** three faults of the kind "nothing jumps" forbids, none seen by the checks: the actions were mounted only once something was picked, so the foot grew by 176 px and took the scroll area's room; each `sortingRead` reloaded the cards above the calendar, so it moved down; the grid's headers came after its photos and the scroll effect followed the selected photo's *row*, which the headers moved. The style audit measured still screenshots only; no scene clicked the new control. The busiest days were also shaded in the same violet as a ticked day.
-- **Rule:** a bar or foot that holds actions is always there, its actions disabled until there is something to act on (`SubToolbar`); a scroll area keeps what the user looks at when content above it changes (`useScrollAnchor` in `SidePanel`); a grid draws its headers with its photos and scrolls only when the selected photo changes; only a switched-on control wears the accent. Every new control is clicked in a scene that asserts nothing moved (UI-STABLE-003, the style-audit skill §4).
-
-### A progress bar stuck at 1/16: counted photos the task never ticked (FR-141)
-
-- **Area:** state-cache
-- **Seen:** the new *Checking duplicates* notice stayed at 1/16 after RollSense had finished, and its ✕ did nothing (owner, 2026-11-19).
-- **Why:** the total counted every photo of the candidate pairs, but a pair can reach a photo of another folder, which the pass's scope does not hold; those were skipped before their tick, so `done` never reached `total`, the notice never hid, and the stop had no running job to end.
-- **Rule:** a task's total is the items it will tick, filtered first; every item is ticked on every path (skipped, failed, cancelled), so a progress always ends.

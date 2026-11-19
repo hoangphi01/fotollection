@@ -41,7 +41,7 @@ export function useGallerySections(filter: CullFilter, photos: PhotoSummary[]): 
   const next = timed ? (answer.sections ?? NONE) : NONE
   if ((!timed || ready) && (shown.photos !== photos || shown.sections !== next)) setShown({ photos, sections: next })
 
-  const clock = new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
+  const clock = new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' })
   const time = (min: number) => clock.format(new Date(min * 60_000))
   const date = new Intl.DateTimeFormat(i18n.language, { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
   return {

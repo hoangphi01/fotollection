@@ -445,6 +445,12 @@
     "sideOpen": "Bal oszlop mutatása (Tab)"
   },
   "errors": {
+    "calendar": {
+      "bad_month": "Válasszon hónapot 1900 és 2100 között."
+    },
+    "place": {
+      "query_too_long": "Írjon rövidebb nevet."
+    },
     "internal": "Belső hiba. Másold a diagnosztikát: Beállítások → Hiba jelentése.",
     "panic": "Ez a panel hiba miatt leállt; a többi rész működik.",
     "camera": {

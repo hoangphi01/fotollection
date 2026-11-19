@@ -425,6 +425,12 @@
     "sideOpen": "Hiện cột trái (Tab)"
   },
   "errors": {
+    "calendar": {
+      "bad_month": "Chọn một tháng từ năm 1900 đến 2100."
+    },
+    "place": {
+      "query_too_long": "Gõ tên ngắn hơn."
+    },
     "internal": "Lỗi nội bộ. Sao chép thông tin chẩn đoán trong Cài đặt → Báo lỗi.",
     "panic": "Bảng này dừng do lỗi; các phần khác vẫn hoạt động.",
     "camera": {

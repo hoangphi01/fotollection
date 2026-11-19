@@ -404,7 +404,7 @@ Tous les réglages de cet ordinateur se trouvent dans une seule fenêtre : cli
 
 Les photos d’un téléphone mêlent les prises de vue de l’appareil, les captures d’écran, les images enregistrées depuis les applis et les messageries, les copies retouchées et les doublons. **RollSense** les trie sur cet ordinateur, pour faire le tri avant la couleur et l’impression. Il ne modifie jamais une photo et ne supprime que ce que vous choisissez, vers la corbeille.
 
-1. En mode Pro, choisissez **RollSense** dans la barre d’outils, à côté de **Photos** et **Groups**. La première fois, il lit chaque photo ; **Stop** interrompt.
-2. La colonne de droite liste les groupes avec leur nombre de photos : **Source**, **What they show**, **When**, **Trips**, **Visits home**, **Where**, **Duplicates and stacks**. Choisissez-en un : la grille montre ses photos.
-3. Puis **Set aside n photos** (réversible, **Cmd/Ctrl+Z**) ou **Delete n photos…** : après confirmation, vers la corbeille du système ; sur un disque sans corbeille, Fotollection redemande avant de supprimer définitivement.
-4. De retour dans **Photos**, seules les photos gardées restent, pour la couleur et l’impression.
+1. En mode Pro, choisissez **RollSense** dans la barre d’outils, à côté de **Photos** et **Groups**. La première fois, il lit chaque photo ; la progression s’affiche au-dessus de la galerie, le carré rouge l’arrête.
+2. La colonne de droite liste les groupes avec leur nombre de photos : **Source**, **Subject**, **When** (un calendrier du mois : un clic sur un jour le coche), **Trips**, **Visits home**, **Where**, **Duplicates, Live Photos and bursts**. Cochez-en un : la grille montre ses photos, un jour coché découpé par événements, à l’heure locale.
+3. La barre sous la barre d’outils agit sur elles : **Edit in Photos**, **Print basket**, **Set aside** (réversible, **Cmd/Ctrl+Z**) ou **Mark to delete** : elles passent dans **To delete** de la barre latérale, puis de là d’un coup dans la corbeille du système.
+4. **Edit in Photos** garde la sélection dans **Photos** pour la couleur et l’impression ; sa pastille dans la barre d’outils l’efface.

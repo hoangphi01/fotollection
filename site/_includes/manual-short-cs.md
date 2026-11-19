@@ -405,7 +405,7 @@ Všechna nastavení tohoto počítače jsou v jednom okně: ozubené kolo nahoř
 
 Fotky z telefonu míchají snímky z fotoaparátu se snímky obrazovky, obrázky uloženými z aplikací a chatů, upravenými kopiemi a duplikáty. **RollSense** je roztřídí na vašem počítači, takže je lze před úpravou barev a tiskem uklidit. Nikdy fotku nemění a do koše přesune jen to, co vyberete.
 
-1. V režimu Pro vyberte na panelu nástrojů **RollSense**, vedle **Photos** a **Groups**. Poprvé přečte všechny fotky; **Stop** to ukončí dřív.
-2. Pravý sloupec ukazuje skupiny s počtem fotek: **Source**, **What they show**, **When**, **Trips**, **Visits home**, **Where**, **Duplicates and stacks**. Vyber jednu a mřížka ukáže její fotky.
-3. Pak **Set aside n photos** (dá se vrátit, **Cmd/Ctrl+Z**) nebo **Delete n photos…**: po potvrzení do systémového koše; na disku bez koše se Fotollection zeptá ještě jednou, než smaže natrvalo.
-4. Zpátky v **Photos** zůstanou jen ponechané fotky, pro úpravu barev a tisk.
+1. V režimu Pro vyberte na panelu nástrojů **RollSense**, vedle **Photos** a **Groups**. Poprvé přečte všechny fotky; průběh je nad galerií a červený čtvereček ho zastaví.
+2. Pravý sloupec ukazuje skupiny s počtem fotek: **Source**, **Subject**, **When** (kalendář měsíce: klepnutím na den ho zaškrtnete), **Trips**, **Visits home**, **Where**, **Duplicates, Live Photos and bursts**. Zaškrtněte jednu a mřížka ukáže její fotky; zaškrtnutý den je rozdělený podle událostí s místním časem.
+3. Lišta pod panelem nástrojů s nimi pracuje: **Edit in Photos**, **Print basket**, **Set aside** (dá se vrátit, **Cmd/Ctrl+Z**) nebo **Mark to delete**: fotky přejdou do **To delete** v postranním panelu a odtud najednou do systémového koše.
+4. **Edit in Photos** ponechá výběr v **Photos** pro barvy a tisk; štítek na panelu nástrojů ho zruší.

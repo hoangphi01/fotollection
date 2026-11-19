@@ -404,7 +404,7 @@ Alle Einstellungen dieses Computers liegen in einem Fenster: Klick auf das Zahnr
 
 Die Aufnahmen eines Handys mischen Kamerafotos mit Bildschirmfotos, Bildern aus Apps und Chats, bearbeiteten Kopien und Duplikaten. **RollSense** sortiert sie auf diesem Computer, damit du vor Farbe und Druck aufräumst. Es ändert nie ein Foto und löscht nur, was du wählst, in den Papierkorb.
 
-1. Wähl im Pro-Modus in der Werkzeugleiste **RollSense**, neben **Fotos** und **Gruppen**. Beim ersten Mal liest es jedes Foto; **Stopp** bricht ab.
-2. Die rechte Spalte listet die Gruppen mit ihrer Anzahl: **Quelle**, **Was sie zeigen**, **Wann**, **Reisen**, **Besuche zu Hause**, **Wo**, **Duplikate und Stapel**. Wähl eine: das Raster zeigt ihre Fotos.
-3. Dann **Fotos beiseitelegen** (zurückholbar, **Cmd/Ctrl+Z**) oder **Fotos löschen…**: nach deiner Bestätigung in den Papierkorb des Systems; auf einem Laufwerk ohne Papierkorb fragt Fotollection noch einmal, bevor es endgültig löscht.
-4. Zurück in **Fotos** bleiben nur die behaltenen Fotos, für Farbe und Druck.
+1. Wähl im Pro-Modus in der Werkzeugleiste **RollSense**, neben **Fotos** und **Gruppen**. Beim ersten Mal liest es jedes Foto; der Fortschritt steht über der Galerie, das rote Quadrat hält an.
+2. Die rechte Spalte listet die Gruppen mit ihrer Anzahl: **Quelle**, **Motiv**, **Wann** (ein Monatskalender: ein Klick auf einen Tag hakt ihn an), **Reisen**, **Heimatbesuche**, **Wo**, **Duplikate, Live Photos und Serien**. Hak eine an: das Raster zeigt ihre Fotos, ein angehakter Tag nach Ereignissen geteilt, mit Ortszeit.
+3. Die Leiste unter der Werkzeugleiste wirkt auf sie: **In Fotos bearbeiten**, **Druckkorb**, **Zurücklegen** (zurückholbar, **Cmd/Ctrl+Z**) oder **Zum Löschen vormerken**: sie kommen nach **Zum Löschen** in der Seitenleiste und von dort auf einmal in den Papierkorb des Systems.
+4. **In Fotos bearbeiten** behält die Auswahl in **Fotos** für Farbe und Druck; ihr Chip in der Werkzeugleiste hebt sie auf.

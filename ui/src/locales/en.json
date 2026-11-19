@@ -445,6 +445,12 @@
     "sideOpen": "Show left column (Tab)"
   },
   "errors": {
+    "calendar": {
+      "bad_month": "Pick a month between 1900 and 2100."
+    },
+    "place": {
+      "query_too_long": "Type a shorter name."
+    },
     "internal": "Internal error. Copy diagnostics in Settings → Report a problem.",
     "panic": "This panel stopped on an error; the rest still works.",
     "camera": {

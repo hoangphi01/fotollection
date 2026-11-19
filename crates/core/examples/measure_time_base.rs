@@ -5,7 +5,9 @@
 //!
 //! - table: what RollSense pays once after a change, `Library::photo_time` on an empty cache
 //!   (each photo's place from its GPS through the bundled places, its zone, then `resolve`);
-//! - resolve: `time_base::resolve` alone, the zones already known.
+//! - resolve: `time_base::resolve` alone, the zones already known;
+//! - sections: `Library::gallery_sections` (FR-141 C2), the grid's runs for a month picked and
+//!   for a day, RollSense's index already built, as after the first tick.
 //!
 //! `cargo run --release -p fotollection-core --example measure_time_base -- [N]`
 
@@ -15,8 +17,9 @@ use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use fotollection_core::import::ImportedFile;
-use fotollection_core::library::{Library, PhotoId};
+use fotollection_core::library::{CullFilter, Library, PhotoId};
 use fotollection_core::metadata::PhotoMeta;
+use fotollection_core::sorting::facets::SortPick;
 use fotollection_core::time_base::{self, TimeFacts, Zone};
 
 /// Cities the photos are taken around: (latitude, longitude, zone offset in minutes).
@@ -105,4 +108,32 @@ fn main() {
     println!("{n} photos, table: median {m:.1} ms ({lo:.1}–{hi:.1})");
     let (m, lo, hi) = stats(resolve);
     println!("{n} photos, resolve alone: median {m:.2} ms ({lo:.2}–{hi:.2})");
+    let day = fotollection_core::calendar::days_from_ymd(2019, 6, 15).unwrap();
+    for (what, sort) in [
+        (
+            "a month",
+            vec![SortPick::Month {
+                year: 2019,
+                month: 6,
+            }],
+        ),
+        ("a day", vec![SortPick::Day { day }]),
+    ] {
+        let filter = CullFilter {
+            sort,
+            ..CullFilter::default()
+        };
+        // The first call builds RollSense's index, as the first tick does in the app.
+        let runs = lib.gallery_sections(&filter).len();
+        let mut times = Vec::new();
+        for _ in 0..5 {
+            let t = Instant::now();
+            std::hint::black_box(lib.gallery_sections(&filter));
+            times.push(t.elapsed().as_secs_f64() * 1000.0);
+        }
+        let (m, lo, hi) = stats(times);
+        println!(
+            "{n} photos, sections of {what} ({runs} runs): median {m:.2} ms ({lo:.2}–{hi:.2})"
+        );
+    }
 }

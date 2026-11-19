@@ -35,10 +35,12 @@
 | **はがき (hagaki)** | The Japanese postcard, 100 × 148 mm; its address side is written top to bottom (FR-130). |
 | **Half-frame** | A film camera that puts two frames on each 35 mm negative, 72 photos on a 36-exposure roll: the idea behind Collage mode. |
 | **HEIC / HEIF** | High Efficiency Image format, the iPhone default, compressed with HEVC. |
+| **Home time** | The time zone a camera clock without one is read in (FR-145, ADR-0058): an IANA name (`Asia/Ho_Chi_Minh`), the computer's or another place's, chosen on the welcome and kept when the computer travels. Never "the time now". |
 | **ICC profile** | Colour-space description embedded in an image (sRGB, Display P3, Adobe RGB). Dropping it shifts colours in print. |
 | **Info frame** | A band under (or around) the photo showing the camera, lens, exposure, style and date, "Shot on …" style. The whole print keeps the selected size ([FR-040](PRD.md#fr-040--exif-info-frame)). |
 | **IPC** | Inter-process communication between the web UI and the Rust core, done through Tauri commands and events. |
 | **k-d tree** | Spatial index for nearest-neighbour search. Not used: the geocoder bins places in a 1° grid of latitude and longitude (`geocode.rs`). |
+| **Local time** | A photo's time in the zone of the place it was taken (FR-145): its UTC instant (GPS time, its own offset, or the camera's clock) shown as the traveller's clock read then; RollSense's days and events follow it. |
 | **Lightroom preset** | A user's own Lightroom® `.xmp` or `.lrtemplate`, read into a look (FR-089, ADR-0045): the sliders that match ours go to them, the per-pixel rest into one table, what no look holds named as not applied. |
 | **Look** | A photo's colour (FR-079): sliders, an optional LUT and an amount, kept per photo; one of Fotollection's eight, a saved one, a LUT or a Lightroom preset. Shown as tiles on the strip under the photo. |
 | **Lossless crop** | Cropping a JPEG in the DCT domain along MCU boundaries without re-encoding, so there is zero quality loss. |
@@ -56,7 +58,7 @@
 | **Presets & LUTs** | The develop view's left-column panel (Pro mode) listing the looks of the library in groups, with *Import presets…* and *Import LUT…*, as Lightroom's Presets panel. |
 | **Print basket / set aside** | The two holding areas ([FR-050](PRD.md#fr-050--print-basket)): the photos that will really be printed, and the ones taken out of the gallery for now. Nothing here is deleted; only RollSense deletes, to the Trash, on the user's word (ADR-0055). |
 | **Rendering intent** | How a colour conversion handles colours outside the target space: *perceptual* compresses the whole gamut smoothly, *relative colorimetric* clips only out-of-gamut colours. |
-| **RollSense** | Pro mode's third tab (FR-141, ADR-0054, ADR-0056): a phone's camera roll sorted by source, subject, time, trips, visits home, place and duplicates, the chosen group then set aside or deleted to the Trash, so only the kept photos go on to colour and print. |
+| **RollSense** | Pro mode's third tab (FR-141, ADR-0054, ADR-0056): a phone's camera roll sorted by source, subject, time, trips, visits home, place and duplicates, the chosen group then edited in Photos, set aside or marked to delete (to *To delete*, then the Trash), so only the kept photos go on to colour and print. |
 | **RenderPlan** | Fotollection's pure, serializable description of how one output photo is produced: crop rectangle, stamp, output path. It is shared by preview and export. |
 | **Settings → Data** | The Settings section of what Fotollection keeps on this computer (FR-116): moving it with a `.fotosettings`, each store's size and folder, starting afresh. |
 | **sRGB** | The standard colour space most print labs expect. Wider spaces (Display P3, Adobe RGB) look dull if a lab treats them as sRGB. |

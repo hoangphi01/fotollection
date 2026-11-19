@@ -445,6 +445,12 @@
     "sideOpen": "Linke Spalte anzeigen (Tab)"
   },
   "errors": {
+    "calendar": {
+      "bad_month": "Wählen Sie einen Monat zwischen 1900 und 2100."
+    },
+    "place": {
+      "query_too_long": "Geben Sie einen kürzeren Namen ein."
+    },
     "internal": "Interner Fehler. Diagnose kopieren unter Einstellungen → Problem melden.",
     "panic": "Dieser Bereich wurde nach einem Fehler angehalten; der Rest funktioniert weiter.",
     "camera": {

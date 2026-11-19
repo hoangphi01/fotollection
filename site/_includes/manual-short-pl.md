@@ -364,7 +364,7 @@ Wszystkie ustawienia tego komputera są w jednym oknie: kliknij koło zębate u 
 
 Zdjęcia z telefonu mieszają ujęcia z aparatu ze zrzutami ekranu, obrazami zapisanymi z aplikacji i czatów, edytowanymi kopiami i duplikatami. **RollSense** porządkuje je na twoim komputerze, żebyś przed kolorem i drukiem zrobił porządek. Nigdy nie zmienia zdjęcia i usuwa tylko to, co wybierzesz, do kosza.
 
-1. W trybie Pro wybierz na pasku narzędzi **RollSense**, obok **Photos** i **Groups**. Za pierwszym razem odczytuje każde zdjęcie; **Stop** kończy wcześniej.
-2. Prawa kolumna pokazuje grupy z liczbą zdjęć: **Source**, **What they show**, **When**, **Trips**, **Visits home**, **Where**, **Duplicates and stacks**. Wybierz jedną, a siatka pokaże jej zdjęcia.
-3. Potem **Set aside n photos** (do cofnięcia, **Cmd/Ctrl+Z**) albo **Delete n photos…**: po potwierdzeniu do systemowego kosza; na dysku bez kosza Fotollection pyta jeszcze raz, zanim usunie na zawsze.
-4. Z powrotem w **Photos** zostają tylko zachowane zdjęcia, do koloru i druku.
+1. W trybie Pro wybierz na pasku narzędzi **RollSense**, obok **Photos** i **Groups**. Za pierwszym razem odczytuje każde zdjęcie; postęp widać nad galerią, czerwony kwadrat go zatrzymuje.
+2. Prawa kolumna pokazuje grupy z liczbą zdjęć: **Source**, **Subject**, **When** (kalendarz miesiąca: kliknięcie dnia go zaznacza), **Trips**, **Visits home**, **Where**, **Duplicates, Live Photos and bursts**. Zaznacz jedną, a siatka pokaże jej zdjęcia; zaznaczony dzień jest podzielony na wydarzenia z czasem lokalnym.
+3. Pasek pod paskiem narzędzi działa na nich: **Edit in Photos**, **Print basket**, **Set aside** (do cofnięcia, **Cmd/Ctrl+Z**) albo **Mark to delete**: trafiają do **To delete** na pasku bocznym, a stamtąd naraz do systemowego kosza.
+4. **Edit in Photos** zachowuje wybór w **Photos** do koloru i druku; jego etykieta na pasku narzędzi go usuwa.

@@ -29,6 +29,7 @@ Here is what each column covers:
 - **Errors:** Rust gives a code. The interface shows `errors.<code>` from the locale, with Rust's English message as the fallback. Rust keeps one language.
 - **Manual:** the manual inside the app ([FR-110](PRD.md#fr-110--the-manual-inside-the-app-offline)). The full manual exists in English and Vietnamese. Any other language shows its short guide, the same one the website shows.
 - **Welcome pictures:** `ui/public/welcome/<page>-<assets>-<theme>.webp`, the screenshots of the welcome screen.
+- **The repository's READMEs:** `README.md` (English, full), `README.vi.md` (Vietnamese, full), and short ones in Simplified Chinese, Japanese and Korean (`README.zh-CN.md`, `README.ja.md`, `README.ko.md`, 2026-11-19), each linked from the others' language bar. Chinese has no interface yet.
 - **Update reason:** the reason for a safety update, written with the release in English and Vietnamese (`.github/update.json`, [FR-103](PRD.md#fr-103--check-for-updates-at-start-never-download-unasked)).
 
 ## 2. One description per language
@@ -48,7 +49,7 @@ The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.
 3. **Plurals follow CLDR.** Each English `_one` / `_other` pair gets the forms the language has. Vietnamese has only `_other`. Hungarian has `_one` and `_other`, and a noun after a number stays singular, so both forms often read the same (*1 fotó*, *5 fotó*). German has `_one` and `_other` as English.
 4. **Plain text only.** No markup and no HTML: React escapes every value, and nothing is rendered as HTML ([SECURITY.md](SECURITY.md)).
 5. **Print content never follows the interface.** The info frame's line and the date stamp are part of the print (FR-020).
-6. **Numbers follow the language,** through `Intl.NumberFormat` (`18.6`, `18,6`). A photo's date stays `YYYY-MM-DD HH:MM` in every language.
+6. **Numbers follow the language,** through `Intl.NumberFormat` (`18.6`, `18,6`). A photo's date stays `YYYY-MM-DD HH:MM` in every language; a clock time is 24-hour everywhere (`hourCycle: 'h23'`). Headers that name a day (RollSense's grid, *Saturday, 7 November*) and a calendar's weekdays follow the language through `Intl.DateTimeFormat`; the calendar's first day of the week is the language's with the system's region (English on a British system starts on Monday).
 7. **Shorter first, then the three steps** ([FR-125](PRD.md#fr-125--long-words-fit-a-step-smaller-then-cut-with-the-whole-in-a-hint)). A translation is kept as short as the English where it can be: `npm run text-widths` lists the labels it makes over 30 % and 20 px wider. What still does not fit is fitted by the app: one step of the type scale smaller for that control only, then cut with an ellipsis and the whole words in the hint (*nagyállomás* → *nagyállom…*). English, the source, always fits whole (UI-TEXT-007); MEASURE lists every word a translation shrank or cut (`MEASURE=1 MEASURE_LANG=<code>`). The layout is never changed for one language ([STYLE_RULE.md §4](STYLE_RULE.md#4-uiux)).
 8. **Product names stay as they are:** Fotollection, Lightroom, LUMIX Lab, LUT, RAW, JPEG, Pro.
 9. **Japanese** (FR-128, 2026-11-15), as Japanese apps and Apple's and Microsoft's Japanese style write it:

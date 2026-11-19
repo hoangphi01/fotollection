@@ -80,6 +80,8 @@ export function CalendarMonth({ year, month, title, counts, pressed, onDay, onPr
   // 1 January 2024 was a Monday.
   const names = Array.from({ length: 7 }, (_, i) => weekday.format(new Date(Date.UTC(2024, 0, 1 + ((first + i) % 7)))))
   const days = weeks.flat()
+  // Today on this computer's calendar, named to assistive technology.
+  const [today] = useState(() => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60_000) / 86_400_000))
   const most = Math.max(1, ...days.filter((d) => d.inMonth).map((d) => counts.get(d.day) ?? 0))
 
   // Arrows move to the next day with photos that way; up and down by a week.
@@ -129,6 +131,7 @@ export function CalendarMonth({ year, month, title, counts, pressed, onDay, onPr
                   data-day={d.day}
                   disabled={count === 0}
                   pressed={on}
+                  aria-current={d.day === today ? 'date' : undefined}
                   onPressedChange={() => onDay(d.day)}
                   aria-label={count > 0 ? `${d.date} · ${count.toLocaleString(i18n.language)}` : undefined}
                   className={cn('w-full min-w-0 px-0 tabular-nums', !d.inMonth && 'invisible', count > 0 && !on && shade(count, most))}

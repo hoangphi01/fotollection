@@ -167,7 +167,7 @@ pub fn zone(name: &str) -> Option<Zone> {
 }
 
 /// The zone the system reports, if it is an IANA name we know: only a suggestion for the
-/// home zone, never saved unasked (FR-145). Read with plain system calls (the `/etc/localtime`
+/// home zone (FR-145), written to the settings only by the welcome's *Start*. Read with plain system calls (the `/etc/localtime`
 /// link, `GetDynamicTimeZoneInformation` on Windows) and cached by jiff behind a lock.
 pub fn system_zone() -> Option<Zone> {
     zone(TimeZone::try_system().ok()?.iana_name()?)
