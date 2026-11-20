@@ -50,16 +50,18 @@
       const GEO = {
         en: {
           stamp: { from: { x: 274, y: 230, w: 718, h: 335 }, to: { x: 281, y: 308, w: 704, h: 329 }, fromM: { x: 394, y: 158, w: 478, h: 478 }, toM: { x: 587, y: 231, w: 405, h: 405 } },
-          left: { x: 232, y: 237, w: 339, h: 459 }, right: { x: 696, y: 237, w: 339, h: 459 },
-          rows: [[377, 402, 666, 922, 23], [416, 441, 666, 889, 20], [546, 569, 666, 785, 12], [575, 599, 666, 1007, 36], [605, 628, 666, 801, 14], [638, 657, 666, 738, 7]].map(([top, bottom, start, end, letters]) => ({ top, bottom, start, end, right: 1070, letters })),
+          // Measured 2026-11-20 on the castle card and the arcade-and-church sheet (owner: one subject a print).
+          sheet: { x: 409, y: 205, w: 782, h: 523 }, cut: { x: 799, y: 206, w: 3, h: 520 }, card: { x: 422, y: 205, w: 756, h: 523 },
+          left: { x: 461, y: 272, w: 287, h: 388 }, right: { x: 852, y: 272, w: 287, h: 388 },
+          rows: [[389, 417, 832, 1039, 22], [423, 446, 832, 1094, 28], [533, 554, 833, 932, 12], [558, 579, 833, 1120, 36], [583, 604, 834, 946, 14], [607, 629, 832, 893, 7]].map(([top, bottom, start, end, letters]) => ({ top, bottom, start, end, right: 1170, letters })),
           list: { x: 1262, y: 292, w: 330, h: 530 }, sizes: [437, 472, 543, 579, 614, 650, 792], ring: { x: 1266, w: 320 },
         },
-        // Vietnamese: the English set's photos and layout (measured 2026-11-15 on its own shots);
-        // the typewriter's letters are of one width, so only the name, two letters longer, ends later.
+        // Vietnamese: the English set's photos and layout, its own typed rows (measured 2026-11-20).
         vi: {
           stamp: { from: { x: 274, y: 230, w: 718, h: 335 }, to: { x: 281, y: 308, w: 704, h: 329 }, fromM: { x: 394, y: 158, w: 478, h: 478 }, toM: { x: 587, y: 231, w: 405, h: 405 } },
-          left: { x: 232, y: 237, w: 339, h: 459 }, right: { x: 696, y: 237, w: 339, h: 459 },
-          rows: [[377, 402, 666, 922, 23], [416, 441, 666, 889, 20], [546, 569, 666, 803, 14], [575, 599, 666, 1007, 36], [605, 628, 666, 801, 14], [638, 657, 666, 738, 7]].map(([top, bottom, start, end, letters]) => ({ top, bottom, start, end, right: 1070, letters })),
+          sheet: { x: 409, y: 205, w: 782, h: 523 }, cut: { x: 799, y: 206, w: 3, h: 520 }, card: { x: 422, y: 205, w: 756, h: 523 },
+          left: { x: 461, y: 272, w: 287, h: 388 }, right: { x: 852, y: 272, w: 287, h: 388 },
+          rows: [[390, 413, 832, 965, 14], [423, 448, 833, 1030, 21], [533, 557, 833, 948, 14], [558, 579, 833, 1120, 36], [583, 604, 834, 946, 14], [607, 629, 832, 893, 7]].map(([top, bottom, start, end, letters]) => ({ top, bottom, start, end, right: 1170, letters })),
           list: { x: 1262, y: 292, w: 330, h: 530 }, sizes: [437, 472, 543, 579, 614, 650, 792], ring: { x: 1266, w: 320 },
         },
         ja: {
@@ -182,10 +184,11 @@
       })
 
       // 3–4. One sheet: two photos come together, then it turns into a postcard.
-      const SHEET = { x: 170, y: 157, w: 927, h: 618 }
+      // The sheet and its cut line where each language's shots show them (ja and ko: their 2026-11-15 shots).
+      const SHEET = GEO.sheet ?? { x: 170, y: 157, w: 927, h: 618 }
       const LEFT = GEO.left
       const RIGHT = GEO.right
-      const CUT_LINE = { x: 632, y: 157, w: 3, h: 606 }
+      const CUT_LINE = GEO.cut ?? { x: 632, y: 157, w: 3, h: 606 }
       const L3 = layer()
       const W3 = world(L3)
       const flip = el('div', '', { position: 'absolute', inset: 0, transformOrigin: `${SHEET.x + SHEET.w / 2}px ${SHEET.y + SHEET.h / 2}px` }, W3)
@@ -196,19 +199,16 @@
       const left = crop(collage, shot('collage-preview'), LEFT)
       const right = crop(collage, shot('collage-preview'), RIGHT)
       const postcard = el('div', '', { position: 'absolute', inset: 0 }, flip)
-      const card = crop(postcard, shot('postcard-night'), SHEET)
+      // The card without the preview's ‹ › at its sides (en, vi: 12 px in from each edge).
+      const card = crop(postcard, shot('postcard-night'), GEO.card ?? SHEET)
       Object.assign(card.style, { borderRadius: '4px', boxShadow: '0 30px 80px rgba(0, 0, 0, 0.55)' })
-      // The preview's "22 / 35" sits on the sheet's foot: the photo's pixels just above it and the
-      // paper cover it, so only the sheet shows.
-      const patch = crop(postcard, shot('postcard-night'), { x: 585, y: 752, w: 48, h: 12 })
-      place(patch, 585, 764)
-      Object.assign(patch.style, { height: '11px', borderBottomLeftRadius: '0' })
-      el('div', 'mask', { left: '633px', top: '764px', width: '50px', height: '11px' }, postcard)
+      // The preview's counter ("11 / 35") now sits under the sheet, outside the crop: nothing to cover.
       // The message and the address, typed: each row is covered by paper that steps right, one letter at a time.
-      // Typed one letter at a time from 0.8 s after the turn: about 40 letters a second, a beat between rows.
-      let typedAt = 0.8
+      // Typed one letter at a time from 0.6 s after the turn: about 45 letters a second, a beat between rows
+      // (the last row done before the next scene fades in at 13.5 s).
+      let typedAt = 0.6
       const ROWS = GEO.rows.map((r) => {
-        const dur = Math.max(0.25, r.letters / 40)
+        const dur = Math.max(0.25, r.letters / 45)
         const row = { ...r, at: typedAt, dur, mask: el('div', 'mask', { top: px(r.top), height: px(r.bottom - r.top) }, postcard) }
         typedAt += dur + 0.06
         return row

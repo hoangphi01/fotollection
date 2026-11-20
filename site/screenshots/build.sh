@@ -17,6 +17,9 @@
 # Needs: cargo, npm, cwebp (libwebp), uv (Python with Pillow, from pyproject.toml).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
+# Each print of the landing page its own photo, checked before anything is recorded (owner,
+# 2026-11-20: "five prints of one tram").
+uv run python -I site/screenshots/results.py --check
 
 demo=$(cd "$1" && pwd)
 work=$(mkdir -p "$2" && cd "$2" && pwd)

@@ -322,14 +322,14 @@ const LANGUAGES = (process.env.SHOT_LANGS ?? 'en,vi').split(',').map((l) => l.tr
 // addresses (famous places' public addresses, owner 2026-11-15).
 const PROFILES = {
   prague: {
-    grid: ['P1068073', 'erdmaennchen-in-der-wilhelma-1'],
+    grid: ['P1068184', 'erdmaennchen-in-der-wilhelma-1'],
     stamp: ['bennetts-beach'],
-    frame: ['P1067865', 'erdmaennchen-in-der-wilhelma-1'],
-    card: ['P1067865', 'erdmaennchen-in-der-wilhelma-1'],
+    frame: ['P1068261', 'erdmaennchen-in-der-wilhelma-1'],
+    card: ['P1068205', 'erdmaennchen-in-der-wilhelma-1'],
     crop: ['bir-hakeim-bridge'],
     compare: ['P1067950', 'charles-bridge-at-sunset'],
-    night: ['P1068073'],
-    pair: ['P1068256'],
+    night: ['P1068205'],
+    pair: ['P1068142'],
     tabRules: [['wilhelma', 0, 'Wilhelma Zoo'], ['tuebingen|ammerschlag|anlagensee|neckar', 1, 'Tübingen'], ['^P10|charles-bridge', 2, 'Praha']],
     tabElse: [3, 'Travels'],
     tabs: ['Wilhelma Zoo', 'Praha', 'Travels'],

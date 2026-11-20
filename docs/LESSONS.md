@@ -143,6 +143,13 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-20
 
+### Five prints of one tram, and a postcard that called it a funicular (FR-135, website)
+
+- **Area:** docs, checks
+- **Seen:** every finished print on the English and Vietnamese landing pages showed a tram (the hero card and the Lumix frame the same night tram), and the second postcard read "Love from the funicular." on a red tram (owner, 2026-11-20: "so many Prague photos and only the tram").
+- **Why:** each place's photo was picked on its own across sessions, never against the page as a whole; the postcard's words were written for the funicular photo and stayed when the photo changed. Every test checked layout, text size and baselines, none what the pictures show.
+- **Rule:** each place on the landing page shows its own photo and subject (`results.py --check`, run first by `build.sh`); a postcard's words are written next to the photo they describe (`demo.rs`) and read against it after any change of photo; the screenshots README lists which photo shows where.
+
 ### Every photo asked the same question: the source was known and unused (FR-141)
 
 - **Area:** measure, spec-request

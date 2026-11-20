@@ -200,7 +200,7 @@ collage_text: "Lấy cảm hứng từ máy ảnh film half-frame: một tấm 1
 show_collage: "Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt"
 collage_preview_title: "Xem tấm in trước khi in"
 collage_preview_text: "Mở một tấm như mở một ảnh: tấm in hiện lớn, đúng như máy in ở kiosk sẽ làm ra, hai ảnh cạnh nhau cùng dấu ngày và viền. Chọn ảnh nào bằng phím 1 hoặc 2 để cắt hoặc xoay, và dùng phím mũi tên để xem các tấm khác."
-show_collage_preview: "Xem trước một tấm ghép: chuyến tram đêm và Bảo tàng Quốc gia Praha trên một tấm in 10 × 15"
+show_collage_preview: "Xem trước một tấm ghép: mái vòm và nhà thờ Baroque ở Phố Cổ Praha trên một tấm in 10 × 15"
 simple_title: "Đơn giản: giữ hay bỏ, rồi in"
 simple_text: "Từng ảnh một, đúng như khi in. Một phím số cho ảnh một look, phím lên để giữ, phím xuống để bỏ, và ảnh kế tiếp hiện ra ngay. Chọn khổ và dấu ngày, rồi xuất những ảnh đã giữ."
 show_simple: "Chế độ Đơn giản: ảnh đúng như khi in, nút Giữ và Bỏ, và Xuất những ảnh đã giữ"
@@ -313,7 +313,7 @@ fn_nvidia: "Với driver chính hãng của NVIDIA, bộ dựng DMA-BUF của We
 fn_dm: dm và logo dm là thương hiệu của dm-drogerie markt GmbH + Co. KG.
 fn_rossmann: ROSSMANN và logo ROSSMANN là thương hiệu của Dirk Rossmann GmbH.
 fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
-fn_photos: "Các ảnh Praha trong ảnh chụp màn hình (tram, phố, sông Vltava) do @hoangphi01 chụp bằng Lumix GX9 vào tháng 11/2026: © @hoangphi01, giữ mọi quyền. Các ảnh này không thuộc giấy phép của ứng dụng và không được dùng lại. Các ảnh demo còn lại thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (7 ảnh), Pierre Blaché from Paris, France (2 ảnh) và Kate Branch (1 ảnh). Chú mèo trong ảnh chụp màn hình phần giỏ in và ảnh đẹp nhất cũng do @hoangphi01 chụp bằng GX9, giữ mọi quyền; các bản mờ hơn, rung tay và tối hơn bên cạnh được tạo từ chính tấm ảnh đó, để minh hoạ cách chọn ảnh đẹp nhất."
+fn_photos: "Các ảnh Praha trong ảnh chụp màn hình (lâu đài, phố, sông Vltava) do @hoangphi01 chụp bằng Lumix GX9 vào tháng 11/2026: © @hoangphi01, giữ mọi quyền. Các ảnh này không thuộc giấy phép của ứng dụng và không được dùng lại. Các ảnh demo còn lại thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (7 ảnh), Pierre Blaché from Paris, France (2 ảnh) và Kate Branch (1 ảnh). Chú mèo trong ảnh chụp màn hình phần giỏ in và ảnh đẹp nhất cũng do @hoangphi01 chụp bằng GX9, giữ mọi quyền; các bản mờ hơn, rung tay và tối hơn bên cạnh được tạo từ chính tấm ảnh đó, để minh hoạ cách chọn ảnh đẹp nhất."
 fn_photos_link: "Danh sách từng tệp, trang gốc và mã kiểm tra."
 fn_rawsamples: "Các số đo RAW dùng chín tệp mẫu thuộc phạm vi công cộng (CC0) từ raw.pixls.us, mỗi định dạng một tệp; scripts/fetch-raw-samples.py tải về và kiểm tra chúng."
 fn_rawformats: "Các định dạng RAW nhắc đến trên trang này thuộc về hãng máy ảnh đã tạo ra chúng: RW2 (Panasonic Holdings Corporation), CR2 và CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) và ORF (OM Digital Solutions Corporation, trước đây là Olympus). DNG là đặc tả mở do Adobe Inc. công bố. Fotollection đọc các định dạng này qua bộ đọc có sẵn trong Fotollection, còn trên macOS thì qua bộ giải mã của hệ điều hành trước (trên Windows, Raw Image Extension của Microsoft, nếu đã cài, là phương án dự phòng cuối cùng); ứng dụng không do hãng nào trong số này làm ra hay bảo trợ."

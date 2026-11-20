@@ -3,13 +3,13 @@
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "Writing by hand on photo paper: use a fi"
+    "text": "For handwriting: an ultra-fine permanent"
   },
   "addassist-phone-en-light": {
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "Writing by hand on photo paper: use a fi"
+    "text": "For handwriting: an ultra-fine permanent"
   },
   "addassist-phone-ja-dark": {
     "width": 320,
@@ -278,14 +278,14 @@
   "estimate-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 12.21,
-    "text": "Thành phố"
+    "minPx": 12.12,
+    "text": "Đen"
   },
   "estimate-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 12.21,
-    "text": "Thành phố"
+    "minPx": 12.12,
+    "text": "Đen"
   },
   "export-dialog-phone-en-dark": {
     "width": 320,
@@ -386,14 +386,14 @@
   "grid-phone-en-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 11.23,
-    "text": "2018-09-21 22:28"
+    "minPx": 11.22,
+    "text": "2026-10-31 18:00"
   },
   "grid-phone-en-light": {
     "width": 320,
     "height": 400,
-    "minPx": 11.23,
-    "text": "2018-09-21 22:28"
+    "minPx": 11.22,
+    "text": "2026-10-31 18:00"
   },
   "grid-phone-ja-dark": {
     "width": 320,
@@ -422,14 +422,14 @@
   "grid-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 11.23,
-    "text": "2018-09-21 22:28"
+    "minPx": 11.22,
+    "text": "2026-10-31 18:00"
   },
   "grid-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 11.23,
-    "text": "2018-09-21 22:28"
+    "minPx": 11.22,
+    "text": "2026-10-31 18:00"
   },
   "groups-phone-en-dark": {
     "width": 320,
@@ -627,13 +627,13 @@
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "How much RAM and disk Fotollection uses "
+    "text": "RAM and disk used for instant previews"
   },
   "settings-phone-en-light": {
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "How much RAM and disk Fotollection uses "
+    "text": "RAM and disk used for instant previews"
   },
   "settings-phone-ja-dark": {
     "width": 320,
@@ -663,13 +663,13 @@
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "Fotollection dùng bao nhiêu bộ nhớ RAM v"
+    "text": "RAM và ổ đĩa cho bản xem trước tức thì"
   },
   "settings-phone-vi-light": {
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "Fotollection dùng bao nhiêu bộ nhớ RAM v"
+    "text": "RAM và ổ đĩa cho bản xem trước tức thì"
   },
   "simple-phone-en-dark": {
     "width": 320,
@@ -903,12 +903,12 @@
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "Look, LUT và preset của bạn hiện ở đây: "
+    "text": "Look, LUT và preset đã lưu hiện ở đây: l"
   },
   "window-phone-vi-light": {
     "width": 320,
     "height": 400,
     "minPx": 12.3,
-    "text": "Look, LUT và preset của bạn hiện ở đây: "
+    "text": "Look, LUT và preset đã lưu hiện ở đây: l"
   }
 }

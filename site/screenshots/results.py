@@ -29,11 +29,26 @@ PICKS = {
     "ko": {"card": ("sheet-postcard-full", "DSCF2041"), "card2": ("sheet-postcard", "DSC06332"),
            "stamp": ("preview/stamp", "DSC06335"), "sheet": ("sheet", ("DSCF1972", "DSCF1975")),
            "frame": ("preview/frame", "DSCF2022"), "frame2": ("preview/frame", "DSC06325")},
-    "en": {"card": ("sheet-postcard-full", "P1068073"), "card2": ("sheet-postcard", "P1067865"),
-           "stamp": ("preview/stamp", "P1067865"), "sheet": ("sheet", ("P1067819", "P1067829")),
-           "frame": ("preview/frame", "P1068073")},
+    # Prague (owner, 2026-11-20): the castle across the Vltava, the bridges at dusk, Old Town's
+    # houses, the National Museum by night, mulled wine and a grilled sausage; the red tram only in Looks.
+    "en": {"card": ("sheet-postcard-full", "P1068205"), "card2": ("sheet-postcard", "P1067998"),
+           "stamp": ("preview/stamp", "P1068160"), "sheet": ("sheet", ("P1067955", "P1067963")),
+           "frame": ("preview/frame", "P1068261")},
 }
 PICKS["vi"] = PICKS["en"]
+
+
+def repeats(picks: dict) -> list[str]:
+    """Photos used by more than one print of a set (owner, 2026-11-20: "five prints of one
+    tram"): each print of the landing page shows its own photo."""
+    seen: dict[str, str] = {}
+    out = []
+    for name, (_, stem) in picks.items():
+        for s in stem if isinstance(stem, tuple) else (stem,):
+            if s in seen:
+                out.append(f"{s} in both {seen[s]} and {name}")
+            seen.setdefault(s, name)
+    return out
 
 # Who took each photo, by file name (credited under each print, owner 2026-11-15; the page's
 # fn_photos note says the rest). The camera comes from the photo's EXIF in the recording.
@@ -77,6 +92,9 @@ def rows(sizes: dict) -> list:
 
 
 def main() -> None:
+    if sys.argv[1:] == ["--check"]:
+        bad = [f"{lang}: {r}" for lang, picks in PICKS.items() for r in repeats(picks)]
+        sys.exit("results.py: a photo repeats: " + "; ".join(bad) if bad else 0)
     dump, lang = Path(sys.argv[1]), sys.argv[2]
     fixtures = json.loads((dump / "fixtures.json").read_text())
     ids = {p["fileName"].rsplit(".", 1)[0]: p["id"] for p in fixtures["common"]["list_photos"]["photos"]}
