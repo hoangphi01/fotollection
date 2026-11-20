@@ -13,7 +13,7 @@ use crate::geocode::{self, GeoError};
 use crate::time_base::{self, Zone};
 
 const ZONES: &[u8] = include_bytes!("../assets/geo/zones.bin");
-const ZONES_BLAKE3: &str = "60b1a138dd66b6d272ad03ed35c234ecab1f8493aaa3cac174c69b0ed84ad9d8";
+const ZONES_BLAKE3: &str = "caed338304f50c0724594c549d9312474c03c0e2672c503cbe6ce6402a8a3e4f";
 const MAGIC: &[u8; 4] = b"FZON";
 const FORMAT_VERSION: u16 = 1;
 const NO_ZONE: u16 = u16::MAX;
@@ -215,6 +215,31 @@ mod tests {
         zones.dedup();
         assert_eq!(zones.len(), russia.len());
         assert_eq!(search("")?, Vec::new());
+        Ok(())
+    }
+
+    /// FR-145 (owner, 2026-11-20: "Hanoi, Vietnam" twice, one on Asia/Bangkok): a place gets
+    /// its own country's zone, never a neighbour's that IANA shares with it since 1970, and a
+    /// place is listed once.
+    #[test]
+    fn fr_145_a_place_is_listed_once_in_its_own_countrys_zone() -> Result<(), GeoError> {
+        for (query, country, zone) in [
+            ("Hanoi", "Vietnam", "Asia/Ho_Chi_Minh"),
+            ("Phnom Penh", "Cambodia", "Asia/Phnom_Penh"),
+            ("Vientiane", "Laos", "Asia/Vientiane"),
+        ] {
+            let hits = search(query)?;
+            let ours: Vec<&ZoneHit> = hits
+                .iter()
+                .filter(|h| h.place == query && h.country == country)
+                .collect();
+            assert_eq!(ours.len(), 1, "{hits:?}");
+            assert_eq!(ours[0].zone, zone, "{hits:?}");
+            assert!(
+                crate::time_base::zone(zone).is_some(),
+                "{zone} unknown to the bundled database"
+            );
+        }
         Ok(())
     }
 

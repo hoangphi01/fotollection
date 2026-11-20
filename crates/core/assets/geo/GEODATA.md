@@ -5,7 +5,7 @@ The offline place data of the location stamp and place search ([FR-005](../../..
 | File | Contents | Source | Licence |
 |------|----------|--------|---------|
 | `places.bin` | 161,937 towns and cities with at least 1,000 people, 252 countries | [GeoNames](https://www.geonames.org/) `cities1000.zip` and `countryInfo.txt`, snapshot 2026-10-24 | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), © GeoNames |
-| `zones.bin` | The IANA time zone of each place of `places.bin`, in its order (FR-145): 392 zones, 30 places without one | GeoNames `cities1000.zip` (column 18), download of 2026-11-19 | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), © GeoNames |
+| `zones.bin` | The IANA time zone of each place of `places.bin`, in its order (FR-145): 392 zones, 30 places without one | GeoNames `cities1000.zip` (column 18), download of 2026-11-20, and IANA's `zone.tab` and `zone1970.tab` of tzdb 2026e (public domain) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), © GeoNames |
 | `countries.bin` | 235 country outlines for RollSense's map (FR-141), 31,004 points | [Natural Earth](https://www.naturalearthdata.com/) 1:50m admin-0 countries, release v5.1.2 | Public domain |
 
 Places that are not a town in their own right are left out: sections of a city (`PPLX`, such as "Praha 1") and historical, abandoned or destroyed places (`PPLH`, `PPLQ`, `PPLW`, `PPLCH`).
@@ -40,11 +40,11 @@ Format (version 1, little-endian): `FCTY`, `u16` version, `u16` country count; p
 
 ## Time zones (`zones.bin`)
 
-`crates/geodata`'s `zones` packer (`scripts/geodata/fetch-and-pack.sh zones`) reads the GeoNames ids from the bundled `places.bin`, in its order, and each id's IANA zone from a fresh `cities1000.txt`, so `places.bin` is not packed again; a place gone from the newer dump gets no zone. The zones' rules, past summer times included, come from the IANA time zone database (public domain) bundled by `jiff` (Unlicense OR MIT, `jiff-tzdb` 0.1.9, tzdb 2026e); nothing is downloaded at runtime. Checked against its BLAKE3 sum at load by `crates/core/src/zones.rs`, and against `places.bin`: the file names the BLAKE3 of the `places.bin` it was packed for and its record count, and is refused when either differs.
+`crates/geodata`'s `zones` packer (`scripts/geodata/fetch-and-pack.sh zones`) reads the GeoNames ids from the bundled `places.bin`, in its order, and each id's IANA zone from a fresh `cities1000.txt`, so `places.bin` is not packed again; a place gone from the newer dump gets no zone. **A place takes its own country's zone** (owner, 2026-11-20: Hanoi was listed on Asia/Bangkok): GeoNames follows `zone1970.tab`, where one zone shared since 1970 covers several countries; when the place's country has a single zone in `zone.tab` and the shared zone covers it, the country's own zone is taken. The 2026-11-20 pack moved 398 places this way: Vietnam's 396 from Asia/Bangkok to Asia/Ho_Chi_Minh (the two differ only from 1970 to 1975), one in Mali (Africa/Bamako) and one in Slovakia (Europe/Bratislava); countries with several zones keep GeoNames' choice. The zones' rules, past summer times included, come from the IANA time zone database (public domain) bundled by `jiff` (Unlicense OR MIT, `jiff-tzdb` 0.1.9, tzdb 2026e); nothing is downloaded at runtime. Checked against its BLAKE3 sum at load by `crates/core/src/zones.rs`, and against `places.bin`: the file names the BLAKE3 of the `places.bin` it was packed for and its record count, and is refused when either differs.
 
 | File | Size | BLAKE3 (checked at load) |
 |------|-----:|--------------------------|
-| `zones.bin` | 330,351 bytes | `60b1a138dd66b6d272ad03ed35c234ecab1f8493aaa3cac174c69b0ed84ad9d8` |
+| `zones.bin` | 330,351 bytes | `caed338304f50c0724594c549d9312474c03c0e2672c503cbe6ce6402a8a3e4f` |
 
 Download used (SHA-256): `cities1000.zip` (2026-11-19) `1dcfe6ea1731529fe53d54c8c524add5a8f4b198cff7ff0ab5e5b774d528db17`.
 

@@ -5,7 +5,15 @@
 //! (column 18, the IANA name). A place missing from the newer dump gets no zone. Read by
 //! `crates/core/src/zones.rs`, described in `crates/core/assets/geo/GEODATA.md`.
 //!
-//! `zones <places.bin> <cities1000.txt> <out.bin>`
+//! A place takes its own country's zone (owner, 2026-11-20: Hanoi listed on Asia/Bangkok):
+//! GeoNames follows IANA's `zone1970.tab`, where a zone shared since 1970 covers several
+//! countries (Asia/Bangkok: Thailand, Cambodia, Laos and most of Vietnam); when the place's
+//! country has one zone in `zone.tab` and that shared zone covers the country, the country's
+//! own zone is taken (Asia/Ho_Chi_Minh, Asia/Phnom_Penh). The clock is the same for the photos
+//! people bring (Vietnam's two differ only from 1970 to 1975); countries with several zones
+//! keep GeoNames' choice.
+//!
+//! `zones <places.bin> <cities1000.txt> <zone.tab> <zone1970.tab> <out.bin>`
 
 use std::collections::{BTreeSet, HashMap};
 use std::io::Write;
@@ -60,11 +68,50 @@ fn valid_zone(name: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b"/_+-".contains(&b))
 }
 
+/// Each country's zone where `zone.tab` gives it exactly one.
+fn single_zones(text: &str) -> HashMap<&str, &str> {
+    let mut all: HashMap<&str, Vec<&str>> = HashMap::new();
+    for c in text
+        .lines()
+        .filter(|l| !l.starts_with('#'))
+        .map(|l| l.split('\t').collect::<Vec<_>>())
+    {
+        if let (Some(cc), Some(zone)) = (c.first(), c.get(2)) {
+            all.entry(cc).or_default().push(zone);
+        }
+    }
+    all.into_iter()
+        .filter_map(|(cc, z)| (z.len() == 1).then(|| (cc, z[0])))
+        .collect()
+}
+
+/// The countries each zone of `zone1970.tab` covers.
+fn covered(text: &str) -> HashMap<&str, Vec<&str>> {
+    text.lines()
+        .filter(|l| !l.starts_with('#'))
+        .filter_map(|l| {
+            let c: Vec<&str> = l.split('\t').collect();
+            Some((*c.get(2)?, c.first()?.split(',').collect()))
+        })
+        .collect()
+}
+
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().collect();
-    let [_, places, cities, out] = args.as_slice() else {
-        return fail("usage: zones <places.bin> <cities1000.txt> <out.bin>");
+    let [_, places, cities, zone_tab, zone1970, out] = args.as_slice() else {
+        return fail(
+            "usage: zones <places.bin> <cities1000.txt> <zone.tab> <zone1970.tab> <out.bin>",
+        );
     };
+    let (Ok(zone_tab), Ok(zone1970)) = (
+        std::fs::read_to_string(zone_tab),
+        std::fs::read_to_string(zone1970),
+    ) else {
+        return fail("cannot read zone.tab or zone1970.tab");
+    };
+    let own = single_zones(&zone_tab);
+    let shared = covered(&zone1970);
+    let mut switched = 0usize;
     let Ok(places) = std::fs::read(places) else {
         return fail("cannot read places.bin");
     };
@@ -77,9 +124,19 @@ fn main() -> ExitCode {
     let mut zone_of: HashMap<u32, &str> = HashMap::new();
     for line in text.lines() {
         let c: Vec<&str> = line.split('\t').collect();
-        if let (Some(Ok(id)), Some(zone)) = (c.first().map(|s| s.parse::<u32>()), c.get(17))
+        if let (Some(Ok(id)), Some(cc), Some(zone)) =
+            (c.first().map(|s| s.parse::<u32>()), c.get(8), c.get(17))
             && valid_zone(zone)
         {
+            let zone = match own.get(cc) {
+                Some(&mine)
+                    if mine != *zone && shared.get(zone).is_some_and(|cs| cs.contains(cc)) =>
+                {
+                    switched += 1;
+                    mine
+                }
+                _ => zone,
+            };
             zone_of.insert(id, zone);
         }
     }
@@ -131,10 +188,11 @@ fn main() -> ExitCode {
         return fail("cannot write the output");
     }
     println!(
-        "{} places, {} zones, {} without a zone, {} bytes, BLAKE3 {}",
+        "{} places, {} zones, {} without a zone, {} cities moved to their country's own zone, {} bytes, BLAKE3 {}",
         ids.len(),
         names.len(),
         missing,
+        switched,
         bytes.len(),
         blake3::hash(&bytes).to_hex()
     );

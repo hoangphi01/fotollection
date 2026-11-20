@@ -29,9 +29,14 @@ if [ "${1:-}" = zones ]; then
   trap 'rm -rf "$work"' EXIT
   curl -sSfL -o "$work/cities1000.zip" "https://download.geonames.org/export/dump/cities1000.zip"
   unzip -q -o "$work/cities1000.zip" cities1000.txt -d "$work"
+  # IANA's tables (public domain), pinned to the release jiff bundles (tzdb 2026e): each
+  # country's own zone, and the countries a zone shared since 1970 covers.
+  for t in zone.tab zone1970.tab; do
+    curl -sSfL -o "$work/$t" "https://raw.githubusercontent.com/eggert/tz/2026e/$t"
+  done
   cargo run -q --release -p fotollection-geodata --bin zones -- \
     "$root/crates/core/assets/geo/places.bin" "$work/cities1000.txt" \
-    "$root/crates/core/assets/geo/zones.bin"
+    "$work/zone.tab" "$work/zone1970.tab" "$root/crates/core/assets/geo/zones.bin"
   echo "Update the BLAKE3 sum in GEODATA.md and crates/core/src/zones.rs." >&2
   exit 0
 fi
