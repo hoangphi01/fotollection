@@ -2,7 +2,8 @@
 import { Globe } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Field } from '@/components/forms/field'
+import { Field, Stack } from '@/components/forms/field'
+import { Collapse } from '@/components/layout/collapse'
 import { PickerTrigger } from '@/components/forms/picker-trigger'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
@@ -97,24 +98,30 @@ export function HomeZoneSetting() {
   const [other, setOther] = useState(false)
   const away = ui.homeZone !== null && system !== null && ui.homeZone !== system
   const mode = other || away ? 'other' : 'computer'
+  const hint = away && system ? t('homeZone.differs', { zone: system.replaceAll('_', ' ') }) : home ? t('homeZone.readIn', { zone: zoneLabel(home, i18n.language) }) : undefined
+  // Two 32 px controls, the toggle and the place it opens, are two rows 12 px apart, never one
+  // field's 6 px (owner, 2026-11-20); the place folds away with the computer's zone.
   return (
-    <Field
-      label={t('homeZone.label')}
-      hint={away && system ? t('homeZone.differs', { zone: system.replaceAll('_', ' ') }) : home ? t('homeZone.readIn', { zone: zoneLabel(home, i18n.language) }) : undefined}
-    >
-      <SegmentedToggle<'computer' | 'other'>
-        value={mode}
-        options={[
-          { value: 'computer', label: t('homeZone.computer') },
-          { value: 'other', label: t('homeZone.other') },
-        ]}
-        onChange={(v) => {
-          setOther(v === 'other')
-          if (v === 'computer' && system) void update({ homeZone: system })
-        }}
-        ariaLabel={t('homeZone.label')}
-      />
-      {mode === 'computer' ? null : <ZonePicker label={home ? zoneLabel(home, i18n.language) : t('homeZone.search')} onPick={(homeZone) => void update({ homeZone })} />}
-    </Field>
+    <Stack>
+      <Field label={t('homeZone.label')} hint={mode === 'computer' ? hint : undefined}>
+        <SegmentedToggle<'computer' | 'other'>
+          value={mode}
+          options={[
+            { value: 'computer', label: t('homeZone.computer') },
+            { value: 'other', label: t('homeZone.other') },
+          ]}
+          onChange={(v) => {
+            setOther(v === 'other')
+            if (v === 'computer' && system) void update({ homeZone: system })
+          }}
+          ariaLabel={t('homeZone.label')}
+        />
+      </Field>
+      <Collapse open={mode === 'other'}>
+        <Field hint={hint}>
+          <ZonePicker label={home ? zoneLabel(home, i18n.language) : t('homeZone.search')} onPick={(homeZone) => void update({ homeZone })} />
+        </Field>
+      </Collapse>
+    </Stack>
   )
 }

@@ -19,6 +19,7 @@ Read this table in full before any task; then read in full every entry whose Are
 ### ui-layout
 
 - A button beside a field sits on the field's line; every tab of every panel has a scene, its folded cards opened. Kept by: UI-LAYOUT-025, the `Pro panel: Print` scene (`side-panels.mjs`).
+- Two 32 px controls one under the other are two rows 12 px apart, never one field's 6 px. Kept by: no machine check yet (STYLE_RULE §4 table).
 - Measure every new row, column, control or summary at 1180 px and the narrowest panel, in Vietnamese and Hungarian, with its longest text, before keeping it. Kept by: `MEASURE=1` (UI-LAYOUT-001).
 - Words in a flex row get `min-w-0`, `truncate` gets a width (`w-full min-w-0`), a button stops at its container (`max-w-full`). Kept by: UI-LAYOUT-001 and the long custom size stress fixture.
 - Nothing jumps: a box that holds something that comes and goes has a fixed size, and what a first change reveals is there from the start, off. Kept by: UI-STABLE-001.
@@ -143,6 +144,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-20
+
+### Two controls 6 px apart read as one: the home time's toggle and its place (FR-145, UI)
+
+- **Area:** ui-layout
+- **Seen:** in Settings › General, *Home time*'s toggle and the place picker under it sat 6 px apart (owner, 2026-11-20: "where is the style rule? why are these two lines so close?").
+- **Why:** both were children of one `Field`, which spaces label, control, options and hint 6 px apart; the table had no row for a second full control under the first, so the rule passed as written.
+- **Rule:** two 32 px controls one under the other are two rows 12 px apart (`Stack`), the second in a `Collapse` when a toggle opens it; the lego table now says so. Kept by: no machine check yet (UI-LAYOUT measure by eye).
 
 ### Ten folders pressed in turn, one read: the UI kept a queue it did not have (FR-141, FR-015)
 

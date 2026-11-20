@@ -53,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Home time**'s toggle and its place sit 12 px apart, as two rows, and the place folds away with *Computer*.
 - **Home time**'s place search lists a city once, in its own country's time zone: *Hanoi, Vietnam* shows once on Asia/Ho Chi Minh, no longer also on Asia/Bangkok.
 - RollSense reads every folder you press it in, one after another: the progress bar names the folder being read and its **n waiting** button lists the others, each with its own stop or remove, with **Stop all**; the folder list shows a turning ring on the folder being read and a clock on those waiting. Before, a folder pressed while another was read was never read, and its stop stopped the other folder; reading a second folder no longer clears the first one's duplicates.
 - The right column covers the folders chosen only: **Camera clocks** lists the cameras of those photos, **Places** their places, and the stamps' **Reset** counts and resets those photos, not the whole library.
