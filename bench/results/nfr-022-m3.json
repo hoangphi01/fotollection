@@ -1,0 +1,5319 @@
+{
+ "about": "RollSense on REF-MAC (NFR-022, FR-141): a 550-photo sample of the owner's phone roll drawn at random (seed 20261120) in the roll's own mix (252 HEIC, 197 JPG, 101 PNG; names and photos kept out of the repository), on an external USB SSD, the release benches as on the ThinkPad, telemetry every second (no clock or temperature without sudo on Apple Silicon). Swap held at 11.9 GB and did not grow; memory free never under 65 %.",
+ "date": "2026-11-20",
+ "machine": "Apple M3 (4 performance + 4 efficiency cores), 16 GB, macOS, mains power, dev app closed",
+ "pass": {
+  "all8": {
+   "photos": 550,
+   "msCold": 65.3,
+   "msWarm": 0.049
+  },
+  "byType8": {
+   "heic": 83.0,
+   "jpg": 61.3,
+   "png": 62.8
+  },
+  "ladder": [
+   {
+    "threads": 2,
+    "msCold": 147.5
+   },
+   {
+    "threads": 4,
+    "msCold": 89.1
+   },
+   {
+    "threads": 8,
+    "msCold": 65.3
+   }
+  ]
+ },
+ "model": [
+  {
+   "threads": 1,
+   "ms": 69.8
+  },
+  {
+   "threads": 2,
+   "ms": 35.0
+  },
+  {
+   "threads": 8,
+   "ms": 18.2
+  }
+ ],
+ "roll": {
+  "mix": {
+   "heic": 6054,
+   "jpg": 4726,
+   "png": 2399
+  },
+  "weightedMsPerPhoto": 71.5,
+  "minutesFor15000": 17.9,
+  "minutesForTheRoll13179Stills": 15.7,
+  "minutesForTrip2500": 3.0
+ },
+ "headers": {
+  "files": 550,
+  "perFileMsP50ColdWithHash": 58.6,
+  "hashSumS": 66.1,
+  "perFileSumS": 66.9,
+  "headersAloneMsPerFile": 1.45,
+  "stacksMs": 0.16,
+  "rollMs": 18.8,
+  "duplicatesFindProveMs": 6.0,
+  "note": "roll_scan's per-file time is almost all its hash, a full decode for files without an embedded thumbnail (the app hashes in the pass instead): headers alone are about 1.5 ms a file of CPU, 15,000 in about 3 s on 8 threads"
+ },
+ "memoryMB": {
+  "benchPeakRss": 1353.0
+ },
+ "gpuPct": {
+  "median": 0.0,
+  "max": 25.0
+ },
+ "phases": [
+  {
+   "key": "0-idle",
+   "start": 0.0,
+   "end": 1.0
+  },
+  {
+   "key": "1-headers-cold",
+   "start": 1.0,
+   "end": 1.16
+  },
+  {
+   "key": "2-headers-warm",
+   "start": 1.16,
+   "end": 1.31
+  },
+  {
+   "key": "3-pass-all-8",
+   "start": 1.31,
+   "end": 1.93
+  },
+  {
+   "key": "4a-heic-8",
+   "start": 1.93,
+   "end": 2.28
+  },
+  {
+   "key": "4b-jpg-8",
+   "start": 2.28,
+   "end": 2.49
+  },
+  {
+   "key": "4c-png-8",
+   "start": 2.49,
+   "end": 2.6
+  },
+  {
+   "key": "5a-all-2",
+   "start": 2.6,
+   "end": 3.96
+  },
+  {
+   "key": "5b-all-4",
+   "start": 3.96,
+   "end": 4.78
+  },
+  {
+   "key": "6a-synthetic-1",
+   "start": 4.79,
+   "end": 5.97
+  },
+  {
+   "key": "6b-synthetic-2",
+   "start": 5.97,
+   "end": 6.56
+  },
+  {
+   "key": "6c-synthetic-8",
+   "start": 6.56,
+   "end": 6.86
+  },
+  {
+   "key": "7-idle",
+   "start": 6.86,
+   "end": 7.86
+  }
+ ],
+ "telemetry": [
+  {
+   "s": 0.0,
+   "cpu": 10.9,
+   "memFree": 67.0,
+   "swapMB": 11920.0,
+   "rssMB": null,
+   "gpu": 3.0
+  },
+  {
+   "s": 0.7,
+   "cpu": 7.2,
+   "memFree": 67.0,
+   "swapMB": 11920.0,
+   "rssMB": null,
+   "gpu": 4.0
+  },
+  {
+   "s": 1.4,
+   "cpu": 14.5,
+   "memFree": 67.0,
+   "swapMB": 11920.0,
+   "rssMB": null,
+   "gpu": 4.0
+  },
+  {
+   "s": 2.1,
+   "cpu": 5.2,
+   "memFree": 67.0,
+   "swapMB": 11920.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 2.8,
+   "cpu": 3.1,
+   "memFree": 67.0,
+   "swapMB": 11920.0,
+   "rssMB": null,
+   "gpu": 2.0
+  },
+  {
+   "s": 3.6,
+   "cpu": 5.1,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 2.0
+  },
+  {
+   "s": 4.3,
+   "cpu": 3.6,
+   "memFree": 66.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 4.0
+  },
+  {
+   "s": 5.0,
+   "cpu": 3.7,
+   "memFree": 65.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 25.0
+  },
+  {
+   "s": 5.7,
+   "cpu": 3.4,
+   "memFree": 65.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 6.4,
+   "cpu": 6.4,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 4.0
+  },
+  {
+   "s": 7.1,
+   "cpu": 2.8,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 2.0
+  },
+  {
+   "s": 7.8,
+   "cpu": 6.7,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 8.6,
+   "cpu": 3.0,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 2.0
+  },
+  {
+   "s": 9.3,
+   "cpu": 2.7,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 3.0
+  },
+  {
+   "s": 10.0,
+   "cpu": 4.0,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 3.0
+  },
+  {
+   "s": 10.7,
+   "cpu": 19.6,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 3.0
+  },
+  {
+   "s": 11.4,
+   "cpu": 10.2,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 12.1,
+   "cpu": 3.0,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 12.8,
+   "cpu": 8.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 13.5,
+   "cpu": 1.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 14.2,
+   "cpu": 2.5,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 15.0,
+   "cpu": 0.9,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 15.7,
+   "cpu": 2.5,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 16.4,
+   "cpu": 2.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 17.1,
+   "cpu": 2.0,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 17.8,
+   "cpu": 5.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 18.5,
+   "cpu": 1.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 19.2,
+   "cpu": 10.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 19.9,
+   "cpu": 3.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 20.6,
+   "cpu": 1.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 21.4,
+   "cpu": 1.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 22.1,
+   "cpu": 3.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 22.8,
+   "cpu": 0.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 23.5,
+   "cpu": 1.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 24.2,
+   "cpu": 2.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 24.9,
+   "cpu": 2.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 25.6,
+   "cpu": 1.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 26.3,
+   "cpu": 2.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 27.1,
+   "cpu": 0.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 27.8,
+   "cpu": 2.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 28.5,
+   "cpu": 1.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 29.2,
+   "cpu": 0.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 29.9,
+   "cpu": 3.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 30.6,
+   "cpu": 1.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 31.4,
+   "cpu": 0.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 32.1,
+   "cpu": 2.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 32.8,
+   "cpu": 0.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 33.5,
+   "cpu": 8.5,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 1.0
+  },
+  {
+   "s": 34.2,
+   "cpu": 8.1,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 34.9,
+   "cpu": 2.1,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 2.0
+  },
+  {
+   "s": 35.6,
+   "cpu": 4.5,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 1.0
+  },
+  {
+   "s": 36.3,
+   "cpu": 4.3,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 37.1,
+   "cpu": 5.9,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 1.0
+  },
+  {
+   "s": 37.8,
+   "cpu": 12.6,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 11.0
+  },
+  {
+   "s": 38.5,
+   "cpu": 7.6,
+   "memFree": 66.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 23.0
+  },
+  {
+   "s": 39.2,
+   "cpu": 8.7,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 21.0
+  },
+  {
+   "s": 39.9,
+   "cpu": 9.8,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 6.0
+  },
+  {
+   "s": 40.7,
+   "cpu": 11.6,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 41.4,
+   "cpu": 12.6,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 4.0
+  },
+  {
+   "s": 42.1,
+   "cpu": 3.1,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 42.8,
+   "cpu": 9.0,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 2.0
+  },
+  {
+   "s": 43.5,
+   "cpu": 13.6,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 44.3,
+   "cpu": 3.8,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 45.0,
+   "cpu": 6.9,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 3.0
+  },
+  {
+   "s": 45.7,
+   "cpu": 8.3,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 46.4,
+   "cpu": 1.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 47.1,
+   "cpu": 2.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 47.8,
+   "cpu": 3.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 48.5,
+   "cpu": 5.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 49.3,
+   "cpu": 1.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 50.0,
+   "cpu": 2.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 50.7,
+   "cpu": 2.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 51.4,
+   "cpu": 2.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 52.1,
+   "cpu": 1.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 52.8,
+   "cpu": 0.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 53.5,
+   "cpu": 1.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 54.3,
+   "cpu": 1.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 55.0,
+   "cpu": 0.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 55.7,
+   "cpu": 3.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 56.4,
+   "cpu": 1.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 57.1,
+   "cpu": 0.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 57.8,
+   "cpu": 2.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 58.5,
+   "cpu": 1.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 59.3,
+   "cpu": 0.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 60.0,
+   "cpu": 1.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 60.7,
+   "cpu": 3.3,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": 0.0,
+   "gpu": 1.0
+  },
+  {
+   "s": 61.4,
+   "cpu": 17.2,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 327.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 62.1,
+   "cpu": 38.7,
+   "memFree": 66.0,
+   "swapMB": 11912.0,
+   "rssMB": 657.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 62.8,
+   "cpu": 51.4,
+   "memFree": 66.0,
+   "swapMB": 11912.0,
+   "rssMB": 775.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 63.5,
+   "cpu": 46.9,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 795.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 64.3,
+   "cpu": 45.1,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 834.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 65.0,
+   "cpu": 52.1,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 812.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 65.7,
+   "cpu": 55.4,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 861.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 66.5,
+   "cpu": 41.0,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 862.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 67.2,
+   "cpu": 33.9,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 862.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 67.9,
+   "cpu": 40.8,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 920.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 68.6,
+   "cpu": 35.8,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 943.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 69.3,
+   "cpu": 42.8,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 1096.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 70.0,
+   "cpu": 11.7,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 349.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 70.7,
+   "cpu": 42.5,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 703.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 71.5,
+   "cpu": 44.7,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 758.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 72.2,
+   "cpu": 44.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 754.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 72.9,
+   "cpu": 45.7,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 788.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 73.6,
+   "cpu": 48.2,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 913.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 74.3,
+   "cpu": 52.6,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 871.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 75.1,
+   "cpu": 34.6,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 869.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 75.8,
+   "cpu": 37.6,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 918.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 76.5,
+   "cpu": 49.5,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1270.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 77.2,
+   "cpu": 35.7,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 1297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 78.0,
+   "cpu": 32.0,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 1317.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 78.7,
+   "cpu": 2.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 0.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 79.4,
+   "cpu": 8.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 171.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 80.1,
+   "cpu": 77.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 753.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 80.9,
+   "cpu": 93.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 921.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 81.7,
+   "cpu": 96.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 998.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 82.5,
+   "cpu": 94.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1116.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 83.3,
+   "cpu": 93.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1054.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 84.1,
+   "cpu": 95.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1055.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 85.0,
+   "cpu": 96.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1102.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 85.8,
+   "cpu": 95.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1112.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 86.6,
+   "cpu": 97.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1090.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 87.4,
+   "cpu": 96.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1112.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 88.2,
+   "cpu": 95.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1067.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 89.0,
+   "cpu": 94.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1113.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 89.8,
+   "cpu": 96.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1113.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 90.6,
+   "cpu": 95.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1066.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 91.5,
+   "cpu": 92.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1151.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 92.4,
+   "cpu": 90.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1142.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 93.2,
+   "cpu": 92.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1155.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 94.0,
+   "cpu": 94.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1075.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 94.8,
+   "cpu": 93.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1067.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 95.6,
+   "cpu": 92.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1155.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 96.5,
+   "cpu": 92.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1116.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 97.3,
+   "cpu": 92.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1165.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 98.1,
+   "cpu": 90.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1166.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 98.9,
+   "cpu": 96.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1117.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 99.7,
+   "cpu": 94.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1113.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 100.6,
+   "cpu": 89.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1173.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 101.3,
+   "cpu": 83.2,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1175.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 102.1,
+   "cpu": 92.4,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1172.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 102.9,
+   "cpu": 92.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1212.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 103.7,
+   "cpu": 94.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1228.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 104.5,
+   "cpu": 94.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1269.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 105.4,
+   "cpu": 94.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1182.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 106.1,
+   "cpu": 93.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1183.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 107.0,
+   "cpu": 87.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1275.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 107.8,
+   "cpu": 93.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1223.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 108.6,
+   "cpu": 93.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1312.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 109.4,
+   "cpu": 95.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1091.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 110.3,
+   "cpu": 96.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1050.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 111.0,
+   "cpu": 88.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1099.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 111.9,
+   "cpu": 82.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1098.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 112.7,
+   "cpu": 95.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1061.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 113.5,
+   "cpu": 91.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1062.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 114.4,
+   "cpu": 92.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1108.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 115.2,
+   "cpu": 96.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1070.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 116.0,
+   "cpu": 8.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 386.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 116.8,
+   "cpu": 80.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 867.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 117.5,
+   "cpu": 85.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1162.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 118.3,
+   "cpu": 91.7,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1164.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 119.1,
+   "cpu": 90.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1163.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 119.8,
+   "cpu": 91.7,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1164.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 120.6,
+   "cpu": 90.1,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": 1166.0,
+   "gpu": 1.0
+  },
+  {
+   "s": 121.3,
+   "cpu": 91.8,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": 1211.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 122.1,
+   "cpu": 91.9,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": 1210.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 122.8,
+   "cpu": 90.8,
+   "memFree": 67.0,
+   "swapMB": 11912.0,
+   "rssMB": 1210.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 123.6,
+   "cpu": 92.9,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1210.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 124.3,
+   "cpu": 88.5,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1214.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 125.1,
+   "cpu": 86.5,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1216.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 125.9,
+   "cpu": 92.7,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 126.6,
+   "cpu": 92.1,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1263.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 127.4,
+   "cpu": 92.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1262.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 128.2,
+   "cpu": 91.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1261.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 129.0,
+   "cpu": 90.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1262.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 129.8,
+   "cpu": 91.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1263.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 130.6,
+   "cpu": 90.7,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1353.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 131.4,
+   "cpu": 90.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1351.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 132.3,
+   "cpu": 87.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1305.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 133.1,
+   "cpu": 89.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1264.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 133.9,
+   "cpu": 91.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1265.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 134.7,
+   "cpu": 89.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1266.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 135.5,
+   "cpu": 85.5,
+   "memFree": 70.0,
+   "swapMB": 11912.0,
+   "rssMB": 1267.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 136.3,
+   "cpu": 90.7,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 1267.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 137.0,
+   "cpu": 4.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 137.8,
+   "cpu": 84.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 783.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 138.7,
+   "cpu": 96.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 948.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 139.5,
+   "cpu": 97.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1012.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 140.3,
+   "cpu": 98.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1012.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 141.2,
+   "cpu": 97.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1013.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 142.0,
+   "cpu": 97.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1013.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 142.8,
+   "cpu": 97.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1013.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 143.6,
+   "cpu": 98.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1013.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 144.4,
+   "cpu": 97.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1013.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 145.3,
+   "cpu": 97.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1048.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 146.2,
+   "cpu": 97.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1048.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 147.1,
+   "cpu": 97.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1053.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 147.9,
+   "cpu": 97.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1055.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 148.8,
+   "cpu": 89.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1055.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 149.5,
+   "cpu": 4.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 285.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 150.3,
+   "cpu": 89.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 658.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 151.2,
+   "cpu": 97.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 676.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 152.1,
+   "cpu": 97.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 676.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 153.0,
+   "cpu": 97.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 706.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 153.8,
+   "cpu": 97.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 710.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 154.6,
+   "cpu": 97.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 710.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 155.4,
+   "cpu": 95.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 710.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 156.2,
+   "cpu": 1.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 285.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 156.8,
+   "cpu": 22.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 609.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 157.6,
+   "cpu": 26.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 783.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 158.3,
+   "cpu": 26.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 800.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 159.0,
+   "cpu": 25.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 801.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 159.7,
+   "cpu": 27.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 824.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 160.4,
+   "cpu": 25.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 825.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 161.1,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 825.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 161.8,
+   "cpu": 25.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 825.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 162.5,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 852.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 163.2,
+   "cpu": 25.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 852.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 163.9,
+   "cpu": 27.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 804.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 164.6,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 852.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 165.3,
+   "cpu": 25.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 852.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 166.0,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 853.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 166.7,
+   "cpu": 27.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 858.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 167.4,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 858.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 168.1,
+   "cpu": 27.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 858.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 168.8,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 864.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 169.5,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 864.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 170.2,
+   "cpu": 26.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 842.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 170.9,
+   "cpu": 25.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 890.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 171.6,
+   "cpu": 26.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 890.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 172.3,
+   "cpu": 28.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 917.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 173.0,
+   "cpu": 25.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 911.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 173.7,
+   "cpu": 25.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 911.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 174.4,
+   "cpu": 25.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 911.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 175.1,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 911.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 175.8,
+   "cpu": 31.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 919.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 176.5,
+   "cpu": 25.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 791.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 177.2,
+   "cpu": 26.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 798.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 177.9,
+   "cpu": 27.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 785.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 178.6,
+   "cpu": 25.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 821.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 179.3,
+   "cpu": 26.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 833.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 180.0,
+   "cpu": 26.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 833.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 180.7,
+   "cpu": 23.9,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": 874.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 181.4,
+   "cpu": 25.6,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": 874.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 182.1,
+   "cpu": 28.2,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 863.0,
+   "gpu": 1.0
+  },
+  {
+   "s": 182.8,
+   "cpu": 25.5,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 828.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 183.5,
+   "cpu": 27.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 828.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 184.2,
+   "cpu": 25.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 824.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 184.9,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 832.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 185.6,
+   "cpu": 26.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 836.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 186.3,
+   "cpu": 26.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 672.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 187.0,
+   "cpu": 25.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 672.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 187.7,
+   "cpu": 29.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 632.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 188.4,
+   "cpu": 25.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 672.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 189.1,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 672.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 189.8,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 631.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 190.5,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 672.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 191.2,
+   "cpu": 26.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 713.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 191.9,
+   "cpu": 26.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 702.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 192.6,
+   "cpu": 25.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 679.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 193.3,
+   "cpu": 24.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 679.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 194.0,
+   "cpu": 26.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 679.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 194.7,
+   "cpu": 26.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 679.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 195.4,
+   "cpu": 28.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 679.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 196.1,
+   "cpu": 27.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 479.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 196.8,
+   "cpu": 26.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 479.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 197.5,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 488.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 198.3,
+   "cpu": 26.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 537.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 199.0,
+   "cpu": 26.5,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 537.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 199.7,
+   "cpu": 25.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 537.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 200.4,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 537.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 201.1,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 537.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 201.8,
+   "cpu": 26.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 537.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 202.5,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 530.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 203.2,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 530.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 203.9,
+   "cpu": 27.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 537.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 204.6,
+   "cpu": 25.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 534.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 205.3,
+   "cpu": 27.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 621.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 206.0,
+   "cpu": 28.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 633.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 206.7,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 626.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 207.4,
+   "cpu": 31.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 680.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 208.1,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 586.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 208.8,
+   "cpu": 25.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 819.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 209.5,
+   "cpu": 26.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 813.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 210.2,
+   "cpu": 26.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 850.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 210.9,
+   "cpu": 25.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 854.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 211.6,
+   "cpu": 25.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 854.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 212.3,
+   "cpu": 26.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 856.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 213.0,
+   "cpu": 26.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 856.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 213.7,
+   "cpu": 26.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 856.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 214.4,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 856.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 215.1,
+   "cpu": 26.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 817.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 215.8,
+   "cpu": 27.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 861.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 216.5,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 655.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 217.2,
+   "cpu": 25.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 646.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 217.9,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 694.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 218.6,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 687.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 219.3,
+   "cpu": 26.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 692.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 220.0,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 692.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 220.7,
+   "cpu": 25.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 688.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 221.4,
+   "cpu": 24.9,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 729.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 222.1,
+   "cpu": 25.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 729.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 222.8,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 702.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 223.5,
+   "cpu": 25.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 709.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 224.2,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 662.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 224.9,
+   "cpu": 25.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 673.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 225.6,
+   "cpu": 26.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 713.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 226.3,
+   "cpu": 25.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 552.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 227.0,
+   "cpu": 25.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 570.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 227.7,
+   "cpu": 27.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 570.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 228.4,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 570.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 229.1,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 577.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 229.8,
+   "cpu": 26.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 577.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 230.5,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 577.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 231.2,
+   "cpu": 15.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 581.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 231.9,
+   "cpu": 13.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 574.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 232.6,
+   "cpu": 12.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 569.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 233.3,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 569.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 234.0,
+   "cpu": 14.8,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 534.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 234.7,
+   "cpu": 13.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 574.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 235.4,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 574.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 236.1,
+   "cpu": 14.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 584.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 236.8,
+   "cpu": 13.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 544.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 237.5,
+   "cpu": 14.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 584.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 238.2,
+   "cpu": 28.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 639.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 239.0,
+   "cpu": 49.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 856.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 239.7,
+   "cpu": 53.0,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 870.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 240.4,
+   "cpu": 50.8,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": 920.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 241.2,
+   "cpu": 50.1,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": 925.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 241.9,
+   "cpu": 51.9,
+   "memFree": 68.0,
+   "swapMB": 11912.0,
+   "rssMB": 927.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 242.7,
+   "cpu": 51.0,
+   "memFree": 69.0,
+   "swapMB": 11912.0,
+   "rssMB": 928.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 243.4,
+   "cpu": 52.7,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 881.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 244.1,
+   "cpu": 51.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 933.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 244.9,
+   "cpu": 49.8,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 955.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 245.6,
+   "cpu": 51.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 916.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 246.4,
+   "cpu": 51.5,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 964.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 247.1,
+   "cpu": 50.1,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 964.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 247.8,
+   "cpu": 53.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 964.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 248.6,
+   "cpu": 51.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 965.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 249.3,
+   "cpu": 51.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 965.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 250.1,
+   "cpu": 50.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 965.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 250.8,
+   "cpu": 50.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 917.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 251.5,
+   "cpu": 56.0,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 917.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 252.3,
+   "cpu": 51.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 954.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 253.0,
+   "cpu": 49.3,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1006.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 253.7,
+   "cpu": 50.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 958.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 254.5,
+   "cpu": 49.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 965.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 255.2,
+   "cpu": 51.4,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 965.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 256.0,
+   "cpu": 51.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 965.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 256.7,
+   "cpu": 51.3,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1182.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 257.5,
+   "cpu": 50.6,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1146.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 258.2,
+   "cpu": 50.7,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1187.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 258.9,
+   "cpu": 51.2,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 259.7,
+   "cpu": 49.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 260.4,
+   "cpu": 50.4,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1217.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 261.2,
+   "cpu": 48.6,
+   "memFree": 71.0,
+   "swapMB": 11912.0,
+   "rssMB": 1265.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 261.9,
+   "cpu": 50.2,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1177.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 262.6,
+   "cpu": 51.1,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1271.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 263.4,
+   "cpu": 49.9,
+   "memFree": 72.0,
+   "swapMB": 11912.0,
+   "rssMB": 1217.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 264.1,
+   "cpu": 52.2,
+   "memFree": 72.0,
+   "swapMB": 11904.0,
+   "rssMB": 1217.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 264.9,
+   "cpu": 52.6,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1192.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 265.6,
+   "cpu": 49.8,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1233.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 266.4,
+   "cpu": 49.8,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1192.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 267.1,
+   "cpu": 50.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1192.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 267.8,
+   "cpu": 50.9,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 954.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 268.6,
+   "cpu": 50.3,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1040.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 269.3,
+   "cpu": 52.7,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1075.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 270.1,
+   "cpu": 51.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1075.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 270.8,
+   "cpu": 50.3,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1035.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 271.5,
+   "cpu": 50.6,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1112.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 272.3,
+   "cpu": 50.3,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1038.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 273.0,
+   "cpu": 50.5,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1076.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 273.7,
+   "cpu": 51.4,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1076.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 274.5,
+   "cpu": 50.3,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1076.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 275.2,
+   "cpu": 50.4,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1084.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 276.0,
+   "cpu": 52.7,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1036.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 276.7,
+   "cpu": 50.9,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1036.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 277.4,
+   "cpu": 53.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 1035.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 278.2,
+   "cpu": 52.0,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 796.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 278.9,
+   "cpu": 50.1,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 845.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 279.6,
+   "cpu": 52.1,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 823.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 280.4,
+   "cpu": 51.1,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 883.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 281.1,
+   "cpu": 49.5,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 884.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 281.9,
+   "cpu": 51.9,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 886.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 282.6,
+   "cpu": 50.5,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 893.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 283.3,
+   "cpu": 49.9,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 903.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 284.1,
+   "cpu": 30.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 941.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 284.8,
+   "cpu": 14.4,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 903.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 285.4,
+   "cpu": 15.1,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 903.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 286.1,
+   "cpu": 13.0,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 904.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 286.8,
+   "cpu": 12.8,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 903.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 287.6,
+   "cpu": 4.8,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 0.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 288.2,
+   "cpu": 10.8,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 212.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 288.9,
+   "cpu": 13.1,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 289.6,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 290.3,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 291.0,
+   "cpu": 23.0,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 291.7,
+   "cpu": 30.7,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 292.4,
+   "cpu": 44.3,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 293.1,
+   "cpu": 34.0,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 293.9,
+   "cpu": 23.9,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 294.6,
+   "cpu": 26.5,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 295.3,
+   "cpu": 36.9,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 296.0,
+   "cpu": 37.8,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 296.6,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 297.3,
+   "cpu": 27.4,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 298.1,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 298.7,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 299.4,
+   "cpu": 27.5,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 300.2,
+   "cpu": 31.7,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 300.9,
+   "cpu": 44.4,
+   "memFree": 69.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 1.0
+  },
+  {
+   "s": 301.6,
+   "cpu": 50.0,
+   "memFree": 69.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 302.3,
+   "cpu": 52.2,
+   "memFree": 69.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 303.0,
+   "cpu": 50.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 303.7,
+   "cpu": 41.3,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 304.4,
+   "cpu": 38.4,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 305.1,
+   "cpu": 38.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 305.8,
+   "cpu": 36.6,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 306.5,
+   "cpu": 37.9,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 307.2,
+   "cpu": 45.5,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 307.9,
+   "cpu": 36.7,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 308.6,
+   "cpu": 27.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 309.3,
+   "cpu": 21.2,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 310.0,
+   "cpu": 31.4,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 310.7,
+   "cpu": 19.3,
+   "memFree": 72.0,
+   "swapMB": 11896.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 311.4,
+   "cpu": 15.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 312.1,
+   "cpu": 16.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 312.8,
+   "cpu": 47.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 313.5,
+   "cpu": 47.0,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 314.2,
+   "cpu": 28.3,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 314.9,
+   "cpu": 26.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 315.6,
+   "cpu": 27.5,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 316.3,
+   "cpu": 26.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 317.0,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 317.7,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 297.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 318.4,
+   "cpu": 25.4,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 319.1,
+   "cpu": 19.5,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 319.8,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 320.5,
+   "cpu": 20.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 321.2,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 321.9,
+   "cpu": 48.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 322.6,
+   "cpu": 41.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 323.3,
+   "cpu": 27.4,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 324.0,
+   "cpu": 27.7,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 324.7,
+   "cpu": 26.4,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 325.4,
+   "cpu": 25.5,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 326.1,
+   "cpu": 27.3,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 326.8,
+   "cpu": 22.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 327.5,
+   "cpu": 26.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 257.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 328.2,
+   "cpu": 19.5,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 328.9,
+   "cpu": 18.4,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 329.6,
+   "cpu": 14.1,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 330.3,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 331.0,
+   "cpu": 12.7,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 331.7,
+   "cpu": 14.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 332.4,
+   "cpu": 12.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 333.1,
+   "cpu": 14.4,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 333.8,
+   "cpu": 14.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 334.5,
+   "cpu": 12.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 335.2,
+   "cpu": 12.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 335.9,
+   "cpu": 15.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 336.6,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 337.3,
+   "cpu": 12.7,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 338.0,
+   "cpu": 13.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 338.7,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 339.4,
+   "cpu": 14.4,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 340.1,
+   "cpu": 13.1,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 340.8,
+   "cpu": 12.7,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 341.5,
+   "cpu": 12.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 342.2,
+   "cpu": 13.6,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 342.9,
+   "cpu": 12.7,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 343.6,
+   "cpu": 12.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 344.3,
+   "cpu": 13.3,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 345.0,
+   "cpu": 12.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 345.7,
+   "cpu": 17.4,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 346.4,
+   "cpu": 13.3,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 347.1,
+   "cpu": 12.9,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 347.8,
+   "cpu": 17.5,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 348.5,
+   "cpu": 16.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 349.2,
+   "cpu": 13.1,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 349.9,
+   "cpu": 14.2,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 350.6,
+   "cpu": 12.8,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 351.3,
+   "cpu": 12.6,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 352.0,
+   "cpu": 13.5,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 352.7,
+   "cpu": 12.6,
+   "memFree": 72.0,
+   "swapMB": 11888.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 353.4,
+   "cpu": 13.2,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 354.1,
+   "cpu": 13.9,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 354.8,
+   "cpu": 12.7,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 355.5,
+   "cpu": 13.3,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 356.2,
+   "cpu": 14.0,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 356.9,
+   "cpu": 12.8,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 357.6,
+   "cpu": 16.8,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 213.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 358.3,
+   "cpu": 3.4,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 208.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 359.0,
+   "cpu": 23.1,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 359.7,
+   "cpu": 27.1,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 360.4,
+   "cpu": 25.5,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 361.1,
+   "cpu": 25.4,
+   "memFree": 69.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 1.0
+  },
+  {
+   "s": 361.8,
+   "cpu": 27.2,
+   "memFree": 70.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 362.6,
+   "cpu": 25.8,
+   "memFree": 70.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 363.3,
+   "cpu": 25.7,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 364.0,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 364.7,
+   "cpu": 38.7,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 309.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 365.4,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 310.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 366.1,
+   "cpu": 26.0,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 310.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 366.8,
+   "cpu": 27.3,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 310.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 367.5,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 310.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 368.2,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 310.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 368.9,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 310.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 369.6,
+   "cpu": 34.6,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 370.3,
+   "cpu": 25.9,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 371.0,
+   "cpu": 25.1,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 371.7,
+   "cpu": 25.5,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 372.4,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 373.1,
+   "cpu": 25.8,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 373.8,
+   "cpu": 27.1,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 374.5,
+   "cpu": 26.4,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 375.2,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 375.9,
+   "cpu": 25.7,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 376.6,
+   "cpu": 25.6,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 377.3,
+   "cpu": 25.7,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 378.0,
+   "cpu": 27.4,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 311.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 378.7,
+   "cpu": 25.3,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 379.4,
+   "cpu": 25.6,
+   "memFree": 72.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 380.1,
+   "cpu": 26.3,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 380.8,
+   "cpu": 25.4,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 381.5,
+   "cpu": 44.0,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 382.2,
+   "cpu": 31.5,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 382.9,
+   "cpu": 33.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 383.6,
+   "cpu": 28.0,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 384.3,
+   "cpu": 29.3,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 385.0,
+   "cpu": 25.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 385.7,
+   "cpu": 25.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 386.4,
+   "cpu": 26.9,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 387.1,
+   "cpu": 35.3,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 387.8,
+   "cpu": 26.3,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 294.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 388.5,
+   "cpu": 25.4,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 389.2,
+   "cpu": 25.0,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 389.9,
+   "cpu": 26.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 390.7,
+   "cpu": 25.8,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 391.4,
+   "cpu": 26.1,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 392.1,
+   "cpu": 27.8,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 392.8,
+   "cpu": 25.8,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 393.5,
+   "cpu": 27.8,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 246.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 394.3,
+   "cpu": 83.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 338.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 395.2,
+   "cpu": 97.0,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 396.0,
+   "cpu": 97.6,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 396.9,
+   "cpu": 97.7,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 397.8,
+   "cpu": 95.8,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 398.7,
+   "cpu": 97.8,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 399.5,
+   "cpu": 98.4,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 400.3,
+   "cpu": 98.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 401.1,
+   "cpu": 93.5,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 401.9,
+   "cpu": 98.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 402.8,
+   "cpu": 98.5,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 403.7,
+   "cpu": 97.3,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 404.4,
+   "cpu": 81.2,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 405.3,
+   "cpu": 97.3,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 406.2,
+   "cpu": 98.1,
+   "memFree": 73.0,
+   "swapMB": 11880.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 407.0,
+   "cpu": 97.1,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 407.8,
+   "cpu": 97.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 408.6,
+   "cpu": 95.6,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 409.5,
+   "cpu": 96.8,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 410.4,
+   "cpu": 97.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 411.2,
+   "cpu": 97.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": 342.0,
+   "gpu": 0.0
+  },
+  {
+   "s": 411.9,
+   "cpu": 1.7,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 412.7,
+   "cpu": 0.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 413.4,
+   "cpu": 0.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 414.1,
+   "cpu": 3.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 414.8,
+   "cpu": 2.1,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 415.5,
+   "cpu": 2.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 416.2,
+   "cpu": 4.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 416.9,
+   "cpu": 1.7,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 417.7,
+   "cpu": 4.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 418.4,
+   "cpu": 1.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 419.1,
+   "cpu": 1.3,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 419.8,
+   "cpu": 2.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 420.5,
+   "cpu": 1.7,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 421.3,
+   "cpu": 1.3,
+   "memFree": 69.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 422.0,
+   "cpu": 10.2,
+   "memFree": 70.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 1.0
+  },
+  {
+   "s": 422.7,
+   "cpu": 1.9,
+   "memFree": 70.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 423.4,
+   "cpu": 3.4,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 424.1,
+   "cpu": 0.8,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 424.9,
+   "cpu": 3.5,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 425.6,
+   "cpu": 1.7,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 426.3,
+   "cpu": 2.7,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 427.0,
+   "cpu": 1.0,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 427.7,
+   "cpu": 2.1,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 428.4,
+   "cpu": 2.4,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 429.2,
+   "cpu": 0.9,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 429.9,
+   "cpu": 2.5,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 430.6,
+   "cpu": 1.9,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 431.3,
+   "cpu": 0.8,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 432.0,
+   "cpu": 6.6,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 432.8,
+   "cpu": 1.7,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 433.5,
+   "cpu": 0.7,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 434.2,
+   "cpu": 2.3,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 434.9,
+   "cpu": 2.0,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 435.6,
+   "cpu": 3.1,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 436.3,
+   "cpu": 4.5,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 437.1,
+   "cpu": 2.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 437.8,
+   "cpu": 2.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 438.5,
+   "cpu": 4.3,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 439.2,
+   "cpu": 3.1,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 439.9,
+   "cpu": 3.9,
+   "memFree": 72.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 440.6,
+   "cpu": 3.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 441.3,
+   "cpu": 1.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 442.1,
+   "cpu": 5.3,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 442.8,
+   "cpu": 1.1,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 443.5,
+   "cpu": 1.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 444.2,
+   "cpu": 1.6,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 444.9,
+   "cpu": 0.8,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 445.6,
+   "cpu": 0.8,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 446.4,
+   "cpu": 0.6,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 447.1,
+   "cpu": 1.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 447.8,
+   "cpu": 3.6,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 448.5,
+   "cpu": 1.7,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 449.2,
+   "cpu": 1.8,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 450.0,
+   "cpu": 3.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 450.7,
+   "cpu": 1.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 451.4,
+   "cpu": 1.4,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 452.1,
+   "cpu": 2.3,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 452.8,
+   "cpu": 1.0,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 453.5,
+   "cpu": 2.8,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 454.3,
+   "cpu": 2.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 455.0,
+   "cpu": 1.6,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 455.7,
+   "cpu": 3.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 456.4,
+   "cpu": 2.0,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 457.2,
+   "cpu": 1.4,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 457.9,
+   "cpu": 4.1,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 458.6,
+   "cpu": 2.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 459.3,
+   "cpu": 1.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 460.0,
+   "cpu": 1.1,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 460.7,
+   "cpu": 2.3,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 461.5,
+   "cpu": 6.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 462.2,
+   "cpu": 2.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 462.9,
+   "cpu": 2.0,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 463.6,
+   "cpu": 1.1,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 464.3,
+   "cpu": 1.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 465.1,
+   "cpu": 2.0,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 465.8,
+   "cpu": 1.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 466.5,
+   "cpu": 2.2,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 467.2,
+   "cpu": 1.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 467.9,
+   "cpu": 4.7,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 468.6,
+   "cpu": 1.8,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 469.4,
+   "cpu": 1.5,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 470.1,
+   "cpu": 3.3,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 470.8,
+   "cpu": 0.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  },
+  {
+   "s": 471.5,
+   "cpu": 2.9,
+   "memFree": 73.0,
+   "swapMB": 11872.0,
+   "rssMB": null,
+   "gpu": 0.0
+  }
+ ]
+}
