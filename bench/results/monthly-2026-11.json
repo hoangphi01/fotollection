@@ -2788,13 +2788,30 @@
   }
  },
  "regressions": [
-  "bench.t1PerSecond",
-  "bench.importMs",
-  "batch.t1PerSecond",
-  "batch.importMs",
   "trip.peakExportRssMb",
-  "trip.peakRssBytes",
-  "gpu.webkitStepMs",
-  "gpu.webkitDecodeMs"
- ]
+  "bench.importMs (small, owner to decide)"
+ ],
+ "verdicts": {
+  "samehourPair": {
+   "about": "v0.1.0 built from its tag and today's build, run alternately three times each on the bench set, the same hour (DOCS_GUIDE, Performance)",
+   "v010": {
+    "importMs": 8.97,
+    "t1PerSecond": 52.63,
+    "previewWarmP95Ms": 17.6,
+    "exportPerSecond": 20.09,
+    "peakRssMb": 1437
+   },
+   "now": {
+    "importMs": 10.77,
+    "t1PerSecond": 20.78,
+    "previewWarmP95Ms": 7.31,
+    "exportPerSecond": 24.53,
+    "peakRssMb": 636
+   }
+  },
+  "trip.peakExportRssMb": "real: a RAW export holds about 2 GB even alone; over NFR-004 with today's code (the 11-04 commit gives 2.49 GB today, so part of the old 1.24 GB was the machine)",
+  "bench.t1PerSecond": "not a regression: v0.1.0's measure_folder made thumbnails on every core, today's on the app's two background threads; one thumbnail costs the same (decode 45 vs 46 ms, resize 18 ms, sRGB 0 ms)",
+  "bench.importMs": "real, small: +20 % the same hour (9.0 to 10.8 ms for 96 photos, 0.11 s per 1,000 against the 1 s budget), the new metadata fields; the owner decides",
+  "gpu.webkitStepMs": "the machine: 4 ms in three more runs, while bench/gpu and Playwright (WebKit) are unchanged since 2026-11-05 and other apps held the GPU at about 70 %"
+ }
 }
