@@ -94,6 +94,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - A model's choices follow what the metadata knows (the route by source), and a selection rule's margin exceeds its noise: judge the newly named photos (≥ 75 % on ≥ 30) and release on a blind random sample. Kept by: ADR-0059, RESULT §42.
 - A zero-shot label set is measured on every kind of roll it meets, counting the unnamed and the catch-all's share, its misses looked at before a label is dropped. Kept by: OPTIMIZATION §5 (2026-11-19), `clip_bench`.
+- A comparison with an older Fotollection builds that code and runs both the same hour; an old log mixes the machine's change with the code's. Kept by: no machine check yet.
 - Measure or observe before guessing; read the checker's or dependency's source before a third guess. Kept by: no machine check yet.
 - Check that a benchmark measures what the app does, and time each stage of one item, before optimizing a number. Kept by: `measure_folder` mirrors the app.
 - Measure one step of a gesture before and after a change; count pixels on a zoomed screenshot, never by eye. Kept by: `measure_preview LOOK_DRAG=1`.
@@ -146,6 +147,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-20
+
+### The monthly comparison read October's log, and the log did not reproduce (measure)
+
+- **Area:** measure
+- **Seen:** the November run compared today's numbers with the files of 2026-10-23 and 2026-11-04; chasing the trip's export memory (3.62 GB against 1.24 GB), the very commit that wrote 1.24 GB gave 2.49 GB when built and run again the same day.
+- **Why:** the machine changed under the log (macOS updated; RAW then decoded by the system; swap nearly full), so an old file mixes the code's change with the machine's. DOCS_GUIDE already says a comparison with an earlier Fotollection is measured on that version built from its tag, never taken from an old log; the monthly run did not.
+- **Rule:** the monthly run builds the baseline's commit (v0.1 and the last release) beside today's and runs both on the same files, the same hour; a regression is called only on that pair. Kept by: no machine check yet (ROADMAP, Every month, performance).
 
 ### The gallery's photos 8 px under the toolbar, 16 px from the sides (UI)
 
