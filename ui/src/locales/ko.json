@@ -1451,6 +1451,8 @@
     "next": "다음"
   },
   "welcome": {
+    "newSettings": "새 설정",
+    "done": "완료",
     "title": "환영합니다",
     "step": "{{count}}단계 중 {{n}}단계",
     "next": "다음",

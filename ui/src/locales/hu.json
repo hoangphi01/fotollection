@@ -1451,6 +1451,8 @@
     "next": "Tovább"
   },
   "welcome": {
+    "newSettings": "Új beállítások",
+    "done": "Kész",
     "title": "Üdvözlünk",
     "step": "{{n}}. lépés / {{count}}",
     "next": "Tovább",

@@ -1471,6 +1471,14 @@ Measured first: the owner's labelling page gains *delete: soft*, *upscaled*, *me
 - **One local day for everything:** RollSense's days, events and trips, the calendar ([FR-141](#fr-141--sorting-a-phones-camera-roll) C1–C2) and later the journal ([FR-049](#fr-049--trip-journal)) take a photo's day from its instant and its place's offset, so a photo taken at 00:30 in Seoul falls on that Seoul day. The trips' edits keep their days since 1970, so a saved project keeps its meaning.
 - Done when tests show: GPS time wins over a camera's clock; a camera left on home time in Seoul lands on the Seoul day; European summer time in 2019; a computer set to another zone changes nothing; and the measured cost on 15,000 photos is logged (OPTIMIZATION §5).
 
+### FR-146 — After an update, the welcome shows only the new settings
+
+**P1 (v0.14.4 "Sorting", 2026-Q4; owner, 2026-11-20: "a machine on the old version, once updated, opens the dialog as a new install would, but shows only the time, since the rest was set already; from now on, each welcome feature the old version lacked is shown to choose, not everything, only the part that needs setting").** A user who has seen the welcome ([FR-109](#fr-109--a-welcome-screen-on-the-first-launch)) and updates to a version whose welcome holds a setting they never chose meets the welcome's frame with only those settings' pages: *New settings*, step n of m, *Done* on the last; language, theme and the tour are not shown again. A fresh install still meets the whole welcome.
+
+- **Which settings:** each setting the welcome asks for is listed with its *not chosen yet* state (its value `null` in the settings file); the first is the home time ([FR-145](#fr-145--one-time-base-utc-instants-the-places-local-time-a-home-zone)). A new welcome setting joins the list with such a state, so no settings schema change is needed to tell an update from a choice.
+- **Done** keeps what the page shows (the home time: the computer's zone unless another place was chosen), so the page never comes back; *Show the welcome again* in Settings opens the whole welcome.
+- Done when a scene shows the page alone for a user who saw the welcome without a home time, nothing for one who has it, and the whole welcome for a fresh install (UI-STATE-013).
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

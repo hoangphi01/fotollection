@@ -11,8 +11,10 @@ import { Label } from '@/components/ui/label'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { languageInfo } from '@/i18n'
 import { useSystemZone } from '@/features/settings/use-system-zone'
+import { HomeZonePage } from './home-zone-page'
 import { LanguagePage } from './language-page'
-import { closeWelcome, decideWelcome, useWelcomeOpen } from './welcome-store'
+import { pendingSettings, WELCOME_SETTINGS } from './welcome-settings'
+import { closeWelcome, decideWelcome, useWelcomeMode } from './welcome-store'
 
 /** The five pages, in the order of the work (owner, 2026-11-07); each a picture of the app. */
 const PAGES = [
@@ -25,17 +27,22 @@ const PAGES = [
 ] as const
 
 /**
- * The welcome screen (FR-109): on the first launch after the install or an update, and at
+ * The welcome screen (FR-109): on the first launch after the install, and at
  * every start when its last page's tick asks for it, the language (FR-124) then five pages of the basics in the Settings
  * window's frame (owner, 2026-11-07: "the size of Settings and Export"), the pages listed on
- * the left as the window's sections are. *Start* or Esc closes it and remembers it was seen.
+ * the left as the window's sections are. *Start* or Esc closes it and remembers it was seen. After an update, a user who saw it meets
+ * only the settings still unchosen (FR-146), the same frame with *Done*.
  */
 export function WelcomeDialog() {
   const { t, i18n } = useTranslation()
   const { ui, update, loaded } = useUiSettings()
   const systemZone = useSystemZone()
-  if (loaded) decideWelcome(ui.welcomeSeen, ui.welcomeEveryStart)
-  const open = useWelcomeOpen()
+  if (loaded) decideWelcome(ui.welcomeSeen, ui.welcomeEveryStart, pendingSettings(ui))
+  const mode = useWelcomeMode()
+  const open = mode !== null
+  // After an update, only the settings the old version lacked (FR-146); else the whole welcome.
+  const settingsOnly = mode?.kind === 'settings'
+  const pages = settingsOnly ? WELCOME_SETTINGS.filter((s) => mode.keys.includes(s.key)) : PAGES
   const [page, setPage] = useState(0)
   // The tick follows the saved choice until the user changes it, then is theirs until Start.
   const [tick, setTick] = useState<boolean | null>(null)
@@ -50,8 +57,9 @@ export function WelcomeDialog() {
     // The home zone is kept from here on (FR-145), so a laptop taken abroad keeps it.
     void update({ welcomeSeen: true, welcomeEveryStart: everyStart, homeZone: ui.homeZone ?? systemZone })
   }
-  const current = PAGES[page] ?? PAGES[0]
-  const last = page === PAGES.length - 1
+  const current = pages[page] ?? pages[0] ?? PAGES[0]
+  const last = page === pages.length - 1
+  const title = (key: string) => (key === 'homeZone' ? t('homeZone.label') : t(`welcome.${key}.title` as 'welcome.language.title'))
   const lang = languageInfo(i18n.language).assets
   const theme = useDarkTheme() ? 'dark' : 'light'
 
@@ -59,19 +67,19 @@ export function WelcomeDialog() {
     <SettingsFrame
       open={open}
       onClose={close}
-      title={t('welcome.title')}
+      title={settingsOnly ? t('welcome.newSettings') : t('welcome.title')}
       full
       closable={false}
-      nav={PAGES.map((p, i) => (
+      nav={pages.map((p, i) => (
         <ListRow key={p.key} icon={<p.icon />} chosen={i === page} current="step" onClick={() => setPage(i)}>
-          {t(`welcome.${p.key}.title`)}
+          {title(p.key)}
         </ListRow>
       ))}
-      heading={t(`welcome.${current.key}.title`)}
-      description={t('welcome.step', { n: page + 1, count: PAGES.length })}
+      heading={title(current.key)}
+      description={t('welcome.step', { n: page + 1, count: pages.length })}
       actions={
         <>
-          {last && (
+          {last && !settingsOnly && (
             <>
               <Checkbox id={tickId} checked={everyStart} onCheckedChange={(v) => setEveryStart(v === true)} />
               <Label htmlFor={tickId} className="text-xs font-normal text-muted-foreground">
@@ -86,7 +94,7 @@ export function WelcomeDialog() {
               </Button>
             )}
             {last ? (
-              <Button onClick={close}>{t('welcome.start')}</Button>
+              <Button onClick={close}>{settingsOnly ? t('welcome.done') : t('welcome.start')}</Button>
             ) : (
               <Button onClick={() => setPage(page + 1)}>
                 {t('welcome.next')} <ArrowRight data-icon="inline-end" />
@@ -96,7 +104,9 @@ export function WelcomeDialog() {
         </>
       }
     >
-      {current.key === 'language' ? (
+      {current.key === 'homeZone' ? (
+        <HomeZonePage />
+      ) : current.key === 'language' ? (
         <LanguagePage />
       ) : (
       /* The picture fills the page; the words sit on it in frosted glass, the picture blurred

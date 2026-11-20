@@ -1451,6 +1451,8 @@
     "next": "次へ"
   },
   "welcome": {
+    "newSettings": "新しい設定",
+    "done": "完了",
     "title": "ようこそ",
     "step": "ステップ{{n}} / {{count}}",
     "next": "次へ",

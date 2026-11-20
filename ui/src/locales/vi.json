@@ -1400,6 +1400,8 @@
     "next": "Tiếp"
   },
   "welcome": {
+    "newSettings": "Cài đặt mới",
+    "done": "Xong",
     "title": "Chào mừng",
     "step": "Bước {{n}} / {{count}}",
     "next": "Tiếp",

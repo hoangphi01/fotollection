@@ -100,6 +100,7 @@ Only the recording needs `tauri dev` quit (the app runs once at a time, and the 
 | UI-STATE-010 | A part that fails fails alone | With every card broken on purpose, then the main view (`lib/fault.ts`, a build with `VITE_FAULTS=1`), each shows `PartFailed` in its place, the gallery or the side panel stays, and the window never fails as a whole | A `shoot.mjs` | release | ADR-0048; LESSONS |
 | UI-STATE-011 | One right-click menu | On one of your looks in Presets & LUTs, the ⋯, a right click and Shift+F10 open the same menu (at the pointer for the right click), Esc closes it; a built-in look opens none; on the looks' strip a right click on yours opens Rename and Remove | M | release | Owner, 2026-11-18 (FR-117) |
 | UI-STATE-012 | A trip renamed, split and merged | In RollSense, a trip's ⋯ and a right click open Rename, Split…, Merge with the next trip; Rename edits the row, Enter keeps it; Split… opens the trip's page, a day chosen splits it in two; Merge on the page joins them back; the project saved and opened again keeps every change | M | release | Owner, 2026-11-18 (FR-012 S7c) |
+| UI-STATE-013 | After an update, only the new settings | A user who saw the welcome with no home time meets one page, the home time's, *New settings* with *Done*; with a home time, no welcome; a fresh install, the whole welcome (FR-146, owner 2026-11-20) | A `measureSidePanels` | every UI change | FR-146 |
 
 ### Stability
 

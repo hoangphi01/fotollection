@@ -115,8 +115,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     take_startup_notices: () => [],
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
-    // The welcome (FR-109) seen, so it covers no shot; a shot of it sets `ui.welcomeSeen: false`.
-    get_ui_settings: () => ({ ...common.get_ui_settings, welcomeSeen: true, language, mode, ...ui }),
+    // The welcome (FR-109) seen and a home time kept (FR-146), so it covers no shot; a shot of it sets `ui.welcomeSeen: false` or `ui.homeZone: null`.
+    get_ui_settings: () => ({ ...common.get_ui_settings, welcomeSeen: true, homeZone: 'Europe/Prague', language, mode, ...ui }),
     // The update window at start (FR-103) and Settings' copy of it, when a shot asks for it.
     check_for_update_at_start: () => update, last_update_check: () => update,
     // The preview's colour cards (FR-079): the scenario's look, shared by every photo.

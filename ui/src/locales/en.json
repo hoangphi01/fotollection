@@ -1451,6 +1451,8 @@
     "next": "Next"
   },
   "welcome": {
+    "newSettings": "New settings",
+    "done": "Done",
     "title": "Welcome",
     "step": "Step {{n}} of {{count}}",
     "next": "Next",

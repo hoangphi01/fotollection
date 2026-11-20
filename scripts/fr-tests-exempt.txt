@@ -6,3 +6,4 @@ FR-122 interface only (the chrome's gradient): UI-VISUAL-001 baselines
 FR-125 interface only (FitText): UI-TEXT-007 and UI-TEXT-008, run by the pre-push hook
 FR-136 interface only (the Postcard tab's three cards): UI-MODE-012, run by scripts/ui-check.sh
 FR-137 interface only (Pro's Colour tab and Presets & LUTs reused in Collage): UI-MODE-013; its batch and IPC are FR-079's and FR-114's, tested there
+FR-146 interface only (the welcome's settings after an update): UI-STATE-013, run by scripts/ui-check.sh

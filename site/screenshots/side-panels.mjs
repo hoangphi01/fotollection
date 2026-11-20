@@ -36,6 +36,16 @@ export async function measureSidePanels({ open, settle, measure, allChecks, say,
   rows.push(['Simple panel', await measure(page, 'aside.border-l')])
   await page.screenshot({ path: path.join(outDir, 'measure-simple.png') })
   await context.close()
+  // UI-STATE-013 (FR-146, owner 2026-11-20): after an update, a user who saw the welcome meets
+  // only the settings still unchosen (the home time), never the whole welcome again.
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme, ui: { homeZone: null } }))
+  await settle(page)
+  const steps = await page.locator('[role="dialog"] nav button').count()
+  if ((await page.locator('[role="dialog"]').count()) !== 1 || steps !== 1)
+    extra.push(`UI-STATE-013 an update without a home time shows ${steps} welcome pages, not the home time's alone`)
+  extra.push(...(await allChecks(page, 'welcome after an update')))
+  await page.screenshot({ path: path.join(outDir, 'measure-welcome-new.png') })
+  await context.close()
   // Pro's gallery panel, its Print tab: the date stamp, camera clocks and places cards, every
   // row checked (UI-LAYOUT-025, owner 2026-11-19: no scene opened this tab, so the Places card's
   // reset hung below its field unseen).
