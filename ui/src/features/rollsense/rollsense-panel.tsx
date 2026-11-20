@@ -91,9 +91,10 @@ export function RollSensePanel({ sense, picks, onPicks, onClearFilter }: RollSen
       {props && (
         <>
           <CleanupCard rows={props.facets.cleanup} picks={picks} onPicks={onPicks} />
+          {/* The calendar first after Clean up (owner, 2026-11-20). */}
+          <TimeCard {...props} />
           <SourcesCard {...props} />
           <SubjectsCard {...props} />
-          <TimeCard {...props} />
           <TripsCard {...props} onOpenTrip={setTripOpen} />
           <VisitsCard {...props} />
           <WhereCard {...props} folders={sense.folders} />

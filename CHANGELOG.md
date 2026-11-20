@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- RollSense's calendar (**When**) comes first, right under **Clean up**.
 - The website's English and Vietnamese pages show Prague in many photos, one subject per print: the castle across the Vltava, the bridges at dusk, Old Town, the National Museum by night, mulled wine and a grilled sausage; each postcard's message names what its photo shows.
 - The **Places** card lists each place as a row with its country and photos, renamed with a click, its ⋯ or a right click; the red way back to the original name shows only once a place is renamed.
 - The interface's words in every language are rewritten to one technical register: labels are nouns or verbs, a hint is one sentence on what the control does, errors say what to do, one term per thing (*ticked*, *apply*, *duplicates*), and shortcuts show ⌘ on macOS and Ctrl elsewhere. The Czech website addresses the reader with *vy*.
