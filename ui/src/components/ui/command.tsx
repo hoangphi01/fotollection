@@ -68,7 +68,9 @@ function CommandInput({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
-    <div data-slot="command-input-wrapper" className="p-1 pb-0">
+    // As far from the list's edge below as from the top and the sides (owner, 2026-11-20: with
+    // nothing found yet, `pb-0` left it 8 px from the top and 4 px from the bottom).
+    <div data-slot="command-input-wrapper" className="p-1">
       <InputGroup className="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
         <CommandPrimitive.Input
           data-slot="command-input"
