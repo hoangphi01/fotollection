@@ -144,7 +144,9 @@ export function LibraryGrid({
       ref={scrollRef}
       tabIndex={0}
       onKeyDown={onKeyDown}
-      className="flex-1 overflow-y-auto p-2 outline-none"
+      // 16 px from the toolbar, as from the sides: 8 px here and a row's own 8 px in from the
+      // left (owner, 2026-11-20: the top was 8 px against the sides' 16).
+      className="flex-1 overflow-y-auto p-2 pt-4 outline-none"
       aria-label={t('library.gridLabel')}
     >
       <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>

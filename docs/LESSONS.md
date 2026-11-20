@@ -19,6 +19,7 @@ Read this table in full before any task; then read in full every entry whose Are
 ### ui-layout
 
 - A button beside a field sits on the field's line; every tab of every panel has a scene, its folded cards opened. Kept by: UI-LAYOUT-025, the `Pro panel: Print` scene (`side-panels.mjs`).
+- An inset is measured from what shows, the same on every side, a row's own gap counted. Kept by: no machine check yet.
 - Two 32 px controls one under the other are two rows 12 px apart, never one field's 6 px. Kept by: no machine check yet (STYLE_RULE §4 table).
 - Measure every new row, column, control or summary at 1180 px and the narrowest panel, in Vietnamese and Hungarian, with its longest text, before keeping it. Kept by: `MEASURE=1` (UI-LAYOUT-001).
 - Words in a flex row get `min-w-0`, `truncate` gets a width (`w-full min-w-0`), a button stops at its container (`max-w-full`). Kept by: UI-LAYOUT-001 and the long custom size stress fixture.
@@ -145,6 +146,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-20
+
+### The gallery's photos 8 px under the toolbar, 16 px from the sides (UI)
+
+- **Area:** ui-layout
+- **Seen:** the first row of thumbnails sat closer to the toolbar than to the column's edge (owner, 2026-11-20, a screenshot).
+- **Why:** the grid's scroll box had 8 px all round, and each row added its own 8 px on the left only, so the sides got 16 px and the top 8.
+- **Rule:** an inset is measured from what shows, on every side: when a row adds a gap on one side, the box adds it on the others. Kept by: no machine check yet.
 
 ### A broken colon fixed by half: U+FFFD on every line of the Japanese README (docs)
 

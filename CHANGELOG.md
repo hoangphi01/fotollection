@@ -54,6 +54,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- The gallery's first row of photos sits as far from the toolbar as from the column's sides (16 px).
 - The search field of the place and home-time pickers sits as far from the list's bottom edge as from its top and sides.
 - **Home time**'s toggle and its place sit 12 px apart, as two rows, and the place folds away with *Computer*.
 - **Home time**'s place search lists a city once, in its own country's time zone: *Hanoi, Vietnam* shows once on Asia/Ho Chi Minh, no longer also on Asia/Bangkok.
