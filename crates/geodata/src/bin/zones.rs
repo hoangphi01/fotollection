@@ -9,7 +9,7 @@
 //! GeoNames follows IANA's `zone1970.tab`, where a zone shared since 1970 covers several
 //! countries (Asia/Bangkok: Thailand, Cambodia, Laos and most of Vietnam); when the place's
 //! country has one zone in `zone.tab` and that shared zone covers the country, the country's
-//! own zone is taken (Asia/Ho_Chi_Minh, Asia/Phnom_Penh). The clock is the same for the photos
+//! own zone is taken (`Asia/Ho_Chi_Minh`, `Asia/Phnom_Penh`). The clock is the same for the photos
 //! people bring (Vietnam's two differ only from 1970 to 1975); countries with several zones
 //! keep GeoNames' choice.
 //!
