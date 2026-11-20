@@ -5,11 +5,13 @@
 
 # Fotollection
 
-**Chuyến đi của bạn, sẵn sàng để in: ngày và nơi chụp trên từng tấm, đúng khổ của tiệm in, không tải ảnh lên đâu cả.**
+**Hàng nghìn tấm ảnh, chỉ được xem lại trên chuyến bay về?**
 
-Miễn phí · offline · mã nguồn mở · macOS, Windows và Linux
+Fotollection chọn ra những tấm đẹp nhất, in ngày và nơi chụp, và cắt đúng khổ của máy in ảnh, miễn phí và hoàn toàn offline.
 
 **[⬇ Tải cho macOS, Windows hoặc Linux](https://fotollection.org/vi/download/)**
+
+<sub>macOS và Windows hỏi một lần ở lần mở đầu tiên: chọn **Open Anyway** ([cách làm](#lần-mở-đầu-tiên)).</sub>
 
 [Trang giới thiệu](https://fotollection.org/vi/) · [Hướng dẫn](https://fotollection.org/vi/manual/) · [Releases](https://github.com/hoangphi01/fotollection/releases/latest) · [English](README.md) · **Tiếng Việt** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
@@ -19,38 +21,6 @@ Miễn phí · offline · mã nguồn mở · macOS, Windows và Linux
   <img src="site/assets/img/showcase/wide-vi.webp" alt="Fotollection trên ảnh Praha: chuyến đi của bạn, sẵn sàng để in" width="100%" />
 </p>
 
-<div align="center">
-
-[![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
-[![CI](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml)
-[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](docs/RELEASE.md)
-[![Offline · zero telemetry](https://img.shields.io/badge/privacy-offline%20%C2%B7%20zero%20telemetry-2ea44f.svg)](docs/SECURITY.md#5-privacy)
-
-</div>
-
----
-
-## Vì sao có Fotollection?
-
-Bạn chụp 800 tấm trong một chuyến đi và muốn in chừng hai chục tấm. Hiện giờ việc đó khá mệt:
-
-- **Ảnh in không ghi khi nào, ở đâu.** Vài năm sau, chẳng ai nhớ.
-- **Tiệm in tự crop ảnh** về 2:3, 3:4 hay 1:1, và có thể cắt mất đầu người.
-- **Công cụ online bắt tải ảnh lên.** Dữ liệu GPS lộ cả nơi bạn sống.
-
-Fotollection làm tất cả những việc đó **ngay trên máy bạn**: 1.000 ảnh mở trong 0,12 giây, xuất 18 ảnh mỗi giây, và bản in giữ trọn chi tiết và màu của máy ảnh:
-
-![Chi tiết giữ lại: Fotollection 100 %, web editor 13 %. Độ bão hoà màu giữ lại với ảnh Display P3: 99,9 % so với 86,8 %. Sai lệch màu ΔE2000: 0,19 so với 1,39, mắt thấy được từ 1.](docs/images/bench-quality-vi.svg)
-
-So với cách xuất thường thấy của web editor (mô phỏng với thiết lập chuẩn: bỏ ICC profile, 2000 px, 4:2:0, chất lượng 80), đo trên Apple M3; cách đo và mọi con số nằm ở mục [Hiệu năng](#hiệu-năng).
-
-## Cách dùng
-
-1. **Mở thư mục của chuyến đi.** JPEG, HEIC từ iPhone hay RAW máy ảnh, hàng nghìn tấm một lúc; app gợi ý tấm đẹp nhất.
-2. **Giữ những tấm muốn in.** Ngày và nơi chụp in lên từng tấm bằng font LCD kiểu máy film, khung crop vừa khổ của tiệm, một look cho màu.
-3. **Xuất cho tiệm in** ở chất lượng gốc, đã bỏ GPS, rồi mang file ra máy in ảnh: dm, Rossmann, CEWE, hay 7-Eleven, Lawson và FamilyMart ở Nhật.
-
 <p align="center">
   <img src="site/assets/img/results/stamp-vi.webp" alt="Ảnh in hoàn chỉnh với dấu ngày kiểu máy film" width="23%" />
   <img src="site/assets/img/results/frame-vi.webp" alt="Ảnh in hoàn chỉnh với khung thông tin Shot on" width="23%" />
@@ -58,6 +28,22 @@ So với cách xuất thường thấy của web editor (mô phỏng với thi�
 </p>
 
 <p align="center"><sub>Ảnh in đúng như Fotollection xuất ra. Ảnh Praha © @hoangphi01.</sub></p>
+
+## Vì sao mình làm Fotollection
+
+Chào bạn, mình là [hoangphi01](https://github.com/hoangphi01), một sinh viên Việt Nam ở châu Âu. Sau một chuyến đi, mình có hàng trăm tấm ảnh và chỉ muốn in chừng hai chục tấm, nhưng cách nào cũng vướng:
+
+- **Ảnh in không ghi khi nào, ở đâu.** Vài năm sau, chẳng ai nhớ.
+- **Tiệm in tự crop ảnh** về 2:3, 3:4 hay 1:1, và có thể cắt mất đầu người.
+- **Công cụ online bắt tải ảnh lên.** Dữ liệu GPS lộ cả nơi bạn sống.
+
+Vậy nên mình làm Fotollection, làm tất cả những việc đó ngay trên máy bạn. Fotollection miễn phí, mã nguồn mở, và ảnh của bạn không bao giờ rời khỏi máy.
+
+## Cách dùng
+
+1. **Mở thư mục của chuyến đi.** JPEG, HEIC từ iPhone hay RAW máy ảnh, hàng nghìn tấm một lúc; app gợi ý tấm đẹp nhất.
+2. **Giữ những tấm muốn in.** Ngày và nơi chụp in lên từng tấm bằng font LCD kiểu máy film, khung crop vừa khổ của tiệm, một look cho màu.
+3. **Xuất cho tiệm in** ở chất lượng gốc, đã bỏ GPS, rồi mang file ra máy in ảnh: dm, Rossmann, CEWE, hay 7-Eleven, Lawson và FamilyMart ở Nhật.
 
 <p align="center">
   <img src="site/assets/img/grid-vi-light.webp" alt="Cửa sổ chính Fotollection (giao diện sáng)" width="49%" />
@@ -68,12 +54,12 @@ So với cách xuất thường thấy của web editor (mô phỏng với thi�
 
 | | |
 |---|---|
-| 📅 **Ngày và nơi chụp trên ảnh in** | lấy từ EXIF, bằng font LCD của máy film, địa điểm tìm offline |
+| 📅 **Ngày và nơi chụp trên ảnh in** | đọc từ chính tấm ảnh, bằng font số của máy film, địa điểm tìm offline |
 | ⏱️ **Máy ảnh và điện thoại cùng nhau** | giờ sai của máy ảnh sửa từ một tấm điện thoại chụp cùng lúc, và địa điểm lấy từ ảnh điện thoại chụp cùng cảnh |
 | ✂️ **Đúng khổ của tiệm in** | 21 khổ in của tiệm và máy in ảnh ở châu Âu, Nhật và Hàn, khổ tự đặt, hay giữ nguyên hình ảnh gốc, kèm viền 3 mm để máy cắt không phạm vào ảnh |
 | ✨ **Gợi ý tấm đẹp nhất** | gom ảnh chụp liên tiếp và ảnh giống nhau, gợi ý tấm nét nhất, mắt mở, kèm lý do; sao, cờ và bộ lọc, phím tắt như Lightroom |
-| 📷 **Mọi loại ảnh** | JPEG, PNG, HEIC từ iPhone, và RAW máy ảnh: Fujifilm RAF, Panasonic, Canon, Nikon, Sony, Olympus và DNG đều dùng được ngay hôm nay |
-| 🌈 **Look, preset và LUT** | một chạm là ảnh có màu; dùng được cả preset Lightroom của bạn và LUT LUMIX Lab hay `.cube`; công cụ màu như Lightroom |
+| 📷 **Mọi loại ảnh** | ảnh iPhone và Android, và file RAW của máy ảnh Fujifilm, Panasonic, Canon, Nikon, Sony và Olympus |
+| 🌈 **Look, preset và LUT** | một chạm là ảnh có màu; dùng được cả preset Lightroom và look LUMIX Lab của bạn |
 | ✉️ **Bưu thiếp** | một mặt là ảnh, mặt sau là phần địa chỉ, gõ hoặc viết tay; はがき của Nhật và 우편엽서 của Hàn, địa chỉ tự điền từ mã bưu chính (**AddAssist**) |
 | 🎚️ **Ba chế độ** | **Đơn giản** (giữ hay bỏ, rồi in), **Ghép ảnh** (hai ảnh trên một tấm in, hoặc bưu thiếp) và **Chuyên nghiệp** (đủ mọi điều chỉnh) |
 | 🔒 **Riêng tư từ thiết kế** | không tài khoản, không cloud, không telemetry; GPS bị xoá khi xuất; kết nối mạng duy nhất là kiểm tra bản mới, tắt được |
@@ -86,24 +72,29 @@ So với cách xuất thường thấy của web editor (mô phỏng với thi�
 
 Giao diện tiếng Anh, tiếng Việt, tiếng Đức, tiếng Hung, 日本語 và 한국어. Từng bước có hình: [hướng dẫn](https://fotollection.org/vi/manual/). Từng phiên bản: [CHANGELOG.md](CHANGELOG.md). Từng yêu cầu: [docs/PRD.md](docs/PRD.md).
 
-## Lộ trình
+## Những gì chưa có
 
-![Lộ trình: Fotollection đã dùng trọn vẹn hôm nay; v1.0.0, bản ổn định, là mốc tiếp theo, rồi các bản dự kiến cho từng quý tới quý 4/2028.](docs/images/roadmap-vi.svg)
+Fotollection còn mới; vài thứ chưa có:
 
-Fotollection đã dùng trọn vẹn hôm nay; **v1.0.0** vào tháng 12/2026 là lời hứa ổn định. Trước đó có hai bản: v0.14.4 vào tháng 11, lọc cả kho ảnh điện thoại (ảnh chụp, ảnh chụp màn hình, ảnh đã lưu, Live Photo, ảnh trùng, sự kiện), và v0.14.5 thêm look; sau đó mỗi tháng một bản với chủ đề riêng, bảo trì đi trước, kế hoạch tới 11/2028. Sắp tới: crop theo khuôn mặt, xem trước photobook và mã QR sau lưng ảnh in. Mọi yêu cầu và quý của nó: [docs/ROADMAP.md](docs/ROADMAP.md); các hạng mục còn lại trước v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+- **Bản build chưa ký số:** macOS và Windows hỏi một lần trước lần mở đầu tiên ([lần mở đầu tiên](#lần-mở-đầu-tiên)).
+- **Ảnh iPhone (HEIC) trên Linux:** tạm thời đổi sang JPEG.
+- **Chụp bằng máy ảnh qua cáp USB** mới chạy trên Windows.
+- **Chưa có bản cho điện thoại:** Fotollection chạy trên máy tính.
+- **Lỗi:** bạn có thể gặp vài lỗi; [một issue](https://github.com/hoangphi01/fotollection/issues/new/choose) giúp mình rất nhiều, cảm ơn bạn.
 
 ## Tải về
 
 Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` cho Windows 10/11 (file `.msi` dành cho bộ phận IT), và AppImage hoặc `.deb` cho Linux 64-bit ([những distro nào](#linux)). Lúc khởi động, app hỏi GitHub một lần xem có bản mới không (tắt được trong Cài đặt → Cập nhật) và không bao giờ tự tải gì về. Cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
 
-> [!IMPORTANT]
-> Các bản build hiện **chưa được ký số** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)): chứng chỉ ký số tốn tiền mà một dự án mã nguồn mở của một người chưa có. Mã nguồn công khai, mọi bản build đều do CI của GitHub tạo ra, và app chỉ lên mạng để kiểm tra bản mới. Lần mở đầu tiên:
->
-> - **macOS:** System Settings → Privacy & Security → **Open Anyway**
-> - **Windows:** SmartScreen → **More info** → **Run anyway**
-> - **Linux:** không cần bấm gì thêm; cho AppImage quyền chạy, hoặc cài file `.deb` (bên dưới)
->
-> Kiểm tra từng file tải về với `SHA256SUMS.txt` trên trang phát hành. Xem [chính sách ký mã và quyền riêng tư](https://fotollection.org/vi/code-signing/).
+### Lần mở đầu tiên
+
+Các bản build chưa được ký số ([ADR-0009](docs/adr/0009-unsigned-distribution.md)), nên hệ điều hành hỏi một lần:
+
+- **macOS:** System Settings → Privacy & Security → **Open Anyway**
+- **Windows:** SmartScreen → **More info** → **Run anyway**
+- **Linux:** không cần bấm gì thêm; cho AppImage quyền chạy, hoặc cài file `.deb` (bên dưới)
+
+Mọi bản build do CI của GitHub tạo ra từ mã nguồn công khai; mỗi file tải về kiểm được bằng `SHA256SUMS.txt` trên trang release ([ký số](https://fotollection.org/vi/code-signing/)).
 
 ### Theo hệ điều hành
 
@@ -193,9 +184,19 @@ sudo apt install ./Fotollection_*_amd64.deb
 
 </details>
 
+## Lộ trình
+
+![Lộ trình: Fotollection đã dùng trọn vẹn hôm nay; v1.0.0, bản ổn định, là mốc tiếp theo, rồi các bản dự kiến cho từng quý tới quý 4/2028.](docs/images/roadmap-vi.svg)
+
+Fotollection đã dùng trọn vẹn hôm nay; **v1.0.0** vào tháng 12/2026 là lời hứa ổn định. Trước đó có hai bản: v0.14.4 vào tháng 11, lọc cả kho ảnh điện thoại (ảnh chụp, ảnh chụp màn hình, ảnh đã lưu, Live Photo, ảnh trùng, sự kiện), và v0.14.5 thêm look; sau đó mỗi tháng một bản với chủ đề riêng, bảo trì đi trước, kế hoạch tới 11/2028. Sắp tới: crop theo khuôn mặt, xem trước photobook và mã QR sau lưng ảnh in. Mọi yêu cầu và quý của nó: [docs/ROADMAP.md](docs/ROADMAP.md); các hạng mục còn lại trước v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+
 ## Hiệu năng
 
 Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia, nên tốc độ là yêu cầu bắt buộc, không phải thứ có thì tốt. **Mọi con số dưới đây đều đo thật, không phải ước tính**, trên Apple M3 (8 nhân, 16 GB) với ảnh JPEG 16 MP thật. Lần đo đầu tiên, ngày 23/10/2026 trên v0.1, được giữ làm mốc tham chiếu; mỗi mục ghi ngày đo của nó, và các phép đo được chạy lại hằng tháng so với mốc đó ([ROADMAP](docs/ROADMAP.md)). Mỗi biểu đồ có một mốc tham chiếu để so: ngân sách hiệu năng, trần RAM, hoặc trình duyệt. Kết quả đầy đủ: [docs/RESULT.md](docs/RESULT.md) (tiếng Anh).
+
+![Chi tiết giữ lại: Fotollection 100 %, web editor 13 %. Độ bão hoà màu giữ lại với ảnh Display P3: 99,9 % so với 86,8 %. Sai lệch màu ΔE2000: 0,19 so với 1,39, mắt thấy được từ 1.](docs/images/bench-quality-vi.svg)
+
+So với cách xuất thường thấy của web editor (mô phỏng với thiết lập chuẩn: bỏ ICC profile, 2000 px, 4:2:0, chất lượng 80), đo trên Apple M3.
 
 ### So với ngân sách
 
@@ -344,6 +345,11 @@ Mọi phiên bản công cụ đều được ghim: `rust-toolchain.toml`, `.nod
 
 ## Công nghệ
 
+[![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
+[![CI](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](docs/RELEASE.md)
+[![Offline · zero telemetry](https://img.shields.io/badge/privacy-offline%20%C2%B7%20zero%20telemetry-2ea44f.svg)](docs/SECURITY.md#5-privacy)
 [![Rust 1.99](https://img.shields.io/badge/rust-1.99-b7410e.svg?logo=rust)](rust-toolchain.toml)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db.svg?logo=tauri&logoColor=white)](https://v2.tauri.app/)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black)](https://react.dev/)

@@ -4,11 +4,13 @@
 
 # Fotollection
 
-**Your trip, ready to print: the date and place on each photo, the lab's sizes, nothing uploaded.**
+**Thousands of photos, only looked at on the plane home?**
 
-Free · offline · open source · macOS, Windows and Linux
+Fotollection finds the best shots, stamps the date and place, and sizes them for the print kiosk, free and fully offline.
 
 **[⬇ Download for macOS, Windows or Linux](https://fotollection.org/download/)**
+
+<sub>macOS and Windows ask once on first launch: choose **Open Anyway** ([how](#first-launch)).</sub>
 
 [Website](https://fotollection.org/) · [Manual](https://fotollection.org/manual/) · [Releases](https://github.com/hoangphi01/fotollection/releases/latest) · **English** · [Tiếng Việt](README.vi.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
@@ -18,38 +20,6 @@ Free · offline · open source · macOS, Windows and Linux
   <img src="site/assets/img/showcase/wide-en.webp" alt="Fotollection over a photo of Prague: your trip, ready to print" width="100%" />
 </p>
 
-<div align="center">
-
-[![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
-[![CI](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml)
-[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](docs/RELEASE.md)
-[![Offline · zero telemetry](https://img.shields.io/badge/privacy-offline%20%C2%B7%20zero%20telemetry-2ea44f.svg)](docs/SECURITY.md#5-privacy)
-
-</div>
-
----
-
-## Why Fotollection?
-
-You shot 800 photos on a trip and want twenty of them on paper. Getting there today is tedious:
-
-- **Prints don't say when or where.** In a few years, nobody remembers.
-- **Labs auto-crop your photos** to 2:3, 3:4 or 1:1, and that can cut off heads.
-- **Online tools upload your photos.** GPS data reveals where you live.
-
-Fotollection does all of this **on your computer**: 1,000 photos open in 0.12 s, an export runs at 18 photos a second, and the print keeps your camera's detail and colour:
-
-![Detail kept: Fotollection 100 %, web editor 13 %. Colour saturation kept on Display P3 photos: 99.9 % against 86.8 %. Colour error ΔE2000: 0.19 against 1.39, where 1 is visible.](docs/images/bench-quality.svg)
-
-Against a web editor's usual export (simulated with its standard settings: the colour profile dropped, 2000 px, 4:2:0, quality 80), measured on an Apple M3; the method and every number are under [Performance](#performance).
-
-## How it works
-
-1. **Open the trip's folder.** JPEG, HEIC from the iPhone or camera RAW, thousands at once; best shots are suggested.
-2. **Keep the ones to print.** The date and place go on each photo in a film-camera face, the crop fits the lab's size, a look gives the colour.
-3. **Export for the lab** at full quality, GPS removed, and take the files to the kiosk: dm, Rossmann, CEWE, or 7-Eleven, Lawson and FamilyMart in Japan.
-
 <p align="center">
   <img src="site/assets/img/results/stamp-en.webp" alt="A finished print with the film-camera date stamp" width="23%" />
   <img src="site/assets/img/results/frame-en.webp" alt="A finished print with the Shot on info frame" width="23%" />
@@ -57,6 +27,22 @@ Against a web editor's usual export (simulated with its standard settings: the c
 </p>
 
 <p align="center"><sub>Finished prints as Fotollection exports them. Photos of Prague © @hoangphi01.</sub></p>
+
+## Why I built it
+
+Hi, I'm [hoangphi01](https://github.com/hoangphi01), a Vietnamese student in the EU. After a trip I had hundreds of photos and wanted twenty of them on paper, and every way there let me down:
+
+- **Prints don't say when or where.** In a few years, nobody remembers.
+- **Labs auto-crop your photos** to 2:3, 3:4 or 1:1, and that can cut off heads.
+- **Online tools upload your photos.** GPS data reveals where you live.
+
+So I made Fotollection, which does all of it on your computer. It is free and open source, and your photos never leave the computer.
+
+## How it works
+
+1. **Open the trip's folder.** JPEG, HEIC from the iPhone or camera RAW, thousands at once; best shots are suggested.
+2. **Keep the ones to print.** The date and place go on each photo in a film-camera face, the crop fits the lab's size, a look gives the colour.
+3. **Export for the lab** at full quality, GPS removed, and take the files to the kiosk: dm, Rossmann, CEWE, or 7-Eleven, Lawson and FamilyMart in Japan.
 
 <p align="center">
   <img src="site/assets/img/grid-en-light.webp" alt="Fotollection main window (light theme)" width="49%" />
@@ -67,12 +53,12 @@ Against a web editor's usual export (simulated with its standard settings: the c
 
 | | |
 |---|---|
-| 📅 **Date and place on the print** | from the photo's EXIF, in a film-camera LCD face, places found offline |
+| 📅 **Date and place on the print** | read from the photo itself, in a film camera's digital face, places found offline |
 | ⏱️ **Camera and phone together** | a camera's wrong clock fixed from one phone photo of the same moment, and the place taken from your phone's photo of the same scene |
 | ✂️ **The lab's own sizes** | 21 print sizes of Europe's, Japan's and Korea's shops and kiosks, your own sizes, or the photo's original shape, with a 3 mm border so the kiosk's trim cuts nothing |
 | ✨ **The best shots, suggested** | bursts and similar shots grouped, the sharpest with eyes open suggested with its reasons; stars, flags and filters, Lightroom's keys |
-| 📷 **Every kind of photo** | JPEG, PNG, HEIC from the iPhone, and camera RAW: Fujifilm RAF, Panasonic, Canon, Nikon, Sony, Olympus and DNG all work today |
-| 🌈 **Looks, presets and LUTs** | one tap gives a photo its colour; your own Lightroom presets and LUMIX Lab or `.cube` LUTs work too; colour tools as Lightroom's |
+| 📷 **Every kind of photo** | iPhone and Android photos, and the RAW files of Fujifilm, Panasonic, Canon, Nikon, Sony and Olympus cameras |
+| 🌈 **Looks, presets and LUTs** | one tap gives a photo its colour; your own Lightroom presets and LUMIX Lab looks work too |
 | ✉️ **Postcards** | a photo on one side, the address side on the back, typed or written by hand; the Japanese はがき and the Korean 우편엽서, the address filled in from its postal code (**AddAssist**) |
 | 🎚️ **Three modes** | **Simple** (keep or drop, then print), **Collage** (two photos on one print, or postcards) and **Pro** (every control) |
 | 🔒 **Private by design** | no account, no cloud, no telemetry; GPS removed on export; the only network request is the update check, which you can turn off |
@@ -85,24 +71,29 @@ Against a web editor's usual export (simulated with its standard settings: the c
 
 Interface in English, Tiếng Việt, Deutsch, Magyar, 日本語 and 한국어. Every step with pictures: the [manual](https://fotollection.org/manual/). Every version: [CHANGELOG.md](CHANGELOG.md). Every requirement: [docs/PRD.md](docs/PRD.md).
 
-## Roadmap
+## What's missing
 
-![Roadmap: Fotollection works end to end today; v1.0.0, the stable release, is the next milestone, then the releases planned for each quarter to 2028-Q4.](docs/images/roadmap.svg)
+Fotollection is young; a few things are not there yet:
 
-Fotollection works end to end today; **v1.0.0** in December 2026 is its promise of stability. Two releases come first: v0.14.4 in November, which sorts a phone's whole camera roll (camera shots, screenshots, saved images, Live Photos, duplicates, events), and v0.14.5 with more looks; after it, one release a month, each with its theme, and maintenance first, planned to 2028-11. Coming later: a face-aware crop, a photo-book preview and QR codes on the back of prints. Every requirement and its quarter: [docs/ROADMAP.md](docs/ROADMAP.md); the checks left before v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+- **Unsigned builds:** macOS and Windows ask once before the first launch ([first launch](#first-launch)).
+- **iPhone photos (HEIC) on Linux:** convert them to JPEG for now.
+- **Shooting with a camera over USB** works on Windows only.
+- **No phone version:** Fotollection runs on a computer.
+- **Bugs:** you may find some; [an issue](https://github.com/hoangphi01/fotollection/issues/new/choose) helps, thank you.
 
 ## Download
 
 Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), a `-setup.exe` for Windows 10/11 (the `.msi` is for IT departments), and an AppImage or `.deb` for 64-bit Linux ([which distributions](#linux)). The app asks GitHub once at start whether a newer version exists (Settings → Updates turns it off) and never downloads anything by itself. Installing over an older one keeps your settings and projects.
 
-> [!IMPORTANT]
-> Builds are **unsigned** for now ([ADR-0009](docs/adr/0009-unsigned-distribution.md)): a certificate costs money a one-person open-source project does not have yet. The code is public, every build comes from GitHub's own CI, and the app goes online only to check for a new version. On first launch:
->
-> - **macOS:** System Settings → Privacy & Security → **Open Anyway**
-> - **Windows:** SmartScreen → **More info** → **Run anyway**
-> - **Linux:** nothing to approve; make the AppImage executable, or install the `.deb` (below)
->
-> Verify each download against `SHA256SUMS.txt` on the release page. See the [code signing and privacy policy](https://fotollection.org/code-signing/).
+### First launch
+
+The builds are not signed yet ([ADR-0009](docs/adr/0009-unsigned-distribution.md)), so the system asks once:
+
+- **macOS:** System Settings → Privacy & Security → **Open Anyway**
+- **Windows:** SmartScreen → **More info** → **Run anyway**
+- **Linux:** nothing to approve; make the AppImage executable, or install the `.deb` (below)
+
+Every build comes from GitHub's own CI from the public code; each download can be checked against `SHA256SUMS.txt` on the release page ([code signing](https://fotollection.org/code-signing/)).
 
 ### By system
 
@@ -192,9 +183,19 @@ sudo apt install ./Fotollection_*_amd64.deb
 
 </details>
 
+## Roadmap
+
+![Roadmap: Fotollection works end to end today; v1.0.0, the stable release, is the next milestone, then the releases planned for each quarter to 2028-Q4.](docs/images/roadmap.svg)
+
+Fotollection works end to end today; **v1.0.0** in December 2026 is its promise of stability. Two releases come first: v0.14.4 in November, which sorts a phone's whole camera roll (camera shots, screenshots, saved images, Live Photos, duplicates, events), and v0.14.5 with more looks; after it, one release a month, each with its theme, and maintenance first, planned to 2028-11. Coming later: a face-aware crop, a photo-book preview and QR codes on the back of prints. Every requirement and its quarter: [docs/ROADMAP.md](docs/ROADMAP.md); the checks left before v1.0.0: [docs/STATUS.md](docs/STATUS.md).
+
 ## Performance
 
 Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have. **Every number below is measured, not estimated**, on an Apple M3 (8 cores, 16 GB) with real 16 MP JPEGs. The first measurements, of 2026-10-23 on v0.1, are kept as the baseline; each section names its date, and the measurements are run again every month against that baseline ([ROADMAP](docs/ROADMAP.md)). Each chart has a reference to read it against: the budget, the memory ceiling, or the browser. Full results: [docs/RESULT.md](docs/RESULT.md).
+
+![Detail kept: Fotollection 100 %, web editor 13 %. Colour saturation kept on Display P3 photos: 99.9 % against 86.8 %. Colour error ΔE2000: 0.19 against 1.39, where 1 is visible.](docs/images/bench-quality.svg)
+
+Against a web editor's usual export (simulated with its standard settings: the colour profile dropped, 2000 px, 4:2:0, quality 80), measured on an Apple M3.
 
 ### Against the budgets
 
@@ -343,6 +344,11 @@ To build from source you also need about 10 GB free for Rust build files (a debu
 
 ## Tech stack
 
+[![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
+[![CI](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](docs/RELEASE.md)
+[![Offline · zero telemetry](https://img.shields.io/badge/privacy-offline%20%C2%B7%20zero%20telemetry-2ea44f.svg)](docs/SECURITY.md#5-privacy)
 [![Rust 1.99](https://img.shields.io/badge/rust-1.99-b7410e.svg?logo=rust)](rust-toolchain.toml)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db.svg?logo=tauri&logoColor=white)](https://v2.tauri.app/)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black)](https://react.dev/)
