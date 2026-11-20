@@ -35,6 +35,8 @@
 
 **Flatpak** (proposed, [ADR-0050](adr/0050-flatpak-on-flathub.md)): Flathub builds it from source with the owner's manifest; this repository carries its metainfo and launcher (`src-tauri/linux/flatpak/`, made by `node scripts/flatpak-files.mjs`, which `release.sh` runs). In a Flatpak the app never checks for updates itself: the software centre brings them.
 
+**Homebrew** (since 2026-11-20): the cask `fotollection` in the tap [hoangphi01/homebrew-tap](https://github.com/hoangphi01/homebrew-tap) installs the release's universal `.dmg` (`brew tap hoangphi01/tap && brew trust hoangphi01/tap`, then `brew install --cask hoangphi01/tap/fotollection`; Homebrew 7 asks once to trust a tap). The tap's own workflow (`bump.yml`, every six hours and by hand) takes each new release's version and the `.dmg`'s checksum from its `SHA256SUMS.txt`, so a release needs no step here; check that it ran after a release (`gh run list --repo hoangphi01/homebrew-tap`).
+
 The WebView2 runtime is bootstrapped by the Windows installer when it is missing. Installer size is budgeted by [NFR-008](PRD.md#nfr-008--install-size).
 
 **Not on crates.io** (owner, 2026-11-09). The names `fotollection` and `fotollection-core` were free that day, but crates.io's usage policy removes a crate that "exists only to reserve a name … without any genuine functionality", and the app itself does not install through `cargo install` (a Tauri app with its built interface). The name is to be protected by a registered trademark instead, a decision still open with the owner (with relicensing, ADR-0008). Publishing the real core library later means publishing its local crates first (`fotollection-oscodec`, the RAW crates, `geodata`), each with a version and under crates.io's 10 MB per package, and moving the large data out of the package; the owner runs `cargo login` and approves the last `cargo publish`.
@@ -100,7 +102,7 @@ There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-00
 
 Installing a new version over an old one **replaces it** and keeps settings, profiles and projects, which are migrated on first open ([DATABASE.md](DATABASE.md)):
 
-- **macOS:** drag the new app into Applications and choose *Replace*. Running it from the disk image or Downloads replaces nothing.
+- **macOS:** drag the new app into Applications and choose *Replace*. Running it from the disk image or Downloads replaces nothing. Installed with Homebrew: `brew upgrade --cask fotollection`.
 - **Windows `-setup.exe` (recommended):** the reinstall page defaults to uninstalling the old version first; app data is kept unless its box is ticked.
 - **Windows `.msi`:** `MajorUpgrade` removes the old version and refuses downgrades. This needs the same `UpgradeCode` in every release, so it is pinned in `tauri.conf.json` (`bundle.windows.wix.upgradeCode`); never change it.
 - Do not mix the two Windows installers: one installs per user, the other per machine, so both copies would stay.

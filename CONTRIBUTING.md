@@ -145,7 +145,9 @@ Open one from the [issue templates](https://github.com/hoangphi01/fotollection/i
 - **Feature request:** the problem first, then the behaviour you propose, the acceptance criteria and any effect on performance or privacy. Say whether it extends an existing `FR-` or is new; a new one gets its ID at the end of the PRD when it is accepted.
 - **Photos:** attach a sample only if you are happy for it to be public, and strip GPS first. A file that fails is the best report, but never send one you would not post.
 - **Security problems** go to a private [security advisory](https://github.com/hoangphi01/fotollection/security/advisories/new), never a public issue ([SECURITY.md](docs/SECURITY.md)).
-- Labels: `bug`, `enhancement`, `documentation`, `question`, `accessibility`, `good first issue`, `help wanted`; `triaged` once decided, `needs info` while waiting for the reporter.
+- Labels: `bug`, `enhancement`, `documentation`, `question`, `accessibility`, `translation`, `good first issue`, `help wanted`; `triaged` once decided, `needs info` while waiting for the reporter. A small, well-described task gets `good first issue`, so a first contributor finds a way in.
+- **Questions and ideas that are not yet a request** go to [Discussions](https://github.com/hoangphi01/fotollection/discussions).
+- **Thanks, by name** (2026-11-20): a CHANGELOG line that comes from someone's report, idea, translation or pull request ends with `Thanks to @user (#n)`, so it reaches the release notes and the person sees it.
 
 ## 8. Branches, commits and pull requests
 

@@ -86,6 +86,13 @@ Fotollection còn mới; vài thứ chưa có:
 
 Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` cho Windows 10/11 (file `.msi` dành cho bộ phận IT), và AppImage hoặc `.deb` cho Linux 64-bit ([những distro nào](#linux)). Lúc khởi động, app hỏi GitHub một lần xem có bản mới không (tắt được trong Cài đặt → Cập nhật) và không bao giờ tự tải gì về. Cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
 
+Trên Mac, cài bằng Homebrew cũng được (Homebrew hỏi một lần để tin cậy tap):
+
+```sh
+brew tap hoangphi01/tap && brew trust hoangphi01/tap
+brew install --cask hoangphi01/tap/fotollection
+```
+
 ### Lần mở đầu tiên
 
 Các bản build chưa được ký số ([ADR-0009](docs/adr/0009-unsigned-distribution.md)), nên hệ điều hành hỏi một lần:

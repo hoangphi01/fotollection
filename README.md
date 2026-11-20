@@ -85,6 +85,13 @@ Fotollection is young; a few things are not there yet:
 
 Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), a `-setup.exe` for Windows 10/11 (the `.msi` is for IT departments), and an AppImage or `.deb` for 64-bit Linux ([which distributions](#linux)). The app asks GitHub once at start whether a newer version exists (Settings → Updates turns it off) and never downloads anything by itself. Installing over an older one keeps your settings and projects.
 
+On a Mac, Homebrew installs it too (Homebrew asks once to trust the tap):
+
+```sh
+brew tap hoangphi01/tap && brew trust hoangphi01/tap
+brew install --cask hoangphi01/tap/fotollection
+```
+
 ### First launch
 
 The builds are not signed yet ([ADR-0009](docs/adr/0009-unsigned-distribution.md)), so the system asks once:
