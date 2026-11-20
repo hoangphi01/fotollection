@@ -237,6 +237,16 @@ Memory must not grow with the number of photos. A batch 53 times larger costs 0.
 
 The 5,035-photo export runs for more than 5 minutes, and the M3 throttles under that load, which explains the lower throughput.
 
+### Sorting a camera roll
+
+RollSense reads every photo once to sort it. A load test, far beyond a trip's 2,000 to 3,000 photos: 9,639 photos on a Windows laptop from 2020 (Lenovo ThinkPad X1, i7-10610U, 15 W), on every core for 70 minutes, the memory flat between 400 and 850 MB:
+
+![RollSense under load, second by second: the processor 99 % busy, the clock 1.8 GHz on average, the pass's memory 844 MB at most, 86 °C on average, the graphics card at most 1.5 %.](docs/images/bench-ecg.svg)
+
+![RollSense's time per photo: 614 ms on 2 threads, 498 on 4, 438 on 8, the model alone 128 ms on 8.](docs/images/bench-sense.svg)
+
+A trip of 2,500 photos takes about 18 minutes on that laptop; a photo read again from the cache, 1.3 ms. About 70 % of a photo's time is reading and decoding it, not the model. Method and numbers: [docs/OPTIMIZATION.md §5](docs/OPTIMIZATION.md#5-benchmark-log) (NFR-022).
+
 ### Against the browser
 
 The obvious alternative is a web app that does the same work in the browser (`createImageBitmap` + `OffscreenCanvas`, one Web Worker per core). Both ran on the same 95 photos on the same machine, 2026-10-23, on v0.1 (to be measured again on the current version):

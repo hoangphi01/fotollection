@@ -13,6 +13,7 @@
 //   bench-raw.svg      camera RAW per format, and against a RAW-to-DNG conversion (FR-016)
 
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { senseCharts } from './chart-sense.mjs'
 import { join } from 'node:path'
 import { published } from '../eleventy.registry.mjs'
 
@@ -63,6 +64,8 @@ const gpu = read('gpu.json')
 const drag = read('drag.json')
 const inflight = read('inflight.json')
 const browse = read('browse.json')
+// RollSense under load on a Windows laptop, second by second (NFR-022, FR-141).
+const sense = read('nfr-022-windows.json')
 if (!rust || !web) throw new Error('run bench/run.sh first')
 
 const openSource = batch ?? rust
@@ -959,11 +962,12 @@ const styleFor = ({ light: l, dark: d }) => `<style>
   .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:${l.axis};stroke-width:1}
   .ref{stroke:${l.t2};stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:${l.s2};stroke-width:1.5;stroke-dasharray:4 3}
   .s1{fill:${l.s1}} .old{fill-opacity:.45} .s2{fill:${l.s2}} .s3{fill:${l.s3}} .s4{fill:${l.s4}} .s5{fill:${l.s5}} .gap{stroke:${l.bg};stroke-width:2}
-  .in{fill:#fff}
+  .in{fill:#fff} .ln{fill:none;stroke:${l.s1};stroke-width:2;stroke-linejoin:round} .band{fill:${l.axis};fill-opacity:.35}
   @media (prefers-color-scheme: dark){
     .bg{fill:${d.bg}} .t1{fill:${d.t1}} .t2{fill:${d.t2}} .t3{fill:${d.t3}} .axis{stroke:${d.axis}}
     .ref{stroke:${d.t2}} .refw{stroke:${d.s2}}
     .s1{fill:${d.s1}} .s2{fill:${d.s2}} .s3{fill:${d.s3}} .s4{fill:${d.s4}} .s5{fill:${d.s5}} .gap{stroke:${d.bg}}
+    .ln{stroke:${d.s1}} .band{fill:${d.axis}}
   }
 </style>`
 let STYLE = styleFor(THEMES.docs)
@@ -996,6 +1000,8 @@ function refLine(cls, x, y0, y1, label, anchor = 'middle', gap = null) {
   const lines = gap ? line(y0, gap[0]) + (gap[1] < y1 ? line(gap[1], y1) : '') : line(y0, y1)
   return `${lines}<text class="t3" x="${x}" y="${y0 - 4}" text-anchor="${anchor}">${esc(label)}</text>`
 }
+
+
 
 function charts(lang) {
   const t = T[lang]
@@ -1417,6 +1423,7 @@ function charts(lang) {
     body += `<text class="t3" x="0" y="${h - 4}">${esc(t.photoOpenFooter())}</text>`
     out['bench-open'] = doc(t.photoOpenTitle, rows.map((r) => `${r.name}: ${f(r.v, 0)} ms`).join('. '), h, body)
   }
+  Object.assign(out, senseCharts(lang, f, { sense, doc, bar, esc, W, LEFT, PLOT }))
   return out
 }
 
@@ -1518,7 +1525,7 @@ for (const lang of ['en', 'vi']) {
 }
 // The website shows these in its own colours: the home page and the performance page (site/README.md).
 STYLE = styleFor(THEMES.site)
-const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench', 'bench-gpu', 'bench-inflight', 'bench-open']
+const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench', 'bench-gpu', 'bench-inflight', 'bench-open', 'bench-ecg', 'bench-sense']
 mkdirSync(join(root, 'site/assets/img/charts'), { recursive: true })
 // Each chart's size, for the width and height of its <img>: a lazy chart with no height grew
 // as it loaded and moved the anchors below it while the page scrolled to them (LESSONS).

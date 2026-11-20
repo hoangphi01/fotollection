@@ -238,6 +238,16 @@ RAM không được tăng theo số ảnh. Batch lớn gấp 53 lần chỉ tố
 
 Lần export 5.035 ảnh chạy hơn 5 phút, và M3 tự giảm xung khi tải nặng kéo dài, nên tốc độ thấp hơn.
 
+### Lọc cả kho ảnh
+
+RollSense đọc mỗi tấm ảnh một lần để phân loại. Một bài thử tải, vượt xa 2.000 đến 3.000 tấm của một chuyến đi: 9.639 tấm trên một laptop Windows đời 2020 (Lenovo ThinkPad X1, i7-10610U, 15 W), chạy mọi nhân trong 70 phút, bộ nhớ đứng yên trong khoảng 400 đến 850 MB:
+
+![RollSense khi chạy nặng, từng giây: bộ xử lý bận 99 %, xung trung bình 1,8 GHz, bộ nhớ của lượt đọc tối đa 844 MB, trung bình 86 °C, card đồ hoạ tối đa 1,5 %.](docs/images/bench-ecg-vi.svg)
+
+![Thời gian mỗi ảnh của RollSense: 614 ms với 2 luồng, 498 với 4, 438 với 8, riêng mô hình 128 ms với 8 luồng.](docs/images/bench-sense-vi.svg)
+
+Một chuyến đi 2.500 tấm mất khoảng 18 phút trên laptop đó; một tấm đọc lại từ cache mất 1,3 ms. Khoảng 70 % thời gian của mỗi tấm là đọc và giải mã ảnh, không phải mô hình. Cách đo và số liệu: [docs/OPTIMIZATION.md §5](docs/OPTIMIZATION.md#5-benchmark-log) (NFR-022).
+
 ### So với trình duyệt
 
 Phương án thay thế dễ thấy nhất là một web app làm đúng việc đó trong trình duyệt (`createImageBitmap` + `OffscreenCanvas`, mỗi nhân CPU một Web Worker). Cả hai chạy trên cùng 95 ảnh, cùng một máy, ngày 23/10/2026, trên v0.1 (sẽ đo lại trên bản hiện tại):

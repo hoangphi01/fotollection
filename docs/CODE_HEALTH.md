@@ -40,7 +40,7 @@ Summary: 508 files, 79,362 production lines, **73.7 % of them in green files**; 
 | `src-tauri/src/commands.rs` | 3,246 | red | 17 concerns and the shell's helper hub; ~380 lines of logic for the core; ~330 lines repeated (lock errors 75 times, the edit frame 3 times) | FR-138 S1–S3 |
 | `crates/core/src/preview.rs` | 1,704 | red | budget, standard previews, tiles, regions and the sheet front end in one file; the render plan 6 times | FR-138 S4 |
 | `site/screenshots/shoot.mjs` | 1,550 | red | the IPC fake, profiles, checks, stress views and the shot loop in one file | FR-138 S5 |
-| `bench/chart.mjs` | 1,538 | red | 55 % is the charts' words in 9 languages | FR-138 S5 |
+| `bench/chart.mjs` | 1,545 | red | 55 % is the charts' words in 9 languages; RollSense's charts went to `bench/chart-sense.mjs` (2026-11-20) so it grew by only the import | FR-138 S5 |
 | `src-tauri/src/camera.rs` | 1,469 | orange | the Sony driver, session files, state, IPC and the thread; ~500 lines for `oscamera` and the core | FR-139 S1 |
 | `crates/core/src/sheet.rs` | 1,343 | orange | layout, render, card choice (4 places), credit (3 places); test setup repeated | FR-139 S3 |
 | `crates/core/src/project.rs` | 636 (1,536 with tests) | orange | production green; each schema version's test repeats the load, the panic and the round trip (checklist 6) | FR-139: a `fixture(v)` and a round-trip helper |

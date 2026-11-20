@@ -38,5 +38,13 @@
   "bench-open": {
     "width": 752,
     "height": 336
+  },
+  "bench-ecg": {
+    "width": 752,
+    "height": 524
+  },
+  "bench-sense": {
+    "width": 752,
+    "height": 272
   }
 }

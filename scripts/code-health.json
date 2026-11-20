@@ -24,8 +24,8 @@
     },
     "bench/chart.mjs": {
       "level": "red",
-      "production": 1538,
-      "total": 1538,
+      "production": 1545,
+      "total": 1545,
       "due": "FR-138, before v1.0.0",
       "cause": "55 % is the charts' words in 9 languages, data inside code; each chart repeats its ending"
     },
