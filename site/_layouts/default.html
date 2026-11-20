@@ -95,6 +95,9 @@
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
         "license": "https://www.gnu.org/licenses/gpl-3.0.html",
         "url": "{{ '/' | absolute_url }}",
+        "downloadUrl": "{{ '/download/' | absolute_url }}",
+        "author": { "@type": "Person", "name": "hoangphi01", "url": "https://github.com/hoangphi01" },
+        "sameAs": ["https://github.com/hoangphi01/fotollection", "https://alternativeto.net/software/fotollection/about/"],
         "image": "{{ og_image }}",
         "inLanguage": "{{ pg.html_lang }}",
         "description": {{ t.description | jsonify }}

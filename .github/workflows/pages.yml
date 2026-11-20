@@ -105,3 +105,15 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # IndexNow (Bing, Yandex, Seznam…): after a push that changed the site, tells them every
+      # page of the sitemap changed, so a new site is crawled sooner. Not on the six-hourly
+      # rebuilds. The key is the public file at the site's root. A failed ping fails nothing.
+      - name: IndexNow
+        if: github.event_name == 'push'
+        run: |
+          key=a93a91910f62b63ab1fbd2d3afe0d6f2
+          urls=$(curl -fsS https://fotollection.org/sitemap.xml | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g' | jq -R . | jq -sc .)
+          jq -n --arg key "$key" --argjson urls "$urls" \
+            '{host: "fotollection.org", key: $key, keyLocation: "https://fotollection.org/\($key).txt", urlList: $urls}' |
+            curl -sS -o /dev/null -w 'IndexNow: HTTP %{http_code}\n' -H 'Content-Type: application/json; charset=utf-8' -d @- https://api.indexnow.org/indexnow || true
