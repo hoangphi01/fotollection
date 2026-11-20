@@ -1663,6 +1663,15 @@
     "typeCount_other": "完全に削除するには{{count}}と入力してください。"
   },
   "rollsense": {
+    "queue": {
+      "show": "待ち行列を表示",
+      "title": "RollSenseの待ち行列",
+      "reading": "読み込み中",
+      "waiting": "待機中",
+      "waitingCount_other": "あと{{count}}件",
+      "remove": "待ち行列から外す",
+      "stopAll": "すべて停止"
+    },
     "picked_one": "{{count}} 枚を選択",
     "picked_other": "{{count}} 枚を選択",
     "nonePicked": "グループにチェックして写真を選択",

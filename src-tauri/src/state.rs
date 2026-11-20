@@ -152,8 +152,8 @@ pub struct AppState {
     pub analyses: Mutex<Analyses>,
     /// `sorting/` next to `thumbs/`: RollSense's pixels pass (FR-141, DATABASE.md §8.2).
     pub sorting_cache: fotollection_core::sorting::pass::SortingCache,
-    /// Job id of the RollSense pass in progress, if any.
-    pub sorting: Mutex<Option<u32>>,
+    /// RollSense's queue, its running job and worker (FR-141, `sorting::SortingState`).
+    pub sorting: Mutex<crate::sorting::SortingState>,
     /// The files the Trash refused last (a volume without one): the only ones `delete_photos`
     /// may delete for good, so the Trash always comes first (FR-141, ADR-0055).
     pub trash_refused: Mutex<std::collections::HashSet<std::path::PathBuf>>,
@@ -367,7 +367,7 @@ impl AppState {
             analysis_cache: AnalysisCache::new(beside("analysis")),
             analyses: Mutex::new(Analyses::default()),
             sorting_cache: fotollection_core::sorting::pass::SortingCache::new(beside("sorting")),
-            sorting: Mutex::new(None),
+            sorting: Mutex::new(crate::sorting::SortingState::default()),
             trash_refused: Mutex::default(),
             trash_cancel: std::sync::atomic::AtomicBool::new(false),
             previews: PreviewCache::with(

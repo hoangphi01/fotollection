@@ -1663,6 +1663,15 @@
     "typeCount_other": "영구 삭제하려면 {{count}}을(를) 입력하세요."
   },
   "rollsense": {
+    "queue": {
+      "show": "대기열 보기",
+      "title": "RollSense 대기열",
+      "reading": "읽는 중",
+      "waiting": "대기 중",
+      "waitingCount_other": "{{count}}개 대기 중",
+      "remove": "대기열에서 빼기",
+      "stopAll": "모두 중지"
+    },
     "picked_one": "{{count}}장 선택됨",
     "picked_other": "{{count}}장 선택됨",
     "nonePicked": "그룹을 체크해 사진 선택",

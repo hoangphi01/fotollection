@@ -1602,6 +1602,15 @@
     "typeCount_other": "Gõ {{count}} để xoá vĩnh viễn."
   },
   "rollsense": {
+    "queue": {
+      "show": "Xem hàng đợi",
+      "title": "Hàng đợi RollSense",
+      "reading": "Đang đọc",
+      "waiting": "Đang chờ",
+      "waitingCount_other": "còn {{count}} thư mục",
+      "remove": "Bỏ khỏi hàng đợi",
+      "stopAll": "Dừng tất cả"
+    },
     "picked_other": "Đã chọn {{count}} ảnh",
     "nonePicked": "Tick nhóm để chọn ảnh",
     "editInPhotos": "Chỉnh trong Ảnh",

@@ -16,12 +16,15 @@ use fotollection_core::sorting::clip::{Embedder, MODEL_BLAKE3};
 use fotollection_core::sorting::dupes::{self, DupKind};
 use fotollection_core::sorting::facets::Facets;
 use fotollection_core::sorting::pass::{Pixels, picture};
+use fotollection_core::sorting::queue::{Scope, SortQueue};
 use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
+use specta::Type;
 use tauri::{AppHandle, Manager, State};
 use tauri_specta::Event;
 
 use crate::commands::progress_reporter;
-use crate::events::{SortingFinished, SortingRead, TaskKind};
+use crate::events::{SortingFinished, SortingQueueChanged, SortingRead, TaskKind};
 use crate::state::{AppState, IpcError};
 
 /// The bundled model, compiled in once here (the core takes its bytes).
@@ -56,83 +59,276 @@ fn pool() -> Result<&'static rayon::ThreadPool, IpcError> {
     .map_err(|e| IpcError::internal(e.clone()))
 }
 
-/// Reads the pixels of the photos in `folders` (every folder when empty: the Workspace;
-/// owner, 2026-11-18: "only the tab chosen"), cached ones at once, then proves the duplicates.
-/// Cancelled, it keeps nothing: the library is as before. Returns the job id for `cancel_job`;
-/// a second call while one runs returns the running job.
+/// RollSense's queue (FR-141; owner, 2026-11-20: ten folders pressed in turn are all read, one
+/// after another): the scopes asked for, the running pass's job id, and whether the worker
+/// thread lives. Its lock is taken only between passes, never across the pixels' work, and never
+/// with another lock held (LESSONS, rust-concurrency).
+#[derive(Debug, Default)]
+pub struct SortingState {
+    queue: SortQueue,
+    job: Option<u32>,
+    worker: bool,
+}
+
+impl SortingState {
+    /// Nothing runs and nothing waits (the demo waits for this).
+    pub fn is_idle(&self) -> bool {
+        self.queue.running().is_none() && self.queue.waiting().next().is_none() && !self.worker
+    }
+}
+
+/// One scope as the UI knows it: the folders' current ids (none: the Workspace).
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct QueuedScope {
+    pub folders: Vec<u16>,
+}
+
+/// The queue for the progress bar and its list: the scope being read, its job (for its stop),
+/// and the scopes waiting, in order.
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct SortingQueue {
+    pub running: Option<QueuedScope>,
+    pub job_id: Option<u32>,
+    pub waiting: Vec<QueuedScope>,
+}
+
+/// A scope by the folders' paths (ids are renumbered when a folder is removed); unknown ids
+/// are dropped, and a set that names none is refused.
+fn scope_of(state: &AppState, folders: &[u16]) -> Result<Scope, IpcError> {
+    if folders.is_empty() {
+        return Ok(Scope::new(Vec::new()));
+    }
+    let library = state.library.read().map_err(poisoned)?;
+    let paths: Vec<std::path::PathBuf> = folders
+        .iter()
+        .filter_map(|&f| library.folders().get(usize::from(f)).cloned())
+        .collect();
+    if paths.is_empty() {
+        return Err(IpcError::new(
+            "culling.empty",
+            "There are no photos to analyse",
+        ));
+    }
+    Ok(Scope::new(paths))
+}
+
+/// The queue in the UI's terms, each scope's folders by their current ids.
+fn queue_view(state: &AppState) -> SortingQueue {
+    let (running, job_id, waiting) = match state.sorting.lock() {
+        Ok(s) => (
+            s.queue.running().cloned(),
+            s.job,
+            s.queue.waiting().cloned().collect::<Vec<_>>(),
+        ),
+        Err(_) => (None, None, Vec::new()),
+    };
+    let ids = |scope: &Scope| -> QueuedScope {
+        let folders = state.library.read().map_or_else(
+            |_| Vec::new(),
+            |library| {
+                let all = library.folders();
+                scope
+                    .folders()
+                    .iter()
+                    .filter_map(|p| all.iter().position(|f| f == p))
+                    .filter_map(|i| u16::try_from(i).ok())
+                    .collect()
+            },
+        );
+        QueuedScope { folders }
+    };
+    SortingQueue {
+        running: running.as_ref().map(ids),
+        job_id,
+        waiting: waiting.iter().map(ids).collect(),
+    }
+}
+
+fn queue_changed(app: &AppHandle) {
+    let _ = SortingQueueChanged(queue_view(&app.state::<AppState>())).emit(app);
+}
+
+/// Asks RollSense to read the photos of `folders` (every folder when empty: the Workspace;
+/// owner, 2026-11-18: "only the tab chosen"), cached ones at once, then prove the duplicates.
+/// The scope joins the queue unless the running or a waiting scope already covers it, and the
+/// worker reads one scope at a time (owner, 2026-11-20). Returns the queue.
 #[tauri::command]
 #[specta::specta]
 pub fn analyze_sorting(
     app: AppHandle,
     state: State<'_, AppState>,
     folders: Vec<u16>,
-) -> Result<u32, IpcError> {
-    let mut running = state.sorting.lock().map_err(poisoned)?;
-    if let Some(job_id) = *running {
-        return Ok(job_id);
-    }
-    let records: Vec<PhotoRecord> = {
+) -> Result<SortingQueue, IpcError> {
+    let scope = scope_of(&state, &folders)?;
+    let has_photos = {
         let library = state.library.read().map_err(poisoned)?;
-        library
-            .sorted_ids()
-            .into_iter()
-            .filter(|&id| {
-                folders.is_empty() || library.folder_of(id).is_some_and(|f| folders.contains(&f))
-            })
-            .filter_map(|id| library.record(id))
-            .collect()
+        !records_of(&library, &scope).is_empty()
     };
-    if records.is_empty() {
+    if !has_photos {
         return Err(IpcError::new(
             "culling.empty",
             "There are no photos to analyse",
         ));
     }
-    let embedder = embedder()?;
-    let pool = pool()?;
-    let job_id = state.next_job.fetch_add(1, Ordering::Relaxed);
-    let cancel = CancellationToken::new();
-    state
-        .jobs
-        .lock()
-        .map_err(poisoned)?
-        .insert(job_id, cancel.clone());
-    *running = Some(job_id);
-    drop(running);
+    embedder()?;
+    pool()?;
+    let start = {
+        let mut sorting = state.sorting.lock().map_err(poisoned)?;
+        sorting.queue.push(scope);
+        let start = !sorting.worker;
+        sorting.worker = true;
+        start
+    };
+    if start {
+        let worker = app.clone();
+        fotollection_core::supervise::spawn(
+            "sorting",
+            move || run_queue(&worker),
+            worker_ended(&app),
+        );
+    }
+    queue_changed(&app);
+    Ok(queue_view(&state))
+}
 
-    let total = u32::try_from(records.len()).unwrap_or(u32::MAX);
-    let ended = sorting_ended(&app, job_id, total);
-    fotollection_core::supervise::spawn(
-        "sorting",
-        move || {
-            let state = app.state::<AppState>();
-            let (analysed, failed) =
-                read_batches(&app, &state, pool, embedder, &records, &cancel, job_id);
-            if !cancel.is_cancelled() {
-                let candidates = state
-                    .library
-                    .read()
-                    .map_or_else(|_| Vec::new(), |library| library.duplicate_candidates());
-                prove_duplicates(&app, &state, pool, &records, &candidates, &cancel);
+/// The queue as it stands (the UI asks on start).
+#[tauri::command]
+#[specta::specta]
+pub fn sorting_queue(state: State<'_, AppState>) -> SortingQueue {
+    queue_view(&state)
+}
+
+/// Stops the scope being read; the next one waiting starts.
+#[tauri::command]
+#[specta::specta]
+pub fn stop_sorting(state: State<'_, AppState>) -> Result<(), IpcError> {
+    let job = state.sorting.lock().map_err(poisoned)?.job;
+    cancel(&state, job)
+}
+
+/// Takes a waiting scope out of the queue.
+#[tauri::command]
+#[specta::specta]
+pub fn remove_sorting(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    folders: Vec<u16>,
+) -> Result<(), IpcError> {
+    let scope = scope_of(&state, &folders)?;
+    let removed = state.sorting.lock().map_err(poisoned)?.queue.remove(&scope);
+    if removed {
+        queue_changed(&app);
+    }
+    Ok(())
+}
+
+/// *Stop all*: nothing waits any more and the scope being read stops.
+#[tauri::command]
+#[specta::specta]
+pub fn cancel_sorting(app: AppHandle, state: State<'_, AppState>) -> Result<(), IpcError> {
+    stop_all(&state)?;
+    queue_changed(&app);
+    Ok(())
+}
+
+/// Empties the queue and stops the running pass (also on a project switch).
+pub fn stop_all(state: &AppState) -> Result<(), IpcError> {
+    let job = {
+        let mut sorting = state.sorting.lock().map_err(poisoned)?;
+        sorting.queue.clear();
+        sorting.job
+    };
+    cancel(state, job)
+}
+
+fn cancel(state: &AppState, job: Option<u32>) -> Result<(), IpcError> {
+    if let Some(job) = job
+        && let Some(token) = state.jobs.lock().map_err(poisoned)?.get(&job)
+    {
+        token.cancel();
+    }
+    Ok(())
+}
+
+/// The photos of a scope, listed when its turn comes (a folder imported into while it waited
+/// is read whole; a folder removed meanwhile has none).
+fn records_of(library: &fotollection_core::library::Library, scope: &Scope) -> Vec<PhotoRecord> {
+    let folders = library.folders();
+    let ids: Vec<u16> = scope
+        .folders()
+        .iter()
+        .filter_map(|p| folders.iter().position(|f| f == p))
+        .filter_map(|i| u16::try_from(i).ok())
+        .collect();
+    library
+        .sorted_ids()
+        .into_iter()
+        .filter(|&id| {
+            scope.is_workspace() || library.folder_of(id).is_some_and(|f| ids.contains(&f))
+        })
+        .filter_map(|id| library.record(id))
+        .collect()
+}
+
+/// The worker: one scope at a time, each lock taken alone and let go before the pixels' work.
+fn run_queue(app: &AppHandle) {
+    let state = app.state::<AppState>();
+    let (Ok(embedder), Ok(pool)) = (embedder(), pool()) else {
+        return;
+    };
+    loop {
+        let job_id = state.next_job.fetch_add(1, Ordering::Relaxed);
+        let cancel = CancellationToken::new();
+        let next = match state.sorting.lock() {
+            Ok(mut sorting) => {
+                let next = sorting.queue.start_next();
+                if next.is_some() {
+                    sorting.job = Some(job_id);
+                } else {
+                    sorting.worker = false;
+                }
+                next
             }
-            let cancelled = cancel.is_cancelled();
-            if let Ok(mut running) = state.sorting.lock() {
-                *running = None;
-            }
-            if let Ok(mut jobs) = state.jobs.lock() {
-                jobs.remove(&job_id);
-            }
-            let _ = SortingFinished {
-                job_id,
-                analysed,
-                failed,
-                cancelled,
-            }
-            .emit(&app);
-        },
-        ended,
-    );
-    Ok(job_id)
+            Err(_) => None,
+        };
+        let Some(scope) = next else {
+            queue_changed(app);
+            return;
+        };
+        if let Ok(mut jobs) = state.jobs.lock() {
+            jobs.insert(job_id, cancel.clone());
+        }
+        queue_changed(app);
+        let records = state
+            .library
+            .read()
+            .map_or_else(|_| Vec::new(), |library| records_of(&library, &scope));
+        let (analysed, failed) =
+            read_batches(app, &state, pool, embedder, &records, &cancel, job_id);
+        if !cancel.is_cancelled() {
+            let candidates = state
+                .library
+                .read()
+                .map_or_else(|_| Vec::new(), |library| library.duplicate_candidates());
+            prove_duplicates(app, &state, pool, &records, &candidates, &cancel);
+        }
+        if let Ok(mut jobs) = state.jobs.lock() {
+            jobs.remove(&job_id);
+        }
+        if let Ok(mut sorting) = state.sorting.lock() {
+            sorting.queue.finish();
+            sorting.job = None;
+        }
+        let _ = SortingFinished {
+            job_id,
+            analysed,
+            failed,
+            cancelled: cancel.is_cancelled(),
+        }
+        .emit(app);
+    }
 }
 
 /// Reads `records` in batches, each kept as it is read, so the cards fill while the window stays
@@ -270,28 +466,25 @@ fn prove_duplicates(
         .filter_map(|m| Some(PhotoId(u32::try_from(m).ok()?)))
         .collect();
     if let Ok(mut library) = state.library.write() {
-        library.set_duplicates(&ids);
+        let scope: Vec<PhotoId> = records.iter().map(|r| r.id).collect();
+        library.set_duplicates_in(&scope, &ids);
     }
 }
 
-/// The pass's end when its thread dies: nothing running, the job gone, every photo failed.
-fn sorting_ended(app: &AppHandle, job_id: u32, total: u32) -> impl FnOnce() + Send + 'static {
+/// The worker's end when its thread dies: nothing runs or waits, so a press starts it again.
+fn worker_ended(app: &AppHandle) -> impl FnOnce() + Send + 'static {
     let app = app.clone();
     move || {
         let state = app.state::<AppState>();
-        if let Ok(mut running) = state.sorting.lock() {
-            *running = None;
+        let job = state.sorting.lock().ok().and_then(|mut s| {
+            let job = s.job.take();
+            *s = SortingState::default();
+            job
+        });
+        if let (Some(job), Ok(mut jobs)) = (job, state.jobs.lock()) {
+            jobs.remove(&job);
         }
-        if let Ok(mut jobs) = state.jobs.lock() {
-            jobs.remove(&job_id);
-        }
-        let _ = SortingFinished {
-            job_id,
-            analysed: 0,
-            failed: total,
-            cancelled: false,
-        }
-        .emit(&app);
+        queue_changed(&app);
     }
 }
 

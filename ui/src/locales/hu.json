@@ -1669,6 +1669,16 @@
     "typeCount_other": "A végleges törléshez írd be: {{count}}"
   },
   "rollsense": {
+    "queue": {
+      "show": "Várólista megjelenítése",
+      "title": "RollSense várólista",
+      "reading": "Olvasás",
+      "waiting": "Várakozik",
+      "waitingCount_one": "{{count}} várakozik",
+      "waitingCount_other": "{{count}} várakozik",
+      "remove": "Eltávolítás a várólistáról",
+      "stopAll": "Összes leállítása"
+    },
     "picked_one": "{{count}} fotó kiválasztva",
     "picked_other": "{{count}} fotó kiválasztva",
     "nonePicked": "Jelöljön be csoportokat a fotók kiválasztásához",

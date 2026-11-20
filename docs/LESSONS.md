@@ -124,6 +124,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Cached state names its owner, bound and evictor; a value made in two places is made in one function; test every consumer with the cache empty. Kept by: the per-caller cache tests.
 - A fix that changes the pixels of files already seen bumps the cache version; a thumbnail's key carries its look. Kept by: `thumbs::CACHE_VERSION`.
 - Data more than one component shows is a shared store; a setting that changes a list is announced by Rust once stored. Kept by: no machine check yet.
+- A queue of work lives in Rust and the UI only shows it; a command never answers with another task's id, and a pass over part of the library replaces only that part's results. Kept by: `fr_141_ten_folders_asked_in_turn_are_all_read`, `fr_015_two_folders_proven_in_turn_keep_their_duplicates`.
 - A live save is a draft: history waits for the end of typing, only the latest answer applies, a focused field takes no outside value. Kept by: `fr_077_a_draft_of_an_address_gives_way_to_the_whole_one`.
 
 ### print-post
@@ -142,6 +143,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-20
+
+### Ten folders pressed in turn, one read: the UI kept a queue it did not have (FR-141, FR-015)
+
+- **Area:** state-cache, rust-concurrency
+- **Seen:** asked "what if a user presses RollSense in ten folders, one after another?", the code showed folder 2 was never read: `analyze_sorting` returned the running job's id while folder 1 read, the hook stored it as its own, and its hand-on (`jobId !== own`) never fired; the stop shown in folder 2 stopped folder 1. Reading folders in turn would also have wiped folder 1's duplicates (`set_duplicates` cleared the whole library), and `analyze_sorting` held its lock while taking the library's and the jobs'.
+- **Why:** the second call answered with another task's id, so the request was lost without a word, and the UI tried to keep a queue in a component's effect, which forgets every folder but the one on screen. The duplicates were written as if one pass covered the whole library.
+- **Rule:** a queue lives in Rust (`sorting::queue::SortQueue`, by folder paths, deduplicated) with one worker taking each lock alone, never across the pixels' work; the UI only shows it (`sorting-queue-changed`). A command never answers a request with another task's id. A pass over part of the library replaces only that part's results (`set_duplicates_in`). Kept by `fr_141_ten_folders_asked_in_turn_are_all_read`, `fr_141_a_folder_asked_while_another_reads_is_read_next`, `fr_015_two_folders_proven_in_turn_keep_their_duplicates`, each failing on the old code first.
 
 ### Five prints of one tram, and a postcard that called it a funicular (FR-135, website)
 

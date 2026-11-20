@@ -1669,6 +1669,16 @@
     "typeCount_other": "Gib {{count}} ein, um sie endgültig zu löschen."
   },
   "rollsense": {
+    "queue": {
+      "show": "Warteschlange zeigen",
+      "title": "RollSense-Warteschlange",
+      "reading": "Wird gelesen",
+      "waiting": "Wartet",
+      "waitingCount_one": "{{count}} wartet",
+      "waitingCount_other": "{{count}} warten",
+      "remove": "Aus der Warteschlange entfernen",
+      "stopAll": "Alle stoppen"
+    },
     "picked_one": "{{count}} Foto ausgewählt",
     "picked_other": "{{count}} Fotos ausgewählt",
     "nonePicked": "Gruppen ankreuzen, um Fotos zu wählen",

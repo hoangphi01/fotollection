@@ -70,6 +70,8 @@ import { PickChip } from '@/features/rollsense/pick-chip'
 import { RollSensePanel } from '@/features/rollsense/rollsense-panel'
 import { SenseBar } from '@/features/rollsense/sense-bar'
 import { useRollSense } from '@/features/rollsense/use-rollsense'
+import { SortingQueueMenu } from '@/features/rollsense/sorting-queue-menu'
+import { sameScope, useSortingQueue } from '@/features/rollsense/use-sorting-queue'
 
 export function App() {
   const { t } = useTranslation()
@@ -110,7 +112,10 @@ export function App() {
   const exporter = useExport()
   const project = useProject()
   const bestShots = useBestShots()
-  const sense = useRollSense(filter.folders ?? [], rollsense)
+  // RollSense's queue, as Rust keeps it (owner, 2026-11-20): one store for the bar, its list
+  // and the folder rows.
+  const sortingQueue = useSortingQueue()
+  const sense = useRollSense(filter.folders ?? [], rollsense, sortingQueue)
   // RollSense reading: the window stays free and the cards fill as it reads; the red stop on
   // the progress bar ends it, keeps nothing and goes back to Photos (owner, 2026-11-18).
   const sorting = sense.running
@@ -119,6 +124,22 @@ export function App() {
     setPicks([])
     setView('photos')
   }
+  // The scope being read stops and the next waiting one starts; when it was the one shown,
+  // RollSense keeps nothing of it and goes back to Photos, as before.
+  const stopSorting = () => {
+    const shown = sortingQueue?.running && sameScope(sortingQueue.running.folders, filter.folders ?? [])
+    void commands.stopSorting()
+    if (shown) {
+      setPicks([])
+      setView('photos')
+    }
+  }
+  // A scope's words: its folders' names, or the Workspace.
+  const scopeName = (ids: number[]) =>
+    ids.length === 0 ? t('library.allPhotos') : ids.map((id) => folders.find((f) => f.id === id)?.name ?? '').filter(Boolean).join(', ')
+  const waitingCount = sortingQueue?.waiting.length ?? 0
+  // The folder being read; the folders waiting are the list's button beside it.
+  const sortingDetail = sortingQueue?.running ? scopeName(sortingQueue.running.folders) : undefined
   // Tethered capture (FR-062, FR-063): the capture screen and the session tabs.
   // The camera went away by itself (unplugged, turned off): show the session's tab, as
   // closing the capture screen does (ADR-0028).
@@ -281,6 +302,7 @@ export function App() {
       <PartBoundary part="folders">
       <LibrarySidebar
         folders={folders}
+        sorting={sortingQueue}
         selected={filter.folders ?? []}
         onSelect={(next) => setFilter({ ...filter, folders: next, queue: 'gallery' }, (filter.queue ?? 'gallery') === 'gallery')}
         queue={filter.queue ?? 'gallery'}
@@ -316,7 +338,22 @@ export function App() {
             />
           )}
           {taskProgress && (
-            <TaskProgressBar progress={taskProgress} onCancel={(taskProgress.task === 'sort' || taskProgress.task === 'duplicates') && sorting ? cancelSorting : taskProgress.task === 'trash' ? () => void commands.cancelTrash() : undefined} />
+            <TaskProgressBar
+              progress={taskProgress}
+              onCancel={(taskProgress.task === 'sort' || taskProgress.task === 'duplicates') && sorting ? stopSorting : taskProgress.task === 'trash' ? () => void commands.cancelTrash() : undefined}
+              detail={taskProgress.task === 'sort' || taskProgress.task === 'duplicates' ? sortingDetail : undefined}
+              menu={
+                (taskProgress.task === 'sort' || taskProgress.task === 'duplicates') && sortingQueue && waitingCount > 0 ? (
+                  <SortingQueueMenu
+                    queue={sortingQueue}
+                    name={scopeName}
+                    onStop={stopSorting}
+                    onRemove={(scope) => void commands.removeSorting(scope)}
+                    onStopAll={cancelSorting}
+                  />
+                ) : undefined
+              }
+            />
           )}
         </NoticeStack>
         {/* The main view fails alone, its notices above it stay (ADR-0048). */}

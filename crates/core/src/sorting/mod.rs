@@ -11,6 +11,7 @@ pub mod events;
 pub mod facets;
 pub mod locations;
 pub mod pass;
+pub mod queue;
 pub mod routes;
 pub mod stacks;
 pub mod time;

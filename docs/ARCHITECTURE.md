@@ -384,7 +384,8 @@ Commands marked † are implemented.
 | `list_groups() -> [Group]` † | Groups of similar shots from the last analysis: `{ id, result: { photos (best first, with score parts, closed eyes, faces), reasons, tooClose } }`. `id` is the group's first photo | FR-041 |
 | `keep_best(groups) -> HistoryState` † | Picks each group's best photo and rejects the rest as one undoable step; 1–5,000 groups, unknown groups are rejected | FR-041, FR-022 |
 | `keep_one(group, photo) -> HistoryState` † | Keeps the chosen photo of one group and rejects the others, one undoable step (for "Too close to call" or a different preference) | FR-041, FR-022 |
-| `analyze_sorting(folders) -> JobId` † | RollSense's pixels pass (`src-tauri/src/sorting.rs`) over the photos of `folders` (all when empty) on its own pool on every core: TinyCLIP-39M's subjects and the duplicates proven on their pictures, cached photos at once, written to the library in batches of 256; cancel with `cancel_job`, which keeps nothing. A second call while one runs returns the running job | FR-141, FR-015 |
+| `analyze_sorting(folders) -> SortingQueue` † | Asks RollSense's pixels pass (`src-tauri/src/sorting.rs`) for the photos of `folders` (all when empty): the scope joins a queue in Rust (`sorting::queue::SortQueue`, by the folders' paths) unless the running or a waiting scope covers it, and one worker thread reads one scope at a time on the pass's own pool on every core (owner, 2026-11-20): TinyCLIP-39M's subjects and the duplicates proven on their pictures (each scope's own duplicates replaced, never another's), cached photos at once, written to the library in batches of 256; a stopped scope keeps nothing; a project switch empties the queue | FR-141, FR-015 |
+| `sorting_queue() -> SortingQueue`, `stop_sorting()`, `remove_sorting(folders)`, `cancel_sorting()` † | The queue as it stands; the scope being read stopped (the next one starts); a waiting scope removed; *Stop all* (the queue emptied, the running scope stopped) | FR-141 |
 | `sort_facets(folders) -> Facets` † | Everything RollSense lists, with counts, over the photos of `folders` (all when empty) | FR-141 |
 | `gallery_sections(filter) -> GallerySection[]` † | The grid's runs under RollSense's time picks: a ticked day's events, a month's or a year's days, each with its local times and place (`library/sections.rs`) | FR-141 |
 | `trash_check(ids ≤ 100,000) -> TrashCheck` † | The summary before a move to the Trash: the photos' bytes, and how many seem to sit on a volume without a Trash (a network share), whose files would be deleted for good | FR-141, ADR-0055 |
@@ -429,6 +430,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `analysis-finished` † | `{ jobId, analyzed, failed, groups, cancelled }`. The UI refetches `list_groups` |
 | `sorting-read` † | `{ jobId, analysed }`: RollSense's pass has read more photos (every 2 seconds at most); the UI refetches the facets, so the cards fill as it reads (FR-141) |
 | `sorting-finished` † | `{ jobId, analysed, failed, cancelled }`: RollSense's pass finished or was cancelled; the UI refetches the facets (FR-141) |
+| `sorting-queue-changed` † | `SortingQueue { running, jobId, waiting }`, each scope its folders' current ids (none: the Workspace): RollSense's queue changed, for the progress bar's folder, its list and the folder rows (FR-141) |
 | `project://saved` | `{ path, at }`, for the autosave indicator |
 | `history://changed` | `{ can_undo, can_redo }` |
 

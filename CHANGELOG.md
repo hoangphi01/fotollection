@@ -52,6 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- RollSense reads every folder you press it in, one after another: the progress bar names the folder being read and its **n waiting** button lists the others, each with its own stop or remove, with **Stop all**; the folder list shows a turning ring on the folder being read and a clock on those waiting. Before, a folder pressed while another was read was never read, and its stop stopped the other folder; reading a second folder no longer clears the first one's duplicates.
 - The right column covers the folders chosen only: **Camera clocks** lists the cameras of those photos, **Places** their places, and the stamps' **Reset** counts and resets those photos, not the whole library.
 - A camera's clock correction now also moves its photos in RollSense: a photo taken just before midnight on a slow clock falls on its true day, month, event and trip.
 

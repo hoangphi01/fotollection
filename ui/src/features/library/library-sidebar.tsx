@@ -7,6 +7,7 @@ import {
   Folder,
   FolderOpen,
   Archive,
+  Clock,
   Trash,
   Images,
   ListChecks,
@@ -23,7 +24,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { ButtonGroup } from '@/components/forms/button-group'
-import { commands, type FolderSummary, type ImportSummary, type QueueView } from '@/ipc/bindings'
+import { commands, type FolderSummary, type ImportSummary, type QueueView, type SortingQueue } from '@/ipc/bindings'
+import { Spinner } from '@/components/forms/spinner'
 import { ThemeSwitch } from '@/features/appearance/theme-switch'
 import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
@@ -57,6 +59,8 @@ type LibrarySidebarProps = {
   onShowRelink: () => void
   /** Connect camera (FR-063), shown before Open folder. */
   cameraAction?: ReactNode
+  /** RollSense's queue (FR-141): a folder being read shows a spinner, a waiting one a clock. */
+  sorting?: SortingQueue | null
 }
 
 export function LibrarySidebar({
@@ -73,6 +77,7 @@ export function LibrarySidebar({
   project,
   onShowRelink,
   cameraAction,
+  sorting,
 }: LibrarySidebarProps) {
   const { t } = useTranslation()
   const total = folders.reduce((sum, f) => sum + f.count, 0)
@@ -317,7 +322,13 @@ export function LibrarySidebar({
                     )}
                     <span className="truncate">{name}</span>
                     <span className="ml-auto text-xs text-muted-foreground tabular-nums group-focus-within:invisible group-hover:invisible">
-                      {count}
+                      {sorting?.running?.folders.includes(id) ? (
+                        <Spinner className="size-3.5" aria-label={t('rollsense.queue.reading')} />
+                      ) : sorting?.waiting.some((w) => w.folders.includes(id)) ? (
+                        <Clock className="size-3.5" aria-label={t('rollsense.queue.waiting')} />
+                      ) : (
+                        count
+                      )}
                     </span>
                   </button>
                   {/* Like closing a browser tab: shown on hover, the files stay on disk. */}

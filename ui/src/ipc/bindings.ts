@@ -858,12 +858,20 @@ export const commands = {
 	 */
 	keepOne: (group: PhotoId, photo: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_one", { group, photo })),
 	/**
-	 *  Reads the pixels of the photos in `folders` (every folder when empty: the Workspace;
-	 *  owner, 2026-11-18: "only the tab chosen"), cached ones at once, then proves the duplicates.
-	 *  Cancelled, it keeps nothing: the library is as before. Returns the job id for `cancel_job`;
-	 *  a second call while one runs returns the running job.
+	 *  Asks RollSense to read the photos of `folders` (every folder when empty: the Workspace;
+	 *  owner, 2026-11-18: "only the tab chosen"), cached ones at once, then prove the duplicates.
+	 *  The scope joins the queue unless the running or a waiting scope already covers it, and the
+	 *  worker reads one scope at a time (owner, 2026-11-20). Returns the queue.
 	 */
-	analyzeSorting: (folders: number[]) => typedError<number, IpcError>(__TAURI_INVOKE("analyze_sorting", { folders })),
+	analyzeSorting: (folders: number[]) => typedError<SortingQueue, IpcError>(__TAURI_INVOKE("analyze_sorting", { folders })),
+	/**  The queue as it stands (the UI asks on start). */
+	sortingQueue: () => __TAURI_INVOKE<SortingQueue>("sorting_queue"),
+	/**  Stops the scope being read; the next one waiting starts. */
+	stopSorting: () => typedError<null, IpcError>(__TAURI_INVOKE("stop_sorting")),
+	/**  Takes a waiting scope out of the queue. */
+	removeSorting: (folders: number[]) => typedError<null, IpcError>(__TAURI_INVOKE("remove_sorting", { folders })),
+	/**  *Stop all*: nothing waits any more and the scope being read stops. */
+	cancelSorting: () => typedError<null, IpcError>(__TAURI_INVOKE("cancel_sorting")),
 	/**  Everything RollSense lists, with counts, over the photos of `folders` (all when empty). */
 	sortFacets: (folders: number[]) => typedError<Facets, IpcError>(__TAURI_INVOKE("sort_facets", { folders })),
 	/**
@@ -973,6 +981,7 @@ export const events = {
 	quitBlocked: makeEvent<QuitBlocked>("quit-blocked"),
 	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
 	sortingFinished: makeEvent<SortingFinished>("sorting-finished"),
+	sortingQueueChanged: makeEvent<SortingQueueChanged>("sorting-queue-changed"),
 	sortingRead: makeEvent<SortingRead>("sorting-read"),
 	startupFinished: makeEvent<StartupFinished>("startup-finished"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
@@ -2561,6 +2570,11 @@ export type QueueView =
 /**  Every photo except those set aside or marked to delete; the basket's photos stay, marked. */
 "gallery" | "print" | "aside" | "delete";
 
+/**  One scope as the UI knows it: the folders' current ids (none: the Workspace). */
+export type QueuedScope = {
+	folders: number[],
+};
+
 /**
  *  Closing the app was held back because shots exist only in Fotollection's data: a camera
  *  is connected, or session tabs are not saved yet (ADR-0028). The UI asks Save all, Delete
@@ -2794,6 +2808,19 @@ export type SortingFinished = {
 	failed: number,
 	cancelled: boolean,
 };
+
+/**
+ *  The queue for the progress bar and its list: the scope being read, its job (for its stop),
+ *  and the scopes waiting, in order.
+ */
+export type SortingQueue = {
+	running: QueuedScope | null,
+	jobId: number | null,
+	waiting: QueuedScope[],
+};
+
+/**  RollSense's queue changed: a scope asked for, started, ended, stopped or removed (FR-141). */
+export type SortingQueueChanged = SortingQueue;
 
 /**
  *  RollSense's pass has read more photos (every 2 seconds at most): the UI refetches the

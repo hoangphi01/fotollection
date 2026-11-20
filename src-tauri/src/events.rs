@@ -100,6 +100,10 @@ pub struct SortingRead {
     pub analysed: u32,
 }
 
+/// RollSense's queue changed: a scope asked for, started, ended, stopped or removed (FR-141).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+pub struct SortingQueueChanged(pub crate::sorting::SortingQueue);
+
 /// Progress of a background task, for the progress bar (coalesced to ≤ 30 per second).
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
 #[serde(rename_all = "camelCase")]

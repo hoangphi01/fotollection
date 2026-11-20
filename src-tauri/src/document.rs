@@ -319,6 +319,8 @@ pub async fn save_document_as(app: AppHandle) -> Result<Option<DocumentState>, I
 
 /// Empties the library, the undo history and the per-id caches.
 fn reset_library(state: &AppState) -> Result<(), IpcError> {
+    // RollSense's queue belongs to the old project's folders (FR-141).
+    crate::sorting::stop_all(state)?;
     *state.library.write().map_err(poisoned)? = Library::new();
     state.sync_home_zone();
     state.history.lock().map_err(poisoned)?.clear();

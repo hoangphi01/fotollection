@@ -130,9 +130,13 @@ impl Library {
             .collect()
     }
 
-    /// The photos proven duplicates, replacing the last set.
-    pub fn set_duplicates(&mut self, ids: &[PhotoId]) {
-        self.duplicate.iter_mut().for_each(|d| *d = false);
+    /// The photos of `scope` proven duplicates (`ids`), replacing that scope's last set only.
+    pub fn set_duplicates_in(&mut self, scope: &[PhotoId], ids: &[PhotoId]) {
+        for id in scope {
+            if let Some(i) = self.index(*id) {
+                self.duplicate[i] = false;
+            }
+        }
         for id in ids {
             if let Some(i) = self.index(*id) {
                 self.duplicate[i] = true;
@@ -557,6 +561,28 @@ mod tests {
     }
 
     #[test]
+    fn fr_015_two_folders_proven_in_turn_keep_their_duplicates() {
+        // RollSense's queue reads folders one after another (owner, 2026-11-20): the second
+        // folder's proof must not wipe the first one's duplicates.
+        let mut lib = Library::new();
+        for (folder, name) in [("/a", "0"), ("/a", "1"), ("/b", "2"), ("/b", "3")] {
+            let f = lib.add_folder(Path::new(folder));
+            let file = ImportedFile {
+                path: PathBuf::from(format!("{folder}/{name}.jpg")),
+                size: 1,
+                mtime: 0,
+            };
+            lib.push(f, &file, &shot(3, 9));
+        }
+        lib.set_duplicates_in(&[PhotoId(0), PhotoId(1)], &[PhotoId(1)]);
+        lib.set_duplicates_in(&[PhotoId(2), PhotoId(3)], &[PhotoId(3)]);
+        assert_eq!(lib.facets(&[]).duplicates, 2);
+        // A folder proven again with no copies left clears its own only.
+        lib.set_duplicates_in(&[PhotoId(2), PhotoId(3)], &[]);
+        assert_eq!(lib.facets(&[]).duplicates, 1);
+    }
+
+    #[test]
     fn fr_141_a_stopped_pass_puts_the_library_back() {
         let mut lib = Library::new();
         let f = lib.add_folder(Path::new("/roll"));
@@ -689,7 +715,7 @@ mod tests {
         }
         // No row without photos: a camera's shots are no clean-up.
         assert_eq!(lib.facets(&[]).cleanup, Vec::new());
-        lib.set_duplicates(&[PhotoId(1)]);
+        lib.set_duplicates_in(&[PhotoId(0), PhotoId(1)], &[PhotoId(1)]);
         assert_eq!(
             lib.facets(&[]).cleanup,
             vec![CleanupRow {

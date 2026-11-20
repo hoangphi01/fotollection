@@ -103,7 +103,7 @@ fn prepare(app: &AppHandle, folder: PathBuf) -> Result<Vec<PhotoId>, String> {
         .map_err(|e| format!("{e:?}"))?;
     loop {
         std::thread::sleep(Duration::from_millis(200));
-        if state.sorting.lock().map_err(|e| e.to_string())?.is_none() {
+        if state.sorting.lock().map_err(|e| e.to_string())?.is_idle() {
             break;
         }
     }

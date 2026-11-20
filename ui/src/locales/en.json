@@ -1669,6 +1669,16 @@
     "typeCount_other": "Type {{count}} to delete them permanently."
   },
   "rollsense": {
+    "queue": {
+      "show": "Show the queue",
+      "title": "RollSense queue",
+      "reading": "Reading",
+      "waiting": "Waiting",
+      "waitingCount_one": "{{count}} waiting",
+      "waitingCount_other": "{{count}} waiting",
+      "remove": "Remove from the queue",
+      "stopAll": "Stop all"
+    },
     "picked_one": "{{count}} photo picked",
     "picked_other": "{{count}} photos picked",
     "nonePicked": "Tick groups to pick photos",
