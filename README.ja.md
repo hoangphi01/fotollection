@@ -23,7 +23,7 @@ Fotollectionは、ベストショットを選び、撮影日と場所を入れ�
 <p align="center">
   <img src="site/assets/img/results/stamp-ja.webp" alt="撮影日入りのプリント" width="23%" />
   <img src="site/assets/img/results/frame-ja.webp" alt="撮影情報フレーム付きのプリント" width="23%" />
-  <img src="site/assets/img/results/card-ja.webp" alt="はがき:写真と宛名面" width="51%" />
+  <img src="site/assets/img/results/card-ja.webp" alt="はがき：写真と宛名面" width="51%" />
 </p>
 
 ## 作った理由
@@ -32,7 +32,7 @@ Fotollectionは、ベストショットを選び、撮影日と場所を入れ�
 
 - **プリントには、いつどこで撮ったかが残りません。** 数年たつと誰も覚えていません。
 - **お店は写真を自動でトリミングします。** 2:3、3:4、1:1に切られ、顔が切れることもあります。
-- **オンラインのツールは写真をアップロードさせます。** GPS情報から住んでいる場所がわかります。
+- **オンラインのツールでは写真のアップロードが必要です。** GPS情報から住んでいる場所がわかります。
 
 そこで、すべてをパソコンの中で行うFotollectionを作りました。無料のオープンソースで、写真がパソコンの外に出ることはありません。
 
@@ -44,29 +44,29 @@ Fotollectionは、ベストショットを選び、撮影日と場所を入れ�
 
 ## 主な機能
 
-- **撮影日と場所をプリントに**：写真そのものから読み取り、場所はオフラインで検索します。
-- **お店のプリントサイズ**：L判、2L判、正方形など日本・韓国・ヨーロッパの21サイズ。
-- **ベストショットの提案**：連写や似た写真をまとめ、目を開いた一番シャープな一枚を理由付きで提案します。
-- **RAW対応**：Fujifilm、Panasonic、Canon、Nikon、Sony、OlympusのカメラのRAWファイル。
-- **ルック、プリセット、LUT**：ワンタップで写真の色が決まります。手持ちのLightroomプリセットやLUMIX Labのルックも使えます。
-- **ポストカード**：郵便はがきの宛名面、郵便番号から住所を入力(AddAssist)。
-- **プライバシー**：アカウント不要、クラウドなし、テレメトリなし。通信は更新の確認だけで、オフにできます。
+- **撮影日と場所をプリントに**：写真そのものから読み取り、場所はオフラインで検索します。
+- **お店のプリントサイズ**：L判、2L判、スクエアなど日本・韓国・ヨーロッパの21サイズ。
+- **ベストショットの提案**：連写や似た写真をまとめ、目を開けている一番シャープな一枚を理由付きで提案します。
+- **RAW対応**：Fujifilm、Panasonic、Canon、Nikon、Sony、OlympusのカメラのRAWファイル。
+- **ルック、プリセット、LUT**：ワンクリックで写真の色が決まります。手持ちのLightroomプリセットやLUMIX Labのルックも使えます。
+- **ポストカード**：郵便はがきの宛名面、郵便番号から住所を入力(AddAssist)。
+- **プライバシー**：アカウント不要、クラウドなし、テレメトリなし。通信は更新の確認だけで、オフにできます。
 
-画面の言語:日本語、English、Tiếng Việt、Deutsch、Magyar、한국어。
+画面の言語：日本語、English、Tiếng Việt、Deutsch、Magyar、한국어。
 
-## まだできないこと
+## まだ足りないところ
 
-Fotollectionはまだ新しいソフトです。次のことはまだできません。
+Fotollectionはまだ新しいソフトで、足りないところがあります。
 
-- **署名のないビルド:** macOSとWindowsは初回の起動前に一度だけ確認します([初回の起動](#初回の起動))。
-- **LinuxでのiPhoneの写真(HEIC):** 今はJPEGに変換してください。
-- **USBでつないだカメラでの撮影:** Windowsだけで使えます。
-- **スマートフォン版はありません:** パソコンで使うソフトです。
-- **不具合:** 見つけたら[issue](https://github.com/hoangphi01/fotollection/issues/new/choose)で教えてください。
+- **署名のないビルド：** macOSとWindowsは初回の起動時に一度だけ確認します([初回の起動](#初回の起動))。
+- **LinuxでのiPhoneの写真(HEIC)：** 今はJPEGに変換してください。
+- **USBでつないだカメラでの撮影：** Windowsだけで使えます。
+- **スマートフォン版はありません：** パソコンで使うソフトです。
+- **不具合：** 見つけたら[issue](https://github.com/hoangphi01/fotollection/issues/new/choose)で教えてください。
 
 ## ダウンロード
 
-[ダウンロードページ](https://fotollection.org/ja/download/)から、macOS 11以降(Apple SiliconとIntel)の`.dmg`、Windows 10/11の`-setup.exe`、64ビットLinuxのAppImageまたは`.deb`を入手できます。MacではHomebrewでも入れられます。
+[ダウンロードページ](https://fotollection.org/ja/download/)から、macOS 11以降(Apple SiliconとIntel)の`.dmg`、Windows 10/11の`-setup.exe`、64ビットLinuxのAppImageまたは`.deb`を入手できます。MacではHomebrewでもインストールできます。
 
 ```sh
 brew tap hoangphi01/tap && brew trust hoangphi01/tap
@@ -77,14 +77,14 @@ brew install --cask hoangphi01/tap/fotollection
 
 ビルドにはまだ署名がないため([ADR-0009](docs/adr/0009-unsigned-distribution.md))、システムが一度だけ確認します。
 
-- **macOS:** システム設定 → プライバシーとセキュリティ → **このまま開く**
-- **Windows:** SmartScreen → **詳細情報** → **実行**
-- **Linux:** 確認はありません。AppImageに実行権限を付けるか、`.deb`をインストールします。
+- **macOS：** システム設定 → プライバシーとセキュリティ → **このまま開く**
+- **Windows：** SmartScreen → **詳細情報** → **実行**
+- **Linux：** 確認はありません。AppImageに実行権限を付けるか、`.deb`をインストールします。
 
 ## サポート
 
-Fotollectionは無料で、学生が一人で開発しています。役に立ったら [GitHub Sponsors](https://github.com/sponsors/hoangphi01) または [Ko-fi](https://ko-fi.com/hoangphi01) で応援できます。
+Fotollectionは無料で、学生が一人で開発しています。役に立ったら[GitHub Sponsors](https://github.com/sponsors/hoangphi01)または[Ko-fi](https://ko-fi.com/hoangphi01)で応援していただけます。
 
 ## ライセンス
 
-[GPL-3.0-only](LICENSE) © hoangphi01。詳しい説明は [English README](README.md) をご覧ください。
+[GPL-3.0-only](LICENSE) © hoangphi01。詳しい説明は[English README](README.md)をご覧ください。

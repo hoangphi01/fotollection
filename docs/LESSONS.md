@@ -116,6 +116,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A heading renamed or removed is grepped as `#its-anchor` in every doc. Kept by: `check-docs` (links and their anchors, as CI's lychee).
 - When work moves to another release or quarter, grep every doc for the old version and change it in the same commit (ADR-0053; the audit of 2026-11-16 found about 110 stale lines). Kept by: `check-docs` (ROADMAP and STATUS quarters), no check for prose yet.
 - A released version's CHANGELOG section is frozen: new lines under `[Unreleased]`, found by its heading. Kept by: `check-docs-with-code.sh` (released sections).
+- Text is checked by code point: no mojibake, U+FFFD or invisible control character. Kept by: `check-docs.sh` (broken encoding).
 - Copy a link from its file name, keep markers out of headings, and say "planned" for what is not built. Kept by: `check-docs.sh` link check, CI's lychee.
 
 ### state-cache
@@ -144,6 +145,13 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-20
+
+### A broken colon fixed by half: U+FFFD on every line of the Japanese README (docs)
+
+- **Area:** docs, checks
+- **Seen:** GitHub showed a replacement character (U+FFFD) after every bold label of README.ja.md's features (owner, 2026-11-20, a screenshot).
+- **Why:** the full-width colon "：" had been stored as mojibake, three characters (U+00EF, U+00BC and an invisible U+009A); replacing the two visible ones left the invisible one, and no check read for it.
+- **Rule:** a text fix is checked by code point, never by eye; `check-docs.sh` fails on mojibake, U+FFFD and invisible control characters in the READMEs, docs, the site's words and the app's locales, shown failing on the broken file first.
 
 ### Two controls 6 px apart read as one: the home time's toggle and its place (FR-145, UI)
 

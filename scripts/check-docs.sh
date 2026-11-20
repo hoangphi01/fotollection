@@ -64,6 +64,21 @@ for f in docs/*.md; do
   head -n 5 "$f" | grep -qE 'Last (reviewed|updated):' || fail "$f lacks a 'Last reviewed:' header"
 done
 
+echo "• Text files hold no broken encoding (mojibake, U+FFFD, invisible control characters; LESSONS 2026-11-20)"
+# A full-width colon broken into "ï¼" and an invisible U+009A showed as "�" on GitHub (README.ja.md).
+while IFS= read -r hit; do fail "$hit"; done < <(python3 -I - <<'PY'
+import pathlib, re
+files = [*pathlib.Path('.').glob('README*.md'), pathlib.Path('CHANGELOG.md'), pathlib.Path('CONTRIBUTING.md'),
+         *pathlib.Path('docs').rglob('*.md'), *pathlib.Path('site/_data/i18n').glob('*.yml'),
+         *pathlib.Path('site/_includes/perf').glob('*.md'), *pathlib.Path('ui/src/locales').glob('*.json')]
+bad = re.compile('[\u0080-\u009f\ufffd\u200b\u202a-\u202e]|Ã[\u0080-\u00bf]|â€|ï¼')
+for f in files:
+    for n, line in enumerate(f.read_text(encoding='utf-8', errors='replace').splitlines(), 1):
+        m = bad.search(line)
+        if m:
+            print(f"{f}:{n}: broken text {m.group()!r}")
+PY
+)
 echo "• README.vi.md mirrors README.md (same sections, same charts)"
 if [ -f README.vi.md ]; then
   en_sections=$(grep -c '^## ' README.md)
