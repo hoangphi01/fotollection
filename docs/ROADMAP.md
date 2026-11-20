@@ -90,6 +90,7 @@ v0.14.4 sorts a phone's camera roll (FR-141, [ADR-0054](adr/0054-sorting-metadat
 | FR-146 | After an update, the welcome shows only the settings the old version lacked (the home time first); a fresh install the whole welcome; v0.14.4 (owner, 2026-11-20) |
 | FR-117 | Right-click menus in more places (folders, photos, the filmstrip, collage slots, export presets), each holding only actions found elsewhere too, groups split by hairlines as Lightroom's; `MenuContent` and the style rules; the shared block and the trips' and looks' menus in v0.14.4, the rest one place at a time, each list chosen with the owner (owner, 2026-11-09; moved up 2026-11-18) |
 | FR-138 | Code health, part 1: no source file over 1,500 production lines when v1.0.0 ships, in stages (shared shell helpers, `commands.rs` by concern, logic to the core, `preview.rs` to a folder, the tooling scripts) ([CODE_HEALTH.md](CODE_HEALTH.md)) |
+| FR-147 | Look codes: a look shared as a short code (`FL1-…`, absolute values, CRC) or a QR of `fotollection.org/look#<code>` on a photo-first recipe card; the website's page reads the code in the browser; QR reading from screenshots after; v0.14.5 (owner, 2026-11-20) |
 | FR-083 | A personal photo calendar: a built-in calendar engine for any year, important days marked, a photo a month, PDF or PNG pages; on the collage sheet first, two months to a print; v0.14.5 (moved from v0.14.3, 2026-11-15) (moved from v0.14.2, 2026-11-15; owner, 2026-11-14) |
 
 ## 2027-Q1 — v1.1 "Core 2" and v1.2 "Smart culling"
