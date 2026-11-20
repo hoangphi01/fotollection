@@ -1,0 +1,12 @@
+{
+  "about": "Best-shot suggestions (FR-041) scored against bench/bestshot/truth-103_09.json with crates/core/examples/eval_bestshot. Each step was measured on the same 95 photos; the last row is reproduced by the current code.",
+  "date": "2026-10-24",
+  "photos": 95,
+  "labelledGroups": 22,
+  "steps": [
+    { "key": "dhash", "en": "dHash (before)", "vi": "dHash (trước)", "foundGroups": 3, "pairPrecision": 1.0, "pairRecall": 0.09, "extraGroups": 0, "picksRight": 2, "picksScored": 2 },
+    { "key": "signature", "en": "+ layout & colour signature", "vi": "+ chữ ký bố cục & màu", "foundGroups": 13, "pairPrecision": 1.0, "pairRecall": 0.67, "extraGroups": 2, "picksRight": 3, "picksScored": 4 },
+    { "key": "zoom", "en": "+ zoom from focal length", "vi": "+ tính zoom từ tiêu cự", "foundGroups": 15, "pairPrecision": 1.0, "pairRecall": 0.73, "extraGroups": 2, "picksRight": 5, "picksScored": 6 },
+    { "key": "faces", "en": "+ fair sharpness, hidden faces", "vi": "+ độ nét công bằng, mặt bị che", "foundGroups": 15, "pairPrecision": 1.0, "pairRecall": 0.7272727272727273, "extraGroups": 2, "picksRight": 6, "picksScored": 6 }
+  ]
+}

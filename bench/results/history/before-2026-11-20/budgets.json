@@ -1,0 +1,7 @@
+{
+  "source": "docs/OPTIMIZATION.md §3 (scripts/check-docs.sh checks that every `text` below appears in that table)",
+  "NFR-001": { "value": 1, "unit": "s", "better": "lower", "text": "< 1 s" },
+  "NFR-002": { "value": 50, "unit": "ms", "better": "lower", "text": "< 50 ms" },
+  "NFR-003": { "value": 8, "unit": "photos/s", "better": "higher", "text": "≥ 8 photos/s" },
+  "NFR-004": { "value": 2, "unit": "GB", "better": "lower", "text": "≤ 2 GB" }
+}
