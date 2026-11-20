@@ -51,12 +51,11 @@ pub(super) fn day32(day: i64) -> i32 {
 }
 
 /// The subjects a photo is named by, one bit each in `clip::subject_keys`' order: its likeliest
-/// at `subject_min_p` or more (`clip::top_subject`), and people too at `people_also_p`.
-fn named(best: &[(&'static str, f32)]) -> u16 {
+/// at its route's bar or more (`clip::top_subject`), and people too at `people_also_p`.
+fn named(best: &[(&'static str, f32)], min_p: f32) -> u16 {
     let keys = crate::sorting::clip::subject_keys();
     let bit = |k: &str| keys.iter().position(|x| *x == k).map_or(0, |b| 1u16 << b);
-    let mut mask =
-        crate::sorting::clip::top_subject(best, crate::sorting::subject_min_p()).map_or(0, bit);
+    let mut mask = crate::sorting::clip::top_subject(best, min_p).map_or(0, bit);
     if best
         .iter()
         .any(|(k, p)| *k == "people" && *p >= crate::sorting::people_also_p())
@@ -80,7 +79,14 @@ impl Library {
         if self.record(id).is_none_or(|r| r.path != path) {
             return false;
         }
-        self.subject[i] = named(&crate::sorting::clip::subjects(&pixels.embedding));
+        // The source first, then the pixels on its route (ADR-0059).
+        let class = self.source(id).map(|s| s.class);
+        let (best, min_p) = crate::sorting::routes::routed(
+            crate::sorting::subject_routes(),
+            &pixels.embedding,
+            class,
+        );
+        self.subject[i] = named(&best, min_p);
         self.hash[i] = Some(pixels.hash);
         self.analysed[i] = true;
         self.sort_index = std::sync::OnceLock::new();
@@ -771,6 +777,7 @@ mod tests {
         assert_eq!(lib.facets(&[g]).subjects.len(), 0);
         // A street with walkers is scenery and people; people alone below the subject's bar
         // still name people; nothing near the bar names nothing.
+        let bar = crate::sorting::subject_routes().open.min_p;
         let keys = crate::sorting::clip::subject_keys();
         let bits = |mask: u16| -> Vec<&str> {
             (0..keys.len())
@@ -779,16 +786,16 @@ mod tests {
                 .collect()
         };
         assert_eq!(
-            bits(named(&[("scenery", 0.6), ("people", 0.35)])),
+            bits(named(&[("scenery", 0.6), ("people", 0.35)], bar)),
             vec!["people", "scenery"]
         );
         assert_eq!(
-            bits(named(&[("people", 0.4), ("scenery", 0.35)])),
+            bits(named(&[("people", 0.4), ("scenery", 0.35)], bar)),
             vec!["people"]
         );
-        let under = crate::sorting::subject_min_p() - 0.01;
+        let under = bar - 0.01;
         assert_eq!(
-            named(&[("scenery", under), ("food", 0.3), ("people", 0.1)]),
+            named(&[("scenery", under), ("food", 0.3), ("people", 0.1)], bar),
             0
         );
         // Old filters without a pick still read.

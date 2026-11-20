@@ -19,7 +19,11 @@
   "file_time": { "window_h": 14, "share": 0.95 },
   "events": { "d": 10, "k": 17.0, "split_km": 50.0, "always_cut_h": 24 },
   "trips": { "home_cell_deg": 0.1, "away_km": 50.0, "max_gap_days": 3, "min_photos": 10, "home_min_months": 6 },
-  "subject_min_p": 0.45,
+  "subject_routes": {
+    "lens": { "subjects": ["people", "dog", "cat", "animal", "scenery", "building", "vehicle", "food", "document"], "min_p": 0.55 },
+    "screen": { "subjects": ["screen", "document", "meme"], "min_p": 0.35, "guard": true },
+    "open": { "subjects": [], "min_p": 0.45 }
+  },
   "people_also_p": 0.35,
   "duplicates": { "max_distance": 7, "grid": 128, "max_block": 13.0, "colour_saturation": 8.0, "colour_mean": 5.0 }
 }

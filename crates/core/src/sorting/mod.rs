@@ -11,6 +11,7 @@ pub mod events;
 pub mod facets;
 pub mod locations;
 pub mod pass;
+pub mod routes;
 pub mod stacks;
 pub mod time;
 pub mod trips;
@@ -108,17 +109,16 @@ struct Rules {
     events: events::EventRules,
     trips: trips::TripRules,
     duplicates: dupes::DupRules,
-    /// A subject is named only at this probability or more (93 % right on the owner's labels,
-    /// with each label's prompts summed and three cuts, OPTIMIZATION §5).
-    subject_min_p: f32,
+    /// Each source's subjects and bar (ADR-0059, RESULT §42).
+    subject_routes: routes::Routes,
     /// People are named too at this probability, beside the subject the photo has: a street
     /// with walkers is scenery and people (owner, 2026-11-18).
     people_also_p: f32,
 }
 
-/// The probability a subject must reach to be named ([`clip::subjects`]).
-pub fn subject_min_p() -> f32 {
-    rules().subject_min_p
+/// The subjects and bar of each source's route ([`routes::routed`]).
+pub fn subject_routes() -> &'static routes::Routes {
+    &rules().subject_routes
 }
 
 /// The probability at which people are named beside a photo's subject.

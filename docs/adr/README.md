@@ -62,6 +62,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0056](0056-tinyclip-39m-bundled-for-sorting.md) | TinyCLIP-39M (MIT) bundled for sorting, chosen by a written rule on the M3; int8 weights run at f32 speed; never downloaded; embeddings cached, not labels | Accepted | 2026-11-18 |
 | [0057](0057-rollsense-pick-carries-into-photos.md) | RollSense's pick carries into Photos, always named by a violet chip in the toolbar; export and colour follow it; session state only | Accepted (amended 2026-11-19: the actions on a bar under the toolbar) | 2026-11-18 |
 | [0058](0058-time-model-utc-instant-zone-anchors.md) | Time model: a UTC instant per photo from anchors in the photo (GPS time, its offset, the corrected camera clock), shown in the place's zone; a home zone for clocks without one; never the computer's clock | Accepted | 2026-11-19 |
+| [0059](0059-subjects-routed-by-source.md) | RollSense's subjects routed by the photo's source, read from the metadata first: a lens photo is never a screenshot or a meme, a screenshot never scenery (with a guard), each route its own bar; chosen on the owner's labels and three reviews | Accepted | 2026-11-20 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

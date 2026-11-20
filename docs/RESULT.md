@@ -829,3 +829,28 @@ The Color Mixer is one function of a pixel in `f32` (`colour_ops::MixerParams::a
   RawTherapee works in float on full-image buffers, ProPhoto by default. Its reconstruction adds 0.2–0.25 s and 350–950 MB on the A7 III, one run each. Ours adds 55 ms at worst (half the frame clipped) and no buffer beyond the frame.
 
 **Left:** the owner's real trial, a RAW with a blown sky pulled down in the app; the owner's bracketed 0 / −2 EV pairs as a second truth. Closing the gap to Color Propagation is planned (owner, 2026-11-12; STATUS item 5b): brighter rebuilt pixels, then the rebuild before the demosaic's cap and white balance, then a propagation; each run with `compare.sh` against the numbers above, which stay as the baseline.
+
+## 42. RollSense's subjects (v0.14.4, FR-141 S6, ADR-0059)
+
+What RollSense calls each photo (people, scenery, a vehicle…) on the owner's own photos, round by round over 2026-11-19 and 20, from 9 subjects for a phone's roll to subjects routed by the photo's source. TinyCLIP-39M never changed: each round is a label set or a naming rule, recomputed exactly from probabilities and embeddings stored once (a softmax over some prompts is the summed shares renormalised). Counts only; the photos stay with their owner. The numbers, for a chart later, are in `bench/results/rollsense-subjects.json`.
+
+**The sets.** *Library*: the owner's 759 trip photos (Prague, Japan, Seoul; Lumix, Sony, Fujifilm, an iPhone, a compact that prints the date), unlabelled, its *Other* counted. *Trip*: 200 of them labelled by the owner, enriched with hard photos (all 90 the first rule left unnamed, then 110 at random). *Phone*: 200 of the owner's iPhone roll, labelled on 2026-11-18 (112 screens). The sources by `roll_scan`, the app's own `classify`.
+
+| Round | Library *Other* | Trip right | Phone right | Screenshots found |
+|-------|----------------:|-----------:|------------:|------------------:|
+| 9 subjects, one softmax, 0.5 | 90 | 100/110 (90.9 %) | 162/173 (93.6 %) | |
+| + vehicle, building, night, festival, object | | 124/153 (81.0 %) | 149/160 (93.1 %) | |
+| + vehicle, building, 0.45 | 57 | 144/158 (91.1 %) | 165/177 (93.2 %) | |
+| + buildings and scenery together (`b5637207`) | 30 | 147/163 (90.2 %) | 166/180 (92.2 %) | 101/112 |
+| screen and meme left out for cameras, one bar | 9 | 160/187 (85.6 %) | 166/183 (90.7 %) | 100/112 |
+| routes, lens 0.50 | 14 | 155/175 (88.6 %) | 164/183 (89.6 %) | 102/112 |
+| routes, lens 0.55 | 24 | 151/167 (90.4 %) | 164/181 (90.6 %) | 102/112 |
+| **routes, lens 0.55, screen guarded (shipped)** | **24** | **151/167 (90.4 %)** | **166/180 (92.2 %)** | **101/112** |
+
+**How it was chosen.** Each round passed a rule written before it was measured: no labelled set more than 2 points under the version shipped, then the fewest *Other*. Night (5/14 right), festivals (0/4) and close-up objects (1/6) were left out; vehicles' misses on the trip set were tram interiors and metro stations tagged as buildings. Three independent reviews (statistics, computer vision, product), each defending its view against the other two, all chose the routes at lens 0.55: the gaps between the last rounds are inside the noise (one standard error about 2.2 points at n = 200), but the 8 photos lens 0.50 names beyond 0.55 were right only 4 times, and a wrong name costs more than *Other* since a filter can lead to a delete. The screen route's guard came from the statistics review.
+
+**The blind check.** 100 photos drawn at random from the 711 the shipped routes name on the library, labelled by the owner without seeing the model's subject; the bar was a Wilson 95 % lower bound of 85 %. As labelled, 91/100 (83.8–95.2 %): short of it. Four of the nine misses were trams filling the frame or a tram's interior, tagged as buildings or night; the owner judged them right ("the error is acceptable"): **95/100, 88.8–97.8 %**. By subject: scenery 62/63, vehicles 20/21, buildings 4/4, people 5/5, food 4/7 (potted succulents read as food).
+
+**Next round** (STATUS, v0.14.5), chosen by a new rule written now: the photos a candidate names beyond the current one at least 75 % right, on at least 30 of them, with the Wilson lower bound. Lens-only prompts for a photo of a monitor or a TV, the date-imprint corner cropped, rotated photos left in *Other* read again.
+
+**Reproduce.** `clip_bench --model tinyclip-39m.w8.onnx --labels <set> --images <dir> --subjects <csv> --dump probs.jsonl` for the photos' shares; `roll_scan <dir> --out classes.jsonl` for their sources; candidate label sets by `scripts/models/clip-export.sh --labels-only`. The scripts that recombine them and the labels stay outside the repository.

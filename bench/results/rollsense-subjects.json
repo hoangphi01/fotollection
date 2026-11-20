@@ -1,0 +1,175 @@
+{
+  "about": "RollSense's subjects (FR-141 S6, ADR-0056, ADR-0059): TinyCLIP-39M unchanged, label sets and naming rules measured on the owner's labels (counts only; the photos and their names stay outside the repository). Every round is an exact recomputation from stored per-photo probabilities or embeddings (a softmax over some prompts is the summed shares renormalised). RESULT §42.",
+  "dates": [
+    "2026-11-19",
+    "2026-11-20"
+  ],
+  "machines": {
+    "trip": "Apple M3, release clip_bench (759 photos in 83 s, 6 threads)",
+    "phone": "M720q (i5-8500T), the stored embeddings of the 2026-11-18 sample"
+  },
+  "sets": {
+    "library": "the owner's trip library, 759 photos (Prague, Japan, Seoul; Lumix, Sony, Fujifilm, iPhone, a compact with a date imprint), unlabelled: Other counted",
+    "trip": "200 of them labelled by the owner (multi-tag): all 90 the first rule left unnamed plus 110 random, so enriched with hard photos",
+    "phone": "200 photos of the owner's iPhone roll labelled on 2026-11-18 (112 screen; 78 screenshots, 35 through a lens, 87 other sources)"
+  },
+  "rule": "Written before measuring (2026-11-19): no labelled set loses more than 2 points against the version shipped; fewest Other on the library wins. Replaced for later rounds (2026-11-20, after three reviews: 2 points is under one standard error at n = 200) by: the photos a candidate names beyond the current one are at least 75 % right, on at least 30 such photos, with the Wilson lower bound reported.",
+  "rounds": [
+    {
+      "key": "nine",
+      "en": "9 subjects, one softmax, p ≥ 0.5",
+      "vi": "9 chủ đề, một softmax, p ≥ 0,5",
+      "libraryOther": 90,
+      "trip": {
+        "named": 110,
+        "right": 100
+      },
+      "phone": {
+        "named": 173,
+        "right": 162
+      }
+    },
+    {
+      "key": "five",
+      "en": "+ vehicle, building, night, festival, object (0.5)",
+      "vi": "+ phương tiện, kiến trúc, đêm, lễ hội, đồ vật (0,5)",
+      "trip": {
+        "named": 153,
+        "right": 124
+      },
+      "phone": {
+        "named": 160,
+        "right": 149
+      },
+      "note": "night 5/14, festival 0/4, object 1/6 right: left out"
+    },
+    {
+      "key": "two",
+      "en": "+ vehicle, building (0.45)",
+      "vi": "+ phương tiện, kiến trúc (0,45)",
+      "libraryOther": 57,
+      "trip": {
+        "named": 158,
+        "right": 144
+      },
+      "phone": {
+        "named": 177,
+        "right": 165
+      },
+      "note": "vehicle 44/53 (its misses tram interiors and metro stations tagged otherwise), building 8/9"
+    },
+    {
+      "key": "family",
+      "en": "+ buildings and scenery together (shipped b5637207)",
+      "vi": "+ kiến trúc và phong cảnh cộng chung (đã có ở b5637207)",
+      "libraryOther": 30,
+      "trip": {
+        "named": 163,
+        "right": 147
+      },
+      "phone": {
+        "named": 180,
+        "right": 166
+      },
+      "screenshotsFound": "101/112"
+    },
+    {
+      "key": "no-screen",
+      "en": "screen and meme left out for cameras, one bar 0.45",
+      "vi": "bỏ màn hình và meme cho ảnh máy ảnh, một ngưỡng 0,45",
+      "libraryOther": 9,
+      "trip": {
+        "named": 187,
+        "right": 160
+      },
+      "phone": {
+        "named": 183,
+        "right": 166
+      },
+      "screenshotsFound": "100/112",
+      "note": "fails the rule by 0.9 points: kept out"
+    },
+    {
+      "key": "routes-b",
+      "en": "routes: lens 0.50, screen 0.35, open 0.45",
+      "vi": "ba đường: ống kính 0,50, màn hình 0,35, mở 0,45",
+      "libraryOther": 14,
+      "trip": {
+        "named": 175,
+        "right": 155
+      },
+      "phone": {
+        "named": 183,
+        "right": 164
+      },
+      "screenshotsFound": "102/112",
+      "note": "the 8 trip photos it names beyond C: 4 right"
+    },
+    {
+      "key": "routes-c",
+      "en": "routes: lens 0.55, screen 0.35, open 0.45",
+      "vi": "ba đường: ống kính 0,55, màn hình 0,35, mở 0,45",
+      "libraryOther": 24,
+      "trip": {
+        "named": 167,
+        "right": 151
+      },
+      "phone": {
+        "named": 181,
+        "right": 164
+      },
+      "screenshotsFound": "102/112"
+    },
+    {
+      "key": "routes-c-guard",
+      "en": "routes C + the screen route's guard (shipped)",
+      "vi": "ba đường C + chốt chặn đường màn hình (phát hành)",
+      "libraryOther": 24,
+      "trip": {
+        "named": 167,
+        "right": 151
+      },
+      "phone": {
+        "named": 180,
+        "right": 166
+      },
+      "screenshotsFound": "101/112",
+      "chosen": true
+    }
+  ],
+  "reviews": [
+    "statistics: the A/B/C gaps are inside the noise (Wilson intervals overlap, one SE about 2.2 points); the evidence is the paired margin, B's extra names at about 50 %; ship C, pre-register a marginal rule, check 100 random named photos blind",
+    "computer vision: masking subjects by the source is a correct prior (metadata 99.6 % right); the screen prompts describe screenshots, so no screen on the lens route; per-route bars are required; ship C",
+    "product: a wrong name costs more than Other because a filter can lead to a delete; ship C; deletes already pass through To delete"
+  ],
+  "blindCheck": {
+    "date": "2026-11-20",
+    "sample": "100 photos drawn at random (seed 20261120) from the 711 the shipped routes name on the 759-photo library, labelled by the owner without seeing the model's subject",
+    "bar": "Wilson 95 % lower bound ≥ 85 %",
+    "asLabelled": {
+      "right": 91,
+      "of": 100,
+      "wilson95": [
+        83.8,
+        95.2
+      ]
+    },
+    "afterReview": {
+      "right": 95,
+      "of": 100,
+      "wilson95": [
+        88.8,
+        97.8
+      ],
+      "note": "the owner judged 4 photos right as vehicles (a tram filling the frame, a tram's interior) that the labels had tagged building, night or scenery (owner, 2026-11-20: 'the error is acceptable')"
+    },
+    "perSubject": {
+      "scenery": "62/63",
+      "vehicle": "16/21 as labelled, 20/21 after review",
+      "building": "4/4",
+      "people": "5/5",
+      "food": "4/7"
+    },
+    "realErrors": "potted succulents named food (2), a street without a vehicle named vehicle (1); borderline: a metro sign as scenery, a person eating as food"
+  }
+}

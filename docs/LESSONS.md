@@ -90,6 +90,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### measure
 
+- A model's choices follow what the metadata knows (the route by source), and a selection rule's margin exceeds its noise: judge the newly named photos (≥ 75 % on ≥ 30) and release on a blind random sample. Kept by: ADR-0059, RESULT §42.
 - A zero-shot label set is measured on every kind of roll it meets, counting the unnamed and the catch-all's share, its misses looked at before a label is dropped. Kept by: OPTIMIZATION §5 (2026-11-19), `clip_bench`.
 - Measure or observe before guessing; read the checker's or dependency's source before a third guess. Kept by: no machine check yet.
 - Check that a benchmark measures what the app does, and time each stage of one item, before optimizing a number. Kept by: `measure_folder` mirrors the app.
@@ -139,6 +140,15 @@ Read this table in full before any task; then read in full every entry whose Are
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - A layout with a chosen board copies the board's measured numbers and has a test per part against them. Kept by: `fr_130_the_upright_card_matches_board_a` and its siblings.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
+
+## 2026-11-20
+
+### Every photo asked the same question: the source was known and unused (FR-141)
+
+- **Area:** measure, spec-request
+- **Seen:** people photos from a compact that prints the date stayed under *Other*, the *screen* prompts taking up to 0.43 of their probability; screenshots were weighed against scenery (owner, 2026-11-20: "not every photo should go through the softmax; split the metadata first").
+- **Why:** ADR-0054 read the source from the metadata before the pixels, 99.6 % right, but the subjects ignored it: one softmax over every subject for every file.
+- **Rule:** a model's choices follow what the metadata already knows (ADR-0059): a camera's photo is never a screenshot, a screenshot never scenery, each route measured with its own bar, a misread source guarded. A selection rule's margin must exceed its noise: at n = 200 one standard error is about 2.2 points, so a candidate is judged on the photos it names beyond the current one (≥ 75 % right on ≥ 30), and a release on a blind random sample.
 
 ## 2026-11-19
 
