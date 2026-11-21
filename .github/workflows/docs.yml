@@ -39,6 +39,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # bench/chart.mjs, which check-docs runs to find stale charts, reads the site's language
+      # registry through js-yaml; only that package, not the whole workspace.
+      - name: The one package the chart check reads
+        run: npm install --no-save --no-package-lock --ignore-scripts --workspaces=false js-yaml@4.1.0
+
       - name: Requirement & index consistency
         run: bash scripts/check-docs.sh
 

@@ -75,6 +75,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### release-ci
 
+- A check added to `check-docs.sh` that runs a script reading an npm package installs that package in the `docs` workflow, which has none. Kept by: CI's `docs` workflow.
 - After every push, look at every workflow it started (`gh run list`), CI and pages too, not only the one expected (learnt three times). Kept by: no machine check yet.
 - Every check CI runs also runs locally before a push; when one fails only in CI, its twin joins the local checks. Kept by: `check-lego`, `check-docs.sh`, `check-docs-with-code.sh`, `cargo deny check advisories licenses bans sources` in the pre-push hook.
 - A new crate passes `cargo deny check advisories` before its first commit; one that calls the OS is read for its Windows path, and a crate with its data bundled, the same on every system, is preferred. Kept by: the pre-push hook (advisories when a manifest changes).
@@ -152,6 +153,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-21
+
+### CI's docs check red on a package the Mac had (release-ci)
+
+- **Area:** release-ci
+- **Seen:** the push of v0.14.4 turned the `docs` workflow red: `bench/chart.mjs`, run by `check-docs.sh` since the stale-chart check of 2026-11-21, could not find `js-yaml`; every local run had passed.
+- **Why:** this Mac has the workspace's packages installed; the `docs` workflow runs on a bare checkout with no `npm ci`.
+- **Fix:** the workflow installs the one package the check reads (`js-yaml@4.1.0`) before `check-docs.sh`.
+- **Rule:** see the Rules table (release-ci): a check that runs a script reading a package names it in the workflow that runs the check.
 
 ### Re-measuring asked for numbers already measured, instead of telling their story (measure)
 
