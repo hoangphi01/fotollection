@@ -159,7 +159,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Area:** release-ci
 - **Seen:** the push of v0.14.4 turned the `docs` workflow red: `bench/chart.mjs`, run by `check-docs.sh` since the stale-chart check of 2026-11-21, could not find `js-yaml`; every local run had passed.
 - **Why:** this Mac has the workspace's packages installed; the `docs` workflow runs on a bare checkout with no `npm ci`.
-- **Fix:** the workflow installs the one package the check reads (`js-yaml@4.1.0`) before `check-docs.sh`.
+- **Fix:** the workflow installs the one package the check reads (`js-yaml@4.1.0`) aside and copies it in before `check-docs.sh`; a first try with `npm install js-yaml` at the root installed the whole workspace, and with Eleventy present `check-docs` built the site, which lacked the pages workflow's `changelog.md`.
 - **Rule:** see the Rules table (release-ci): a check that runs a script reading a package names it in the workflow that runs the check.
 
 ### Re-measuring asked for numbers already measured, instead of telling their story (measure)

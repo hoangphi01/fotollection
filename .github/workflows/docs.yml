@@ -40,9 +40,13 @@ jobs:
       - uses: actions/checkout@v4
 
       # bench/chart.mjs, which check-docs runs to find stale charts, reads the site's language
-      # registry through js-yaml; only that package, not the whole workspace.
+      # registry through js-yaml: only that package (and its one dependency), installed aside and
+      # copied in, since `npm install <pkg>` at the root installs the whole workspace, and with
+      # Eleventy present check-docs builds the site, which needs the pages workflow's changelog.
       - name: The one package the chart check reads
-        run: npm install --no-save --no-package-lock --ignore-scripts --workspaces=false js-yaml@4.1.0
+        run: |
+          npm install --prefix "$RUNNER_TEMP/jsy" --no-save --ignore-scripts js-yaml@4.1.0
+          cp -R "$RUNNER_TEMP/jsy/node_modules" ./node_modules
 
       - name: Requirement & index consistency
         run: bash scripts/check-docs.sh
