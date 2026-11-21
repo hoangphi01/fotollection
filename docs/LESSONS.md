@@ -94,6 +94,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - A model's choices follow what the metadata knows (the route by source), and a selection rule's margin exceeds its noise: judge the newly named photos (≥ 75 % on ≥ 30) and release on a blind random sample. Kept by: ADR-0059, RESULT §42.
 - A zero-shot label set is measured on every kind of roll it meets, counting the unnamed and the catch-all's share, its misses looked at before a label is dropped. Kept by: OPTIMIZATION §5 (2026-11-19), `clip_bench`.
+- Memory is judged on the footprint of every process the work uses, summed at each instant, and growth on many repeats of one input; a system framework that keeps memory is moved to a child, not tuned. Kept by: `os_decode_child` (the test process flat over 8 develops, the child must serve them).
 - A comparison with an older Fotollection builds that code and runs both the same hour; an old log mixes the machine's change with the code's. Kept by: no machine check yet.
 - Measure or observe before guessing; read the checker's or dependency's source before a third guess. Kept by: no machine check yet.
 - Check that a benchmark measures what the app does, and time each stage of one item, before optimizing a number. Kept by: `measure_folder` mirrors the app.
@@ -147,6 +148,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-20
+
+### macOS's RAW develop kept 120 MB a photo that nothing in process gave back (measure)
+
+- **Area:** measure
+- **Seen:** the Prague trip's export at 3.62 GB against 2 GB; RSS alone looked bounded (it levels off once macOS compresses), the footprint did not: one RW2 developed 40 times reached 6.44 GB.
+- **Why:** `ImageIO`'s RAW develop keeps memory for the life of the process; turning its cache off, removing its cache per index and an autorelease pool changed nothing. A child per develop would have thrown away the warm pipeline too (the first develop 600 ms, the next 375).
+- **Fix:** one child serving develops in turn, replaced after twelve or when idle (ADR-0060); the trip's summed footprint 6.14 → 3.46 GB, pixels byte-identical. Replacing it after four cost 11.6 % on a RAW export, which the whole trip hid in its spread: a cost on a small part of a run is measured on that part alone. Two supervisors caught on the way: the fallback must not re-run a file that crashed the system's develop in process, and bytes left by one answer must not fail the next file.
+- **Rule:** see the Rules table (measure): the footprint of every process summed, many repeats of one input, a framework that keeps memory moved to a child. Kept by: `os_decode_child`, `nfr_004_*`.
 
 ### The monthly comparison read October's log, and the log did not reproduce (measure)
 

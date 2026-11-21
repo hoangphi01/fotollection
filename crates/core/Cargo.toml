@@ -44,5 +44,10 @@ criterion.workspace = true
 little_exif.workspace = true
 tempfile.workspace = true
 
+# Its own main: the executable is also the RAW develop's child (ADR-0060).
+[[test]]
+name = "os_decode_child"
+harness = false
+
 [lints]
 workspace = true

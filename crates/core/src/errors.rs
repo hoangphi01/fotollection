@@ -129,6 +129,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("render.failed", "ERR-RUS-0004"),
     ("panic", "ERR-RUS-0005"),
     ("sorting.clip_failed", "ERR-RUS-0006"),
+    ("raw.child_failed", "ERR-RUS-0007"),
 ];
 
 /// The `ERR-` code for a stable Rust error code. Every code the app raises has a row (the

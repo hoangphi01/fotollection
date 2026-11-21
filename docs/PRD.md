@@ -1511,7 +1511,7 @@ Export (decode → crop → stamp → encode → write) runs at **8 or more 24 M
 
 ### NFR-004 — Memory ceiling
 
-Peak resident memory during export stays **at or below 2 GB**, regardless of batch size. The preview's own caches are sized apart, to a quarter of the machine's RAM ([FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well), owner, 2026-11-05).
+Peak resident memory during export stays **at or below 2 GB**, regardless of batch size. A camera RAW developed by macOS's `ImageIO` (Panasonic and Olympus, for the system's lens correction) is the one exception (owner, 2026-11-20, [ADR-0060](adr/0060-imageio-raw-develop-in-a-child-process.md)): one system develop alone peaks at 2.4 GB, so for an export with such files the app and its develop child together stay **at or below 3.5 GB** of memory footprint, judged on the median of 3 runs (owner, 2026-11-21), and memory never grows with the number of photos. The preview's own caches are sized apart, to a quarter of the machine's RAM ([FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well), owner, 2026-11-05).
 
 ### NFR-005 — UI responsiveness
 

@@ -3,6 +3,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
+    // First: started as macOS's RAW develop child, it only serves develops (ADR-0060).
+    if fotollection_core::raw_child::serve() {
+        return;
+    }
     #[cfg(target_os = "linux")]
     nvidia_webkit_workaround();
     fotollection_lib::run();

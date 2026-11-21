@@ -63,6 +63,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0057](0057-rollsense-pick-carries-into-photos.md) | RollSense's pick carries into Photos, always named by a violet chip in the toolbar; export and colour follow it; session state only | Accepted (amended 2026-11-19: the actions on a bar under the toolbar) | 2026-11-18 |
 | [0058](0058-time-model-utc-instant-zone-anchors.md) | Time model: a UTC instant per photo from anchors in the photo (GPS time, its offset, the corrected camera clock), shown in the place's zone; a home zone for clocks without one; never the computer's clock | Accepted | 2026-11-19 |
 | [0059](0059-subjects-routed-by-source.md) | RollSense's subjects routed by the photo's source, read from the metadata first: a lens photo is never a screenshot or a meme, a screenshot never scenery (with a guard), each route its own bar; chosen on the owner's labels and three reviews | Accepted | 2026-11-20 |
+| [0060](0060-imageio-raw-develop-in-a-child-process.md) | macOS's RAW develop (`ImageIO`) runs in the app's own executable started again, one child serving develops in turn, replaced after twelve or when idle, so its dead memory goes back; NFR-004 restated for that path at 3.5 GB summed | Accepted | 2026-11-20 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

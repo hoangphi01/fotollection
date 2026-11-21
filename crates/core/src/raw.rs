@@ -17,7 +17,7 @@ use crate::image::RgbImage;
 /// this much of a file's head.
 pub const HEAD_BYTES: usize = 64 * 1024;
 
-const LIMITS: fotollection_oscodec::Limits = fotollection_oscodec::Limits {
+pub(crate) const LIMITS: fotollection_oscodec::Limits = fotollection_oscodec::Limits {
     max_edge: MAX_EDGE,
     max_pixels: MAX_PIXELS,
 };
@@ -340,9 +340,16 @@ impl RawDecoder for Os {
     /// 8 bits, so the RAW sliders still act before its tone, with no headroom above white.
     fn develop(&self, bytes: &[u8], kind: RawKind) -> Result<Developed, CodecError> {
         intact(bytes, kind)?;
-        let format = fotollection_oscodec::Format::Raw(kind);
-        let developed =
-            decoded(fotollection_oscodec::decode(bytes, format, LIMITS).map_err(error)?)?;
+        // In a child where the app set one up: ImageIO keeps memory no develop gives back
+        // (ADR-0060, NFR-004).
+        #[cfg(target_os = "macos")]
+        let child = crate::raw_child::decode(bytes, kind);
+        #[cfg(not(target_os = "macos"))]
+        let child = None;
+        let image = child.unwrap_or_else(|| {
+            fotollection_oscodec::decode(bytes, fotollection_oscodec::Format::Raw(kind), LIMITS)
+        });
+        let developed = decoded(image.map_err(error)?)?;
         let table: Vec<f32> = (0..=255u8)
             .map(|v| srgb_to_linear(f32::from(v) / 255.0))
             .collect();

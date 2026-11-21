@@ -57,6 +57,7 @@ pub mod print_size;
 pub mod project;
 pub mod quicktime;
 pub mod raw;
+pub mod raw_child;
 pub mod raw_finish;
 pub mod render;
 pub mod settings;

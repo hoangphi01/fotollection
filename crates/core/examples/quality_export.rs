@@ -22,6 +22,13 @@ use fotollection_core::settings::RenderSettings;
 use fotollection_core::share::{ExportTarget, SharePreset};
 
 fn main() {
+    // The app's RAW path: macOS develops in this executable started again (ADR-0060).
+    if fotollection_core::raw_child::serve() {
+        return;
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        fotollection_core::raw_child::use_child(exe);
+    }
     let mut args: Vec<String> = std::env::args().skip(1).collect();
     let target = if args.first().is_some_and(|a| a == "--share") {
         let preset = match args.get(1).map(String::as_str) {

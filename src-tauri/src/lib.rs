@@ -356,6 +356,10 @@ fn log_panics() {
 
 pub fn run() {
     timing::start();
+    // macOS's RAW develop runs in this executable started again (ADR-0060).
+    if let Ok(exe) = std::env::current_exe() {
+        fotollection_core::raw_child::use_child(exe);
+    }
     let builder = specta_builder();
 
     #[cfg(debug_assertions)]

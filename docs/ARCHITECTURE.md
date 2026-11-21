@@ -58,6 +58,7 @@ crates/
       errors.rs          † # the ERR-<KIND>-<NNNN> code of every stable error code, held equal to docs/ERROR_CONTROL.md by its tests
       error_log.rs       † # the offline error log: one line per error and panic, rotated 5 × 1 MB, paths and file names cut to their extension; the text of Copy diagnostics
       raw.rs             † # camera RAW: the format from its bytes, the `RawDecoder`s tried in order (our own DNG reader, rawler, the OS codec; the OS codec second on macOS, last elsewhere), one full develop at a time (FR-016, ADR-0029, ADR-0030)
+      raw_child.rs       † # macOS's RAW develop in the app's own executable started again (ADR-0060): one child serving develops in turn, replaced after twelve or when idle, its answer checked before anything is allocated
       raw_finish.rs      † # a rawler develop finished to the camera's look: per-channel curves matched to the embedded JPEG, or an automatic exposure and S curve (ADR-0029)
       image.rs           † # RgbImage + EXIF orientation transforms
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002); one 128 KB head read gives the EXIF and the facts; `Software`, sub-seconds, the pixel size (EXIF, else the JPEG SOF, PNG IHDR or HEIF `ispe`), `UserComment` as a kind only and Apple's MakerNote (FR-141)
@@ -269,6 +270,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 
   Visible thumbnails therefore never wait behind background work. A request for a photo whose T1 isn't ready gets the embedded T0 at once.
 - A RAW develop runs one at a time (`raw::DEVELOP`, NFR-004), on a plain thread of its own, never on a pool thread: a pool thread waiting for the develop's rayon work would take up other requests meanwhile, and one asking for a develop would wait for the lock its own thread holds (LESSONS 2026-11-03). Its parallel work runs on a pool of its own (`raw::develop_pool`), never the global one, where callers waiting for the lock could hold every thread (LESSONS 2026-11-05).
+- On macOS the system's develop (`ImageIO`, RW2 and ORF first) runs in a **child process**, the app's own executable started with `--os-decode` (`raw_child.rs`, [ADR-0060](adr/0060-imageio-raw-develop-in-a-child-process.md)): `ImageIO` keeps about 120 MB a develop that nothing in process gives back. One child serves the develops in turn inside the develop gate, is replaced after twelve or after 30 s idle, and a watchdog thread kills one that hangs past 120 s; the lock over it is held only for the request and the answer, never over the conversion or rayon work.
 
 ## 6. IPC contract
 

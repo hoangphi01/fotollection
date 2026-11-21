@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - New: a **month calendar** for RollSense's dates; a ticked day splits the gallery by its events, in the local time of the place.
 - New: **Home time**, chosen on the welcome, so photos keep the right time when the computer travels.
 - UI update: deleting is one place, **To delete**, moved to the Trash at once.
+- Fixes: on macOS, exporting Panasonic and Olympus RAW files no longer takes more memory with each photo.
 
 ### Added
 
@@ -54,6 +55,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- On macOS, Panasonic and Olympus RAW files are developed by the system in a short-lived helper process, so memory no longer grows with each photo: the Prague trip's export peaks at 3.5 GB of memory footprint (the app and its helper together) instead of 6.1 GB, RAW files about 8 % slower, with the same pixels; a damaged file that stops the system's develop no longer risks the app.
 - The gallery's first row of photos sits as far from the toolbar as from the column's sides (16 px).
 - The search field of the place and home-time pickers sits as far from the list's bottom edge as from its top and sides.
 - **Home time**'s toggle and its place sit 12 px apart, as two rows, and the place folds away with *Computer*.

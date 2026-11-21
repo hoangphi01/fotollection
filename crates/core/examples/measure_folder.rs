@@ -65,6 +65,13 @@ fn discard_finished(dir: &Path) {
 }
 
 fn main() {
+    // The app's RAW path: macOS develops in this executable started again (ADR-0060).
+    if fotollection_core::raw_child::serve() {
+        return;
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        fotollection_core::raw_child::use_child(exe);
+    }
     let args: Vec<String> = std::env::args().skip(1).collect();
     let json = args.iter().any(|a| a == "--json");
     let discard = args.iter().any(|a| a == "--discard-output");
