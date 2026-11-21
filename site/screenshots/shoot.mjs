@@ -233,7 +233,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     list_groups: () => common.list_groups,
     sort_facets: () => common.sort_facets, // RollSense (FR-141): recorded; its pass is done
     analyze_sorting: () => 1,
-    ...window.__senseAnswers, // RollSense's calendar and the home time (side-panels.mjs)
+    ...window.__senseAnswers, ...window.__senseRecorded?.(common), // RollSense's calendar, map and the home time (side-panels.mjs)
     // Dumps recorded before FR-056 have no folder list: count it from the photos. A few
     // photos sit in the print basket and set aside (FR-050), as after a culling session.
     list_photos: (a) => {
@@ -248,7 +248,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
       const all = withQueues(list.photos)
       return {
         ...list,
-        photos: inView(all, a?.filter),
+        photos: (window.__senseNarrow ?? ((p) => p))(inView(all, a?.filter), a?.filter, common),
         folders,
         queueCounts: Object.fromEntries(['print', 'aside', 'delete'].map((q) => [q, all.filter((p) => p.queue === q).length])),
       }

@@ -575,53 +575,149 @@
     "minPx": null,
     "text": null
   },
-  "rollsense-phone-en-dark": {
+  "rollsense-cleanup-phone-en-dark": {
     "width": 320,
     "height": 400,
     "minPx": 11.32,
     "text": "M"
+  },
+  "rollsense-cleanup-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "M"
+  },
+  "rollsense-cleanup-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "日"
+  },
+  "rollsense-cleanup-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "日"
+  },
+  "rollsense-cleanup-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "일"
+  },
+  "rollsense-cleanup-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "일"
+  },
+  "rollsense-cleanup-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "T2"
+  },
+  "rollsense-cleanup-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "T2"
+  },
+  "rollsense-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
   },
   "rollsense-phone-en-light": {
     "width": 320,
     "height": 400,
-    "minPx": 11.32,
-    "text": "M"
+    "minPx": 11.38,
+    "text": "1"
   },
   "rollsense-phone-ja-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 11.32,
-    "text": "日"
+    "minPx": 11.38,
+    "text": "1"
   },
   "rollsense-phone-ja-light": {
     "width": 320,
     "height": 400,
-    "minPx": 11.32,
-    "text": "日"
+    "minPx": 11.38,
+    "text": "1"
   },
   "rollsense-phone-ko-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 11.32,
-    "text": "일"
+    "minPx": 11.38,
+    "text": "1"
   },
   "rollsense-phone-ko-light": {
     "width": 320,
     "height": 400,
-    "minPx": 11.32,
-    "text": "일"
+    "minPx": 11.38,
+    "text": "1"
   },
   "rollsense-phone-vi-dark": {
     "width": 320,
     "height": 400,
-    "minPx": 11.32,
-    "text": "T2"
+    "minPx": 11.38,
+    "text": "1"
   },
   "rollsense-phone-vi-light": {
     "width": 320,
     "height": 400,
-    "minPx": 11.32,
-    "text": "T2"
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "rollsense-where-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "rollsense-where-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "rollsense-where-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.55,
+    "text": "7"
+  },
+  "rollsense-where-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 12.55,
+    "text": "7"
+  },
+  "rollsense-where-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "rollsense-where-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "rollsense-where-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
+  },
+  "rollsense-where-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.38,
+    "text": "1"
   },
   "select-phone-en-dark": {
     "width": 320,

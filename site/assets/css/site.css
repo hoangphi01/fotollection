@@ -381,6 +381,9 @@ html[data-os='mobile'] .cta-phone { display: flex; order: -1; }
 .sense-points li { display: grid; grid-template-columns: 28px 1fr; gap: 14px; align-items: start; }
 .sense-points li p { margin: 2px 0 0; color: var(--ink-2); }
 .sense-cards .card > .sense-key { margin-bottom: 14px; }
+.sense-cards { margin-top: 56px; }
+.sense-chips { list-style: none; margin: 28px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.sense-chips li { display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-weight: 600; font-size: 0.95rem; }
 .more { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--brand); text-decoration: none; }
 .more:hover { text-decoration: underline; }
 

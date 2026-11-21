@@ -27,6 +27,21 @@ export function senseAnswers() {
     home_zone_guess: () => 'Europe/Prague',
     zone_search: () => [{ zone: 'Asia/Seoul', place: 'Seoul', country: 'South Korea' }],
   }
+  // The grid under RollSense's picks (FR-141), from the photos each pick kept in the recording
+  // (`sort_members`, demo.rs): one card's picks widen, different cards' narrow; a kind the
+  // recording has no members for (a day, a month) leaves the grid as it is.
+  // The Where card's map, as recorded (demo.rs); none in older recordings.
+  window.__senseRecorded = (common) => ({ country_map: ({ country }) => common.country_map?.[country] ?? null })
+  window.__senseNarrow = (photos, filter, common) => {
+    const members = common.sort_members ?? {}
+    const key = (pick) => JSON.stringify(Object.fromEntries(Object.entries(pick).sort()))
+    const kinds = {}
+    for (const pick of filter?.sort ?? []) {
+      const ids = members[key(pick)]
+      if (ids) (kinds[pick.kind] ??= new Set()), ids.forEach((id) => kinds[pick.kind].add(id))
+    }
+    return Object.values(kinds).reduce((list, ids) => list.filter((p) => ids.has(p.id)), photos)
+  }
 }
 
 /** Measures Simple's panel and RollSense's into `rows`, their checks into `extra`. */
@@ -89,20 +104,41 @@ export async function measureSidePanels({ open, settle, measure, allChecks, say,
 }
 
 /**
- * RollSense's picture for the home and Features pages (#rollsense, FR-141): its column, Clean up
- * when the recording has some, and the groups beside the photos; its phone crop the column from
- * its top. True when SHOT_ONLY=rollsense asks for it alone.
+ * RollSense's pictures for the home and Features pages (#rollsense, FR-141), each from the top of
+ * its column: `rollsense` a subject ticked (Scenery) and the grid narrowed to it, the Subject card
+ * in view; `rollsense-cleanup` Clean up over the whole roll; `rollsense-where` the Where card's
+ * map, its first pin ticked. Their phone crops are the column, Where's from its card. True
+ * when SHOT_ONLY=rollsense asks for them alone.
  */
 export async function shootRollSense({ open, settle, save, say, PHONE }, { language, theme }) {
-  PHONE.rollsense ??= async (page) => {
+  const column = async (page) => {
     const b = await page.locator('aside.border-l').boundingBox()
     return b && { x: b.x, y: b.y, width: b.width, height: 400 }
   }
-  const { context, page } = await open({ scenario: 'stamp', language, theme })
-  await page.getByRole('button', { name: say('rollsense.view') }).click()
-  await page.mouse.move(720, 880) // off the button, so its hint does not show
-  await settle(page)
-  await save(page, `rollsense-${language}-${theme}`)
-  await context.close()
+  for (const name of ['rollsense', 'rollsense-cleanup']) PHONE[name] ??= column
+  // Where's crop from its card's head, so the map and its pressed pin show.
+  PHONE['rollsense-where'] ??= async (page) => {
+    const [a, b] = await Promise.all([column(page), page.locator('aside.border-l section', { has: page.getByText(say('rollsense.places')) }).last().boundingBox()])
+    return a && b && { ...a, y: b.y - 8 }
+  }
+  const shots = [
+    ['rollsense', (aside) => aside.getByText(say('rollsense.subject.scenery')).first(), true],
+    ['rollsense-cleanup', (aside) => aside.getByText(say('rollsense.cleanup')).first(), false],
+    ['rollsense-where', (aside) => aside.getByText(say('rollsense.places')).first(), (aside) => aside.locator('button:has([data-slot="sense-key"])').first()],
+  ]
+  for (const [name, target, tick] of shots) {
+    const { context, page } = await open({ scenario: 'stamp', language, theme })
+    await page.getByRole('button', { name: say('rollsense.view') }).click()
+    await page.mouse.move(720, 880) // off the button, so its hint does not show
+    await settle(page)
+    const aside = page.locator('aside.border-l')
+    // The card's head at the top of the column, so the card shows whole.
+    await target(aside).evaluate((e) => e.closest('section')?.scrollIntoView({ block: 'start' }))
+    if (tick) await (tick === true ? target(aside) : tick(aside)).click()
+    await page.mouse.move(720, 880)
+    await settle(page)
+    await save(page, `${name}-${language}-${theme}`)
+    await context.close()
+  }
   return process.env.SHOT_ONLY === 'rollsense'
 }

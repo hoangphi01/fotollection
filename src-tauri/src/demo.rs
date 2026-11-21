@@ -160,6 +160,51 @@ fn prepare(app: &AppHandle, folder: PathBuf) -> Result<Vec<PhotoId>, String> {
     Ok(ids)
 }
 
+/// Each RollSense pick the facets offer (a source, a subject, a place, a clean-up row's picks)
+/// with the photos it keeps, keyed by the pick's JSON: the website's screenshots tick one and
+/// the grid narrows as the app's does (FR-141).
+fn sort_members(app: &AppHandle, facets: &Value) -> Result<Value, String> {
+    let list = |key: &str| facets[key].as_array().cloned().unwrap_or_default();
+    let mut picks: Vec<Value> = Vec::new();
+    picks.extend(
+        list("sources")
+            .iter()
+            .map(|c| json!({ "kind": "source", "class": c["value"] })),
+    );
+    picks.extend(
+        list("subjects")
+            .iter()
+            .map(|c| json!({ "kind": "subject", "key": c["value"] })),
+    );
+    for country in list("countries") {
+        let places = country["places"].as_array().cloned().unwrap_or_default();
+        picks.extend(
+            places
+                .iter()
+                .map(|p| json!({ "kind": "place", "id": p["id"] })),
+        );
+    }
+    for row in list("cleanup") {
+        picks.extend(row["picks"].as_array().cloned().unwrap_or_default());
+    }
+    let mut members = serde_json::Map::new();
+    for pick in picks {
+        let filter = CullFilter {
+            sort: vec![serde_json::from_value(pick.clone()).map_err(|e| e.to_string())?],
+            ..CullFilter::default()
+        };
+        let shown = ok(commands::list_photos(app.state(), filter))?;
+        let ids: Vec<Value> = shown["photos"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .map(|p| p["id"].clone())
+            .collect();
+        members.insert(pick.to_string(), Value::Array(ids));
+    }
+    Ok(Value::Object(members))
+}
+
 /// Answers that do not depend on the look, and the thumbnails and source images.
 fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, String> {
     let state = app.state::<AppState>();
@@ -176,10 +221,21 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
         to_json(document::get_document(app.state()))?,
     );
     common.insert("list_groups", ok(culling::list_groups(app.state()))?);
-    common.insert(
-        "sort_facets",
-        ok(crate::sorting::sort_facets(app.state(), Vec::new()))?,
-    );
+    let facets = ok(crate::sorting::sort_facets(app.state(), Vec::new()))?;
+    common.insert("sort_members", sort_members(app, &facets)?);
+    // The Where card's map of each country (FR-141).
+    let mut maps = serde_json::Map::new();
+    for country in facets["countries"].as_array().into_iter().flatten() {
+        let name = country["country"].as_str().unwrap_or_default().to_owned();
+        let map = ok(crate::trips::country_map(
+            app.state(),
+            Vec::new(),
+            name.clone(),
+        ))?;
+        maps.insert(name, map);
+    }
+    common.insert("country_map", Value::Object(maps));
+    common.insert("sort_facets", facets);
     // The Places card and the place picker (FR-005, FR-032), with one search typed.
     common.insert(
         "list_places",

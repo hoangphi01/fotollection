@@ -45,21 +45,48 @@
   </div>
 </section>
 
-{%- comment %} RollSense in full (FR-141, owner 2026-11-21): what it clears out, the window, then its groups, the way it deletes and its speed and privacy, each card on RollSense's violet key as in the app. {% endcomment %}
+{%- comment %} RollSense in full (FR-141, owner 2026-11-21): the nine subjects it names, as violet chips (icons chosen from Lucide, the app's rows have none); then the app's own screens, a subject ticked and the grid narrowed, Clean up, and Where's map with a pin pressed; then its groups, the way it deletes and its speed and privacy. {% endcomment %}
 {%- assign show_sense = t.show_rollsense %}
+{%- assign show_sense_cleanup = t.show_rollsense_cleanup %}
+{%- assign show_sense_where = t.show_rollsense_where %}
 <section class="section sense-section" id="rollsense">
   <div class="wrap">
     <p class="kicker sense-kicker"><span class="sense-key">{% include icons/scan-search.svg %}</span>RollSense · {{ t.sense_new }}</p>
     <h2>{{ t.sense_f_title }}</h2>
     <p class="lead narrow">{{ t.sense_f_lead }}</p>
+    <ul class="sense-chips">
+      {%- assign subjects = "people:users,cat:cat,dog:dog,scenery:mountain,building:building,vehicle:tram-front,food:utensils,document:receipt,meme:laugh" | split: "," -%}
+      {%- for s in subjects -%}
+      {%- assign parts = s | split: ":" -%}
+      {%- capture icon %}icons/{{ parts[1] }}.svg{% endcapture -%}
+      {%- capture name_key %}sense_subj_{{ parts[0] }}{% endcapture %}
+      <li><span class="sense-key">{% include {{ icon }} %}</span>{{ t[name_key] }}</li>
+      {%- endfor %}
+    </ul>
   </div>
   <div class="wrap showcase">
     <div class="showcase-row">
       <figure class="shot">{% include shot.html name="rollsense" alt=show_sense %}</figure>
       <div class="showcase-text">
+        <h3>{{ t.sense_subject_title }}</h3>
+        <p>{{ t.sense_subject_text }}</p>
+        <p class="small muted">{{ t.show_rollsense }}</p>
+      </div>
+    </div>
+    <div class="showcase-row flip">
+      <figure class="shot">{% include shot.html name="rollsense-cleanup" alt=show_sense_cleanup %}</figure>
+      <div class="showcase-text">
         <h3>{{ t.sense_clean_title }}</h3>
         <p>{{ t.sense_clean_text }}</p>
-        <p class="small muted">{{ t.show_rollsense }}</p>
+        <p class="small muted">{{ t.show_rollsense_cleanup }}</p>
+      </div>
+    </div>
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="rollsense-where" alt=show_sense_where %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.sense_where_title }}</h3>
+        <p>{{ t.sense_where_text }}</p>
+        <p class="small muted">{{ t.show_rollsense_where }}</p>
       </div>
     </div>
   </div>

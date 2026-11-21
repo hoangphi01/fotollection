@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- The website shows what RollSense sorts by: the home page's picture ticks a subject and the grid shows only those photos, and the Features page lists the nine subjects and adds the screens of Clean up and of Where's map.
+
 ## [0.14.4] - 2026-11-21 — Sorting
 
 ### Highlights
