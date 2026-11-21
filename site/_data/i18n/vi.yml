@@ -69,6 +69,7 @@ compat_rows:
   - ["Tương phản, vùng tối, vibrance, bão hoà, phơi sáng", "✓", "vào các thanh trượt của look"]
   - ["Khử sương (Dehaze)", "✓", "mới ở v0.14"]
 looks_kicker: "Mới ở v0.14"
+sense_new: "Mới ở v0.14.4"
 looks_title: "Gặp gỡ Looks."
 looks_sub: "Nhìn lại ảnh của bạn theo một cách khác."
 looks_lead_1: "Lightroom gọi là preset. LUMIX gọi là LUT. Ở Fotollection, cả hai đều là "

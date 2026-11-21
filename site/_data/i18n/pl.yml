@@ -69,6 +69,7 @@ compat_rows:
   - ["Kontrast, cienie, jaskrawość, nasycenie, ekspozycja", "✓", "na własnych suwakach looku"]
   - ["Usuwanie mgły", "✓", "nowość w v0.14"]
 looks_kicker: "Nowość w v0.14"
+sense_new: "Nowość w v0.14.4"
 looks_title: "Poznaj Looki."
 looks_sub: "Nowy sposób patrzenia na twoje zdjęcia."
 looks_lead_1: "Lightroom mówi na to preset. LUMIX mówi LUT. W Fotollection jedno i drugie to "

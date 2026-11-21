@@ -69,6 +69,7 @@ compat_rows:
   - ["Kontrast, stíny, živost, sytost, expozice", "✓", "na vlastních posuvnících looku"]
   - ["Odstranění závoje", "✓", "od verze 0.14"]
 looks_kicker: "Novinka ve verzi 0.14"
+sense_new: "Novinka ve verzi 0.14.4"
 looks_title: "Looky ve Fotollection."
 looks_sub: "Presety a LUTy na jednom místě."
 looks_lead_1: "Lightroom tomu říká preset. LUMIX tomu říká LUT. Ve Fotollection je obojí "

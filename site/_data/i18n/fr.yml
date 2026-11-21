@@ -70,6 +70,7 @@ compat_rows:
   - ["Contraste, ombres, vibrance, saturation, exposition", "✓", "sur les curseurs propres du look"]
   - ["Correction du voile", "✓", "nouveau dans la v0.14"]
 looks_kicker: "Nouveau dans la v0.14"
+sense_new: "Nouveau dans la v0.14.4"
 looks_title: "Voici les looks."
 looks_sub: "Une nouvelle façon de voir vos photos."
 looks_lead_1: "Lightroom appelle ça un preset. LUMIX appelle ça une LUT. Dans Fotollection, les deux sont "

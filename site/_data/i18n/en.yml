@@ -69,6 +69,7 @@ compat_rows:
   - ["Contrast, shadows, vibrance, saturation, exposure", "✓", "on the look's own sliders"]
   - ["Dehaze", "✓", "new in v0.14"]
 looks_kicker: "New in v0.14"
+sense_new: "New in v0.14.4"
 looks_title: "Meet Looks."
 looks_sub: "A new way to see your photos."
 looks_lead_1: "Lightroom calls it a preset. LUMIX calls it a LUT. In Fotollection, both are "

@@ -69,6 +69,7 @@ compat_rows:
   - ["Kontraszt, árnyékok, élénkség, telítettség, expozíció", "✓", "a look saját csúszkáin"]
   - ["Párátlanítás", "✓", "új a v0.14-ben"]
 looks_kicker: "Új a v0.14-ben"
+sense_new: "Új a v0.14.4-ben"
 looks_title: "Íme, a Looks."
 looks_sub: "Új módja annak, hogy lásd a fotóidat."
 looks_lead_1: "A Lightroom szerint preset. A LUMIX szerint LUT. A Fotollection szerint mindkettő "

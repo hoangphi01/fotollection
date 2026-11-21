@@ -69,6 +69,7 @@ compat_rows:
   - ["대비, 어두운 영역, 생동감, 채도, 노출", "✓", "룩 전용 슬라이더로"]
   - ["디헤이즈", "✓", "v0.14의 새로운 기능"]
 looks_kicker: "v0.14의 새로운 기능"
+sense_new: "v0.14.4의 새로운 기능"
 looks_title: "Looks를 소개해요."
 looks_sub: "사진을 보는 새로운 방법."
 looks_lead_1: "Lightroom에서는 프리셋. LUMIX에서는 LUT. Fotollection에서는 둘 다 "

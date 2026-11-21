@@ -69,6 +69,7 @@ compat_rows:
   - ["Kontrast, Tiefen, Dynamik, Sättigung, Belichtung", "✓", "auf den eigenen Reglern des Looks"]
   - ["Dunst entfernen", "✓", "neu in v0.14"]
 looks_kicker: "Neu in v0.14"
+sense_new: "Neu in v0.14.4"
 looks_title: "Das sind Looks."
 looks_sub: "Ein neuer Blick auf deine Fotos."
 looks_lead_1: "Lightroom nennt es Preset. LUMIX nennt es LUT. In Fotollection ist beides "

@@ -69,6 +69,7 @@ compat_rows:
   - ["コントラスト、シャドウ、自然な彩度、彩度、露光量", "✓", "ルック専用のスライダーで"]
   - ["かすみの除去", "✓", "v0.14の新機能"]
 looks_kicker: "v0.14の新機能"
+sense_new: "v0.14.4の新機能"
 looks_title: "ルック、登場。"
 looks_sub: "写真の新しい見え方。"
 looks_lead_1: "Lightroomではプリセット。LUMIXではLUT。Fotollectionでは、どちらも"
