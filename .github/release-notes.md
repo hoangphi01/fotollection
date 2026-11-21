@@ -2,7 +2,7 @@
 
 Fotollection is free and works offline. The installers are not signed with a paid certificate yet ([why](https://github.com/hoangphi01/fotollection/blob/main/docs/adr/0009-unsigned-distribution.md)), so the first launch needs one extra step:
 
-- **macOS 11 or later** (Apple Silicon and Intel): open the `.dmg` and drag Fotollection to Applications. On the first launch macOS blocks it; open **System Settings → Privacy & Security** and click **Open Anyway**.
+- **macOS 11 or later** (Apple Silicon and Intel): open the `.dmg` and drag Fotollection to Applications. It is signed and notarized by Apple, so it opens at once.
 - **Windows 10/11:** run the `-setup.exe` (or the `.msi`). If SmartScreen says "Windows protected your PC", click **More info → Run anyway**.
 - **Linux** (64-bit, glibc 2.35 or later: Ubuntu 22.04+, Debian 12+, Mint 21+, Fedora 36+, Arch…; [which distributions](https://github.com/hoangphi01/fotollection#linux)):
   - **AppImage**, any of these distributions: `chmod +x Fotollection_*.AppImage`, then run it. Ubuntu 24.04 and newer need FUSE 2 once: `sudo apt install libfuse2t64`.

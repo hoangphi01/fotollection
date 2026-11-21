@@ -10,8 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- Security: the macOS app is signed and notarized by Apple, so it opens without the Privacy & Security step.
+
 ### Changed
 
+- The macOS app and its `.dmg` are signed with a Developer ID and notarized by Apple: a downloaded copy opens at once, with no **Open Anyway** in Privacy & Security. Installed over an earlier version, its first launch may ask again for access to a folder; settings and projects stay.
 - The website shows what RollSense sorts by: the home page's picture ticks a subject and the grid shows only those photos, and the Features page lists the nine subjects and adds the screens of Clean up and of Where's map.
 
 ## [0.14.4] - 2026-11-21 — Sorting

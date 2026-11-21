@@ -1,6 +1,6 @@
 # ADR-0009: Ship unsigned builds (no paid code-signing certificates)
 
-- **Status:** Superseded in part by [ADR-0021](0021-versioning-and-automated-releases.md) (no updater, so no signed updater manifest); unsigned installers stay. Amended by [ADR-0034](0034-linux-lean.md) (Linux)
+- **Status:** Superseded in part by [ADR-0021](0021-versioning-and-automated-releases.md) (no updater, so no signed updater manifest); unsigned installers stay. Amended by [ADR-0034](0034-linux-lean.md) (Linux). Superseded for macOS by [ADR-0061](0061-developer-id-signing-on-macos.md) (Developer ID and notarization from v0.14.5); Windows stays unsigned
 - **Date:** 2026-10-23
 - **Related:** [RELEASE.md §3](../RELEASE.md#3-code-signing), FR-021
 

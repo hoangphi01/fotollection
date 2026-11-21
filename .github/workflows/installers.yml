@@ -1,20 +1,24 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# Builds the Windows installers (MSI and NSIS) without publishing anything, whenever their
-# configuration changes, so an installer error shows up before a release does (LESSONS.md:
-# the WiX fragment of "Open with" failed only at the v0.7.0 release). The MSI also uploads,
-# for checking by hand.
+# Builds the Windows installers (MSI and NSIS) and a signed, notarized macOS .dmg (ADR-0061)
+# without publishing anything, whenever their configuration changes, so an installer or
+# signing error shows up before a release does (LESSONS.md: the WiX fragment of "Open with"
+# failed only at the v0.7.0 release). The installers also upload, for checking by hand.
 name: installers
 
 on:
   push:
     branches: [main]
     paths:
+      - "scripts/notarize-dmg.sh"
+      - "scripts/macos-signing-keys.sh"
       - "src-tauri/windows/**"
       - "src-tauri/tauri.conf.json"
       - "src-tauri/tauri.windows.conf.json"
       - ".github/workflows/installers.yml"
   pull_request:
     paths:
+      - "scripts/notarize-dmg.sh"
+      - "scripts/macos-signing-keys.sh"
       - "src-tauri/windows/**"
       - "src-tauri/tauri.conf.json"
       - "src-tauri/tauri.windows.conf.json"
@@ -60,5 +64,59 @@ jobs:
           path: |
             target/release/bundle/msi/*.msi
             target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+          retention-days: 7
+
+  # Apple Silicon only, half the time of the release's universal build; the signing steps are
+  # the release's own. Pull requests have no secrets, so it runs on pushes and by hand.
+  macos:
+    if: github.event_name != 'pull_request'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: aarch64-apple-darwin
+          cache: false
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: macOS signing keys
+        shell: bash
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          P8: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: scripts/macos-signing-keys.sh
+
+      - name: Build the signed .dmg
+        shell: bash
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+        run: npm run build -- --target aarch64-apple-darwin --bundles dmg
+
+      - name: Notarize the disk image
+        shell: bash
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+        run: scripts/notarize-dmg.sh target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-macos
+          path: target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: error
           retention-days: 7

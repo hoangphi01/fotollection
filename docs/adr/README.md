@@ -12,7 +12,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0006](0006-docs-as-code.md) | Docs-as-code with requirement traceability | Accepted | 2026-10-23 |
 | [0007](0007-ui-react-shadcn-lucide.md) | UI stack: React + shadcn/ui + Lucide | Accepted | 2026-10-23 |
 | [0008](0008-license-gpl3-with-relicensing-option.md) | License: GPL-3.0, keeping the option to relicense | Accepted | 2026-10-23 |
-| [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted, updater part superseded by 0021, amended by 0034 | 2026-10-23 |
+| [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted, updater part superseded by 0021, amended by 0034, macOS superseded by 0061 | 2026-10-23 |
 | [0010](0010-project-file-format.md) | Project file format for culling and edits | Superseded by 0016 | 2026-10-23 |
 | [0011](0011-photo-style-looks.md) | Photo Style looks via baked 3D LUTs, global adjustments only | Accepted, amended by 0036 and 0038 | 2026-10-23 |
 | [0012](0012-pure-rust-codecs-first.md) | Start with pure-Rust JPEG codecs behind a trait | Accepted, supersedes 0004, amended by 0033 | 2026-10-23 |
@@ -64,6 +64,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0058](0058-time-model-utc-instant-zone-anchors.md) | Time model: a UTC instant per photo from anchors in the photo (GPS time, its offset, the corrected camera clock), shown in the place's zone; a home zone for clocks without one; never the computer's clock | Accepted | 2026-11-19 |
 | [0059](0059-subjects-routed-by-source.md) | RollSense's subjects routed by the photo's source, read from the metadata first: a lens photo is never a screenshot or a meme, a screenshot never scenery (with a guard), each route its own bar; chosen on the owner's labels and three reviews | Accepted | 2026-11-20 |
 | [0060](0060-imageio-raw-develop-in-a-child-process.md) | macOS's RAW develop (`ImageIO`) runs in the app's own executable started again, one child serving develops in turn, replaced after twelve or when idle, so its dead memory goes back; NFR-004 restated for that path at 3.5 GB summed | Accepted | 2026-11-20 |
+| [0061](0061-developer-id-signing-on-macos.md) | The macOS app signed with a Developer ID and notarized in the release workflow, the `.dmg` too, checked by Gatekeeper before publishing; Windows stays unsigned | Accepted | 2026-11-21 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

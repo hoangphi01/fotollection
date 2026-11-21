@@ -107,16 +107,39 @@ jobs:
       - name: Install JS dependencies
         run: npm ci
 
-      - name: Build installers (macOS ad-hoc signed, ADR-0009)
+      # Developer ID signing and notarization (ADR-0061): the certificate goes into a keychain
+      # of this job, so Tauri (the app) and notarize-dmg.sh (the disk image) both sign with it.
+      - name: macOS signing keys
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          P8: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: scripts/macos-signing-keys.sh
+
+      - name: Build installers (macOS signed with Developer ID, ADR-0061)
         shell: bash
         env:
           PRERELEASE: ${{ needs.detect.outputs.prerelease }}
+          APPLE_SIGNING_IDENTITY: ${{ runner.os == 'macOS' && secrets.APPLE_SIGNING_IDENTITY || '' }}
+          APPLE_API_ISSUER: ${{ runner.os == 'macOS' && secrets.APPLE_API_ISSUER || '' }}
+          APPLE_API_KEY: ${{ runner.os == 'macOS' && secrets.APPLE_API_KEY || '' }}
         run: |
           args="${{ matrix.args }}"
           # MSI versions cannot carry a pre-release tag such as -beta.1: pre-releases ship NSIS only.
           if [ "$PRERELEASE" = "true" ]; then args="${args/msi,/}"; fi
           # shellcheck disable=SC2086 # the arguments are meant to split
           npm run build -- $args
+
+      - name: Notarize the disk image
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+        run: scripts/notarize-dmg.sh target/universal-apple-darwin/release/bundle/dmg/*.dmg
 
       # Uploaded before the smoke test, so a failed test leaves the installers to try by hand;
       # publish still needs every build job to pass.
