@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.14.4] - 2026-11-21 — Sorting
+
 ### Highlights
 
 - New: **RollSense** sorts a phone's camera roll on this computer: by source, subject, date, trip and place, with duplicates and a clean-up.

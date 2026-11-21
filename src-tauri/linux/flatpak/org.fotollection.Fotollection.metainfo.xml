@@ -83,6 +83,17 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.14.4" date="2026-11-21">
+      <description>
+        <ul>
+          <li>New: RollSense sorts a phone's camera roll on this computer: by source, subject, date, trip and place, with duplicates and a clean-up.</li>
+          <li>New: a month calendar for RollSense's dates; a ticked day splits the gallery by its events, in the local time of the place.</li>
+          <li>New: Home time, chosen on the welcome, so photos keep the right time when the computer travels.</li>
+          <li>UI update: deleting is one place, To delete, moved to the Trash at once.</li>
+          <li>Fixes: on macOS, exporting Panasonic and Olympus RAW files no longer takes more memory with each photo.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.14.3" date="2026-11-16">
       <description>
         <ul>
@@ -169,18 +180,6 @@
           <li>UI update: on macOS the title bar takes the app's own colours</li>
           <li>New: the app tells you at start when a newer version is out, with a red warning if yours should not be used any more</li>
           <li>Fixes: New project no longer drops unsaved work after a restart</li>
-        </ul>
-      </description>
-    </release>
-    <release version="0.12.0" date="2026-11-06">
-      <description>
-        <ul>
-          <li>New: one Settings window, as on an iPad: the gear beside the author's name, or ⌘,</li>
-          <li>New: memory and cache to manage, with Default and Auto for your computer; memory given back when it runs short</li>
-          <li>New: a collage sheet says its pixels and how sharp it prints</li>
-          <li>New: a develop view a Lightroom user can read: its keys, a filmstrip, the whole window with Navigator and History</li>
-          <li>New: before and after side by side, split or one above the other</li>
-          <li>Fixes: zooming into a portrait or turned photo shows it the right way up again</li>
         </ul>
       </description>
     </release>
