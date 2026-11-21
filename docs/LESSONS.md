@@ -93,6 +93,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### measure
 
+- We build an app, not a measuring lab: a number is measured again only when its code changed or a regression is suspected, never to polish the page; the website tells a rounded, relative story from the results already committed (owner, 2026-11-21). Kept by: OPTIMIZATION §1 rule 7, CLAUDE.md rule 3.
 - A model's choices follow what the metadata knows (the route by source), and a selection rule's margin exceeds its noise: judge the newly named photos (≥ 75 % on ≥ 30) and release on a blind random sample. Kept by: ADR-0059, RESULT §42.
 - A zero-shot label set is measured on every kind of roll it meets, counting the unnamed and the catch-all's share, its misses looked at before a label is dropped. Kept by: OPTIMIZATION §5 (2026-11-19), `clip_bench`.
 - Memory is judged on the footprint of every process the work uses, summed at each instant, and growth on many repeats of one input; a system framework that keeps memory is moved to a child, not tuned. Kept by: `os_decode_child` (the test process flat over 8 develops, the child must serve them).
@@ -151,6 +152,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-21
+
+### Re-measuring asked for numbers already measured, instead of telling their story (measure)
+
+- **Area:** measure
+- **Seen:** after the Performance page's rewrite, a benchmark review proposed measuring again the GPU step, the folder open on a cold cache, RollSense on 2,500 photos and the RAW develop before v0.14.4, and the summary passed the list to the owner as a release task.
+- **Why:** each number was treated as a claim to defend to the millisecond. Every measurement is relative (a phone new and after a month differs; so does this laptop), and the project measures to guard against regressions, not for a perfect figure.
+- **Fix:** the page uses the results of 2026-11-20 and 2026-11-21 as they are, rounded and told relatively; where two values of one measure disagree, one is shown and the other folded or kept on the Wiki.
+- **Rule:** see the Rules table (measure): measure again only when the code changed or a regression is suspected; the website tells the story.
 
 ### Empty links on three pages: an include did not see the layout's paths (website)
 
