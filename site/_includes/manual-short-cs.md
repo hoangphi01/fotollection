@@ -28,9 +28,9 @@ Označujte fotky při procházení a pak zobrazte jen ty, které chcete. Hvězdi
 2. **1**–**5** přidělí hvězdičky, **0** je smaže.
 3. **P** fotku vybere, **X** ji vyřadí, **U** příznak smaže. Vyřazená fotka zůstane v galerii, vybledlá; nic se nemaže.
 4. V náhledu totéž myší dělá karta **Rating & flag**.
-5. **Filters** vpravo na panelu nástrojů nabízí tři volby: příznaky (**All**, **Picks**, **Unflagged**, **Rejects**, **Unusual files**), hvězdičky (**Any rating**, nebo **≥ 1** až **≥ 5**) a druh souboru (**All files**, **RAW only**, **No RAW**).
+5. **Filters** vpravo na panelu nástrojů nabízí tři volby: příznaky (**All**, **Picks**, **Unflagged**, **Rejects**, **Unusual files**), hvězdičky (**Any rating**, nebo **≥ 1** až **≥ 5**) a druh souboru (**All files**, **RAW only**, **Non-RAW**).
 
-Když je filtr zapnutý, tlačítko je orámované barvou motivu a říká, kolik filtrů platí. **Clear the filters** vrátí všechno zpátky. Co filtry ukazují, to také *Export* zapíše. Hvězdičky a vyřazení z Lightroomu a jiných aplikací se načtou samy (kapitola 10).
+Když je filtr zapnutý, tlačítko je orámované barvou motivu a říká, kolik filtrů platí. **Clear filters** vrátí všechno zpátky. Co filtry ukazují, to také *Export* zapíše. Hvězdičky a vyřazení z Lightroomu a jiných aplikací se načtou samy (kapitola 10).
 
 <!-- shot: manual-filters | Filtry otevřené nad galerií: příznaky, hvězdičky a druh souboru -->
 
@@ -41,7 +41,7 @@ Když je filtr zapnutý, tlačítko je orámované barvou motivu a říká, koli
 Série a skoro stejné záběry se seskupí a z každé skupiny se navrhne nejlepší snímek, včetně zdůvodnění. Nic se nevyřadí, dokud nerozhodnete, a nic se nikdy nemaže.
 
 1. Klikněte na **Find best shots** na panelu nástrojů. Zobrazení se přepne na **Groups** a fotky se analyzují na vašem počítači; **Stop** analýzu ukončí dřív.
-2. Každá skupina ukáže své snímky v řadě. Navržený je označený **Best** a skupina říká **Best of n** s důvody, třeba *n % sharper* nebo *Eyes open*. Když jsou snímky skoro stejné, stojí tam **Too close to call**.
+2. Každá skupina ukáže své snímky v řadě. Navržený je označený **Best** a skupina říká **Best of n** s důvody, třeba *n % sharper* nebo *Eyes open*. Když jsou snímky skoro stejné, stojí tam **Near tie**.
 3. **Compare** ukáže snímky skupiny velké vedle sebe, s pruhem pro každé měřítko. **Keep this one** ponechá ten, který se vám líbí víc, a ostatní odloží.
 4. **Keep best** ponechá navržený snímek: ten se vybere a ostatní ze skupiny se vyřadí a odloží do *Set aside*. **Keep best in n clear groups** nad skupinami to udělá pro všechny jasné skupiny najednou.
 5. Zpátky v **Photos** zobrazte jen **Picks**. **Cmd/Ctrl+Z** všechno vrátí.
@@ -99,7 +99,7 @@ Vyberte formát, ve kterém budete tisknout, a Fotollection na něj ořízne ka�
 1. V kartě **Print / export size** nechte vybrané **Print**.
 2. Otevřete seznam formátů: **Europe (dm, Rossmann, CEWE)** jsou formáty fotokiosků v dm a Rossmannu, třeba *10 × 15 cm · 2:3*; **Japan (convenience stores)** a **Korea (Printing Box, labs)** formáty Japonska a Koreje; **Original** zachová vlastní poměr stran fotky bez ořezu; **Custom** jsou vlastní přidané formáty.
 3. Každý formát má pro vybranou fotku odznak: **Sharp** (300 DPI a víc), **Acceptable** (150–299 DPI) nebo **Pixelated** (pod 150 DPI). Pod seznamem je řádek, jak velká se fotka vytiskne ostře.
-4. Každá fotka se ořízne na poměr formátu, ve výchozím stavu na střed. Co zůstane, zvolíte v náhledu (kapitola 6). **Orientation** pod seznamem položí formát **Upright** nebo **Flat** pro zobrazenou nebo zaškrtnuté fotky bez ohledu na jejich tvar, třeba svislou fotku na ležatý pruh 15 × 5; v náhledu a v režimu Simple stačí klávesa **O**. Čtvercové formáty, **Original** a **Fit whole photo** rámečku s údaji si tvar nechají, listy v Collage se otočí samy.
+4. Každá fotka se ořízne na poměr formátu, ve výchozím stavu na střed. Co zůstane, zvolíte v náhledu (kapitola 6). **Orientation** pod seznamem položí formát **Portrait** nebo **Landscape** pro zobrazenou nebo zaškrtnuté fotky bez ohledu na jejich tvar, třeba svislou fotku na ležatý pruh 15 × 5; v náhledu a v režimu Simple stačí klávesa **O**. Čtvercové formáty, **Original** a **Fit whole photo** rámečku s údaji si tvar nechají, listy v Collage se otočí samy.
 5. **3 mm border** přidá na každou stranu okraj 3 mm, **White** nebo **Black**, a výtisk si zachová přesný formát fotokiosku.
 
 <!-- shot: manual-size | Seznam formátů tisku, u každého odznak ostrosti -->
@@ -164,7 +164,7 @@ Bílý nebo černý pruh pod fotkou s logem fotoaparátu a nastavením expozice,
 
 <!-- shot: frame | Rámeček s údaji „Shot on“ s logem fotoaparátu -->
 
-**Údaje fotoaparátu:** v náhledu pod kartou rámečku lze změnit, co pruh pro tento fotoaparát uvádí: **Camera name**, **Lens** (třeba pro manuální objektiv), **Focal (mm)**, **Aperture F**, **Photo style** a **Logo**. Uloží se pro všechny fotky z toho fotoaparátu.
+**Údaje fotoaparátu:** v náhledu pod kartou rámečku lze změnit, co pruh pro tento fotoaparát uvádí: **Camera name**, **Lens** (třeba pro manuální objektiv), **Focal length (mm)**, **Aperture F**, **Photo style** a **Logo**. Uloží se pro všechny fotky z toho fotoaparátu.
 
 <!-- chapter: dates-places -->
 
@@ -180,7 +180,7 @@ Bílý nebo černý pruh pod fotkou s logem fotoaparátu a nastavením expozice,
 
 Datum na fotce, rámeček, složky podle dnů i datum exportované kopie se přizpůsobí. Všechno je offline, každá změna je jeden krok zpět a soubor fotky se nikdy nemění.
 
-**Místa z telefonu:** fotoaparát bez GPS si může vzít místo z fotky, kterou telefon vyfotil o pár minut dřív nebo později. V kartě **Places** v panelu nastavení klikněte na **Find places**, vyberte časový odstup (5, 10 nebo 30 minut) a **Look for places**. Jisté shody dostanou místo hned, ostatní potvrdíte.
+**Místa z telefonu:** fotoaparát bez GPS si může vzít místo z fotky, kterou telefon vyfotil o pár minut dřív nebo později. V kartě **Places** v panelu nastavení klikněte na **Find places…**, vyberte časový odstup (5, 10 nebo 30 minut) a **Look for places**. Jisté shody dostanou místo hned, ostatní potvrdíte.
 
 **Přejmenování místa:** karta **Places** vypíše všechna místa na vašich fotkách. Napište název, který se má tisknout, třeba `Prague` místo `Praha 1`, a všechna data na fotkách a rámečky ho převezmou.
 
@@ -206,7 +206,7 @@ Všechny fotky z toho fotoaparátu se posunou najednou; soubor fotky se nikdy ne
 Export zapíše nové soubory pro fotolab nebo ke sdílení; originály se nikdy nemění.
 
 1. **Co se exportuje** je to, co ukazuje galerie: vybraná složka či složky a filtry, nikdy odložené fotky. Ze zobrazení **Print basket** přesně košík.
-2. **Tisk, nebo sdílení:** nahoře v kartě *Print / export size* vyberte **Print** (plné rozlišení s ořezem, datem a rámečkem každé fotky) nebo **Share online** a k tomu velikost: **Original size, lighter file** (stejné pixely, zhruba poloviční soubor), **Facebook · 2048 px**, **Instagram · 1080 px** nebo **Custom size**. Sdílené soubory jsou v sRGB. **Whole photo in a frame** vloží každou fotku celou do zvoleného poměru stran.
+2. **Tisk, nebo sdílení:** nahoře v kartě *Print / export size* vyberte **Print** (plné rozlišení s ořezem, datem a rámečkem každé fotky) nebo **Share online** a k tomu velikost: **Original size, smaller file** (stejné pixely, zhruba poloviční soubor), **Facebook · 2048 px**, **Instagram · 1080 px** nebo **Custom size**. Sdílené soubory jsou v sRGB. **Whole photo in a frame** vloží každou fotku celou do zvoleného poměru stran.
 3. **Dialog exportu:** klikněte na **Export n photos** dole na panelu. Vlevo jsou presety, vpravo všechny volby: **Where** (složka, **One folder** nebo **By day**), **File** (**Quality** od 60 do 100), **File name**, **Size** a **Metadata**.
 4. Klikněte na **Export n photos** v dialogu. Lišta ukazuje průběh, **Cancel** export zastaví a na konci zelený rámeček uvede, kolik fotek se kam uložilo, s **Open folder**.
 5. **Don't ask again:** po zaškrtnutí příště **Export** exportuje hned se stejnými volbami. **Settings → Export** dialog vrátí přes **Ask every time**.
@@ -289,7 +289,7 @@ Nejkratší cesta od složky k výtiskům: každá fotka se zobrazí jednou, pon
 3. **↑** nebo **Keep**: fotka se vloží do košíku a zobrazí se další.
 4. **↓** nebo **Drop**: fotka se odloží, nikdy nesmaže, a zobrazí se další.
 5. **← →** jdou zpět a vpřed bez rozhodnutí, **Cmd/Ctrl+Z** vrátí poslední volbu.
-6. **Looks**: pás pod fotkou ji ukazuje v každém looku, s číslem. **0**–**9** vybere look (0 je Original) a **↑** fotku i s ním ponechá. V panelu **Amount** look zeslabí a **Faves** má čtyři každodenní posuvníky.
+6. **Looks**: pás pod fotkou ji ukazuje v každém looku, s číslem. **0**–**9** vybere look (0 je Original) a **↑** fotku i s ním ponechá. V panelu **Amount** look zeslabí a **Favourites** má čtyři každodenní posuvníky.
 7. V panelu vpravo vyberte **Print** nebo **Share online**, formát tisku, **3 mm border** a datum na fotce, pak **Choose destination…** a **Export**.
 
 <!-- shot: simple | Režim Simple: fotka tak, jak se vytiskne, Keep a Drop a Export ponechaných fotek -->
@@ -322,9 +322,9 @@ Datum na fotce se tiskne na každou fotku; rámeček s údaji se na listech nepo
 Výtisk z fotokiosku se změní na pohlednici, kterou můžete poslat: fotka na jedné polovině, rub pohlednice na druhé.
 
 1. V režimu Collage zapněte přepínač **Postcard** v liště nad listy. Každá fotka teď tvoří vlastní list a v panelu se objeví karta **Postcard**.
-2. **Held**: **Landscape** umístí fotku vlevo a kartu vpravo, **Portrait** kartu nahoru a fotku dolů. Vpravo nahoře je čárkované **pole na známku** a dole **řádky na psaní**: **3 lines** nebo **4 lines** na vzkaz, pak 3 na adresu.
+2. **Orientation**: **Landscape** umístí fotku vlevo a kartu vpravo, **Portrait** kartu nahoru a fotku dolů. Vpravo nahoře je čárkované **pole na známku** a dole **řádky na psaní**: **3 lines** nebo **4 lines** na vzkaz, pak 3 na adresu.
 3. Polovina s fotkou funguje jako dřív.
-4. **Recipient** a **Message** (na japonské a korejské pohlednici je před nimi **Sender**, sbalený, dokud nezapnete **Print a sender**): vyberte pohlednici a napište **Message** (až 400 znaků) a **Address** (až 200 znaků, na svislé pohlednici v 5 řádcích), nebo nechte řádky prázdné a pište rukou. Karta nastaví i **Font**, **Size** a **Ink**; co se nevejde, označí červený **!**.
+4. **Recipient** a **Message** (na japonské a korejské pohlednici je před nimi **Sender**, sbalený, dokud nezapnete **Print a sender**): vyberte pohlednici a napište **Message** (až 400 znaků) a **Recipient** (až 200 znaků, na svislé pohlednici v 5 řádcích), nebo nechte řádky prázdné a pište rukou. Karta nastaví i **Typed text**, **Size** a **Ink**; co se nevejde, označí červený **!**.
 5. **Postal use** v kartě *Postcard*, ve výchozím stavu zapnuté, nechá na ležaté pohlednici dole 15 mm volných pro třídicí kód pošty: fotka končí tenkou čarou, dole běží „postal use“ v sedmi jazycích a adresa končí 15 mm od pravého okraje. Na svislé pohlednici běží pruh podél pravého okraje a pole na známku je vlevo od něj. Pro pohlednici, kterou si necháte, ho vypněte. Pohlednice se tiskne na bílý papír, její 3mm okraj je bílý.
 6. **Export** zapíše jeden soubor na pohlednici.
 
@@ -348,11 +348,11 @@ Výtisk z fotokiosku se změní na pohlednici, kterou můžete poslat: fotka na 
 - **Presets & LUTs** vlevo, mezi Navigator a History jako v Lightroomu, vypisuje vaše looky, LUTy a presety z Lightroomu ve skupinách. **+** uloží look fotky nebo importuje presety (`.xmp`, `.lrtemplate` nebo `.zip`) a LUTy (`.cube` nebo HaldCLUT).
 - **Hodně fotek najednou:** v galerii režimu Pro má pravý sloupec karty **Colour** a **Print and export**. V **Colour** vyberte look, LUT nebo preset, nastavte **Amount** a **Apply to … photos** ho použije na zaškrtnuté fotky, nebo na všechny zobrazené. **Cmd/Ctrl+Z** vrátí celou dávku.
 - **Režim Collage:** panel režimu Collage má také karty **Colour** a **Print and export**. V náhledu archu je vlevo **Presets & LUTs**: **+** importuje look, LUT nebo preset z Lightroomu a kliknutím ho použijete na vybranou fotku, nebo když žádná vybraná není, na obě. Úzké okno sloupec sbalí; **Tab** ho otevře.
-- **Faves** ukazuje čtyři posuvníky: **Brightness**, **Contrast**, **Warm / cool** a **Saturation**. **More** přidá **Highlights**, **Shadows**, **Tint** a **Vibrance**. Dvojklik posuvník vrátí na 0.
-- **Color mixer**: nahoře vyberte **Hue**, **Sat**, **Lum** nebo **All** a posuňte posuvník každé z osmi barev.
+- **Favourites** ukazuje čtyři posuvníky: **Brightness**, **Contrast**, **Warm / cool** a **Saturation**. **More** přidá **Highlights**, **Shadows**, **Tint** a **Vibrance**. Dvojklik posuvník vrátí na 0.
+- **Colour mixer**: nahoře vyberte **Hue**, **Sat**, **Lum** nebo **All** a posuňte posuvník každé z osmi barev.
 - **Tools**: **Dehaze**, **Fade**, tónování stínů a světel a **Black and white**. **Grain** přidá filmové zrno, nejsilnější ve středních tónech; **Grain size** ho nastaví od jemného po hrubé v milimetrech na výtisku, takže 10 × 15 i 20 × 30 ukážou stejné zrno. **Vignette** ztmaví (−) nebo zesvětlí (+) rohy oříznuté fotky. Zrno a vinětace z presetu Lightroomu se převezmou sem.
 - **Before** (nebo **\\**) ukáže fotku bez looku; stejně funguje podržení fotky. **Y** ukáže před a po vedle sebe, **⇧Y** rozdělené.
-- **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) a **Reset settings** (**⇧⌘R**) přenášejí look, ořez a datum z jedné fotky na jiné, jako v Lightroomu. Na Windows a Linuxu je to **Ctrl+Shift**.
+- **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) a **Reset settings…** (**⇧⌘R**) přenášejí look, ořez a datum z jedné fotky na jiné, jako v Lightroomu. Na Windows a Linuxu je to **Ctrl+Shift**.
 
 Datum na fotce, rámeček a okraj se nikdy nebarví. V náhledu listu v režimu Collage klikněte na fotku (nebo **1**, **2**) a změníte barvu jen jí; **Whole sheet** (nebo **0**) změní obě.
 
@@ -394,7 +394,7 @@ Všechna nastavení tohoto počítače jsou v jednom okně: ozubené kolo nahoř
 
 - **General:** jazyk, vzhled, *Motion*, *New projects* (výchozí nastavení tisku nového projektu), *Prints* (**Print a small fotollection.org**: ve výchozím stavu zapnuté, nenápadný řádek v rohu okraje, rámečku nebo fotky, daleko od data; nikdy na fotkách exportovaných ke sdílení) a *Photo preview* (v okně, nebo přes celé okno aplikace).
 - **RAM & cache:** **Share of this computer's RAM** pro náhledy (15, 25 nebo 40 %), **Cache on disk** s limitem a **Clear cache** a **Prepare previews in the background**, díky kterému se každá fotka otevře asi za 30 ms. **Default** vrátí výchozí hodnoty, **Auto** je zvolí podle tohoto počítače.
-- **Data:** **Export settings…** uloží vaše nastavení, looky, LUTy, písma a loga fotoaparátů do jednoho souboru `.fotosettings`; na jiném počítači ho načte **Import settings…** (**Merge** nebo **Replace**). **Reset settings** nebo **Erase data** dají čistý začátek; projekty a fotky zůstanou netknuté.
+- **Data:** **Export settings…** uloží vaše nastavení, looky, LUTy, písma a loga fotoaparátů do jednoho souboru `.fotosettings`; na jiném počítači ho načte **Import settings…** (**Merge** nebo **Replace**). **Reset settings…** nebo **Erase data…** dají čistý začátek; projekty a fotky zůstanou netknuté.
 - **Updates**, **Manual**, **Report a problem** a **What's new**.
 
 <!-- shot: settings | Okno Settings v RAM & cache: paměť pro náhledy, mezipaměť na disku, Default a Auto -->

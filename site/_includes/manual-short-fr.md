@@ -28,7 +28,7 @@ Marquez les photos en les parcourant, puis n’affichez que celles que vous voul
 2. **1**–**5** attribue des étoiles, **0** les efface.
 3. **P** la marque comme retenue, **X** comme rejetée, **U** retire la marque. Une photo rejetée reste pâle dans la galerie jusqu’à ce que vous la filtriez ; rien n’est supprimé.
 4. Dans l’aperçu, la carte **Rating & flag** fait la même chose à la souris.
-5. **Filters**, à droite de la barre d’outils, propose trois choix : les marques (**All**, **Picks**, **Unflagged**, **Rejects**, **Unusual files**), les étoiles (**Any rating** ou **≥ 1** à **≥ 5**) et le type de fichier (**All files**, **RAW only**, **No RAW**). **Clear the filters** affiche de nouveau tout.
+5. **Filters**, à droite de la barre d’outils, propose trois choix : les marques (**All**, **Picks**, **Unflagged**, **Rejects**, **Unusual files**), les étoiles (**Any rating** ou **≥ 1** à **≥ 5**) et le type de fichier (**All files**, **RAW only**, **Non-RAW**). **Clear filters** affiche de nouveau tout.
 
 <!-- shot: manual-filters | Les filtres ouverts au-dessus de la galerie : marques, étoiles et type de fichier -->
 
@@ -41,7 +41,7 @@ Ce que montrent les filtres, c’est aussi ce qu’écrit *Export*. Les étoiles
 Les rafales et les photos presque identiques sont regroupées, et la meilleure de chaque groupe est proposée, avec ses raisons. Rien n’est rejeté avant que vous ne décidiez, et rien n’est jamais supprimé.
 
 1. Cliquez sur **Find best shots** dans la barre d’outils. La vue passe à **Groups** pendant que les photos sont analysées sur cet ordinateur ; **Stop** interrompt.
-2. Chaque groupe montre ses photos sur une rangée. Celle qui est proposée porte **Best**, avec des raisons comme *n % sharper*, *Eyes open* ou *Less camera shake*. Quand les photos sont presque à égalité, il est écrit **Too close to call**.
+2. Chaque groupe montre ses photos sur une rangée. Celle qui est proposée porte **Best**, avec des raisons comme *n % sharper*, *Eyes open* ou *Less camera shake*. Quand les photos sont presque à égalité, il est écrit **Near tie**.
 3. **Compare** montre les photos en grand côte à côte, avec une barre par mesure. **Keep this one** garde celle que vous préférez.
 4. **Keep best** garde la photo proposée et met les autres de côté ; **Keep best in n clear groups** le fait pour chaque groupe sans ambiguïté en une fois.
 5. De retour dans **Photos**, n’affichez que les **Picks**. **Cmd/Ctrl+Z** annule tout.
@@ -94,7 +94,7 @@ Choisissez le format dans lequel vous imprimez ; Fotollection recadre chaque p
 1. Dans la carte **Print / export size**, laissez l’option **Print** choisie.
 2. Ouvrez la liste des formats : **Europe (dm, Rossmann, CEWE)** avec les formats des bornes photo CEWE de E.Leclerc, Intermarché, U, Cora et Fnac et des bornes Kodak de Carrefour, **Japan (convenience stores)** et **Korea (Printing Box, labs)** avec ceux du Japon et de la Corée, **Original** pour les proportions propres à la photo sans recadrage, ou **Custom** pour vos propres formats.
 3. Chaque format porte un badge pour la photo choisie : **Sharp** (300 DPI ou plus), **Acceptable** (150–299 DPI) ou **Pixelated** (moins de 150 DPI).
-4. Chaque photo est recadrée au centre ; ce qui reste, vous le choisissez dans l’aperçu (chapitre 6). **Orientation**, sous la liste, place le format **Upright** ou **Flat** pour la photo affichée ou les photos cochées, quelle que soit l’orientation de la photo, par exemple une photo en hauteur posée en travers d’une bande 15 × 5 ; dans l’aperçu et en mode Simple, la touche **O** fait de même. Les formats carrés, **Original** et **Fit whole photo** du cadre d’infos gardent leur forme, les planches Collage pivotent d’elles-mêmes.
+4. Chaque photo est recadrée au centre ; ce qui reste, vous le choisissez dans l’aperçu (chapitre 6). **Orientation**, sous la liste, place le format **Portrait** ou **Landscape** pour la photo affichée ou les photos cochées, quelle que soit l’orientation de la photo, par exemple une photo en hauteur posée en travers d’une bande 15 × 5 ; dans l’aperçu et en mode Simple, la touche **O** fait de même. Les formats carrés, **Original** et **Fit whole photo** du cadre d’infos gardent leur forme, les planches Collage pivotent d’elles-mêmes.
 5. **3 mm border** ajoute une bordure blanche ou noire de 3 mm autour du tirage.
 
 <!-- shot: manual-size | La liste des formats d’impression, un badge de netteté à chaque format -->
@@ -156,7 +156,7 @@ Une barre blanche ou noire sous la photo, avec le logo et les réglages de l’a
 
 <!-- shot: frame | Le cadre d’infos « Shot on » avec le logo de l’appareil -->
 
-Dans l’aperçu, sous la carte du cadre, vous changez ce que la barre dit de cet appareil : **Camera name**, **Lens**, **Focal (mm)**, **Aperture F**, **Photo style** et le **Logo**. Cela vaut pour chaque photo de cet appareil.
+Dans l’aperçu, sous la carte du cadre, vous changez ce que la barre dit de cet appareil : **Camera name**, **Lens**, **Focal length (mm)**, **Aperture F**, **Photo style** et le **Logo**. Cela vaut pour chaque photo de cet appareil.
 
 <!-- chapter: dates-places -->
 
@@ -172,7 +172,7 @@ Dans l’aperçu, sous la carte du cadre, vous changez ce que la barre dit de ce
 
 La date incrustée, le cadre d’infos, les dossiers par jour et la date de la copie exportée suivent. Le fichier de la photo n’est jamais modifié.
 
-**Les lieux du smartphone :** un appareil sans GPS peut reprendre le lieu d’une photo que votre smartphone a prise quelques minutes avant ou après. Dans la carte **Places**, cliquez sur **Find places**, choisissez l’écart (5, 10 ou 30 minutes), puis **Look for places**. Les correspondances sûres reçoivent leur lieu aussitôt ; les autres, vous les confirmez vous-même.
+**Les lieux du smartphone :** un appareil sans GPS peut reprendre le lieu d’une photo que votre smartphone a prise quelques minutes avant ou après. Dans la carte **Places**, cliquez sur **Find places…**, choisissez l’écart (5, 10 ou 30 minutes), puis **Look for places**. Les correspondances sûres reçoivent leur lieu aussitôt ; les autres, vous les confirmez vous-même.
 
 **Renommer un lieu :** la carte **Places** liste chaque lieu de vos photos. Saisissez le nom à imprimer, par exemple `Prague` pour `Praha 1`.
 
@@ -196,14 +196,14 @@ Chaque photo de cet appareil se remet aussitôt à sa place, même celles ajout�
 L’export écrit de nouveaux fichiers pour le labo ou pour le partage ; vos originaux restent intacts.
 
 1. **Ce qui est exporté**, c’est ce que montre la galerie : les dossiers choisis avec leurs filtres, jamais les photos mises de côté. Depuis le **Print basket**, exactement le panier.
-2. **Imprimer ou partager :** en haut de la carte *Print / export size*, choisissez **Print** (pleine résolution, avec recadrage, date et cadre) ou **Share online** avec une taille : **Original size, lighter file**, **Facebook · 2048 px**, **Instagram · 1080 px** ou **Custom size**. **Whole photo in a frame** place chaque photo entière dans des proportions fixes, par exemple **Square · 1:1**, avec une couleur de fond.
+2. **Imprimer ou partager :** en haut de la carte *Print / export size*, choisissez **Print** (pleine résolution, avec recadrage, date et cadre) ou **Share online** avec une taille : **Original size, smaller file**, **Facebook · 2048 px**, **Instagram · 1080 px** ou **Custom size**. **Whole photo in a frame** place chaque photo entière dans des proportions fixes, par exemple **Square · 1:1**, avec une couleur de fond.
 3. **La fenêtre d’export :** cliquez sur **Export n photos** en bas du panneau. À gauche se trouvent des préréglages (**Prints · original size**, **Facebook**, **Instagram**…), à droite chaque choix :
    - **Where :** le dossier (**Choose…**), **One folder** ou **By day**, au choix **Put in a subfolder**, et ce qui arrive à un fichier déjà présent (**Add a number**, **Skip the photo**, **Replace the file**).
    - **File :** la **Quality** de 60 à 100, avec l’estimation de taille et un badge : **Prints beautifully** dès 90, **Prints well** dès 75. **Limit the file size** garde chaque fichier sous une limite.
    - **File name :** par exemple **Original name** ou **Date - original name** ; **Example** montre le premier nom.
    - **Metadata :** **Camera**, **Date only** ou **Nothing**. La position GPS est toujours retirée.
 4. Cliquez sur **Export n photos** dans la fenêtre. Une barre montre la progression, **Cancel** arrête ; à la fin, un cadre vert donne le résultat, avec **Open folder**.
-5. **Don't ask again** exporte désormais tout de suite avec les mêmes réglages ; **Change the export's choices** rouvre la fenêtre.
+5. **Don't ask again** exporte désormais tout de suite avec les mêmes réglages ; **Export options…** rouvre la fenêtre.
 
 <!-- shot: estimate | L’estimation de taille au-dessus du bouton d’export, en partage pour Facebook -->
 
@@ -301,7 +301,7 @@ Deux photos sur un tirage, comme un appareil argentique demi-format : un tirag
 2. Les photos sont associées par paires dans l’ordre, et chaque planche apparaît telle qu’elle sera imprimée.
 3. **Sheet size** est le format d’impression. Le bouton **Turn the sheet** d’une planche, ou **R**, la fait pivoter. **Prints at** dit avec quelle netteté la planche sera imprimée.
 4. **Two photos per sheet** : **Fill each half** remplit chaque moitié sans blanc ; sinon, choisissez **Photo ratio**, **Photo size** (l’application en propose une) et la **Cut line** pour couper le tirage en deux.
-5. **Ordonner :** faites glisser une photo sur une autre pour les échanger. **Auto turn** met toutes les planches à l’horizontale et chaque photo droite.
+5. **Ordonner :** faites glisser une photo sur une autre pour les échanger. **Auto-rotate** met toutes les planches à l’horizontale et chaque photo droite.
 6. **Aperçu :** double-clic sur une planche, ou **Enter**. Là, un clic ou **1**, **2** choisissent une photo ; **Crop** la recadre pour sa place, **Rotate photo** (**⇧R**) la fait pivoter dans sa moitié, **↑** et **↓** la mettent dans le panier ou de côté. **Export this sheet** enregistre cette planche.
 7. **Export** écrit un fichier par planche, nommé d’après ses deux photos.
 
@@ -314,8 +314,8 @@ Deux photos sur un tirage, comme un appareil argentique demi-format : un tirag
 Un tirage de borne devient une carte postale à envoyer : une photo sur une moitié, le dos d’une carte postale sur l’autre.
 
 1. En mode Collage, activez l’interrupteur **Postcard** au-dessus des planches. Chaque photo a maintenant sa propre planche.
-2. **Held** : **Landscape** place la photo à gauche et la carte à droite, **Portrait** la carte en haut. Une case de timbre en pointillés se trouve en haut à droite, les lignes d’écriture en bas : **3 lines** ou **4 lines** pour le message, puis 3 pour l’adresse (5 sur une carte en hauteur).
-3. Dans les cartes **Recipient** et **Message**, saisissez **Address** et **Message** (sur une carte japonaise ou coréenne, **Sender** vient avant, replié tant que **Print a sender** est éteint), ou laissez les lignes vides pour écrire à la main. Choisissez **Typed text** (**Typewriter**, **Handwriting** ou votre propre police), **Size**, **Ink** et une **Credit line** facultative. Un **!** rouge signale un texte qui ne tient pas.
+2. **Orientation** : **Landscape** place la photo à gauche et la carte à droite, **Portrait** la carte en haut. Une case de timbre en pointillés se trouve en haut à droite, les lignes d’écriture en bas : **3 lines** ou **4 lines** pour le message, puis 3 pour l’adresse (5 sur une carte en hauteur).
+3. Dans les cartes **Recipient** et **Message**, saisissez **Recipient** et **Message** (sur une carte japonaise ou coréenne, **Sender** vient avant, replié tant que **Print a sender** est éteint), ou laissez les lignes vides pour écrire à la main. Choisissez **Typed text** (**Typewriter**, **Handwriting** ou votre propre police), **Size**, **Ink** et une **Credit line** facultative. Un **!** rouge signale un texte qui ne tient pas.
 4. **Postal use**, dans la carte *Postcard*, activé par défaut, laisse libres 15 mm en bas d’une carte à l’horizontale pour le code de tri de la poste : la photo s’arrête à un trait fin, « postal use » figure en sept langues au pied, et l’adresse s’arrête à 15 mm du bord droit. Sur une carte en hauteur, la bande longe le bord droit, la case de timbre à sa gauche. Pour une carte que vous gardez, désactivez-le. Une carte postale s’imprime sur papier blanc, sa bordure de 3 mm est blanche. La Poste accepte une carte 10 × 15 (de 90 × 140 à 162 × 235 mm), timbre en haut à droite ; un papier mat est plus sûr pour le code de la poste.
 5. **Export** écrit un fichier par carte postale.
 
@@ -340,11 +340,11 @@ Un tirage de borne devient une carte postale à envoyer : une photo sur une mo
 
 Les cartes de couleur agissent dans l’aperçu d’une photo, et sur cette photo seule ; **Apply to all photos** donne son look à toutes.
 
-- **Faves** montre **Brightness**, **Contrast**, **Warm / cool** et **Saturation** ; **More** ajoute **Highlights**, **Shadows**, **Tint** et **Vibrance**. Un double-clic remet un curseur à 0.
-- **Color mixer** : choisissez **Hue**, **Sat**, **Lum** ou **All** et déplacez le curseur de chacune des huit couleurs.
+- **Favourites** montre **Brightness**, **Contrast**, **Warm / cool** et **Saturation** ; **More** ajoute **Highlights**, **Shadows**, **Tint** et **Vibrance**. Un double-clic remet un curseur à 0.
+- **Colour mixer** : choisissez **Hue**, **Sat**, **Lum** ou **All** et déplacez le curseur de chacune des huit couleurs.
 - **Tools** : **Dehaze**, **Fade**, **Tint the shadows**, **Tint the highlights** et **Black and white**. **Grain** pose un grain argentique sur la photo, plus fort dans les tons moyens ; **Grain size** le règle de fin à gros, en millimètres sur le tirage, si bien que 10 × 15 et 20 × 30 montrent le même grain. **Vignette** assombrit (−) ou éclaircit (+) les coins de la photo recadrée. Le grain et le vignetage d’un preset Lightroom arrivent ici.
 - **Before** (ou **\\**) montre la photo sans son look ; ou maintenez la photo appuyée, comme sur iPhone. **Y** montre avant et après côte à côte, **⇧Y** en partage.
-- **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) et **Reset settings** (**⇧⌘R**) reportent le look, le recadrage et la date d’une photo sur d’autres, comme dans Lightroom. Sous Windows et Linux, c’est **Ctrl+Shift** au lieu de **⇧⌘**.
+- **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) et **Reset settings…** (**⇧⌘R**) reportent le look, le recadrage et la date d’une photo sur d’autres, comme dans Lightroom. Sous Windows et Linux, c’est **Ctrl+Shift** au lieu de **⇧⌘**.
 
 La date incrustée, le cadre d’infos et la bordure ne sont jamais colorés.
 
@@ -390,7 +390,7 @@ Tous les réglages de cet ordinateur se trouvent dans une seule fenêtre : cli
 
 - **General :** langue, thème, *Motion*, *New projects* (ce avec quoi un nouveau projet commence), *Prints* (**Print a small fotollection.org** : activé par défaut, une ligne discrète dans un coin de la bordure, du cadre ou de la photo, loin de la date ; jamais sur les photos exportées pour le partage), *Photo preview* (dans la fenêtre ou remplissant la fenêtre de l’application) et *Show the welcome again*.
 - **RAM & cache :** la **Share of this computer's RAM** pour les aperçus (15, 25 ou 40 %), la limite du **Cache on disk** avec **Clear cache**, et **Prepare previews in the background**, pour que chaque photo s’ouvre en 30 ms environ. **Default** rétablit les valeurs par défaut, **Auto** les choisit pour cet ordinateur.
-- **Data :** **Export settings…** enregistre réglages, looks, LUT, polices et logos d’appareils dans un fichier `.fotosettings` ; **Import settings…** les récupère sur un autre ordinateur, avec **Merge** ou **Replace**. Vous y voyez aussi ce que Fotollection range sur cet ordinateur, et pouvez repartir de zéro avec **Reset settings** ou **Erase data**. Les projets et les photos ne sont jamais touchés.
+- **Data :** **Export settings…** enregistre réglages, looks, LUT, polices et logos d’appareils dans un fichier `.fotosettings` ; **Import settings…** les récupère sur un autre ordinateur, avec **Merge** ou **Replace**. Vous y voyez aussi ce que Fotollection range sur cet ordinateur, et pouvez repartir de zéro avec **Reset settings…** ou **Erase data…**. Les projets et les photos ne sont jamais touchés.
 - **Updates :** *Check for updates*.
 - **Manual :** ce manuel, hors ligne.
 - **Report a problem :** la page des rapports et *Copy diagnostics*.

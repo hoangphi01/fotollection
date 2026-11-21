@@ -28,7 +28,7 @@ Oznaczaj zdjęcia podczas przeglądania, a potem pokaż tylko te, których chces
 2. Naciśnij **1**–**5**, by dać mu gwiazdki, **0**, by je usunąć.
 3. Naciśnij **P**, by je wybrać, **X**, by je odrzucić, **U**, by usunąć flagę. Odrzucone zdjęcie zostaje w galerii, wyblakłe; nic nie jest usuwane.
 4. W podglądzie karta **Rating & flag** robi to samo myszą.
-5. **Filters** po prawej stronie paska narzędzi otwiera trzy wybory: flagi (**All**, **Picks**, **Unflagged**, **Rejects**, **Unusual files**), gwiazdki (**Any rating** albo **≥ 1** do **≥ 5**) i rodzaj pliku (**All files**, **RAW only**, **No RAW**). Gdy filtr działa, przycisk jest obrysowany i podaje, ile filtrów jest włączonych. **Clear the filters** przywraca wszystko.
+5. **Filters** po prawej stronie paska narzędzi otwiera trzy wybory: flagi (**All**, **Picks**, **Unflagged**, **Rejects**, **Unusual files**), gwiazdki (**Any rating** albo **≥ 1** do **≥ 5**) i rodzaj pliku (**All files**, **RAW only**, **Non-RAW**). Gdy filtr działa, przycisk jest obrysowany i podaje, ile filtrów jest włączonych. **Clear filters** przywraca wszystko.
 
 <!-- shot: manual-filters | Filtry otwarte nad galerią: flagi, gwiazdki i rodzaj pliku -->
 
@@ -41,7 +41,7 @@ To, co pokazują filtry, jest też tym, co zapisze eksport. Gwiazdki i odrzuceni
 Serie i niemal identyczne ujęcia trafiają do grup, a Fotollection podpowiada najlepsze z każdej wraz z uzasadnieniem. Nic nie jest odrzucane, dopóki nie zdecydujesz, i nic nigdy nie jest usuwane.
 
 1. Kliknij **Find best shots** na pasku narzędzi. Widok przełącza się na **Groups**, a zdjęcia są analizowane na twoim komputerze; **Stop** kończy wcześniej.
-2. Każda grupa pokazuje ujęcia w rzędzie. Podpowiedziane jest oznaczone **Best**, a grupa podaje powody, na przykład *n % sharper*, *Eyes open* czy *Less camera shake*. Gdy ujęcia wypadają prawie tak samo, widać **Too close to call**.
+2. Każda grupa pokazuje ujęcia w rzędzie. Podpowiedziane jest oznaczone **Best**, a grupa podaje powody, na przykład *n % sharper*, *Eyes open* czy *Less camera shake*. Gdy ujęcia wypadają prawie tak samo, widać **Near tie**.
 3. **Compare** pokazuje ujęcia grupy duże, obok siebie, z paskiem dla każdej miary. **Keep this one** zachowuje ujęcie, które wolisz.
 4. **Keep best** zachowuje podpowiedziane ujęcie: zostaje wybrane, a pozostałe z grupy są odrzucane i odkładane do *Set aside*, skąd mogą wrócić. **Keep best in n clear groups** robi to naraz dla wszystkich wyraźnych grup.
 5. Wróć do **Photos** i pokaż tylko **Picks**. **Cmd/Ctrl+Z** cofa każdy z tych kroków.
@@ -93,7 +93,7 @@ Wybierz rozmiar, w jakim będziesz drukować, a Fotollection przytnie do niego k
 1. W karcie **Print / export size** zostaw zaznaczone **Print**.
 2. Otwórz listę rozmiarów: **Europe (dm, Rossmann, CEWE)** (rozmiary kiosków fotograficznych w dm i Rossmannie, jak *10 × 15 cm · 2:3*), **Japan (convenience stores)** i **Korea (Printing Box, labs)** (rozmiary Japonii i Korei), **Original** (własne proporcje zdjęcia, bez kadrowania) albo **Custom** (twoje rozmiary).
 3. Każdy rozmiar ma plakietkę dla zaznaczonego zdjęcia: **Sharp** (300 DPI lub więcej), **Acceptable** (150–299 DPI) albo **Pixelated** (poniżej 150 DPI). Pod listą wiersz podaje, jak duże zdjęcie wydrukuje się ostro.
-4. Każde zdjęcie jest przycinane do proporcji rozmiaru, domyślnie na środku. Co zostaje, wybierzesz w podglądzie (rozdział 6). **Orientation** pod listą kładzie rozmiar **Upright** albo **Flat** dla pokazanego lub zaznaczonych zdjęć, niezależnie od ich kształtu, np. pionowe zdjęcie na poziomy pasek 15 × 5; w podglądzie i w trybie Simple robi to klawisz **O**. Kwadratowe rozmiary, **Original** i **Fit whole photo** ramki z danymi zachowują swój kształt, a arkusze w Collage obracają się same.
+4. Każde zdjęcie jest przycinane do proporcji rozmiaru, domyślnie na środku. Co zostaje, wybierzesz w podglądzie (rozdział 6). **Orientation** pod listą kładzie rozmiar **Portrait** albo **Landscape** dla pokazanego lub zaznaczonych zdjęć, niezależnie od ich kształtu, np. pionowe zdjęcie na poziomy pasek 15 × 5; w podglądzie i w trybie Simple robi to klawisz **O**. Kwadratowe rozmiary, **Original** i **Fit whole photo** ramki z danymi zachowują swój kształt, a arkusze w Collage obracają się same.
 5. **3 mm border** dodaje białe lub czarne obramowanie 3 mm z każdej strony, a odbitka zachowuje dokładny rozmiar z kiosku.
 
 <!-- shot: manual-size | Lista rozmiarów odbitek z plakietką ostrości przy każdym -->
@@ -155,7 +155,7 @@ Biały lub czarny pasek pod zdjęciem z logo aparatu i ustawieniami, jak na zdj�
 
 <!-- shot: frame | Ramka z danymi „Shot on” z logo aparatu -->
 
-W podglądzie, pod kartą ramki, zmienisz to, co pasek mówi o danym aparacie: **Camera name**, **Lens**, **Focal (mm)**, **Aperture F**, **Photo style** i **Logo**. Puste pole bierze dane z EXIF, a zmiany obowiązują dla wszystkich zdjęć z tego aparatu.
+W podglądzie, pod kartą ramki, zmienisz to, co pasek mówi o danym aparacie: **Camera name**, **Lens**, **Focal length (mm)**, **Aperture F**, **Photo style** i **Logo**. Puste pole bierze dane z EXIF, a zmiany obowiązują dla wszystkich zdjęć z tego aparatu.
 
 <!-- chapter: dates-places -->
 
@@ -169,7 +169,7 @@ W podglądzie, pod kartą ramki, zmienisz to, co pasek mówi o danym aparacie: *
 
 Data na zdjęciu, ramka, foldery dni i data eksportowanej kopii idą za zmianą. Wszystko działa offline, a plik zdjęcia nigdy się nie zmienia.
 
-**Miejsca z telefonu:** aparat bez GPS może przejąć miejsce ze zdjęcia, które telefon zrobił tej samej scenie kilka minut wcześniej lub później. W karcie **Places** kliknij **Find places**, wybierz odstęp czasu (5, 10 lub 30 minut) i **Look for places**.
+**Miejsca z telefonu:** aparat bez GPS może przejąć miejsce ze zdjęcia, które telefon zrobił tej samej scenie kilka minut wcześniej lub później. W karcie **Places** kliknij **Find places…**, wybierz odstęp czasu (5, 10 lub 30 minut) i **Look for places**.
 
 **Zmiana nazwy miejsca:** karta **Places** wymienia każde miejsce z twoich zdjęć. Wpisz nazwę, którą chcesz drukować, na przykład `Prague` zamiast `Praha 1`.
 
@@ -191,14 +191,14 @@ Wszystkie zdjęcia z tego aparatu przesuwają się naraz; plik zdjęcia nigdy si
 Eksport zapisuje nowe pliki do laboratorium albo do udostępnienia; oryginały nigdy się nie zmieniają.
 
 1. **Eksportowane jest** to, co pokazuje galeria: wybrane foldery i filtry, nigdy zdjęcia odłożone. Z widoku **Print basket** – dokładnie koszyk.
-2. **Do druku czy do sieci:** u góry karty *Print / export size* wybierz **Print** (pełna rozdzielczość z kadrem, datą i ramką) albo **Share online**, a potem rozmiar: **Original size, lighter file**, **Facebook · 2048 px**, **Instagram · 1080 px** albo **Custom size**. **Whole photo in a frame** wpisuje całe zdjęcie w wybrane proporcje, na przykład **Square · 1:1**, z białym lub czarnym tłem.
+2. **Do druku czy do sieci:** u góry karty *Print / export size* wybierz **Print** (pełna rozdzielczość z kadrem, datą i ramką) albo **Share online**, a potem rozmiar: **Original size, smaller file**, **Facebook · 2048 px**, **Instagram · 1080 px** albo **Custom size**. **Whole photo in a frame** wpisuje całe zdjęcie w wybrane proporcje, na przykład **Square · 1:1**, z białym lub czarnym tłem.
 3. Kliknij **Export n photos** u dołu panelu. Otworzy się okno jak w Lightroomie: presety po lewej, wszystkie opcje po prawej.
    - **Where:** folder (**Choose…**), **One folder** albo **By day** (folder na każdy dzień), opcjonalnie **Put in a subfolder**, oraz co zrobić, gdy plik o tej nazwie już istnieje.
    - **File:** suwak **Quality** od 60 do 100 z szacowanym rozmiarem i plakietką: **Prints beautifully** od 90, **Prints well** od 75. **Limit the file size** pilnuje limitu rozmiaru pliku.
    - **File name:** wzór nazwy, z **Example** pokazującym pierwszą nazwę.
    - **Metadata:** **Camera**, **Date only** albo **Nothing**. Pozycja GPS jest zawsze usuwana.
 4. Kliknij **Export n photos** w oknie. Pasek pokazuje postęp, a **Cancel** go zatrzymuje. Na koniec zielone pole podaje, ile zdjęć gdzie trafiło, z przyciskiem **Open folder**.
-5. **Don't ask again** sprawia, że **Export** od razu eksportuje z tymi samymi wyborami; **Change the export's choices** przywraca okno.
+5. **Don't ask again** sprawia, że **Export** od razu eksportuje z tymi samymi wyborami; **Export options…** przywraca okno.
 
 <!-- shot: estimate | Szacowany rozmiar nad przyciskiem eksportu, udostępnianie na Facebooka -->
 
@@ -290,7 +290,7 @@ Dwa zdjęcia na jednej odbitce, jak w aparacie half-frame: odbitka 10 × 15 mie�
 2. Zdjęcia łączą się w pary po kolei, 1 + 2, 3 + 4…, a każdy arkusz wygląda tak, jak się wydrukuje.
 3. **Sheet size** to rozmiar odbitki. Arkusz obraca się według pierwszego zdjęcia; przycisk obrotu albo **R** obraca go w drugą stronę. **Prints at** podaje, jak ostro arkusz się wydrukuje.
 4. **Two photos per sheet:** **Fill each half** (każde zdjęcie wypełnia swoją połowę) albo **Photo ratio**, **Photo size** i **Cut line** (cienka linia do przecięcia odbitki).
-5. **Kolejność:** przeciągnij zdjęcie na inne, by je zamienić. **⌥/Alt ← →** przesuwa wybrane zdjęcie o jedno miejsce. **Auto turn** obraca arkusze tak, by stojące zdjęcie nie leżało obok leżącego.
+5. **Kolejność:** przeciągnij zdjęcie na inne, by je zamienić. **⌥/Alt ← →** przesuwa wybrane zdjęcie o jedno miejsce. **Auto-rotate** obraca arkusze tak, by stojące zdjęcie nie leżało obok leżącego.
 6. **Select** zaznacza całe arkusze; pasek wkłada ich zdjęcia do koszyka albo odkłada je na bok.
 7. **Podgląd:** dwuklik na arkuszu albo **Enter**. Kliknij zdjęcie (lub **1**, **2**), by je wybrać. **Crop** (**C**) kadruje wybrane zdjęcie na arkuszu, **Turn the sheet** (**R**) obraca arkusz, **Rotate photo** (**⇧R**) obraca zdjęcie w jego połowie. **Export this sheet** zapisuje ten jeden arkusz.
 8. **Export** w panelu zapisuje jeden plik na arkusz, nazwany od obu zdjęć, na przykład `P1000123+P1000124.jpg`.
@@ -307,7 +307,7 @@ Odbitka z kiosku staje się pocztówką do wysłania: zdjęcie na jednej połowi
 
 1. W trybie Collage włącz przełącznik **Postcard** na pasku nad arkuszami, obok **Select**. Każde zdjęcie tworzy teraz własny arkusz, a w panelu pojawia się karta **Postcard**.
 2. **Held:** **Landscape** kładzie zdjęcie po lewej, a kartę po prawej; **Portrait** kładzie kartę na górze, a zdjęcie pod nią. Pocztówka ma pole na znaczek i linie do pisania (**3 lines** lub **4 lines** na wiadomość, 3 na adres).
-3. **Recipient** i **Message** (na karcie japońskiej i koreańskiej przed nimi jest **Sender**, zwinięty, dopóki **Print a sender** jest wyłączone): wybierz pocztówkę i wpisz **Message** (do 400 znaków) i **Address** (do 200 znaków, na pionowej karcie w 5 liniach), albo zostaw linie puste, by pisać ręcznie. Ta sama karta ustawia **Font**, **Size** i **Ink**. Czerwony **!** oznacza tekst, który się nie mieści.
+3. **Recipient** i **Message** (na karcie japońskiej i koreańskiej przed nimi jest **Sender**, zwinięty, dopóki **Print a sender** jest wyłączone): wybierz pocztówkę i wpisz **Message** (do 400 znaków) i **Recipient** (do 200 znaków, na pionowej karcie w 5 liniach), albo zostaw linie puste, by pisać ręcznie. Ta sama karta ustawia **Typed text**, **Size** i **Ink**. Czerwony **!** oznacza tekst, który się nie mieści.
 4. **Jeden adres dla zestawu:** wpisz adres na jednej karcie i kliknij **Use for them**, by dać go pozostałym kartom bez adresu. **Recent addresses** pokazuje ostatnio wpisane adresy. Tak samo działa to dla wiadomości i dla japońskiego lub koreańskiego odbiorcy czy nadawcy. **Address book** u góry karty *Recipient* pokazuje odbiorców zapisanych przez ☆ (do 100) i ostatnio użytych; kliknięcie wstawia go na kartę, × go zapomina.
 5. **Postal use** w karcie *Postcard*, domyślnie włączone, zostawia na dole poziomej karty 15 mm wolne na kod sortujący poczty: zdjęcie kończy się cienką linią, u dołu biegnie „postal use” w siedmiu językach, a adres kończy się 15 mm od prawej krawędzi. Na pionowej karcie pasek biegnie wzdłuż prawej krawędzi, a pole na znaczek jest na lewo od niego. Wyłącz je dla karty, którą zatrzymujesz. Pocztówka drukuje się na białym papierze, a jej obramowanie 3 mm jest białe.
 6. **Export** zapisuje jeden plik na pocztówkę, na przykład `P1000123-postcard.jpg`.
@@ -325,11 +325,11 @@ Odbitka z kiosku staje się pocztówką do wysłania: zdjęcie na jednej połowi
 - **Looks** to pasek pod zdjęciem: każdy look to kafelek z twoim zdjęciem, więc widzisz kolor, zanim wybierzesz. Kliknij jeden, by nadać zdjęciu ten look; **Amount** ustawia jego siłę. **Presets & LUTs** po lewej wymienia twoje looki, LUT-y i presety Lightroom w grupach. **+** zapisuje look zdjęcia albo importuje presety (`.xmp`, `.lrtemplate`, `.zip`) i LUT-y (`.cube`, HaldCLUT). **Save as look** zachowuje look zdjęcia pod twoją nazwą.
 - **Wiele zdjęć naraz:** w galerii trybu Pro prawa kolumna ma karty **Colour** i **Print and export**. W **Colour** wybierz look, LUT lub preset, ustaw **Amount**, a **Apply to … photos** nada go zaznaczonym zdjęciom albo wszystkim widocznym. **⌘Z** cofa całą partię.
 - **Tryb Collage:** panel trybu Collage też ma karty **Colour** i **Print and export**. W podglądzie arkusza po lewej jest **Presets & LUTs**: **+** importuje look, LUT lub preset Lightroom, kliknięcie daje go wybranemu zdjęciu albo, gdy żadne nie jest wybrane, obu. Wąskie okno zwija kolumnę; **Tab** ją otwiera.
-- **Faves** ma cztery suwaki: **Brightness**, **Contrast**, **Warm / cool** i **Saturation**; **More** dodaje **Highlights**, **Shadows**, **Tint** i **Vibrance**. Dwuklik zeruje suwak.
+- **Favourites** ma cztery suwaki: **Brightness**, **Contrast**, **Warm / cool** i **Saturation**; **More** dodaje **Highlights**, **Shadows**, **Tint** i **Vibrance**. Dwuklik zeruje suwak.
 - **Color mixer:** wybierz **Hue**, **Sat**, **Lum** lub **All** i przesuń suwak każdego z ośmiu kolorów.
 - **Tools:** **Dehaze**, **Fade**, **Tint the shadows**, **Tint the highlights** i **Black and white**. **Grain** dodaje ziarno filmowe, najsilniejsze w półtonach; **Grain size** ustawia je od drobnego do grubego, w milimetrach na odbitce, więc 10 × 15 i 20 × 30 mają to samo ziarno. **Vignette** przyciemnia (−) lub rozjaśnia (+) rogi wykadrowanego zdjęcia. Ziarno i winieta z presetu Lightrooma trafiają tutaj.
 - **Before** (lub **\\**) pokazuje zdjęcie bez looku; możesz też przytrzymać zdjęcie, jak na iPhonie. **Y** pokazuje przed i po obok siebie, **⇧Y** z podziałem.
-- **Kopiowanie ustawień:** **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) i **Reset settings** (**⇧⌘R**), jak w Lightroomie.
+- **Kopiowanie ustawień:** **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) i **Reset settings…** (**⇧⌘R**), jak w Lightroomie.
 
 W trybie Collage kliknij zdjęcie na arkuszu, by zmienić tylko jego kolor, albo wybierz **Whole sheet**, by zmienić oba.
 
@@ -353,7 +353,7 @@ Wszystkie ustawienia tego komputera są w jednym oknie: kliknij koło zębate u 
 
 - **General:** język, motyw, *Motion*, ustawienia startowe nowych projektów, *Prints* (**Print a small fotollection.org**: domyślnie włączone, dyskretna linia w rogu obramowania, ramki lub zdjęcia, z dala od daty; nigdy na zdjęciach eksportowanych do udostępnienia), *Photo preview* (w oknie albo na całe okno) i *Show the welcome again*.
 - **RAM & cache:** część pamięci RAM na podglądy (15, 25 lub 40 %), limit pamięci podręcznej na dysku i **Clear cache**, oraz **Prepare previews in the background**, dzięki któremu każde zdjęcie otwiera się w około 30 ms. **Default** przywraca ustawienia domyślne, a **Auto** dobiera je do komputera.
-- **Data:** **Export settings…** zapisuje ustawienia, looki, LUT-y, czcionki i logo aparatów w jednym pliku `.fotosettings`; na innym komputerze **Import settings…** wczytuje go przez **Merge** albo **Replace**. **Reset settings** i **Erase data** pozwalają zacząć od nowa; projekty i zdjęcia nigdy nie są ruszane.
+- **Data:** **Export settings…** zapisuje ustawienia, looki, LUT-y, czcionki i logo aparatów w jednym pliku `.fotosettings`; na innym komputerze **Import settings…** wczytuje go przez **Merge** albo **Replace**. **Reset settings…** i **Erase data…** pozwalają zacząć od nowa; projekty i zdjęcia nigdy nie są ruszane.
 - **Updates**, **Manual**, **Report a problem** i **What's new**.
 
 <!-- shot: settings | Okno Settings w sekcji RAM & cache: pamięć na podglądy, pamięć podręczna na dysku, Default i Auto -->
