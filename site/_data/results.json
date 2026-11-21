@@ -56,8 +56,8 @@
     1081
    ],
    "stamp": [
-    1067,
-    1600
+    1600,
+    1067
    ],
    "sheet": [
     1600,
@@ -66,25 +66,33 @@
    "frame": [
     1067,
     1600
+   ],
+   "frame2": [
+    1067,
+    1600
    ]
   },
   "credits": {
    "card": "@hoangphi01 \u00b7 Apple iPhone 16 Pro",
    "card2": "@hoangphi01 \u00b7 SONY ILCE-6400",
-   "stamp": "@hoangphi01 \u00b7 Apple iPhone 16 Pro",
-   "sheet": "@hoangphi01 \u00b7 Apple iPhone 15",
-   "frame": "@hoangphi01 \u00b7 Apple iPhone 16 Pro"
+   "stamp": "@hong__tr",
+   "sheet": "@hong__tr",
+   "frame": "@hoangphi01 \u00b7 Apple iPhone 16 Pro",
+   "frame2": "@hoangphi01 \u00b7 Apple iPhone 15"
   },
   "rows": [
    [
     [
-     "stamp"
+     "frame"
     ],
     [
-     "frame"
+     "frame2"
     ]
    ],
    [
+    [
+     "stamp"
+    ],
     [
      "sheet"
     ]

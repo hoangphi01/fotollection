@@ -10,3 +10,8 @@ IMG_5710
 IMG_4421
 IMG_5758
 Gokurakuji
+# Autumn in Japan by @hong__tr (owner, 2026-11-21: three photos for the Japanese landing page, credited
+# under each print; © @hong__tr, never in the repository): a ginkgo in Marunouchi, a forest road, maple leaves.
+hongtr-ginkgo
+hongtr-road
+hongtr-maple

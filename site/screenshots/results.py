@@ -23,9 +23,12 @@ ROOT = Path(__file__).resolve().parents[2]
 # The postcards are the language's demo cards (demo.rs `postcard_demos`); the stamp, the sheet
 # and the frame use photos the set shows best, none repeating the postcards' places.
 PICKS = {
+    # Laid out as the Korean page (owner, 2026-11-21): two rows of two. @hong__tr's autumn, sent
+    # without EXIF, on the prints that need none of a camera's facts (the stamp and the sheet);
+    # the info frames keep the owner's photos, whose camera and settings they print.
     "ja": {"card": ("sheet-postcard-full", "IMG_5773"), "card2": ("sheet-postcard", "Gokurakuji"),
-           "stamp": ("preview/stamp", "IMG_5745"), "sheet": ("sheet", ("IMG_4329", "IMG_4421")),
-           "frame": ("preview/frame", "IMG_5758")},
+           "stamp": ("preview/stamp", "hongtr-road"), "sheet": ("sheet", ("hongtr-ginkgo", "hongtr-maple")),
+           "frame": ("preview/frame", "IMG_5758"), "frame2": ("preview/frame", "IMG_4329")},
     "ko": {"card": ("sheet-postcard-full", "DSCF2041"), "card2": ("sheet-postcard", "DSC06332"),
            "stamp": ("preview/stamp", "DSC06335"), "sheet": ("sheet", ("DSCF1972", "DSCF1975")),
            "frame": ("preview/frame", "DSCF2022"), "frame2": ("preview/frame", "DSC06325")},
@@ -53,6 +56,8 @@ def repeats(picks: dict) -> list[str]:
 # Who took each photo, by file name (credited under each print, owner 2026-11-15; the page's
 # fn_photos note says the rest). The camera comes from the photo's EXIF in the recording.
 def author(stem: str) -> str:
+    if stem.startswith("hongtr-"):
+        return "@hong__tr"
     if stem.startswith("DSCF"):
         return "@9adox"
     if stem.startswith(("IMG_14", "DSC0")):  # ZV-1 files: DSC0…, the phone's IMG_14…
