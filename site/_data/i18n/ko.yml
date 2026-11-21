@@ -483,11 +483,11 @@ perf_description: "Fotollection의 속도, 메모리, 인쇄 품질을 평범한
 perf_kicker: "약속이 아닌, 측정"
 perf_h1: "측정으로 보는 Fotollection"
 perf_tiles:
+  - { m: m3, v: "20×", l: "v0.9.0보다 빠른 RAW 사진 열기(531 → 27 ms)" }
   - { m: m3, v: "0.13초", l: "사진 1,000장 폴더 읽기, 예산의 8분의 1" }
-  - { m: m3, v: "7.6 ms", l: "변경 후 미리 보기 다시 그리기" }
-  - { m: m3, v: "24.0", l: "초당 내보내는 16 MP 사진" }
-  - { m: m3, v: "17.9분", l: "RollSense가 사진 15,000장을 정리하는 시간" }
-  - { m: m3, v: "0.92 GB", l: "사진 5,088장의 상주 메모리 최대치" }
+  - { m: m3, v: "24", l: "초당 내보내는 16 MP 사진" }
+  - { m: m3, v: "약 18분", l: "RollSense가 사진 15,000장을 정리하는 시간" }
+  - { m: m3, v: "< 1 GB", l: "사진 5,088장의 상주 메모리 최대치" }
 perf_machines:
   - { m: m3, role: "기준 노트북", name: "MacBook Air M3, 16 GB, 2024", use: "따로 표시하지 않은 이 페이지의 모든 수치." }
   - { m: i7, role: "평범한 노트북", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "사진 9,639장으로 한 RollSense 부하 테스트." }
@@ -505,9 +505,9 @@ perf_export_title: "내보내기: 모든 코어로, 메모리 예산 안에서"
 perf_export_text: "Fotollection은 가장 큰 사진에 대해 메모리 예산이 허락하는 만큼 여러 장을 동시에 내보내므로, 사진 100장에서 수천 장까지 메모리가 일정합니다. macOS에서는 RAW를 도우미 프로세스에서 현상하고, 12장마다 새 프로세스로 바꿉니다."
 perf_export_fn: [fn_trip]
 export_stats:
-  - { v: "24.0", l: "초당 내보내는 16 MP 사진" }
+  - { v: "24", l: "초당 내보내는 16 MP 사진" }
   - { v: "0.92 GB", l: "사진 5,088장의 상주 메모리 최대치" }
-  - { v: "3.46 GB", l: "메모리 풋프린트 최대치, Fotollection과 RAW 도우미(예산 3.5 GB)" }
+  - { v: "10.0/초", l: "JPEG 내보내기(예산 8/초)" }
 perf_lead: "아래 수치는 모두 평범한 노트북 두 대에서 실제 사진으로 측정했으며, 이를 만든 스크립트는 저장소에 있어 누구나 다시 실행할 수 있습니다."
 perf_how_title: "Fotollection이 빠른 이유"
 perf_how_lead: "마법은 없습니다. 첫 코드를 쓰기 전에 정한 몇 가지 결정, 그리고 그 모든 측정."
@@ -533,7 +533,7 @@ open_stats:
 perf_print_title: "프린트와 공유 사진: 여전히 그 사진"
 perf_print_text: "웹 편집기로 만든 프린트는 흔히 밋밋해 보입니다. 편집기가 색 프로필을 버리고, 사진을 2000 px로 줄이고, 품질 80에 색을 절반으로 저장하기 때문입니다. Fotollection은 프로필을 유지하고 최대 해상도의 4:4:4로 내보냅니다. Facebook은 모든 사진을 2048 px로 줄이고, 다시 압축하며, 색 프로필을 무시합니다. Share 내보내기는 그 작업을 먼저 제대로 해 두기 때문에, Facebook을 거친 뒤에도 보통 방식보다 원본에 더 가깝게 남습니다."
 print_stats:
-  - { v: "0.19", l: "색 오차. 눈이 알아채기 시작하는 것은 1부터" }
+  - { v: "0.19", l: "색 오차. 눈이 알아채기 시작하는 것은 1부터 (q95)" }
   - { v: "4:4:4", l: "색 해상도 그대로. 웹 편집기는 절반으로" }
   - { v: "99.6 %", l: "Facebook을 거친 뒤에도 남는 Display P3 사진의 색(보통은 86 %)" }
 chart_raw: "카메라 RAW: 파일에서 화면까지, 카메라별로 Adobe DNG Converter와 비교"
@@ -541,7 +541,7 @@ perf_raw_title: "카메라 RAW: 있는 그대로 열기"
 perf_raw_text: "Fotollection은 흔히 쓰는 9개 카메라의 RAW 파일을 변환 없이 그대로 열며, Windows와 Linux에서는 설치할 것도 없습니다. v0.10.0부터는 베이어 센서를 쓰는 모든 카메라에서 원본 크기 이미지를 자체 현상하며, RAW 편집기처럼 카메라 자체의 데이터로 만듭니다. 반면 Adobe DNG Converter는 RAW 파일 하나를 다른 RAW 파일로 바꿀 뿐입니다."
 raw_stats:
   - { v: "9–32 ms", l: "RAW 썸네일, 파일 안의 미리 보기에서" }
-  - { v: "0.3–0.7초", l: "Fotollection 자체 현상으로 원본 크기 사진" }
+  - { v: "0.9초", l: "Fotollection의 RAW 전체 현상, 카메라 9종의 중앙값" }
   - { v: "1.2–1.8초", l: "Adobe DNG Converter, 파일 하나를 변환만 하는 데" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
 perf_best_title: "베스트 샷 추천: 사람의 선택과 비교"
@@ -672,7 +672,7 @@ og_card_features:
   sub: "모드, 우편엽서, 프린트 크기, 룩, RAW와 속도. 오프라인으로."
   shield: "무료, 오픈 소스, 오프라인"
 perf_sense_title: "카메라 롤 전체 정리: 9,639장 부하 테스트"
-perf_sense_text: "RollSense는 정리를 위해 사진마다 한 번씩 읽어 무엇이 찍혔는지, 어떤 사진이 중복인지 알아냅니다. 2,500장 여행은 2020년 Windows 노트북에서 약 18분이 걸리고, Fotollection은 9,639장 내내 안정적이었으며 메모리는 70분 동안 늘지 않았습니다."
+perf_sense_text: "RollSense는 정리를 위해 사진마다 한 번씩 읽어 무엇이 찍혔는지, 어떤 사진이 중복인지 알아냅니다. 2,500장 여행은 2020년 Windows 노트북에서 약 18분이 걸리고, Fotollection은 9,639장 내내 안정적이었으며 메모리는 70분 동안 늘지 않았습니다. M3에서는 사진 15,000장에 약 18분이 걸립니다."
 sense_stats:
   - v: "17.9분"
     l: "M3에서 사진 15,000장 정리"

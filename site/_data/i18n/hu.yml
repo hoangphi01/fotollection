@@ -478,11 +478,11 @@ perf_description: "A Fotollection sebessége, memóriája és nyomtatási minős
 perf_kicker: "Mérések, nem ígéretek"
 perf_h1: "A Fotollection mérésekben"
 perf_tiles:
+  - { m: m3, v: "20×", l: "gyorsabban nyílik meg egy RAW fotó, mint a v0.9.0-ban (531 → 27 ms)" }
   - { m: m3, v: "0,13 s", l: "egy 1000 fotós mappa beolvasása, a keret nyolcada alatt" }
-  - { m: m3, v: "7,6 ms", l: "az előnézet újrarajzolása egy módosítás után" }
-  - { m: m3, v: "24,0", l: "exportált 16 MP-es fotó másodpercenként" }
-  - { m: m3, v: "17,9 perc", l: "amíg a RollSense 15 000 fotót rendez" }
-  - { m: m3, v: "0,92 GB", l: "rezidens memória csúcsa 5088 fotónál" }
+  - { m: m3, v: "24", l: "exportált 16 MP-es fotó másodpercenként" }
+  - { m: m3, v: "≈ 18 perc", l: "amíg a RollSense 15 000 fotót rendez" }
+  - { m: m3, v: "< 1 GB", l: "rezidens memória csúcsa 5088 fotónál" }
 perf_machines:
   - { m: m3, role: "A referencia-laptop", name: "MacBook Air M3, 16 GB, 2024", use: "Az oldal minden száma, ha nincs másként jelölve." }
   - { m: i7, role: "Egy hétköznapi laptop", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "A RollSense terheléses tesztje 9639 fotóval." }
@@ -500,9 +500,9 @@ perf_export_title: "Exportálás: minden mag, a memóriakereten belül"
 perf_export_text: "A Fotollection egyszerre több fotót exportál, annyit, amennyit a memóriakeret a legnagyobb fotóhoz enged, így a memória száz fotótól több ezerig egyenletes marad. macOS-en a RAW-ot egy segédfolyamat hívja elő, amelyet tizenkét fotónként egy új vált fel."
 perf_export_fn: [fn_trip]
 export_stats:
-  - { v: "24,0", l: "exportált 16 MP-es fotó másodpercenként" }
+  - { v: "24", l: "exportált 16 MP-es fotó másodpercenként" }
   - { v: "0,92 GB", l: "rezidens memória csúcsa 5088 fotónál" }
-  - { v: "3,46 GB", l: "legnagyobb memórialábnyom, a Fotollection és RAW-segédje (keret: 3,5 GB)" }
+  - { v: "10,0/s", l: "exportált JPEG (keret: 8/s)" }
 perf_lead: "Minden alábbi számot valódi fotókon mértünk két átlagos laptopon, és az ezeket előállító szkriptek a tárolóban vannak, így bárki újra lefuttathatja őket."
 perf_how_title: "Miért gyors a Fotollection"
 perf_how_lead: "Semmi varázslat. Néhány döntés, amely még az első kódsor előtt megszületett, és mindegyik mérve."
@@ -528,7 +528,7 @@ open_stats:
 perf_print_title: "Nyomatok és megosztott fotók: továbbra is a fotó"
 perf_print_text: "A webes szerkesztővel készült nyomatok gyakran fakónak tűnnek: a szerkesztő elhagyja a színprofilt, 2000 px-re kicsinyíti a fotót, és 80-as minőséggel, felezett színnel menti. A Fotollection megtartja a profilt, és teljes felbontásban, 4:4:4-ben exportál. A Facebook minden fotót 2048 px-re kicsinyít, újratömöríti, és figyelmen kívül hagyja a színprofilokat. A Share exportálás ezt a munkát előbb rendesen elvégzi, így a Facebook után a fotó közelebb marad önmagához, mint a szokásos módon."
 print_stats:
-  - { v: "0,19", l: "színhiba; a szem 1-nél kezdi észrevenni" }
+  - { v: "0,19", l: "színhiba; a szem 1-nél kezdi észrevenni (q95)" }
   - { v: "4:4:4", l: "teljes színfelbontás; egy webes szerkesztő megfelezi" }
   - { v: "99,6 %", l: "egy Display P3 fotó színeiből megmarad a Facebook után, 86 % helyett" }
 chart_raw: "Fényképezőgépes RAW: a fájltól a képernyőig, gépenként és az Adobe DNG Converterrel szemben"
@@ -536,7 +536,7 @@ perf_raw_title: "Fényképezőgépes RAW: nyisd meg úgy, ahogy van"
 perf_raw_text: "A Fotollection kilenc elterjedt fényképezőgép RAW fájljait nyitja meg úgy, ahogy vannak, konvertálás nélkül, Windowson és Linuxon pedig telepítés nélkül is. A v0.10.0 óta a teljes kép a saját kidolgozása minden Bayer-érzékelős gépnél, a gép saját adataiból készítve, ahogy egy RAW-szerkesztőben, míg az Adobe DNG Converter csak egyik RAW fájlt alakítja át egy másikká."
 raw_stats:
   - { v: "9–32 ms", l: "egy RAW bélyegképe, a fájlba ágyazott előnézetből" }
-  - { v: "0,3–0,7 s", l: "a teljes fotó a Fotollection saját kidolgozásával" }
+  - { v: "0,9 s", l: "egy RAW teljes előhívása a Fotollectionben, kilenc fényképezőgép mediánja" }
   - { v: "1,2–1,8 s", l: "az Adobe DNG Converter fájlonként, csak a konvertálásra" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
 perf_best_title: "A legjobb kép ajánlásai: egy ember választásához mérve"
@@ -665,7 +665,7 @@ og_card_features:
   sub: "Módok, képeslapok, nyomatméretek, lookok, RAW és sebesség, offline."
   shield: "Ingyenes, nyílt forráskódú, offline"
 perf_sense_title: "Egy teljes fotótár rendezése: terheléses teszt 9639 fotóval"
-perf_sense_text: "A RollSense minden fotót egyszer olvas be a rendezéshez: mit mutat, és melyik másolat. Egy 2500 fotós utazás körülbelül 18 percig tart egy 2020-as windowsos laptopon, és a Fotollection 9639 fotón át stabil maradt, a memóriája 70 percig nem nőtt."
+perf_sense_text: "A RollSense minden fotót egyszer olvas be a rendezéshez: mit mutat, és melyik másolat. Egy 2500 fotós utazás körülbelül 18 percig tart egy 2020-as windowsos laptopon, és a Fotollection 9639 fotón át stabil maradt, a memóriája 70 percig nem nőtt. Az M3-on 15 000 fotó nagyjából 18 percig tart."
 sense_stats:
   - v: "17,9 perc"
     l: "15 000 fotó rendezése az M3-on"

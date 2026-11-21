@@ -61,7 +61,6 @@ const raw = read('raw.json')
 const meta = read('machine.json')
 // The GPU while editing and the photos in flight (ADR-0039, RESULT §22).
 const gpu = read('gpu.json')
-const drag = read('drag.json')
 const inflight = read('inflight.json')
 const browse = read('browse.json')
 // RollSense under load on a Windows laptop, second by second (NFR-022, FR-141).
@@ -163,7 +162,6 @@ const T = {
     ],
     gpuTitle: 'One step of a colour slider: the CPU path against the GPU',
     gpuUnit: 'ms a step · lower is better',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'No GPU (SwiftShader)' },
     gpuFooter: (f) => `1600 px preview, 26 MP photos · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 to Rust's render: mean ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'A machine without a GPU keeps the CPU path.',
@@ -257,7 +255,6 @@ const T = {
     ],
     gpuTitle: 'Jeden krok barevného posuvníku: cesta přes CPU proti GPU',
     gpuUnit: 'ms na krok · méně je lépe',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'Bez GPU (SwiftShader)' },
     gpuFooter: (f) => `Náhled 1600 px, fotky s 26 MP · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 proti vykreslení v Rustu: průměr ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'Počítač bez GPU zůstane u cesty přes CPU.',
@@ -351,7 +348,6 @@ const T = {
     ],
     gpuTitle: 'Ein Schritt eines Farbreglers: der CPU-Weg gegen die GPU',
     gpuUnit: 'ms pro Schritt · niedriger ist besser',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'Keine GPU (SwiftShader)' },
     gpuFooter: (f) => `1600-px-Vorschau, Fotos mit 26 MP · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 zur Berechnung von Rust: Mittel ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'Ein Rechner ohne GPU bleibt beim CPU-Weg.',
@@ -445,7 +441,6 @@ const T = {
     ],
     gpuTitle: 'Egy színcsúszka egy lépése: a CPU-s út a GPU-val szemben',
     gpuUnit: 'ms lépésenként · a kisebb a jobb',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'GPU nélkül (SwiftShader)' },
     gpuFooter: (f) => `1600 px-es előnézet, 26 MP-es fotók · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 a Rust renderjéhez képest: átlag ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'GPU nélküli gépen a CPU-s út marad.',
@@ -539,7 +534,6 @@ const T = {
     ],
     gpuTitle: 'Jeden krok suwaka koloru: ścieżka CPU wobec GPU',
     gpuUnit: 'ms na krok · mniej znaczy lepiej',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'Bez GPU (SwiftShader)' },
     gpuFooter: (f) => `Podgląd 1600 px, zdjęcia 26 MP · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 względem renderu Rusta: średnio ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'Komputer bez GPU zostaje przy ścieżce CPU.',
@@ -633,7 +627,6 @@ const T = {
     ],
     gpuTitle: 'Một nhịp kéo thanh màu: đường CPU so với GPU',
     gpuUnit: 'ms mỗi nhịp · càng thấp càng tốt',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'Không có GPU (SwiftShader)' },
     gpuFooter: (f) => `Bản xem trước 1600 px, ảnh 26 MP · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 so với Rust: trung bình ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'Máy không có GPU vẫn dùng đường CPU.',
@@ -727,7 +720,6 @@ const T = {
     ],
     gpuTitle: 'カラースライダーの 1 ステップ：CPU 経路と GPU の比較',
     gpuUnit: '1 ステップの ms · 小さいほど良い',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU、macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU、Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'GPU なし (SwiftShader)' },
     gpuFooter: (f) => `1600 px プレビュー、26 MP の写真 · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · Rust のレンダリングとの ΔE2000：平均 ${f(gpu.parity.webkit.photoMean, 2)}、p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'GPU のないマシンでは CPU 経路のままです。',
@@ -821,7 +813,6 @@ const T = {
     ],
     gpuTitle: '색 슬라이더 한 단계: CPU 경로와 GPU 비교',
     gpuUnit: '한 단계의 ms · 작을수록 좋음',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'GPU 없음 (SwiftShader)' },
     gpuFooter: (f) => `1600 px 미리보기, 26 MP 사진 · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · Rust 렌더링과의 ΔE2000: 평균 ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'GPU가 없는 컴퓨터에서는 CPU 경로를 그대로 씁니다.',
@@ -915,7 +906,6 @@ const T = {
     ],
     gpuTitle: 'Un pas d’un curseur de couleur : la voie CPU contre le GPU',
     gpuUnit: 'ms par pas · plus bas est mieux',
-    gpuCpu: 'CPU (Rust + JPEG)',
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'Sans GPU (SwiftShader)' },
     gpuFooter: (f) => `Aperçu de 1600 px, photos de 26 MP · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 par rapport au rendu de Rust : moyenne ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'Une machine sans GPU garde la voie CPU.',
@@ -1343,15 +1333,11 @@ function charts(lang) {
       .join('. ')
     out['bench-bestshot'] = doc(t.bsTitle, desc, h, body)
   }
-  // 9. The GPU while editing (ADR-0039): one slider step, the CPU path's parts against the GPU.
+  // 9. The GPU while editing (ADR-0039): one slider step on each engine, a software renderer as
+  // the processor's case. No CPU bar: one summed from two days' parts is not a measurement
+  // (benchmark review, 2026-11-21).
   {
-    const cpu = drag.photos[0]
-    const decode = gpu.engines.find((e) => e.name.startsWith('WebKit'))?.decodeMs ?? 0
-    const cpuMs = cpu.parts.tableMs + cpu.parts.lookStampMs + cpu.parts.encodeMs + decode
-    const rows = [
-      { name: t.gpuCpu, cls: 's2', v: cpuMs },
-      ...gpu.engines.map((e) => ({ name: t.gpuEngines[e.name] ?? e.name, cls: /SwiftShader/.test(e.name) ? 's2 old' : 's1', v: e.stepMs })),
-    ]
+    const rows = gpu.engines.map((e) => ({ name: t.gpuEngines[e.name] ?? e.name, cls: /SwiftShader/.test(e.name) ? 's2 old' : 's1', v: e.stepMs }))
     const max = Math.max(...rows.map((r) => r.v)) * 1.1
     let body = `<text class="t3" x="0" y="30">${esc(t.gpuUnit)}</text>`
     const y0 = 50

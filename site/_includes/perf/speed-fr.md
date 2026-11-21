@@ -1,6 +1,6 @@
 ### Ce qui se passe quand vous ouvrez un dossier
 
-Un dossier de photos n’est pas lu en entier. Pour chaque fichier, Fotollection lit ses données EXIF (date, appareil, lieu) et la petite vignette que chaque appareil range dans le fichier, et rien d’autre : 1 000 photos prennent 0,12 s, pour un budget de 1 s fixé avant d’écrire le code. Des vignettes plus nettes de 400 px sont ensuite faites en arrière-plan, sur deux fils pour que Fotollection reste réactif, et gardées dans un cache sur disque, si bien qu’un dossier rouvert s’affiche instantanément. Pour 5 035 photos, l’import a pris 383 ms et les vignettes intégrées 236 ms.
+Un dossier de photos n’est pas lu en entier. Pour chaque fichier, Fotollection lit ses données EXIF (date, appareil, lieu) et la petite vignette que chaque appareil range dans le fichier, et rien d’autre : 1 000 photos prennent 0,13 s, pour un budget de 1 s fixé avant d’écrire le code. Des vignettes plus nettes de 400 px sont ensuite faites en arrière-plan, sur deux fils pour que Fotollection reste réactif, et gardées dans un cache sur disque, si bien qu’un dossier rouvert s’affiche instantanément. Pour 5 035 photos, l’import a pris 383 ms et les vignettes intégrées 236 ms.
 
 ### Où passent les 17 ms d’un aperçu
 

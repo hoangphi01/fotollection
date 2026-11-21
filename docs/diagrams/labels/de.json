@@ -9,7 +9,7 @@
  "Browse past a photo and it stops going first; a develop no longer wanted when its turn comes is dropped.\nSo a RAW on screen never waits behind a background job.": "Blätterst du an einem Foto vorbei, kommt es nicht mehr zuerst; eine Entwicklung, die nicht mehr gebraucht wird, wenn sie dran ist, entfällt.\nSo wartet ein RAW auf dem Bildschirm nie hinter einer Hintergrundaufgabe.",
  "While you drag a colour slider": "Während du einen Farbregler ziehst",
  "The Rust core builds the look as one 33³ table\n0.9–1.3 ms": "Der Rust-Kern baut den Look als eine 33³-Tabelle\n0,9–1,3 ms",
- "The graphics card (WebGL2) draws it on the preview\n1–2 ms a step; the stamp and the frame left out": "Die Grafikkarte (WebGL2) zeichnet ihn auf die Vorschau\n1–2 ms pro Schritt; ohne Stempel und Rahmen",
+ "The graphics card (WebGL2) draws it on the preview\n1–4 ms a step; the stamp and the frame left out": "Die Grafikkarte (WebGL2) zeichnet ihn auf die Vorschau\n1–4 ms pro Schritt; ohne Stempel und Rahmen",
  "Without a capable graphics card: Rust renders the look,\nencodes a preview JPEG, the webview decodes it\nabout 26 ms a step; the app decides by itself": "Ohne fähige Grafikkarte: Rust berechnet den Look,\nkodiert ein Vorschau-JPEG, die Web-Ansicht dekodiert es\netwa 26 ms pro Schritt; Fotollection entscheidet selbst",
  "You let go: Rust's exact render takes over\n0.13 ΔE2000 apart on average, below what an eye sees": "Du lässt los: Die exakte Berechnung von Rust übernimmt\nim Mittel 0,13 ΔE2000 Abstand, unter dem, was ein Auge sieht",
  "When you export: the processor, every core": "Beim Export: der Prozessor, jeder Kern",

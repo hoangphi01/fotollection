@@ -478,11 +478,11 @@ perf_description: "Geschwindigkeit, Speicher und Druckqualität von Fotollection
 perf_kicker: "Gemessen, nicht versprochen"
 perf_h1: "Fotollection, gemessen"
 perf_tiles:
+  - { m: m3, v: "20×", l: "schneller beim Öffnen eines RAW-Fotos als v0.9.0 (531 → 27 ms)" }
   - { m: m3, v: "0,13 s", l: "um einen Ordner mit 1.000 Fotos zu lesen, achtmal unter dem Budget" }
-  - { m: m3, v: "7,6 ms", l: "um die Vorschau nach einer Änderung neu zu zeichnen" }
-  - { m: m3, v: "24,0", l: "Fotos mit 16 MP pro Sekunde exportiert" }
-  - { m: m3, v: "17,9 min", l: "bis RollSense 15.000 Fotos sortiert hat" }
-  - { m: m3, v: "0,92 GB", l: "Spitze des residenten Speichers bei 5.088 Fotos" }
+  - { m: m3, v: "24", l: "Fotos mit 16 MP pro Sekunde exportiert" }
+  - { m: m3, v: "≈ 18 min", l: "bis RollSense 15.000 Fotos sortiert hat" }
+  - { m: m3, v: "< 1 GB", l: "Spitze des residenten Speichers bei 5.088 Fotos" }
 perf_machines:
   - { m: m3, role: "Der Referenz-Laptop", name: "MacBook Air M3, 16 GB, 2024", use: "Jede Zahl auf dieser Seite, sofern nicht anders angegeben." }
   - { m: i7, role: "Ein Alltagslaptop", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "Der Lasttest von RollSense mit 9.639 Fotos." }
@@ -500,9 +500,9 @@ perf_export_title: "Exportieren: alle Kerne, im Speicherbudget"
 perf_export_text: "Fotollection exportiert mehrere Fotos gleichzeitig, so viele, wie das Speicherbudget für das größte erlaubt, sodass der Speicher von hundert bis zu Tausenden Fotos konstant bleibt. Unter macOS wird ein RAW in einem Hilfsprozess entwickelt, der alle zwölf Fotos ersetzt wird."
 perf_export_fn: [fn_trip]
 export_stats:
-  - { v: "24,0", l: "Fotos mit 16 MP pro Sekunde exportiert" }
+  - { v: "24", l: "Fotos mit 16 MP pro Sekunde exportiert" }
   - { v: "0,92 GB", l: "Spitze des residenten Speichers bei 5.088 Fotos" }
-  - { v: "3,46 GB", l: "Spitzen-Speicherbedarf, Fotollection und RAW-Helfer (Budget 3,5 GB)" }
+  - { v: "10,0/s", l: "exportierte JPEGs (Budget 8/s)" }
 perf_lead: "Jede Zahl unten wurde an echten Fotos auf zwei gewöhnlichen Laptops gemessen, und die Skripte dazu liegen im Repository, damit jeder sie erneut ausführen kann."
 perf_how_title: "Warum Fotollection schnell ist"
 perf_how_lead: "Keine Magie. Ein paar Entscheidungen, getroffen vor der ersten Zeile Code, jede gemessen."
@@ -528,7 +528,7 @@ open_stats:
 perf_print_title: "Drucke und geteilte Fotos: immer noch das Foto"
 perf_print_text: "Abzüge, die über einen Web-Editor entstehen, wirken oft flau: Er verwirft das Farbprofil, verkleinert das Foto auf 2.000 px und speichert mit Qualität 80 und halbierter Farbe. Fotollection behält das Profil und exportiert in voller Auflösung mit 4:4:4. Facebook verkleinert jedes Foto auf 2.048 px, komprimiert es neu und ignoriert Farbprofile. Der Share-Export erledigt diese Arbeit vorher richtig, so bleibt das Foto nach Facebook näher an sich selbst als auf dem üblichen Weg."
 print_stats:
-  - { v: "0,19", l: "Farbfehler; ein Auge bemerkt ihn ab 1" }
+  - { v: "0,19", l: "Farbfehler; ein Auge bemerkt ihn ab 1 (q95)" }
   - { v: "4:4:4", l: "volle Farbauflösung; ein Web-Editor halbiert sie" }
   - { v: "99,6 %", l: "der Farbe eines Display-P3-Fotos bleiben nach Facebook erhalten, gegenüber 86 %" }
 chart_raw: "Kamera-RAW: von der Datei auf den Bildschirm, pro Kamera und gegen Adobe DNG Converter"
@@ -536,7 +536,7 @@ perf_raw_title: "Kamera-RAW: öffnen, wie es ist"
 perf_raw_text: "Fotollection öffnet RAW-Dateien von neun verbreiteten Kameras, wie sie sind, ohne Umwandeln und, unter Windows und Linux, ohne etwas zu installieren. Seit v0.10.0 ist das volle Bild für jede Kamera mit Bayer-Sensor seine eigene Entwicklung, erstellt aus den eigenen Daten der Kamera wie in einem RAW-Editor, während Adobe DNG Converter nur eine RAW-Datei in eine andere umwandelt."
 raw_stats:
   - { v: "9–32 ms", l: "das Vorschaubild eines RAW, aus der Vorschau in der Datei" }
-  - { v: "0,3–0,7 s", l: "die eigene Entwicklung des ganzen Fotos durch Fotollection" }
+  - { v: "0,9 s", l: "vollständige Entwicklung eines RAW in Fotollection, Median aus neun Kameras" }
   - { v: "1,2–1,8 s", l: "Adobe DNG Converter pro Datei, nur zum Umwandeln" }
 perf_raw_fn: ["fn_dng", "fn_sensor", "fn_psnr", "fn_tiff"]
 perf_best_title: "Vorschläge für die besten Aufnahmen: geprüft an der Wahl eines Menschen"
@@ -665,7 +665,7 @@ og_card_features:
   sub: "Modi, Postkarten, Druckformate, Looks, RAW und Tempo, offline."
   shield: "Kostenlos, Open Source, offline"
 perf_sense_title: "Eine ganze Fotomediathek sortieren: Lasttest mit 9.639 Fotos"
-perf_sense_text: "RollSense liest jedes Foto einmal, um es zu sortieren: was es zeigt und welche Fotos Kopien sind. Eine Reise mit 2.500 Fotos dauert auf einem Windows-Laptop von 2020 etwa 18 Minuten, und Fotollection blieb über 9.639 Fotos stabil, der Speicher 70 Minuten lang gleichbleibend."
+perf_sense_text: "RollSense liest jedes Foto einmal, um es zu sortieren: was es zeigt und welche Fotos Kopien sind. Eine Reise mit 2.500 Fotos dauert auf einem Windows-Laptop von 2020 etwa 18 Minuten, und Fotollection blieb über 9.639 Fotos stabil, der Speicher 70 Minuten lang gleichbleibend. Auf dem M3 dauern 15.000 Fotos etwa 18 Minuten."
 sense_stats:
   - v: "17,9 min"
     l: "um 15.000 Fotos auf dem M3 zu sortieren"

@@ -1,6 +1,6 @@
 ### Was passiert, wenn du einen Ordner öffnest
 
-Ein Ordner mit Fotos wird nicht ganz gelesen. Von jeder Datei liest Fotollection die EXIF-Daten (Datum, Kamera, Ort) und das kleine Vorschaubild, das jede Kamera in der Datei ablegt, und sonst nichts: 1.000 Fotos brauchen 0,12 s, bei einem Budget von 1 s, das festgelegt wurde, bevor der Code geschrieben war. Schärfere Vorschaubilder mit 400 px entstehen danach im Hintergrund, auf zwei Threads, damit Fotollection flink bleibt, und kommen in einen Cache auf der Festplatte, so ist ein wieder geöffneter Ordner sofort da. Bei 5.035 Fotos dauerte der Import 383 ms und die eingebetteten Vorschaubilder 236 ms.
+Ein Ordner mit Fotos wird nicht ganz gelesen. Von jeder Datei liest Fotollection die EXIF-Daten (Datum, Kamera, Ort) und das kleine Vorschaubild, das jede Kamera in der Datei ablegt, und sonst nichts: 1.000 Fotos brauchen 0,13 s, bei einem Budget von 1 s, das festgelegt wurde, bevor der Code geschrieben war. Schärfere Vorschaubilder mit 400 px entstehen danach im Hintergrund, auf zwei Threads, damit Fotollection flink bleibt, und kommen in einen Cache auf der Festplatte, so ist ein wieder geöffneter Ordner sofort da. Bei 5.035 Fotos dauerte der Import 383 ms und die eingebetteten Vorschaubilder 236 ms.
 
 ### Wohin die 17 ms einer Vorschau gehen
 

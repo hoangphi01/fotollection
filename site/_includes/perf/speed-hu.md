@@ -1,6 +1,6 @@
 ### Mi történik, amikor megnyitsz egy mappát
 
-Egy fotómappát a Fotollection nem olvas be egészben. Minden fájlnál az EXIF-adatait (dátum, gép, hely) és azt a kis bélyegképet olvassa be, amelyet minden fényképezőgép a fájlba ment, mást nem: 1000 fotó 0,12 s, szemben azzal az 1 s-os kerettel, amelyet a kód megírása előtt szabtunk meg. Ezután a háttérben élesebb, 400 px-es bélyegképek készülnek, két szálon, hogy a Fotollection gyors maradjon, és egy lemezes gyorsítótárba kerülnek, így egy újra megnyitott mappa azonnal ott van. 5035 fotónál az importálás 383 ms-ig, a beágyazott bélyegképek 236 ms-ig tartottak.
+Egy fotómappát a Fotollection nem olvas be egészben. Minden fájlnál az EXIF-adatait (dátum, gép, hely) és azt a kis bélyegképet olvassa be, amelyet minden fényképezőgép a fájlba ment, mást nem: 1000 fotó 0,13 s, szemben azzal az 1 s-os kerettel, amelyet a kód megírása előtt szabtunk meg. Ezután a háttérben élesebb, 400 px-es bélyegképek készülnek, két szálon, hogy a Fotollection gyors maradjon, és egy lemezes gyorsítótárba kerülnek, így egy újra megnyitott mappa azonnal ott van. 5035 fotónál az importálás 383 ms-ig, a beágyazott bélyegképek 236 ms-ig tartottak.
 
 ### Hová megy egy előnézet 17 ms-a
 

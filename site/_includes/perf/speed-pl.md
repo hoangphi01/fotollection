@@ -1,6 +1,6 @@
 ### Co się dzieje, gdy otwierasz folder
 
-Folder zdjęć nie jest czytany w całości. Z każdego pliku Fotollection czyta dane EXIF (datę, aparat, miejsce) i małą miniaturę, którą każdy aparat zapisuje w pliku, i nic więcej: 1000 zdjęć zajmuje 0,12 s, przy budżecie 1 s ustalonym, zanim napisano kod. Ostrzejsze miniatury 400 px powstają potem w tle, na dwóch wątkach, by Fotollection pozostało szybkie, i trafiają do pamięci podręcznej na dysku, więc ponownie otwarty folder pojawia się natychmiast. Dla 5035 zdjęć import zajął 383 ms, a wbudowane miniatury 236 ms.
+Folder zdjęć nie jest czytany w całości. Z każdego pliku Fotollection czyta dane EXIF (datę, aparat, miejsce) i małą miniaturę, którą każdy aparat zapisuje w pliku, i nic więcej: 1000 zdjęć zajmuje 0,13 s, przy budżecie 1 s ustalonym, zanim napisano kod. Ostrzejsze miniatury 400 px powstają potem w tle, na dwóch wątkach, by Fotollection pozostało szybkie, i trafiają do pamięci podręcznej na dysku, więc ponownie otwarty folder pojawia się natychmiast. Dla 5035 zdjęć import zajął 383 ms, a wbudowane miniatury 236 ms.
 
 ### Na co idzie 17 ms podglądu
 

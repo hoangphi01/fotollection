@@ -9,7 +9,7 @@
  "Browse past a photo and it stops going first; a develop no longer wanted when its turn comes is dropped.\nSo a RAW on screen never waits behind a background job.": "Lapozz tovább, és a fotó már nem megy elsőként; a már nem kért kidolgozás elmarad, amikor sorra kerül.\nÍgy a képernyőn lévő RAW sosem vár egy háttérfeladat mögött.",
  "While you drag a colour slider": "Amíg egy színcsúszkát húzol",
  "The Rust core builds the look as one 33³ table\n0.9–1.3 ms": "A Rust-mag egyetlen 33³-os táblaként építi fel a lookot\n0,9–1,3 ms",
- "The graphics card (WebGL2) draws it on the preview\n1–2 ms a step; the stamp and the frame left out": "A videokártya (WebGL2) rajzolja az előnézetre\nlépésenként 1–2 ms; a dátum és a keret nélkül",
+ "The graphics card (WebGL2) draws it on the preview\n1–4 ms a step; the stamp and the frame left out": "A videokártya (WebGL2) rajzolja az előnézetre\nlépésenként 1–4 ms; a dátum és a keret nélkül",
  "Without a capable graphics card: Rust renders the look,\nencodes a preview JPEG, the webview decodes it\nabout 26 ms a step; the app decides by itself": "Alkalmas videokártya nélkül: a Rust rendereli a lookot,\nelőnézeti JPEG-et kódol, a webnézet dekódolja\nkb. 26 ms lépésenként; az alkalmazás magától dönt",
  "You let go: Rust's exact render takes over\n0.13 ΔE2000 apart on average, below what an eye sees": "Elengeded: a Rust pontos renderelése veszi át\nátlagosan 0,13 ΔE2000 eltérés, a szemmel látható alatt",
  "When you export: the processor, every core": "Exportáláskor: a processzor, minden mag",

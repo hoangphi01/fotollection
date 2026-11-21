@@ -478,11 +478,11 @@ perf_description: "Rychlost, paměť a kvalita tisku Fotollection, změřené na
 perf_kicker: "Změřeno, ne slíbeno"
 perf_h1: "Fotollection v číslech"
 perf_tiles:
+  - { m: m3, v: "20×", l: "rychlejší otevření fotky RAW než ve verzi 0.9.0 (531 → 27 ms)" }
   - { m: m3, v: "0,13 s", l: "na přečtení složky s 1 000 fotkami, osmkrát pod limitem" }
-  - { m: m3, v: "7,6 ms", l: "na překreslení náhledu po změně" }
-  - { m: m3, v: "24,0", l: "exportovaných fotek s 16 MP za sekundu" }
-  - { m: m3, v: "17,9 min", l: "než RollSense roztřídí 15 000 fotek" }
-  - { m: m3, v: "0,92 GB", l: "špička rezidentní paměti pro 5 088 fotek" }
+  - { m: m3, v: "24", l: "exportovaných fotek s 16 MP za sekundu" }
+  - { m: m3, v: "≈ 18 min", l: "než RollSense roztřídí 15 000 fotek" }
+  - { m: m3, v: "< 1 GB", l: "špička rezidentní paměti pro 5 088 fotek" }
 perf_machines:
   - { m: m3, role: "Referenční notebook", name: "MacBook Air M3, 16 GB, 2024", use: "Každé číslo na této stránce, pokud není uvedeno jinak." }
   - { m: i7, role: "Běžný notebook", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "Zátěžový test RollSense s 9 639 fotkami." }
@@ -500,9 +500,9 @@ perf_export_title: "Export: všechna jádra, v limitu paměti"
 perf_export_text: "Fotollection exportuje několik fotek najednou, tolik, kolik limit paměti dovolí pro tu největší, takže paměť zůstává stejná od stovky fotek po tisíce. Na macOS se RAW vyvolává v pomocném procesu, který se vymění každých dvanáct fotek."
 perf_export_fn: [fn_trip]
 export_stats:
-  - { v: "24,0", l: "exportovaných fotek s 16 MP za sekundu" }
+  - { v: "24", l: "exportovaných fotek s 16 MP za sekundu" }
   - { v: "0,92 GB", l: "špička rezidentní paměti pro 5 088 fotek" }
-  - { v: "3,46 GB", l: "nejvyšší paměťová stopa, Fotollection a pomocník pro RAW (limit 3,5 GB)" }
+  - { v: "10,0/s", l: "exportovaných JPEGů (limit 8/s)" }
 perf_lead: "Každé číslo níže bylo změřeno na skutečných fotkách na dvou běžných noteboocích a skripty, které je vytvořily, jsou v repozitáři, takže je kdokoli může spustit znovu."
 perf_how_title: "Proč je Fotollection rychlý"
 perf_how_lead: "Rychlost Fotollection vychází z několika rozhodnutí přijatých před prvním řádkem kódu, každé z nich změřené."
@@ -528,7 +528,7 @@ open_stats:
 perf_print_title: "Tisky a sdílené fotky: pořád ta fotka"
 perf_print_text: "Výtisky z webového editoru často vypadají ploše: zahodí barevný profil, zmenší fotku na 2 000 px a uloží ji v kvalitě 80 s polovičním barevným rozlišením (4:2:0). Fotollection profil zachová a exportuje v plném rozlišení ve 4:4:4. Facebook zmenší každou fotku na 2 048 px, znovu ji zkomprimuje a barevné profily ignoruje. Export Share tuhle práci nejdřív udělá pořádně, takže po zpracování Facebookem zůstane fotka věrnější originálu než při běžném postupu."
 print_stats:
-  - { v: "0,19", l: "barevná chyba; oko si začne všímat u 1" }
+  - { v: "0,19", l: "barevná chyba; oko si začne všímat u 1 (q95)" }
   - { v: "4:4:4", l: "plné barevné rozlišení; webový editor ho zpolovičí" }
   - { v: "99,6 %", l: "barev fotky v Display P3 zachovaných po Facebooku, proti 86 %" }
 chart_raw: "RAW z fotoaparátu: od souboru na obrazovku, podle fotoaparátu a proti Adobe DNG Converteru"
@@ -536,7 +536,7 @@ perf_raw_title: "RAW z fotoaparátu bez převodu"
 perf_raw_text: "Fotollection otevírá soubory RAW z devíti běžných fotoaparátů tak, jak jsou, bez převádění a na Windows a Linuxu i bez instalace čehokoli. Od verze 0.10.0 vyvolává Fotollection celou fotku vlastním algoritmem pro každý fotoaparát se snímačem Bayer, z dat daného fotoaparátu jako RAW editor, kdežto Adobe DNG Converter jen převede jeden formát RAW na jiný."
 raw_stats:
   - { v: "9–32 ms", l: "miniatura RAW z náhledu uvnitř souboru" }
-  - { v: "0,3–0,7 s", l: "vlastní vyvolání celé fotky ve Fotollection" }
+  - { v: "0,9 s", l: "úplné vyvolání RAW ve Fotollection, medián devíti fotoaparátů" }
   - { v: "1,2–1,8 s", l: "Adobe DNG Converter na soubor, jen na převod" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
 perf_best_title: "Návrhy nejlepších snímků: ověřené proti volbě člověka"
@@ -667,7 +667,7 @@ og_card_features:
   sub: "Režimy, pohlednice, formáty, looky, RAW a rychlost, offline."
   shield: "Zdarma, open source, offline"
 perf_sense_title: "Třídění celé galerie: zátěžový test s 9 639 fotkami"
-perf_sense_text: "RollSense čte každou fotku jednou, aby ji roztřídil: co ukazuje a které jsou kopie. Výlet o 2 500 fotkách trvá asi 18 minut na notebooku s Windows z roku 2020 a Fotollection zůstal stabilní přes 9 639 fotek, s pamětí beze změny po 70 minut."
+perf_sense_text: "RollSense čte každou fotku jednou, aby ji roztřídil: co ukazuje a které jsou kopie. Výlet o 2 500 fotkách trvá asi 18 minut na notebooku s Windows z roku 2020 a Fotollection zůstal stabilní přes 9 639 fotek, s pamětí beze změny po 70 minut. Na M3 trvá 15 000 fotek asi 18 minut."
 sense_stats:
   - v: "17,9 min"
     l: "roztřídění 15 000 fotek na M3"

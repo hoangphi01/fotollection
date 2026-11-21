@@ -397,11 +397,11 @@ perf_description: "Tốc độ, bộ nhớ và chất lượng in của Fotollec
 perf_kicker: "Đo thật, không hứa suông"
 perf_h1: "Fotollection qua số đo"
 perf_tiles:
+  - { m: m3, v: "20×", l: "nhanh hơn khi mở ảnh RAW so với v0.9.0 (531 → 27 ms)" }
   - { m: m3, v: "0,13 giây", l: "đọc một thư mục 1.000 ảnh, chỉ bằng một phần tám hạn mức" }
-  - { m: m3, v: "7,6 ms", l: "vẽ lại bản xem trước sau khi đổi cài đặt" }
-  - { m: m3, v: "24,0", l: "ảnh 16 MP xuất mỗi giây" }
-  - { m: m3, v: "17,9 phút", l: "để RollSense lọc 15.000 ảnh" }
-  - { m: m3, v: "0,92 GB", l: "RAM thường trú cao nhất với 5.088 ảnh" }
+  - { m: m3, v: "24", l: "ảnh 16 MP xuất mỗi giây" }
+  - { m: m3, v: "≈ 18 phút", l: "để RollSense lọc 15.000 ảnh" }
+  - { m: m3, v: "< 1 GB", l: "RAM thường trú cao nhất với 5.088 ảnh" }
 perf_machines:
   - { m: m3, role: "Máy đo chuẩn", name: "MacBook Air M3, 16 GB, 2024", use: "Mọi con số trên trang này, trừ khi ghi khác." }
   - { m: i7, role: "Một laptop phổ thông", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "Bài thử tải của RollSense với 9.639 ảnh." }
@@ -419,9 +419,9 @@ perf_export_title: "Xuất ảnh: mọi nhân xử lý, trong hạn mức bộ n
 perf_export_text: "Fotollection xuất nhiều ảnh cùng lúc, nhiều nhất theo hạn mức bộ nhớ cho ảnh lớn nhất, nên bộ nhớ không tăng từ một trăm ảnh tới hàng nghìn ảnh. Trên macOS, ảnh RAW được xử lý trong một tiến trình phụ, thay mới sau mỗi mười hai ảnh."
 perf_export_fn: [fn_trip]
 export_stats:
-  - { v: "24,0", l: "ảnh 16 MP xuất mỗi giây" }
+  - { v: "24", l: "ảnh 16 MP xuất mỗi giây" }
   - { v: "0,92 GB", l: "RAM thường trú cao nhất với 5.088 ảnh" }
-  - { v: "3,46 GB", l: "bộ nhớ chiếm dụng cao nhất, Fotollection cùng tiến trình phụ RAW (hạn mức 3,5 GB)" }
+  - { v: "10,0/s", l: "ảnh JPEG được xuất (mục tiêu 8/s)" }
 perf_lead: "Mọi con số dưới đây đều đo trên ảnh thật bằng hai chiếc laptop bình thường, và chương trình đo nằm trong kho mã nguồn để ai cũng chạy lại được."
 perf_how_title: "Vì sao Fotollection nhanh"
 perf_how_lead: "Không có phép màu. Chỉ là một vài quyết định được đưa ra trước dòng mã đầu tiên, và mỗi quyết định đều được đo đạc."
@@ -449,7 +449,7 @@ open_stats:
 perf_print_title: "Ảnh in và ảnh chia sẻ: vẫn đúng là ảnh của bạn"
 perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu: nó bỏ mất hồ sơ màu, thu ảnh xuống 2.000 px và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu và xuất ở độ phân giải đầy đủ, 4:4:4. Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng, nên sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường."
 print_stats:
-  - { v: "0,19", l: "sai lệch màu; mắt người bắt đầu nhận ra ở mức 1" }
+  - { v: "0,19", l: "sai lệch màu; mắt người bắt đầu nhận ra ở mức 1 (q95)" }
   - { v: "4:4:4", l: "độ phân giải màu đầy đủ; trình sửa ảnh web giảm một nửa" }
   - { v: "99,6 %", l: "màu của ảnh Display P3 còn giữ sau Facebook, thay vì 86 %" }
 chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"
@@ -457,7 +457,7 @@ perf_raw_title: "Ảnh RAW: mở thẳng, không cần chuyển đổi"
 perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến đúng như tệp gốc, không cần chuyển đổi, và trên Windows và Linux không cần cài thêm gì. Từ v0.10.0, ảnh đầy đủ là bộ xử lý của riêng Fotollection cho mọi máy ảnh có cảm biến Bayer, làm trên chính dữ liệu của máy ảnh như một trình sửa RAW, còn Adobe DNG Converter chỉ đổi từ RAW này sang RAW khác."
 raw_stats:
   - { v: "9–32 ms", l: "ảnh thu nhỏ của tệp RAW, lấy từ bản xem trước trong tệp" }
-  - { v: "0,3–0,7 giây", l: "bộ xử lý của Fotollection dựng cả tấm ảnh" }
+  - { v: "0,9 giây", l: "Fotollection xử lý trọn một ảnh RAW, trung vị của chín máy ảnh" }
   - { v: "1,2–1,8 giây", l: "Adobe DNG Converter mỗi tệp, chỉ để chuyển đổi" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
 perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
@@ -676,7 +676,7 @@ og_card_features:
   sub: "Chế độ, bưu thiếp, khổ in, Looks, RAW và tốc độ, offline."
   shield: "Miễn phí, mã nguồn mở, offline"
 perf_sense_title: "Lọc cả kho ảnh: thử tải với 9.639 tấm"
-perf_sense_text: "RollSense đọc mỗi tấm ảnh một lần để phân loại: ảnh có gì, và tấm nào là bản trùng. Một chuyến đi 2.500 tấm mất khoảng 18 phút trên một laptop Windows đời 2020, và Fotollection chạy ổn định suốt 9.639 tấm, bộ nhớ đứng yên trong 70 phút."
+perf_sense_text: "RollSense đọc mỗi tấm ảnh một lần để phân loại: ảnh có gì, và tấm nào là bản trùng. Một chuyến đi 2.500 tấm mất khoảng 18 phút trên một laptop Windows đời 2020, và Fotollection chạy ổn định suốt 9.639 tấm, bộ nhớ đứng yên trong 70 phút. Trên M3, 15.000 ảnh mất khoảng 18 phút."
 sense_stats:
   - v: "17,9 phút"
     l: "để lọc 15.000 ảnh trên M3"

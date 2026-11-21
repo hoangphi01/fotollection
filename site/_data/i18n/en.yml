@@ -417,11 +417,11 @@ perf_description: "Fotollection's speed, memory and print quality, measured on r
 perf_kicker: "Measured, not promised"
 perf_h1: "Fotollection, measured"
 perf_tiles:
+  - { m: m3, v: "20×", l: "faster to open a RAW photo than v0.9.0 (531 → 27 ms)" }
   - { m: m3, v: "0.13 s", l: "to read a folder of 1,000 photos, eight times under budget" }
-  - { m: m3, v: "7.6 ms", l: "to redraw the preview after a change" }
-  - { m: m3, v: "24.0", l: "16 MP photos exported a second" }
-  - { m: m3, v: "17.9 min", l: "for RollSense to sort 15,000 photos" }
-  - { m: m3, v: "0.92 GB", l: "peak resident memory for 5,088 photos" }
+  - { m: m3, v: "24", l: "16 MP photos exported a second" }
+  - { m: m3, v: "≈ 18 min", l: "for RollSense to sort 15,000 photos" }
+  - { m: m3, v: "< 1 GB", l: "peak resident memory for 5,088 photos" }
 perf_machines:
   - { m: m3, role: "The reference laptop", name: "MacBook Air M3, 16 GB, 2024", use: "Every number on this page unless marked otherwise." }
   - { m: i7, role: "An everyday laptop", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "RollSense's load test with 9,639 photos." }
@@ -439,9 +439,9 @@ perf_export_title: "Exporting: every core, within a memory budget"
 perf_export_text: "Fotollection exports several photos at once, as many as its memory budget allows for the largest one, so memory stays flat from a hundred photos to thousands. On macOS a RAW is developed in a helper process, replaced every twelve photos."
 perf_export_fn: [fn_trip]
 export_stats:
-  - { v: "24.0", l: "16 MP photos exported a second" }
+  - { v: "24", l: "16 MP photos exported a second" }
   - { v: "0.92 GB", l: "peak resident memory for 5,088 photos" }
-  - { v: "3.46 GB", l: "peak memory footprint, Fotollection and its RAW helper (budget 3.5 GB)" }
+  - { v: "10.0/s", l: "JPEGs exported (budget 8/s)" }
 perf_lead: "Every number below was measured on real photos on two ordinary laptops, and the scripts that produced them are in the repository for anyone to run again."
 perf_how_title: "Why Fotollection is fast"
 perf_how_lead: "No magic. A few decisions made before the first line of code, each one measured."
@@ -469,7 +469,7 @@ open_stats:
 perf_print_title: "Prints and shared photos: still the photo"
 perf_print_text: "Prints made through a web editor often look flat: it drops the colour profile, shrinks the photo to 2,000 px and saves at quality 80 with halved colour. Fotollection keeps the profile and exports at full resolution in 4:4:4. Facebook shrinks every photo to 2,048 px, recompresses it and ignores colour profiles. The Share export does that work properly first, so after Facebook the photo stays closer to itself than the usual way."
 print_stats:
-  - { v: "0.19", l: "colour error; an eye starts to notice at 1" }
+  - { v: "0.19", l: "colour error; an eye starts to notice at 1 (q95)" }
   - { v: "4:4:4", l: "full colour resolution; a web editor halves it" }
   - { v: "99.6 %", l: "of a Display P3 photo's colour kept after Facebook, against 86 %" }
 chart_raw: "Camera RAW: from the file to the screen, per camera and against Adobe DNG Converter"
@@ -477,7 +477,7 @@ perf_raw_title: "Camera RAW: open it as it is"
 perf_raw_text: "Fotollection opens RAW files from nine common cameras as they are, with nothing to convert and, on Windows and Linux, nothing to install. Since v0.10.0 the full picture is its own develop for every camera with a Bayer sensor, made on the camera's own data as in a RAW editor, while Adobe DNG Converter only turns one RAW file into another."
 raw_stats:
   - { v: "9–32 ms", l: "a RAW's thumbnail, from the preview inside the file" }
-  - { v: "0.3–0.7 s", l: "Fotollection's own develop of the full photo" }
+  - { v: "0.9 s", l: "Fotollection's full develop of a RAW, median of nine cameras" }
   - { v: "1.2–1.8 s", l: "Adobe DNG Converter per file, only to convert it" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
 perf_best_title: "Best-shot suggestions: checked against a person's choice"
@@ -698,7 +698,7 @@ og_card_features:
   sub: "Modes, postcards, print sizes, Looks, RAW and speed, offline."
   shield: "Free, open source, offline"
 perf_sense_title: "Sorting a camera roll: a load test with 9,639 photos"
-perf_sense_text: "RollSense reads every photo once to sort it: what it shows, and which ones are copies. A trip of 2,500 photos takes about 18 minutes on a Windows laptop from 2020, and Fotollection stayed steady through 9,639 photos, its memory flat for 70 minutes."
+perf_sense_text: "RollSense reads every photo once to sort it: what it shows, and which ones are copies. A trip of 2,500 photos takes about 18 minutes on a Windows laptop from 2020, and Fotollection stayed steady through 9,639 photos, its memory flat for 70 minutes. On the M3, 15,000 photos take about 18 minutes."
 sense_stats:
   - v: "17.9 min"
     l: "to sort 15,000 photos on the M3"

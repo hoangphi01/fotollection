@@ -1,6 +1,6 @@
 ### Co se stane, když otevřeš složku
 
-Složka fotek se nečte celá. Z každého souboru Fotollection přečte jeho data EXIF (datum, fotoaparát, místo) a malou miniaturu, kterou každý fotoaparát ukládá do souboru, a nic dalšího: 1 000 fotek zabere 0,12 s, proti rozpočtu 1 s stanovenému ještě před napsáním kódu. Ostřejší miniatury o 400 px pak vznikají na pozadí, na dvou vláknech, aby Fotollection zůstal svižný, a ukládají se do mezipaměti na disku, takže znovu otevřená složka je tu hned. U 5 035 fotek trval import 383 ms a vložené miniatury 236 ms.
+Složka fotek se nečte celá. Z každého souboru Fotollection přečte jeho data EXIF (datum, fotoaparát, místo) a malou miniaturu, kterou každý fotoaparát ukládá do souboru, a nic dalšího: 1 000 fotek zabere 0,13 s, proti rozpočtu 1 s stanovenému ještě před napsáním kódu. Ostřejší miniatury o 400 px pak vznikají na pozadí, na dvou vláknech, aby Fotollection zůstal svižný, a ukládají se do mezipaměti na disku, takže znovu otevřená složka je tu hned. U 5 035 fotek trval import 383 ms a vložené miniatury 236 ms.
 
 ### Kam jde 17 ms náhledu
 
