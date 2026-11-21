@@ -45,6 +45,33 @@
   </div>
 </section>
 
+{%- comment %} RollSense in full (FR-141, owner 2026-11-21): what it clears out, the window, then its groups, the way it deletes and its speed and privacy, each card on RollSense's violet key as in the app. {% endcomment %}
+{%- assign show_sense = t.show_rollsense %}
+<section class="section sense-section" id="rollsense">
+  <div class="wrap">
+    <p class="kicker sense-kicker"><span class="sense-key">{% include icons/scan-search.svg %}</span>RollSense</p>
+    <h2>{{ t.sense_f_title }}</h2>
+    <p class="lead narrow">{{ t.sense_f_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="rollsense" alt=show_sense %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.sense_clean_title }}</h3>
+        <p>{{ t.sense_clean_text }}</p>
+        <p class="small muted">{{ t.show_rollsense }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cards sense-cards">
+      <article class="card"><span class="sense-key">{% include icons/tags.svg %}</span><h3>{{ t.sense_groups_title }}</h3><p>{{ t.sense_groups_text }}</p></article>
+      <article class="card"><span class="sense-key">{% include icons/trash.svg %}</span><h3>{{ t.sense_delete_title }}</h3><p>{{ t.sense_delete_text }}</p></article>
+      <article class="card"><span class="sense-key">{% include icons/shield-check.svg %}</span><h3>{{ t.sense_private_title }}</h3><p>{{ t.sense_private_text }}</p></article>
+    </div>
+  </div>
+</section>
+
 {% include carousel.html cards=site.data.carousels.print title=t.car_print_title id="print" %}
 <script src="{{ '/assets/js/carousel.js' | bust }}" defer></script>
 

@@ -9,7 +9,7 @@
 // network: every request outside the two local hosts is refused.
 
 import { axeChecks, baseline, fitReport, layoutChecks, stableChecks } from './checks.mjs'
-import { measureSidePanels, senseAnswers } from './side-panels.mjs'
+import { measureSidePanels, senseAnswers, shootRollSense } from './side-panels.mjs'
 import { readFile } from 'node:fs/promises'
 import { existsSync, writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
@@ -490,7 +490,6 @@ async function zoomed(page, name, clip) {
   shots.push(file)
   await phone(page, name, clip)
 }
-
 
 async function save(page, name) {
   const file = path.join(outDir, `${name}.png`)
@@ -1243,7 +1242,7 @@ if (process.env.MEASURE) {
 for (const language of LANGUAGES) {
   for (const theme of ['dark', 'light']) {
     const suffix = `${language}-${theme}`
-
+    if (await shootRollSense({ open, settle, save, say, PHONE }, { language, theme })) continue // SHOT_ONLY=rollsense: it alone
     // 1. The library grid, culled.
     let { context, page } = await open({ scenario: 'stamp', language, theme })
     await (await reach(page, SHOW.grid)).click()

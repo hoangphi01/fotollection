@@ -87,3 +87,22 @@ export async function measureSidePanels({ open, settle, measure, allChecks, say,
   await page.screenshot({ path: path.join(outDir, 'measure-rollsense-when.png') })
   await context.close()
 }
+
+/**
+ * RollSense's picture for the home and Features pages (#rollsense, FR-141): its column, Clean up
+ * when the recording has some, and the groups beside the photos; its phone crop the column from
+ * its top. True when SHOT_ONLY=rollsense asks for it alone.
+ */
+export async function shootRollSense({ open, settle, save, say, PHONE }, { language, theme }) {
+  PHONE.rollsense ??= async (page) => {
+    const b = await page.locator('aside.border-l').boundingBox()
+    return b && { x: b.x, y: b.y, width: b.width, height: 400 }
+  }
+  const { context, page } = await open({ scenario: 'stamp', language, theme })
+  await page.getByRole('button', { name: say('rollsense.view') }).click()
+  await page.mouse.move(720, 880) // off the button, so its hint does not show
+  await settle(page)
+  await save(page, `rollsense-${language}-${theme}`)
+  await context.close()
+  return process.env.SHOT_ONLY === 'rollsense'
+}

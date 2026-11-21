@@ -25,6 +25,29 @@
 
 {% include looks.html %}
 
+{%- comment %} RollSense in short (FR-141, owner 2026-11-21): a headline, one sentence, three points and the app's own RollSense screen; the details are on the Features page (#rollsense). Violet as the app's RollSense button (`--sense`), only on its small keys and kicker. {% endcomment %}
+{%- assign show_sense = t.show_rollsense %}
+<section class="section sense-section" id="rollsense">
+  <div class="wrap">
+    <p class="kicker sense-kicker"><span class="sense-key">{% include icons/scan-search.svg %}</span>RollSense</p>
+    <h2>{{ t.sense_title }}</h2>
+    <p class="lead narrow">{{ t.sense_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="rollsense" alt=show_sense %}</figure>
+      <div class="showcase-text">
+        <ul class="sense-points">
+          <li><span class="sense-key">{% include icons/eraser.svg %}</span><p>{{ t.sense_p1 }}</p></li>
+          <li><span class="sense-key">{% include icons/tags.svg %}</span><p>{{ t.sense_p2 }}</p></li>
+          <li><span class="sense-key">{% include icons/shield-check.svg %}</span><p>{{ t.sense_p3 }}</p></li>
+        </ul>
+        <p><a class="more" href="{{ path_features }}#rollsense">{{ t.sense_more }} {% include icons/arrow-right.svg %}</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% include results.html %}
 
 <section class="section" id="kiosk">

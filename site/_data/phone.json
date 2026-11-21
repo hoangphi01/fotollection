@@ -575,6 +575,54 @@
     "minPx": null,
     "text": null
   },
+  "rollsense-phone-en-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "M"
+  },
+  "rollsense-phone-en-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "M"
+  },
+  "rollsense-phone-ja-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "日"
+  },
+  "rollsense-phone-ja-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "日"
+  },
+  "rollsense-phone-ko-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "일"
+  },
+  "rollsense-phone-ko-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "일"
+  },
+  "rollsense-phone-vi-dark": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "T2"
+  },
+  "rollsense-phone-vi-light": {
+    "width": 320,
+    "height": 400,
+    "minPx": 11.32,
+    "text": "T2"
+  },
   "select-phone-en-dark": {
     "width": 320,
     "height": 400,
