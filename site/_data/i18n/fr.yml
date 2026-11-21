@@ -2,7 +2,7 @@
 # The website's words in French (site/README.md). English (en.yml) is the source and the fallback;
 # the pages this language has are listed in site/_data/languages.yml. Keys are the same as English's.
 # French says "vous"; a narrow no-break space (U+202F) goes before ; : ! ? % and inside « ».
-title: "Fotollection – des photos prêtes à imprimer, entièrement hors ligne"
+title: "Fotollection – des photos prêtes à imprimer, hors ligne"
 description: "Logiciel gratuit et open source qui prépare vos photos pour le tirage sur votre ordinateur : looks, date incrustée, meilleures photos, sans envoi."
 nav_features: "Fonctions"
 nav_quality: "Qualité"

@@ -274,6 +274,11 @@ if (process.argv.includes('--build') && !problems.length) {
         if (!existsSync(file)) continue
         const html = readFileSync(file, 'utf8')
         if (/\{\{|\{%/.test(html.replace(/<(script|pre|code)\b[\s\S]*?<\/\1>/g, ''))) problems.push(`${l.code}: its ${id} page shows template text ({{ or {%): assign or capture the value before the filter`)
+        // A page's title at most 60 characters wide, CJK counted double: search results cut what
+        // is longer (the French home page's 67, 2026-11-21).
+        const title = (html.match(/<title>([^<]*)<\/title>/)?.[1] ?? '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim()
+        const tw = [...title].reduce((w, ch) => w + (/[\u1100-\u11ff\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef\u3000-\u303f]/.test(ch) ? 2 : 1), 0)
+        if (tw > 60) problems.push(`${l.code}: its ${id} page's title is ${tw} characters wide, at most 60: ${title}`)
         // An empty link: a path variable out of the include's scope (the chapter list's menu, 2026-11-21).
         if (/href=""/.test(html)) problems.push(`${l.code}: its ${id} page has an empty link (href=""): a path assigned where the include cannot see it`)
         for (const m of html.matchAll(/<details\b[\s\S]*?<\/details>/g)) {
