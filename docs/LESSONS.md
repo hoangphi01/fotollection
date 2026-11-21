@@ -107,6 +107,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ### checks
 
+- An include reads only what it assigns or is passed: a variable from the layout or another page is empty there, and a `{{ }}` inside a filter's string is never filled. Kept by: `check-site-i18n --build` (empty links, template text, lazy pictures inside a `<details>`).
 - A check or fixture is shown to fail on the old code before it is trusted, and a new detector runs twice on an unchanged build. Kept by: no machine check yet.
 - A check covers only what it reads and the cases it has: widen what it reads, walk folds, give states the demo lacks a stress view. Kept by: `ui-check` stress views.
 - A check runs as the app runs: scroll bars, fonts, the window's chrome, popups opening both ways. Kept by: the harness's scroll bars, UI-LAYOUT-021's macOS case.
@@ -150,6 +151,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-21
+
+### Empty links on three pages: an include did not see the layout's paths (website)
+
+- **Area:** checks
+- **Seen:** the UI audit of the Performance page found the phone menu inside the chapter list with `href=""` (Features, Performance, Manual) on the Performance page, the manual and the story, and the closing download block's macOS and Windows buttons empty on Features and Performance; both added in the five experts' fixes, the same day, and every check passed. It also found the table labels of the Performance page reading `{{ t[title_key] | escape }}` verbatim.
+- **Why:** `path_*`, `mac` and `win` are assigned in the layout or in `home.html`; an include called from a page body (`chapter-list.html`, `final-download.html`) does not see them, and Liquid prints a missing variable as nothing. A `{{ }}` written inside a filter's string argument is plain text, never filled.
+- **Fix:** each include assigns what it reads (`nav-links.html` its paths, `final-download.html` includes `release-assets.html`); the table's opening tag is captured first, then passed to `replace`.
+- **Rule:** see the Rules table (checks): an include assigns what it reads; `check-site-i18n --build` now fails on an empty link, on template text left in a page and on a lazy picture inside a `<details>`.
 
 ### CI red on Linux and Windows for a `cfg` placeholder the Mac never linted (release-ci)
 

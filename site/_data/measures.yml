@@ -11,6 +11,7 @@
 - { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 5035, kind: export, value: 15.4, unit: ps }
 - { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 95, kind: memory, value: 1.35, unit: gb, basis: rss }
 - { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 5035, kind: memory, value: 1.45, unit: gb, basis: rss }
+- { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 95, kind: preview_p50, value: 17, unit: ms }
 - { date: 2026-10-24, version: "0.1.0", machine: m3, photos: 95, kind: bestshot, value: 17, unit: ms }
 - { date: 2026-11-03, version: "0.9.3", machine: m3, photos: 422, kind: export, value: 7.6, unit: ps }
 - { date: 2026-11-03, version: "0.9.3", machine: m3, photos: 422, kind: memory, value: 2.14, unit: gb, basis: rss }
@@ -20,11 +21,20 @@
 - { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 10, kind: postcards, value: 21, unit: ms }
 - { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 396, kind: export_jpeg, value: 10.1, unit: ps }
 - { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 422, kind: memory, value: 1.31, unit: gb, basis: rss }
+- { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 95, kind: export, value: 23.5, unit: ps }
+- { date: 2026-11-05, version: "0.14.0", machine: m3, photos: 1, kind: slider_cpu, value: 26, unit: ms }
+- { date: 2026-11-05, version: "0.14.0", machine: m3, photos: 1, kind: slider_gpu, value: 1, unit: ms }
+- { date: 2026-11-05, version: "0.14.0", machine: m3, photos: 22, kind: export, value: 10.8, unit: ps }
 - { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 5088, kind: open, value: 0.13, unit: s }
 - { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 5088, kind: export, value: 19.9, unit: ps }
 - { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 5088, kind: memory, value: 0.92, unit: gb, basis: rss }
 - { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 15000, kind: sort, value: 17.9, unit: min }
 - { date: 2026-11-20, version: "0.14.3", machine: i7, photos: 15000, kind: sort, value: 108, unit: min }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 96, kind: preview, value: 7.6, unit: ms }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 96, kind: export, value: "24.0", unit: ps }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 96, kind: memory, value: 0.67, unit: gb, basis: rss }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 1, kind: slider_gpu, value: 4, unit: ms }
+- { date: 2026-11-20, version: "0.14.3", machine: i7, photos: 2500, kind: sort, value: 18, unit: min }
 - { date: 2026-11-21, version: "0.14.3", machine: m3, photos: 422, kind: memory, value: 6.14, unit: gb, basis: fp_before }
 - { date: 2026-11-21, version: "0.14.4", machine: m3, photos: 422, kind: open_all, value: 0.21, unit: s }
 - { date: 2026-11-21, version: "0.14.4", machine: m3, photos: 422, kind: preview, value: 7.3, unit: ms }

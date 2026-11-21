@@ -1,6 +1,7 @@
 {%- comment %} The closing call to download, shared by the home page (with the manual's link) and the
 Features and Performance pages (with the story's, the five experts' review, 2026-11-20): `more` is
-"manual" or "story", read as `include.more` (Jekyll-style includes, eleventy.config.mjs). Its words: final_* in i18n/<code>.yml. {% endcomment -%}
+"manual" or "story", read as `include.more` (Jekyll-style includes, eleventy.config.mjs). Its words: final_* in i18n/<code>.yml. It reads the release's files itself (release-assets.html): an include from a page body does not see another page's assignments (UI audit, 2026-11-21: empty buttons). {% endcomment -%}
+{%- include release-assets.html -%}
 <section class="section final{% if include.tint %} tint{% endif %}" id="get">
   <div class="wrap final-wrap">
     <h2>{{ t.final_title }}</h2>

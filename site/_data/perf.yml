@@ -1,0 +1,17 @@
+# The Performance page's parts, in order (site/_includes/performance.html; owner, 2026-11-20: one
+# idea a part, at most three tiles and one chart, the rest folded under "How it was measured").
+# key: the i18n keys perf_<key>_title, perf_<key>_text, perf_<key>_fn and <key>_stats, and the
+#   section's id;
+# chart: the chart shown (bench-<chart>-<lang>.svg, its caption chart_<chart>; `bench` is the
+#   browser comparison, bench-<lang>.svg, caption chart_browser);
+# more: the folded explanations, _includes/perf/<name>-<lang>.md, in order;
+# extra: charts shown inside the fold; diagrams: draw.io diagrams inside the fold;
+# machines: where the part's numbers were measured (_data/machines.yml); date: the newest run the
+#   tiles quote.
+- { key: open, chart: open, more: [open], diagrams: [preview-tiers], machines: [m3], date: 2026-11-05 }
+- { key: edit, chart: gpu, more: [speed, gpu], extra: [bench], diagrams: [gpu-cpu], machines: [m3], date: 2026-11-20 }
+- { key: export, chart: budgets, more: [memory, trip], extra: [memory, inflight], machines: [m3], date: 2026-11-21 }
+- { key: sense, chart: ecg, more: [sense], extra: [sense], machines: [m3, i7], date: 2026-11-20 }
+- { key: print, chart: quality, more: [print, share], extra: [share], machines: [m3], date: 2026-10-25 }
+- { key: raw, chart: raw, more: [raw], diagrams: [raw-develop, develop-gate], machines: [m3], date: 2026-10-25 }
+- { key: best, chart: bestshot, more: [best], machines: [m3], date: 2026-10-24 }

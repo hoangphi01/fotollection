@@ -1,8 +1,13 @@
 {%- comment %} The top bar's page links for the phone's menu (default.html) and a chapter list's
 popover (chapter-list.html), shown below 960 px only, where the top bar has no room for them. {% endcomment -%}
+{%- comment %} Its own paths: an include from a page body (chapter-list.html) does not see the layout's (UI audit, 2026-11-21: empty links). {% endcomment -%}
+{%- assign t = site.data.i18n[pg.lang] -%}
+{%- assign nav_features = 'features' | url_for: pg.lang | relative_url -%}
+{%- assign nav_perf = 'performance' | url_for: pg.lang | relative_url -%}
+{%- assign nav_manual = 'manual' | url_for: pg.lang | relative_url -%}
 <ul class="nav-menu-links">
-  <li><a href="{{ path_features }}"{% if pg.page_id == 'features' %} aria-current="page"{% endif %}>{{ t.nav_features }}</a></li>
-  <li><a href="{{ path_features }}#privacy">{{ t.nav_privacy }}</a></li>
-  <li><a href="{{ path_perf }}"{% if pg.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a></li>
-  <li><a href="{{ path_manual }}"{% if pg.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a></li>
+  <li><a href="{{ nav_features }}"{% if pg.page_id == 'features' %} aria-current="page"{% endif %}>{{ t.nav_features }}</a></li>
+  <li><a href="{{ nav_features }}#privacy">{{ t.nav_privacy }}</a></li>
+  <li><a href="{{ nav_perf }}"{% if pg.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a></li>
+  <li><a href="{{ nav_manual }}"{% if pg.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a></li>
 </ul>

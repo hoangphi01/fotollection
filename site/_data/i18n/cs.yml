@@ -401,18 +401,7 @@ no_release: "Vydání jsou na GitHubu"
 pf_coming: "Od verze 0.9.0"
 quality_title: "Výtisk vypadá jako fotka"
 nav_changelog: "Novinky"
-perf_speed_fn: [fn_webview]
-perf_trip_fn: [fn_trip, fn_pct]
-perf_trip_title: "Skutečná cesta: 422 souborů z Prahy"
-perf_trip_text: "Testovací sady mohou výsledky přikrášlit, proto tady je jedna složka přesně tak, jak vyšla z fotoaparátu Lumix GX9 po víkendu v Praze: 396 JPEGů s 20 MP, každý asi 11 MB, a vedle nich 26 souborů RAW, celkem 4,7 GB. Při otevření se EXIF všech souborů přečte za 0,23 sekundy. Náhled se překreslí za 19 ms, RAW se vyvolá za 0,35 sekundy a deset pohlednic se překreslí za 21 ms. Dne 3. 11. 2026 dvě čísla na těchto velkých souborech překročila svůj limit: export běžel rychlostí 7,6 fotky za sekundu a špička paměti dosáhla 2,14 GB. Příčina byla nalezena a opravena ve verzi 0.9.7: JPEGy se teď exportují rychlostí 10,1 za sekundu a celý běh zůstane pod 1,31 GB. Při novém měření 21. 11. 2026, kdy macOS vyvolává soubory RAW v pomocném procesu, mají Fotollection a pomocník dohromady nejvýše 3,46 GB paměťové stopy, v rámci limitu 3,5 GB pro RAW; starší čísla jsou na Wiki."
-trip_stats:
-  - { v: "0,23 s", l: "na otevření všech 422 souborů včetně EXIF" }
-  - { v: "19 ms", l: "překreslení náhledu, p95 (limit 50 ms)" }
-  - { v: "0,35 s", l: "na vyvolání RAW s 20 MP (medián)" }
-  - { v: "21 ms", l: "na překreslení deseti pohlednic (limit 100 ms)" }
-  - { v: "10,1/s", l: "exportovaných JPEGů (limit 8/s)" }
-  - { v: "3,46 GB", l: "nejvyšší paměťová stopa, Fotollection a pomocník pro RAW (limit 3,5 GB)" }
-fn_trip: "Pražská složka je autorova vlastní a není zveřejněná (© @hoangphi01, všechna práva vyhrazena). Mediány ze 3 běhů bench/trip.sh a measure_folder na jejích JPEGech, na Apple M3 s 16 GB, s otevřenými dalšími aplikacemi, dne 4. 11. 2026, s exportem z verze 0.9.7; pro srovnání je spusťte na vlastní složce."
+fn_trip: "Pražská složka je autorova vlastní a není zveřejněná (© @hoangphi01, všechna práva vyhrazena). Mediány ze 3 běhů bench/trip.sh a measure_folder na jejích JPEGech, na Apple M3 s 16 GB, s otevřenými dalšími aplikacemi, dne 4. 11. 2026, s exportem z verze 0.9.7; pro srovnání je spusťte na vlastní složce. Paměťová stopa s pomocníkem pro RAW je medián ze 3 běhů measure_folder na celé složce, dne 21. 11. 2026."
 fn_simd: "SIMD (single instruction, multiple data) umožňuje procesoru pracovat s mnoha hodnotami najednou: jedna instrukce působí na několik čísel uložených vedle sebe v širokém vektorovém registru, třeba na červenou, zelenou a modrou mnoha pixelů. Procesory Intel a AMD to nabízejí jako SSE a AVX; Apple silicon a další procesory Arm jako NEON. Intel, AMD a Arm jsou ochranné známky svých vlastníků."
 fn_pct: "p50 a p95 jsou percentily: p50, medián, je čas, pod kterým zůstala polovina běhů; p95 je čas, pod kterým zůstalo 95 běhů ze 100, takže ukazuje pomalé případy, které průměr skryje."
 fn_psnr: "PSNR (peak signal-to-noise ratio, špičkový poměr signálu k šumu) porovná dva obrázky pixel po pixelu a udá jejich rozdíl v decibelech: čím vyšší hodnota, tím menší rozdíl. Nad zhruba 40 dB je rozdíl těžko vidět."
@@ -485,26 +474,47 @@ cs_parts:
       - title: "Odinstalace"
         text: "Ve Windows ho odeberte v Nastavení, na macOS aplikaci smažte. Odinstalátor pro Windows odstraní i položky Otevřít v aplikaci. Na Linuxu spusťte sudo apt remove fotollection, smažte AppImage, nebo spusťte instalační skript s --uninstall, který odstraní i repozitář APT a jeho klíč. Nastavení a projekty zůstanou ve vaší domovské složce."
 perf_title: "Výkon"
-perf_description: "Každé měření za Fotollection srozumitelně: rychlost, paměť, kvalita tisku a nejlepší snímky, a co znamenají ΔE, SSIM a barevné profily."
+perf_description: "Rychlost, paměť a kvalita tisku Fotollection, změřené na skutečných fotkách na dvou běžných noteboocích, s metodou za každým číslem."
 perf_kicker: "Změřeno, ne slíbeno"
-perf_lead: "Každé číslo na této stránce pochází ze skutečných fotek na běžném notebooku (Apple M3, 16 GB) a skripty, které je vytvořily, jsou v repozitáři, takže je kdokoli může spustit znovu; pod každým grafem je jeho význam pro tisk a na konci vysvětlení pojmů."
+perf_h1: "Fotollection v číslech"
+perf_tiles:
+  - { m: m3, v: "0,13 s", l: "na přečtení složky s 1 000 fotkami, osmkrát pod limitem" }
+  - { m: m3, v: "7,6 ms", l: "na překreslení náhledu po změně" }
+  - { m: m3, v: "24,0", l: "exportovaných fotek s 16 MP za sekundu" }
+  - { m: m3, v: "17,9 min", l: "než RollSense roztřídí 15 000 fotek" }
+  - { m: m3, v: "0,92 GB", l: "špička rezidentní paměti pro 5 088 fotek" }
+perf_machines:
+  - { m: m3, role: "Referenční notebook", name: "MacBook Air M3, 16 GB, 2024", use: "Každé číslo na této stránce, pokud není uvedeno jinak." }
+  - { m: i7, role: "Běžný notebook", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "Zátěžový test RollSense s 9 639 fotkami." }
+perf_measured: "Jak se měřilo"
+perf_source: "Každé měření v RESULT.md"
+perf_wiki_link: "Všechna dřívější měření na Wiki"
+perf_edit_title: "Úpravy: náhled drží krok s posuvníkem"
+perf_edit_text: "Změněné nastavení překreslí jen náhled, z kopie držené v paměti. Když se posuvník barvy pohybuje, grafická karta kreslí vzhled z tabulky, kterou sestaví jádro Fotollection, a exporty zůstávají na procesoru, takže tisk vyjde stejně na každém počítači."
+perf_edit_fn: [fn_pct, fn_webview]
+edit_stats:
+  - { v: "7,6 ms", l: "na překreslení náhledu po změně" }
+  - { v: "4 ms", l: "krok barevného posuvníku na grafické kartě" }
+  - { v: "0,13", l: "ΔE2000 mezi lookem z karty a přesným vykreslením" }
+perf_export_title: "Export: všechna jádra, v limitu paměti"
+perf_export_text: "Fotollection exportuje několik fotek najednou, tolik, kolik limit paměti dovolí pro tu největší, takže paměť zůstává stejná od stovky fotek po tisíce. Na macOS se RAW vyvolává v pomocném procesu, který se vymění každých dvanáct fotek."
+perf_export_fn: [fn_trip]
+export_stats:
+  - { v: "24,0", l: "exportovaných fotek s 16 MP za sekundu" }
+  - { v: "0,92 GB", l: "špička rezidentní paměti pro 5 088 fotek" }
+  - { v: "3,46 GB", l: "nejvyšší paměťová stopa, Fotollection a pomocník pro RAW (limit 3,5 GB)" }
+perf_lead: "Každé číslo níže bylo změřeno na skutečných fotkách na dvou běžných noteboocích a skripty, které je vytvořily, jsou v repozitáři, takže je kdokoli může spustit znovu."
 perf_how_title: "Proč je Fotollection rychlý"
 perf_how_lead: "Rychlost Fotollection vychází z několika rozhodnutí přijatých před prvním řádkem kódu, každé z nich změřené."
 perf_how_items:
-  - { t: "Nativní kód na každém jádře", d: "Práce Fotollection běží v Rustu, zkompilovaném pro váš procesor a rozloženém na všechna jeho jádra, s vektorovými instrukcemi (SIMD), které procesory pro pixely nabízejí.", v: "23,5/s", l: "exportovaných fotek s 16 MP", fn: [fn_simd, fn_units, fn_rust] }
-  - { t: "Jen to, co je potřeba", d: "Otevření složky přečte EXIF každého souboru a jeho malý vložený náhled, nikdy celou fotku. Náhledy se ukládají do mezipaměti na disku.", v: "0,12 s", l: "na otevření 1 000 fotek", fn: [fn_exif] }
-  - { t: "Nikdy víc pixelů než obrazovka", d: "Náhled má nejvýš 1 600 px a vzniká z kopie o 2 048 px držené v paměti. Celá fotka se načte po částech až při přiblížení.", v: "17 ms", l: "na překreslení náhledu" }
+  - { t: "Nativní kód na každém jádře", d: "Práce Fotollection běží v Rustu, zkompilovaném pro váš procesor a rozloženém na všechna jeho jádra, s vektorovými instrukcemi (SIMD), které procesory pro pixely nabízejí.", v: "24,0/s", l: "exportovaných fotek s 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Jen to, co je potřeba", d: "Otevření složky přečte EXIF každého souboru a jeho malý vložený náhled, nikdy celou fotku. Náhledy se ukládají do mezipaměti na disku.", v: "0,13 s", l: "na otevření 1 000 fotek", fn: [fn_exif] }
+  - { t: "Nikdy víc pixelů než obrazovka", d: "Náhled má nejvýš 1 600 px a vzniká z kopie o 2 048 px držené v paměti. Celá fotka se načte po částech až při přiblížení.", v: "7,6 ms", l: "na překreslení náhledu" }
   - { t: "Připraveno ještě před kliknutím", d: "Jakmile jsou hotové miniatury, připraví se na pozadí náhled každé fotky a uloží se na disk, zatímco čtvrtina paměti drží fotky kolem té, která je na obrazovce.", v: "27 ms", l: "na otevření kterékoli fotky" }
   - { t: "Žádný výpočet dvakrát", d: "Barevný posuvník mění jen barvu, nikdy velikost. Všechny barevné posuvníky se složí do jedné tabulky 33 × 33 × 33 barev, takže deset posuvníků trvá stejně dlouho jako jeden.", v: "2 ms", l: "pro deset barevných posuvníků na náhledu" }
-  - { t: "Paměť v rámci limitu", d: "Fotollection zpracovává najednou jen tolik fotek v plné velikosti, kolik dovolí jeho paměťový limit, určený podle největší fotky v exportu.", v: "1,45 GB", l: "špička paměti s 5 035 fotkami" }
+  - { t: "Paměť v rámci limitu", d: "Fotollection zpracovává najednou jen tolik fotek v plné velikosti, kolik dovolí jeho paměťový limit, určený podle největší fotky v exportu.", v: "0,92 GB", l: "špička rezidentní paměti s 5 088 fotkami" }
   - { t: "Kodéry vyladěné měřením", d: "Soubory pro tisk vynechávají optimalizaci tabulek, která je zmenšovala o méně než 1 % a stála třetinu času kódování.", v: "−33 %", l: "času kódování souborů pro tisk" }
-  - { t: "Grafická karta při úpravách", d: "Když se barevný posuvník hýbe, grafická karta kreslí z tabulky, kterou sestaví jádro. Exporty zůstávají na procesoru, takže výtisk je na každém počítači stejný.", v: "1–2 ms", l: "na krok posuvníku, dřív 26 ms" }
-perf_gpu_title: "Grafická karta při úpravách, všechna jádra při exportu"
-perf_gpu_text: "Při tažení barevného posuvníku kreslí look grafická karta ze stejné tabulky, kterou sestaví jádro Fotollection; po uvolnění se použije přesné vykreslení. Exporty zůstávají na procesoru, takže výtisk vyjde na každém počítači stejně."
-gpu_stats:
-  - { v: "1–2 ms", l: "krok posuvníku na grafické kartě, proti asi 26 ms" }
-  - { v: "0,13", l: "ΔE2000 mezi lookem z karty a přesným vykreslením" }
-  - { v: "10,8", l: "exportovaných fotek s 26 MP za sekundu, šest najednou" }
+  - { t: "Grafická karta při úpravách", d: "Když se barevný posuvník hýbe, grafická karta kreslí z tabulky, kterou sestaví jádro. Exporty zůstávají na procesoru, takže výtisk je na každém počítači stejný.", v: "4 ms", l: "na krok posuvníku na grafické kartě" }
 chart_gpu: "Jeden krok barevného posuvníku: procesor proti grafické kartě"
 chart_inflight: "Rychlost exportu podle počtu fotek zpracovávaných najednou"
 chart_open: "Otevření fotky: verze 0.9.0 a 0.10.0 proti verzi 0.11.0, na 422 fotkách z jedné cesty"
@@ -515,43 +525,25 @@ open_stats:
   - { v: "20×", l: "rychlejší otevření fotky RAW než ve verzi 0.9.0 (531 → 27 ms)" }
   - { v: "10×", l: "rychlejší otevření JPEGu než ve verzi 0.9.0 (274 → 27 ms)" }
   - { v: "27 ms", l: "na otevření kterékoli fotky, blízké i vzdálené (limit 100 ms)" }
-perf_speed_title: "Rychlost: 1 000 fotek za 0,12 s"
-perf_speed_text: "Otevření složky přečte EXIF každé fotky a její malý vložený náhled, ne celý obrázek, a změněné nastavení překreslí jen náhled. Nativní kód v Rustu je navíc při stejné úloze lepší než webový prohlížeč: stejná rychlost exportu, rychlejší náhled a o čtvrtinu nižší spotřeba paměti."
-speed_stats:
-  - { v: "0,12 s", l: "na přečtení složky s 1 000 fotkami, osmkrát pod limitem" }
-  - { v: "17 ms", l: "na překreslení náhledu po změně" }
-  - { v: "23,5", l: "exportovaných fotek s 16 MP za sekundu" }
-perf_memory_title: "Paměť: stabilní spotřeba i při 5 035 fotkách"
-perf_memory_text: "Fotollection drží v paměti jen pár bajtů na fotku, zapisuje miniatury do mezipaměti na disku a zpracovává najednou jen tolik obrázků v plné velikosti, kolik se vejde do jeho paměťového limitu. Paměť se proto drží na stejné úrovni, i když export naroste na tisíce fotek."
-memory_stats:
-  - { v: "1,45 GB", l: "špička paměti pro 5 035 fotek" }
-  - { v: "1,35 GB", l: "špička paměti pro 95 fotek" }
-  - { v: "53×", l: "víc fotek za 0,1 GB navíc" }
-perf_print_title: "Kvalita tisku: výtisk vypadá jako fotka"
-perf_print_text: "Výtisky z webového editoru často vypadají ploše: zahodí barevný profil, zmenší fotku na 2 000 px a uloží ji v kvalitě 80 s polovičním barevným rozlišením (4:2:0). Fotollection profil zachová a exportuje v plném rozlišení ve 4:4:4."
+perf_print_title: "Tisky a sdílené fotky: pořád ta fotka"
+perf_print_text: "Výtisky z webového editoru často vypadají ploše: zahodí barevný profil, zmenší fotku na 2 000 px a uloží ji v kvalitě 80 s polovičním barevným rozlišením (4:2:0). Fotollection profil zachová a exportuje v plném rozlišení ve 4:4:4. Facebook zmenší každou fotku na 2 048 px, znovu ji zkomprimuje a barevné profily ignoruje. Export Share tuhle práci nejdřív udělá pořádně, takže po zpracování Facebookem zůstane fotka věrnější originálu než při běžném postupu."
 print_stats:
   - { v: "0,19", l: "barevná chyba; oko si začne všímat u 1" }
   - { v: "4:4:4", l: "plné barevné rozlišení; webový editor ho zpolovičí" }
-  - { v: "87 %", l: "jemných detailů, které webový editor při 2 000 px ztratí" }
-perf_share_title: "Fotky pro Facebook a Instagram: menší soubory, věrné barvy"
-perf_share_text: "Facebook zmenší každou fotku na 2 048 px, znovu ji zkomprimuje a barevné profily ignoruje. Export Share tuhle práci nejdřív udělá pořádně, takže po zpracování Facebookem zůstane fotka věrnější originálu než při běžném postupu."
-share_stats:
   - { v: "99,6 %", l: "barev fotky v Display P3 zachovaných po Facebooku, proti 86 %" }
-  - { v: "2 048 px", l: "velikost, kterou Facebook nezmenšuje" }
-  - { v: "½", l: "velikosti souboru oproti Original size, každý pixel zachován" }
 chart_raw: "RAW z fotoaparátu: od souboru na obrazovku, podle fotoaparátu a proti Adobe DNG Converteru"
 perf_raw_title: "RAW z fotoaparátu bez převodu"
 perf_raw_text: "Fotollection otevírá soubory RAW z devíti běžných fotoaparátů tak, jak jsou, bez převádění a na Windows a Linuxu i bez instalace čehokoli. Od verze 0.10.0 vyvolává Fotollection celou fotku vlastním algoritmem pro každý fotoaparát se snímačem Bayer, z dat daného fotoaparátu jako RAW editor, kdežto Adobe DNG Converter jen převede jeden formát RAW na jiný."
 raw_stats:
   - { v: "9–32 ms", l: "miniatura RAW z náhledu uvnitř souboru" }
-  - { v: "0,3–0,7 s", l: "vlastní vyvolání celé fotky ve Fotollection" }
-  - { v: "1,2–1,8 s", l: "Adobe DNG Converter na soubor, jen na převod" }
+  - { v: "0,3–0,7 s", l: "vlastní vyvolání celé fotky ve Fotollection" }
+  - { v: "1,2–1,8 s", l: "Adobe DNG Converter na soubor, jen na převod" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
 perf_best_title: "Návrhy nejlepších snímků: ověřené proti volbě člověka"
 perf_best_text: "95 skutečných fotek bylo ručně roztříděno do 22 momentů a tam, kde byla jasně nejlepší fotka, byla vybrána; skupiny a návrhy Fotollection byly ověřeny proti této volbě."
 best_stats:
-  - { v: "6 z 6", l: "momentů s jasně nejlepší fotkou: přijatelný návrh" }
-  - { v: "15 z 22", l: "nalezených momentů, nikdy dva zaměněné" }
+  - { v: "6 z 6", l: "momentů s jasně nejlepší fotkou: přijatelný návrh" }
+  - { v: "15 z 22", l: "nalezených momentů, nikdy dva zaměněné" }
   - { v: "17 ms", l: "na analýzu fotky, 28 ms s obličeji" }
 perf_toc: "Na této stránce"
 diagram_layers: "Kde se práce odehrává: Fotollection na vašem počítači proti běžnému webovému editoru"
@@ -585,7 +577,6 @@ perf_faq:
 perf_repro_title: "Vlastní měření"
 perf_repro_text: "Všechna měření lze zopakovat na vlastních fotkách. Skripty nikdy žádnou fotku nenahrají ani nezkopírují; uchovávají se jen čísla. Celé tabulky se všemi běhy jsou v RESULT.md."
 perf_repro_link: "Přečíst RESULT.md na GitHubu"
-perf_back: "Zpět na domovskou stránku"
 linux_soon: "Pokud odkazy ke stažení chybí, stránka vydání má všechny soubory."
 og_card_performance:
   kicker: "Výkon"
@@ -678,12 +669,12 @@ og_card_features:
 perf_sense_title: "Třídění celé galerie: zátěžový test s 9 639 fotkami"
 perf_sense_text: "RollSense čte každou fotku jednou, aby ji roztřídil: co ukazuje a které jsou kopie. Výlet o 2 500 fotkách trvá asi 18 minut na notebooku s Windows z roku 2020 a Fotollection zůstal stabilní přes 9 639 fotek, s pamětí beze změny po 70 minut."
 sense_stats:
-  - v: "≈ 18 min"
-    l: "výlet o 2 500 fotkách na notebooku s i7-10610U"
+  - v: "17,9 min"
+    l: "roztřídění 15 000 fotek na M3"
+  - v: "108 min"
+    l: "stejných 15 000 fotek na notebooku s i7"
   - v: "844 MB"
     l: "nejvíce paměti, kterou průchod použil na 9 639 fotkách, bez růstu"
-  - v: "1,3 ms"
-    l: "na fotku při opětovném čtení z mezipaměti"
 chart_ecg: "RollSense pod zátěží, sekundu po sekundě: procesor, takt, paměť, teplota a grafická karta"
 chart_sense: "Čas RollSense na fotku podle počtu vláken a podíl modelu na něm"
 wiki_measures_title: "Měření v čase"
@@ -699,6 +690,9 @@ wiki_m_postcards: "Překreslení deseti pohlednic"
 wiki_m_bestshot: "Analýza nejlepšího snímku, na fotku"
 wiki_m_memory: "Špička paměti"
 wiki_m_sort: "První průchod RollSense"
+wiki_m_preview_p50: "Náhled po změně, p50"
+wiki_m_slider_gpu: "Krok barevného posuvníku na grafické kartě"
+wiki_m_slider_cpu: "Krok barevného posuvníku na procesoru"
 wiki_b_rss: "rezidentní paměť"
 wiki_b_fp: "paměťová stopa, Fotollection a jeho pomocník pro RAW dohromady"
 wiki_b_fp_before: "paměťová stopa, před pomocníkem pro RAW"

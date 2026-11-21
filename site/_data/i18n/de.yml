@@ -401,18 +401,7 @@ no_release: "Die Releases liegen auf GitHub"
 pf_coming: "Kommt in v0.9.0"
 quality_title: "Der Abzug sieht aus wie das Foto"
 nav_changelog: "Was ist neu"
-perf_speed_fn: ["fn_webview"]
-perf_trip_fn: ["fn_trip", "fn_pct"]
-perf_trip_title: "Eine echte Reise: 422 Dateien aus Prag"
-perf_trip_text: "Testsätze können schmeicheln, darum hier ein Ordner genau so, wie er nach einem Wochenende in Prag von einer Lumix GX9 kam: 396 JPEGs mit 20 MP, je etwa 11 MB, und 26 RAW-Dateien daneben, insgesamt 4,7 GB. Beim Öffnen werden die EXIF-Daten jeder Datei in 0,23 Sekunden gelesen. Die Vorschau wird in 19 ms neu berechnet, ein RAW in 0,35 Sekunden entwickelt, und zehn Postkarten werden in 21 ms neu gezeichnet. Am 2026-11-03 verfehlten zwei Werte bei diesen großen Dateien ihr Budget: Der Export schaffte 7,6 Fotos pro Sekunde, und der Speicher lag in der Spitze bei 2,14 GB. Die Ursache wurde gefunden und in v0.9.7 behoben: Die JPEGs werden jetzt mit 10,1 pro Sekunde exportiert, und der ganze Lauf bleibt unter 1,31 GB. Am 21.11.2026 erneut gemessen, während macOS die RAW-Dateien in einem Hilfsprozess entwickelt, kommen Fotollection und der Helfer zusammen auf höchstens 3,46 GB Speicherbedarf, im Budget von 3,5 GB für RAW; frühere Zahlen stehen im Wiki."
-trip_stats:
-  - { v: "0,23 s", l: "um alle 422 Dateien zu öffnen, samt EXIF" }
-  - { v: "19 ms", l: "Neuberechnung der Vorschau, p95 (Budget 50 ms)" }
-  - { v: "0,35 s", l: "um ein 20-MP-RAW zu entwickeln (Median)" }
-  - { v: "21 ms", l: "um zehn Postkarten neu zu zeichnen (Budget 100 ms)" }
-  - { v: "10,1/s", l: "exportierte JPEGs (Budget 8/s)" }
-  - { v: "3,46 GB", l: "Spitzen-Speicherbedarf, Fotollection und RAW-Helfer (Budget 3,5 GB)" }
-fn_trip: "Der Prager Ordner gehört dem Autor und ist nicht veröffentlicht (© @hoangphi01, alle Rechte vorbehalten). Mediane aus 3 Läufen von bench/trip.sh und von measure_folder auf seinen JPEGs, auf einem Apple M3 mit 16 GB, mit anderen geöffneten Apps, am 2026-11-04, mit dem Export von v0.9.7; führ sie zum Vergleich auf einem eigenen Ordner aus."
+fn_trip: "Der Prager Ordner gehört dem Autor und ist nicht veröffentlicht (© @hoangphi01, alle Rechte vorbehalten). Mediane aus 3 Läufen von bench/trip.sh und von measure_folder auf seinen JPEGs, auf einem Apple M3 mit 16 GB, mit anderen geöffneten Apps, am 2026-11-04, mit dem Export von v0.9.7; führ sie zum Vergleich auf einem eigenen Ordner aus. Der Speicherbedarf mit dem RAW-Helfer ist der Median aus 3 Läufen von measure_folder auf dem ganzen Ordner, am 2026-11-21."
 fn_simd: "SIMD (single instruction, multiple data) lässt einen Prozessor an vielen Werten zugleich arbeiten: Ein Befehl wirkt auf mehrere Zahlen, die nebeneinander in einem breiten Vektorregister liegen, etwa das Rot, Grün und Blau vieler Pixel. Prozessoren von Intel und AMD bieten es als SSE und AVX; Apple Silicon und andere Arm-Prozessoren als NEON. Intel, AMD und Arm sind Marken ihrer Inhaber."
 fn_pct: "p50 und p95 sind Perzentile: p50, der Median, ist die Zeit, unter der die Hälfte der Läufe blieb; p95 ist die Zeit, unter der 95 von 100 Läufen blieben, so zeigt sie die langsamen Fälle, die ein Durchschnitt verdeckt."
 fn_psnr: "PSNR (peak signal-to-noise ratio, Spitzen-Signal-Rausch-Verhältnis) vergleicht zwei Bilder Pixel für Pixel und gibt ihren Unterschied in Dezibel an: je höher, desto näher. Über etwa 40 dB ist der Unterschied kaum zu sehen."
@@ -485,26 +474,47 @@ cs_parts:
       - title: "Deinstallieren"
         text: "Entferne es in den Windows-Einstellungen, oder lösche die App unter macOS. Das Windows-Deinstallationsprogramm entfernt auch die Einträge unter „Öffnen mit“. Unter Linux führ sudo apt remove fotollection aus, lösche das AppImage, oder starte das Installationsskript mit --uninstall, das auch das APT-Repository und seinen Schlüssel entfernt. Einstellungen und Projekte bleiben in deinem Benutzerordner."
 perf_title: "Leistung"
-perf_description: "Jede Messung hinter Fotollection, einfach erklärt: Tempo, Speicher, Druckqualität und beste Aufnahmen, dazu ΔE, SSIM und Farbprofile."
+perf_description: "Geschwindigkeit, Speicher und Druckqualität von Fotollection, an echten Fotos auf zwei gewöhnlichen Laptops gemessen, mit der Methode jeder Zahl."
 perf_kicker: "Gemessen, nicht versprochen"
-perf_lead: "Jede Zahl auf dieser Seite stammt von echten Fotos auf einem gewöhnlichen Laptop (Apple M3, 16 GB), und die Skripte, die sie erzeugt haben, liegen im Repository, sodass jeder sie wiederholen kann. Unter jedem Diagramm steht, was es für deine Abzüge bedeutet, und am Ende die Begriffe hinter den Zahlen."
+perf_h1: "Fotollection, gemessen"
+perf_tiles:
+  - { m: m3, v: "0,13 s", l: "um einen Ordner mit 1.000 Fotos zu lesen, achtmal unter dem Budget" }
+  - { m: m3, v: "7,6 ms", l: "um die Vorschau nach einer Änderung neu zu zeichnen" }
+  - { m: m3, v: "24,0", l: "Fotos mit 16 MP pro Sekunde exportiert" }
+  - { m: m3, v: "17,9 min", l: "bis RollSense 15.000 Fotos sortiert hat" }
+  - { m: m3, v: "0,92 GB", l: "Spitze des residenten Speichers bei 5.088 Fotos" }
+perf_machines:
+  - { m: m3, role: "Der Referenz-Laptop", name: "MacBook Air M3, 16 GB, 2024", use: "Jede Zahl auf dieser Seite, sofern nicht anders angegeben." }
+  - { m: i7, role: "Ein Alltagslaptop", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "Der Lasttest von RollSense mit 9.639 Fotos." }
+perf_measured: "So wurde gemessen"
+perf_source: "Jeder Lauf in RESULT.md"
+perf_wiki_link: "Alle früheren Messungen im Wiki"
+perf_edit_title: "Bearbeiten: Die Vorschau hält mit dem Regler Schritt"
+perf_edit_text: "Eine geänderte Einstellung zeichnet nur die Vorschau neu, aus einer Kopie im Speicher. Während ein Farbregler bewegt wird, zeichnet die Grafikkarte den Look aus der Tabelle, die der Kern von Fotollection erstellt, und Exporte bleiben auf dem Prozessor, damit ein Druck auf jedem Computer gleich aussieht."
+perf_edit_fn: [fn_pct, fn_webview]
+edit_stats:
+  - { v: "7,6 ms", l: "um die Vorschau nach einer Änderung neu zu zeichnen" }
+  - { v: "4 ms", l: "ein Farbreglerschritt auf der Grafikkarte" }
+  - { v: "0,13", l: "ΔE2000 zwischen dem Look der Karte und der exakten Berechnung" }
+perf_export_title: "Exportieren: alle Kerne, im Speicherbudget"
+perf_export_text: "Fotollection exportiert mehrere Fotos gleichzeitig, so viele, wie das Speicherbudget für das größte erlaubt, sodass der Speicher von hundert bis zu Tausenden Fotos konstant bleibt. Unter macOS wird ein RAW in einem Hilfsprozess entwickelt, der alle zwölf Fotos ersetzt wird."
+perf_export_fn: [fn_trip]
+export_stats:
+  - { v: "24,0", l: "Fotos mit 16 MP pro Sekunde exportiert" }
+  - { v: "0,92 GB", l: "Spitze des residenten Speichers bei 5.088 Fotos" }
+  - { v: "3,46 GB", l: "Spitzen-Speicherbedarf, Fotollection und RAW-Helfer (Budget 3,5 GB)" }
+perf_lead: "Jede Zahl unten wurde an echten Fotos auf zwei gewöhnlichen Laptops gemessen, und die Skripte dazu liegen im Repository, damit jeder sie erneut ausführen kann."
 perf_how_title: "Warum Fotollection schnell ist"
 perf_how_lead: "Keine Magie. Ein paar Entscheidungen, getroffen vor der ersten Zeile Code, jede gemessen."
 perf_how_items:
-  - { t: "Nativer Code auf jedem Kern", d: "Die Arbeit von Fotollection läuft in Rust, kompiliert für deinen Prozessor und verteilt auf alle seine Kerne, mit den Vektorbefehlen (SIMD), die Prozessoren für Pixel bieten.", v: "23,5/s", l: "exportierte Fotos mit 16 MP", fn: [fn_simd, fn_units, fn_rust] }
-  - { t: "Nur, was nötig ist", d: "Beim Öffnen eines Ordners werden die EXIF-Daten jeder Datei und ihr kleines eingebettetes Vorschaubild gelesen, nie das ganze Foto. Die Vorschaubilder liegen in einem Cache auf der Festplatte.", v: "0,12 s", l: "um 1.000 Fotos zu öffnen", fn: [fn_exif] }
-  - { t: "Nie mehr Pixel als der Bildschirm", d: "Eine Vorschau hat höchstens 1.600 px und entsteht aus einer Kopie mit 2.048 px im Speicher. Das ganze Foto wird erst gelesen, wenn du hineinzoomst, und zwar Stück für Stück.", v: "17 ms", l: "um eine Vorschau neu zu zeichnen" }
+  - { t: "Nativer Code auf jedem Kern", d: "Die Arbeit von Fotollection läuft in Rust, kompiliert für deinen Prozessor und verteilt auf alle seine Kerne, mit den Vektorbefehlen (SIMD), die Prozessoren für Pixel bieten.", v: "24,0/s", l: "exportierte Fotos mit 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Nur, was nötig ist", d: "Beim Öffnen eines Ordners werden die EXIF-Daten jeder Datei und ihr kleines eingebettetes Vorschaubild gelesen, nie das ganze Foto. Die Vorschaubilder liegen in einem Cache auf der Festplatte.", v: "0,13 s", l: "um 1.000 Fotos zu öffnen", fn: [fn_exif] }
+  - { t: "Nie mehr Pixel als der Bildschirm", d: "Eine Vorschau hat höchstens 1.600 px und entsteht aus einer Kopie mit 2.048 px im Speicher. Das ganze Foto wird erst gelesen, wenn du hineinzoomst, und zwar Stück für Stück.", v: "7,6 ms", l: "um eine Vorschau neu zu zeichnen" }
   - { t: "Bereit, bevor du klickst", d: "Sind die Vorschaubilder fertig, wird im Hintergrund für jedes Foto eine Vorschau vorbereitet und auf der Festplatte abgelegt, während ein Viertel des Speichers die Fotos rund um das auf dem Bildschirm hält.", v: "27 ms", l: "um ein beliebiges Foto zu öffnen" }
   - { t: "Nichts doppelt", d: "Ein Farbregler ändert nur die Farbe, nie die Größe. Jeder Farbregler wird in eine einzige Tabelle mit 33 × 33 × 33 Farben eingerechnet, so kosten zehn Regler so viel wie einer.", v: "2 ms", l: "für zehn Farbregler auf einer Vorschau" }
-  - { t: "Speicher im Budget", d: "Fotollection bearbeitet nur so viele Fotos in voller Größe gleichzeitig, wie sein Speicherbudget erlaubt, festgelegt nach dem größten Foto im Export.", v: "1,45 GB", l: "Spitzenspeicher bei 5.035 Fotos" }
+  - { t: "Speicher im Budget", d: "Fotollection bearbeitet nur so viele Fotos in voller Größe gleichzeitig, wie sein Speicherbudget erlaubt, festgelegt nach dem größten Foto im Export.", v: "0,92 GB", l: "Spitze des residenten Speichers bei 5.088 Fotos" }
   - { t: "Encoder, per Messung abgestimmt", d: "Druckdateien verzichten auf eine Tabellenoptimierung, die sie um weniger als 1 % kleiner machte und ein Drittel der Kodierzeit kostete.", v: "−33 %", l: "Kodierzeit für Druckdateien" }
-  - { t: "Die Grafikkarte beim Bearbeiten", d: "Während sich ein Farbregler bewegt, zeichnet die Grafikkarte aus der Tabelle, die der Kern erstellt. Exporte bleiben auf dem Prozessor, so ist ein Abzug auf jedem Computer identisch.", v: "1–2 ms", l: "pro Reglerschritt, statt 26 ms" }
-perf_gpu_title: "Die Grafikkarte beim Bearbeiten, jeder Kern für Exporte"
-perf_gpu_text: "Während du einen Farbregler ziehst, zeichnet die Grafikkarte den Look aus derselben Tabelle, die der Kern von Fotollection erstellt, und sobald du loslässt, übernimmt die exakte Berechnung. Exporte bleiben auf dem Prozessor, so wird ein Abzug auf jedem Computer gleich."
-gpu_stats:
-  - { v: "1–2 ms", l: "ein Reglerschritt auf der Grafikkarte, gegenüber etwa 26 ms" }
-  - { v: "0,13", l: "ΔE2000 zwischen dem Look der Karte und der exakten Berechnung" }
-  - { v: "10,8", l: "Fotos mit 26 MP pro Sekunde exportiert, sechs gleichzeitig" }
+  - { t: "Die Grafikkarte beim Bearbeiten", d: "Während sich ein Farbregler bewegt, zeichnet die Grafikkarte aus der Tabelle, die der Kern erstellt. Exporte bleiben auf dem Prozessor, so ist ein Abzug auf jedem Computer identisch.", v: "4 ms", l: "pro Reglerschritt auf der Grafikkarte" }
 chart_gpu: "Ein Schritt eines Farbreglers: der Prozessor gegen die Grafikkarte"
 chart_inflight: "Exporttempo nach Zahl der gleichzeitig bearbeiteten Fotos"
 chart_open: "Ein Foto öffnen: v0.9.0 und v0.10.0 gegen v0.11.0, mit den 422 Fotos einer Reise"
@@ -515,43 +525,25 @@ open_stats:
   - { v: "20×", l: "schneller beim Öffnen eines RAW-Fotos als v0.9.0 (531 → 27 ms)" }
   - { v: "10×", l: "schneller beim Öffnen eines JPEGs als v0.9.0 (274 → 27 ms)" }
   - { v: "27 ms", l: "um ein beliebiges Foto zu öffnen, nah oder fern (Budget 100 ms)" }
-perf_speed_title: "Tempo: tausend Fotos im Handumdrehen"
-perf_speed_text: "Beim Öffnen eines Ordners werden die EXIF-Daten jedes Fotos und sein kleines eingebettetes Vorschaubild gelesen, nicht das ganze Bild, und eine geänderte Einstellung zeichnet nur die Vorschau neu. Natives Rust schlägt auch einen Webbrowser bei derselben Aufgabe: dasselbe Exporttempo, eine schnellere Vorschau und ein Viertel weniger Speicher."
-speed_stats:
-  - { v: "0,12 s", l: "um einen Ordner mit 1.000 Fotos zu lesen, achtmal unter dem Budget" }
-  - { v: "17 ms", l: "um die Vorschau nach einer Änderung neu zu zeichnen" }
-  - { v: "23,5", l: "Fotos mit 16 MP pro Sekunde exportiert" }
-perf_memory_title: "Speicher: 5.035 Fotos, und er bleibt flach"
-perf_memory_text: "Fotollection hält pro Foto nur wenige Bytes im Speicher, schreibt Vorschaubilder in einen Cache auf der Festplatte und bearbeitet nur so viele Bilder in voller Größe gleichzeitig, wie in sein Speicherbudget passen. So bleibt der Speicher flach, auch wenn eine Reise auf Tausende Fotos wächst."
-memory_stats:
-  - { v: "1,45 GB", l: "Spitzenspeicher bei 5.035 Fotos" }
-  - { v: "1,35 GB", l: "Spitzenspeicher bei 95 Fotos" }
-  - { v: "53×", l: "mehr Fotos für 0,1 GB mehr" }
-perf_print_title: "Druckqualität: Der Abzug sieht aus wie das Foto"
-perf_print_text: "Abzüge, die über einen Web-Editor entstehen, wirken oft flau: Er verwirft das Farbprofil, verkleinert das Foto auf 2.000 px und speichert mit Qualität 80 und halbierter Farbe. Fotollection behält das Profil und exportiert in voller Auflösung mit 4:4:4."
+perf_print_title: "Drucke und geteilte Fotos: immer noch das Foto"
+perf_print_text: "Abzüge, die über einen Web-Editor entstehen, wirken oft flau: Er verwirft das Farbprofil, verkleinert das Foto auf 2.000 px und speichert mit Qualität 80 und halbierter Farbe. Fotollection behält das Profil und exportiert in voller Auflösung mit 4:4:4. Facebook verkleinert jedes Foto auf 2.048 px, komprimiert es neu und ignoriert Farbprofile. Der Share-Export erledigt diese Arbeit vorher richtig, so bleibt das Foto nach Facebook näher an sich selbst als auf dem üblichen Weg."
 print_stats:
   - { v: "0,19", l: "Farbfehler; ein Auge bemerkt ihn ab 1" }
   - { v: "4:4:4", l: "volle Farbauflösung; ein Web-Editor halbiert sie" }
-  - { v: "87 %", l: "der feinen Details, die die 2.000 px eines Web-Editors verlieren" }
-perf_share_title: "Fotos für Facebook und Instagram: leicht, und immer noch das Foto"
-perf_share_text: "Facebook verkleinert jedes Foto auf 2.048 px, komprimiert es neu und ignoriert Farbprofile. Der Share-Export erledigt diese Arbeit vorher richtig, so bleibt das Foto nach Facebook näher an sich selbst als auf dem üblichen Weg."
-share_stats:
   - { v: "99,6 %", l: "der Farbe eines Display-P3-Fotos bleiben nach Facebook erhalten, gegenüber 86 %" }
-  - { v: "2.048 px", l: "die Größe, die Facebook in Ruhe lässt" }
-  - { v: "½", l: "der Datei in Originalgröße, jedes Pixel erhalten" }
 chart_raw: "Kamera-RAW: von der Datei auf den Bildschirm, pro Kamera und gegen Adobe DNG Converter"
 perf_raw_title: "Kamera-RAW: öffnen, wie es ist"
 perf_raw_text: "Fotollection öffnet RAW-Dateien von neun verbreiteten Kameras, wie sie sind, ohne Umwandeln und, unter Windows und Linux, ohne etwas zu installieren. Seit v0.10.0 ist das volle Bild für jede Kamera mit Bayer-Sensor seine eigene Entwicklung, erstellt aus den eigenen Daten der Kamera wie in einem RAW-Editor, während Adobe DNG Converter nur eine RAW-Datei in eine andere umwandelt."
 raw_stats:
   - { v: "9–32 ms", l: "das Vorschaubild eines RAW, aus der Vorschau in der Datei" }
-  - { v: "0,3–0,7 s", l: "die eigene Entwicklung des ganzen Fotos durch Fotollection" }
-  - { v: "1,2–1,8 s", l: "Adobe DNG Converter pro Datei, nur zum Umwandeln" }
+  - { v: "0,3–0,7 s", l: "die eigene Entwicklung des ganzen Fotos durch Fotollection" }
+  - { v: "1,2–1,8 s", l: "Adobe DNG Converter pro Datei, nur zum Umwandeln" }
 perf_raw_fn: ["fn_dng", "fn_sensor", "fn_psnr", "fn_tiff"]
 perf_best_title: "Vorschläge für die besten Aufnahmen: geprüft an der Wahl eines Menschen"
 perf_best_text: "Wir haben 95 echte Fotos von Hand in 22 Momente sortiert und das beste Foto gewählt, wo es ein klares gab. Die Gruppen und Vorschläge von Fotollection wurden dann an dieser Wahl geprüft."
 best_stats:
-  - { v: "6 von 6", l: "Momente mit einem klaren besten: ein akzeptabler Vorschlag" }
-  - { v: "15 von 22", l: "Momente gefunden, nie zwei verwechselt" }
+  - { v: "6 von 6", l: "Momente mit einem klaren besten: ein akzeptabler Vorschlag" }
+  - { v: "15 von 22", l: "Momente gefunden, nie zwei verwechselt" }
   - { v: "17 ms", l: "um ein Foto zu analysieren, 28 ms mit Gesichtern" }
 perf_toc: "Auf dieser Seite"
 diagram_layers: "Wo die Arbeit geschieht: Fotollection auf deinem Computer, gegenüber einem typischen Web-Editor"
@@ -585,7 +577,6 @@ perf_faq:
 perf_repro_title: "Mach die Messungen selbst"
 perf_repro_text: "Alles lässt sich mit deinen eigenen Fotos wiederholen. Die Skripte laden nie ein Foto hoch und kopieren keins; nur Zahlen werden behalten. Die vollständigen Tabellen, mit jedem Lauf, stehen in RESULT.md."
 perf_repro_link: "RESULT.md auf GitHub lesen"
-perf_back: "Zurück zur Startseite"
 linux_soon: "Fehlen die Download-Links, hat die Release-Seite jede Datei."
 og_card_performance:
   kicker: "Leistung"
@@ -676,12 +667,12 @@ og_card_features:
 perf_sense_title: "Eine ganze Fotomediathek sortieren: Lasttest mit 9.639 Fotos"
 perf_sense_text: "RollSense liest jedes Foto einmal, um es zu sortieren: was es zeigt und welche Fotos Kopien sind. Eine Reise mit 2.500 Fotos dauert auf einem Windows-Laptop von 2020 etwa 18 Minuten, und Fotollection blieb über 9.639 Fotos stabil, der Speicher 70 Minuten lang gleichbleibend."
 sense_stats:
-  - v: "≈ 18 Min."
-    l: "eine Reise mit 2.500 Fotos auf einem i7-10610U-Laptop"
+  - v: "17,9 min"
+    l: "um 15.000 Fotos auf dem M3 zu sortieren"
+  - v: "108 min"
+    l: "dieselben 15.000 Fotos auf dem i7-Laptop"
   - v: "844 MB"
     l: "der höchste Speicher des Durchgangs über 9.639 Fotos, ohne Anstieg"
-  - v: "1,3 ms"
-    l: "pro Foto, erneut aus dem Cache gelesen"
 chart_ecg: "RollSense unter Last, Sekunde für Sekunde: Prozessor, Takt, Speicher, Temperatur und Grafikkarte"
 chart_sense: "Die Zeit pro Foto von RollSense nach Threads und der Anteil des Modells daran"
 wiki_measures_title: "Messungen im Lauf der Zeit"
@@ -697,6 +688,9 @@ wiki_m_postcards: "Zehn Postkarten neu zeichnen"
 wiki_m_bestshot: "Analyse der besten Aufnahme, je Foto"
 wiki_m_memory: "Spitzenspeicher"
 wiki_m_sort: "Erster Durchlauf von RollSense"
+wiki_m_preview_p50: "Vorschau nach einer Änderung, p50"
+wiki_m_slider_gpu: "Ein Farbreglerschritt auf der Grafikkarte"
+wiki_m_slider_cpu: "Ein Farbreglerschritt auf dem Prozessor"
 wiki_b_rss: "residenter Speicher"
 wiki_b_fp: "Speicherbedarf, Fotollection und sein RAW-Helfer zusammen"
 wiki_b_fp_before: "Speicherbedarf, vor dem RAW-Helfer"

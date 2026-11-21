@@ -265,6 +265,22 @@ if (process.argv.includes('--build') && !problems.length) {
         }
       }
     }
+    // A built page holds no template text, no empty link (a `{{ }}` inside a filter's string argument is never
+    // filled: the Performance page's table labels, UI audit 2026-11-21), and no lazy picture inside
+    // a closed fold, which loads only once opened (LESSONS: a picture inside anything closed).
+    for (const l of langs) {
+      for (const id of l.pages) {
+        const file = path.join(out, `${l.prefix}${pages[id]}`, 'index.html')
+        if (!existsSync(file)) continue
+        const html = readFileSync(file, 'utf8')
+        if (/\{\{|\{%/.test(html.replace(/<(script|pre|code)\b[\s\S]*?<\/\1>/g, ''))) problems.push(`${l.code}: its ${id} page shows template text ({{ or {%): assign or capture the value before the filter`)
+        // An empty link: a path variable out of the include's scope (the chapter list's menu, 2026-11-21).
+        if (/href=""/.test(html)) problems.push(`${l.code}: its ${id} page has an empty link (href=""): a path assigned where the include cannot see it`)
+        for (const m of html.matchAll(/<details\b[\s\S]*?<\/details>/g)) {
+          if (/loading="lazy"/.test(m[0])) { problems.push(`${l.code}: its ${id} page has a lazy picture inside a <details>; pass eager`); break }
+        }
+      }
+    }
   } finally {
     rmSync(out, { recursive: true, force: true })
   }

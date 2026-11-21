@@ -401,18 +401,7 @@ no_release: "A kiadások a GitHubon vannak"
 pf_coming: "Érkezik a v0.9.0-ban"
 quality_title: "A nyomat olyan, mint a fotó"
 nav_changelog: "Újdonságok"
-perf_speed_fn: [fn_webview]
-perf_trip_fn: [fn_trip, fn_pct]
-perf_trip_title: "Egy valódi út: 422 fájl Prágából"
-perf_trip_text: "A tesztkészletek szépíthetnek, ezért íme egy mappa pontosan úgy, ahogy egy prágai hétvége után lekerült egy Lumix GX9-ről: 396 darab 20 MP-es JPEG, egyenként kb. 11 MB, mellettük 26 RAW fájl, összesen 4,7 GB. Megnyitáskor 0,23 másodperc alatt beolvasódik minden fájl EXIF-je. Az előnézet 19 ms alatt rajzolódik újra, egy RAW 0,35 másodperc alatt dolgozódik ki, tíz képeslap pedig 21 ms alatt rajzolódik újra. 2026. november 3-án ezeken a nagy fájlokon két szám nem fért bele a keretébe: az exportálás másodpercenként 7,6 fotót készített, a memóriacsúcs pedig 2,14 GB volt. Az ok kiderült, és a v0.9.7 javította: a JPEG-ek exportálása most másodpercenként 10,1, és a teljes futás 1,31 GB alatt marad. 2026. 11. 21-én újramérve, amikor a macOS egy segédfolyamatban hívja elő a RAW-fájlokat, a Fotollection és a segéd együtt legfeljebb 3,46 GB lábnyomot használ, a RAW-ra szabott 3,5 GB-os kereten belül; a korábbi számok a Wikin találhatók."
-trip_stats:
-  - { v: "0,23 s", l: "mind a 422 fájl megnyitása, EXIF-fel együtt" }
-  - { v: "19 ms", l: "az előnézet újrarajzolása, p95 (keret: 50 ms)" }
-  - { v: "0,35 s", l: "egy 20 MP-es RAW kidolgozása (medián)" }
-  - { v: "21 ms", l: "tíz képeslap újrarajzolása (keret: 100 ms)" }
-  - { v: "10,1/s", l: "exportált JPEG (keret: 8/s)" }
-  - { v: "3,46 GB", l: "legnagyobb memórialábnyom, a Fotollection és RAW-segédje (keret: 3,5 GB)" }
-fn_trip: "A prágai mappa a szerző sajátja, és nincs közzétéve (© @hoangphi01, minden jog fenntartva). A bench/trip.sh és a JPEG-jein futtatott measure_folder 3-3 futásának mediánjai, Apple M3-on 16 GB-tal, más nyitott alkalmazások mellett, 2026. november 4-én, a v0.9.7 exportálásával; az összevetéshez futtasd őket egy saját mappán."
+fn_trip: "A prágai mappa a szerző sajátja, és nincs közzétéve (© @hoangphi01, minden jog fenntartva). A bench/trip.sh és a JPEG-jein futtatott measure_folder 3-3 futásának mediánjai, Apple M3-on 16 GB-tal, más nyitott alkalmazások mellett, 2026. november 4-én, a v0.9.7 exportálásával; az összevetéshez futtasd őket egy saját mappán. A RAW-segéddel együtt mért lábnyom a measure_folder 3 futásának mediánja a teljes mappán, 2026. november 21-én."
 fn_simd: "A SIMD (single instruction, multiple data) lehetővé teszi, hogy a processzor sok értéken dolgozzon egyszerre: egyetlen utasítás több, egy széles vektorregiszterben egymás mellett tárolt számra hat, például sok pixel vörös, zöld és kék összetevőjére. Az Intel és az AMD processzoraiban SSE és AVX néven, az Apple siliconban és más Arm processzorokban NEON néven érhető el. Az Intel, az AMD és az Arm tulajdonosaik védjegyei."
 fn_pct: "A p50 és a p95 percentilisek: a p50, a medián, az az idő, amely alatt a futások fele maradt; a p95 az az idő, amely alatt 100 futásból 95 maradt, így azokat a lassú eseteket mutatja, amelyeket egy átlag elrejt."
 fn_psnr: "A PSNR (peak signal-to-noise ratio, csúcsjel–zaj viszony) két képet pixelről pixelre vet össze, és a különbségüket decibelben adja meg: minél nagyobb, annál közelebbiek. Kb. 40 dB fölött a különbség alig látható."
@@ -485,26 +474,47 @@ cs_parts:
       - title: "Eltávolítás"
         text: "Távolítsd el a Windows Gépházában, vagy töröld az alkalmazást macOS-en. A Windowsos eltávolító a Megnyitás ezzel bejegyzéseket is törli. Linuxon futtasd a sudo apt remove fotollection parancsot, vagy töröld az AppImage-et, vagy futtasd a telepítőszkriptet --uninstall kapcsolóval, amely az APT-tárolót és a kulcsát is eltávolítja. A beállítások és a projektek a saját mappádban maradnak."
 perf_title: "Teljesítmény"
-perf_description: "Minden mérés a Fotollection mögött, közérthetően: sebesség, memória, nyomtatási minőség, legjobb képek, és a ΔE, az SSIM és a színprofil."
+perf_description: "A Fotollection sebessége, memóriája és nyomtatási minősége, valódi fotókon mérve két átlagos laptopon, minden szám mérési módjával."
 perf_kicker: "Mérések, nem ígéretek"
-perf_lead: "Ezen az oldalon minden szám valódi fotókból származik, egy átlagos laptopon (Apple M3, 16 GB), az ezeket előállító szkriptek pedig a tárolóban vannak, így bárki újra lefuttathatja őket. Minden diagram alatt ott áll, mit jelent a nyomataidra nézve, a végén pedig a számok mögötti fogalmak."
+perf_h1: "A Fotollection mérésekben"
+perf_tiles:
+  - { m: m3, v: "0,13 s", l: "egy 1000 fotós mappa beolvasása, a keret nyolcada alatt" }
+  - { m: m3, v: "7,6 ms", l: "az előnézet újrarajzolása egy módosítás után" }
+  - { m: m3, v: "24,0", l: "exportált 16 MP-es fotó másodpercenként" }
+  - { m: m3, v: "17,9 perc", l: "amíg a RollSense 15 000 fotót rendez" }
+  - { m: m3, v: "0,92 GB", l: "rezidens memória csúcsa 5088 fotónál" }
+perf_machines:
+  - { m: m3, role: "A referencia-laptop", name: "MacBook Air M3, 16 GB, 2024", use: "Az oldal minden száma, ha nincs másként jelölve." }
+  - { m: i7, role: "Egy hétköznapi laptop", name: "ThinkPad X1 Carbon, i7-10610U, 15 W, 16 GB, 2020, Windows", use: "A RollSense terheléses tesztje 9639 fotóval." }
+perf_measured: "Hogyan mértük"
+perf_source: "Minden futás a RESULT.md-ben"
+perf_wiki_link: "Minden korábbi mérés a Wikin"
+perf_edit_title: "Szerkesztés: az előnézet lépést tart a csúszkával"
+perf_edit_text: "Egy beállítás módosítása csak az előnézetet rajzolja újra, a memóriában tartott másolatból. Színcsúszka mozgatásakor a videokártya rajzolja a megjelenést a Fotollection magja által készített táblából, az exportálás pedig a processzoron marad, így a nyomat minden számítógépen ugyanolyan."
+perf_edit_fn: [fn_pct, fn_webview]
+edit_stats:
+  - { v: "7,6 ms", l: "az előnézet újrarajzolása egy módosítás után" }
+  - { v: "4 ms", l: "egy színcsúszka-lépés a videokártyán" }
+  - { v: "0,13", l: "ΔE2000 a kártya lookja és a pontos renderelés között" }
+perf_export_title: "Exportálás: minden mag, a memóriakereten belül"
+perf_export_text: "A Fotollection egyszerre több fotót exportál, annyit, amennyit a memóriakeret a legnagyobb fotóhoz enged, így a memória száz fotótól több ezerig egyenletes marad. macOS-en a RAW-ot egy segédfolyamat hívja elő, amelyet tizenkét fotónként egy új vált fel."
+perf_export_fn: [fn_trip]
+export_stats:
+  - { v: "24,0", l: "exportált 16 MP-es fotó másodpercenként" }
+  - { v: "0,92 GB", l: "rezidens memória csúcsa 5088 fotónál" }
+  - { v: "3,46 GB", l: "legnagyobb memórialábnyom, a Fotollection és RAW-segédje (keret: 3,5 GB)" }
+perf_lead: "Minden alábbi számot valódi fotókon mértünk két átlagos laptopon, és az ezeket előállító szkriptek a tárolóban vannak, így bárki újra lefuttathatja őket."
 perf_how_title: "Miért gyors a Fotollection"
 perf_how_lead: "Semmi varázslat. Néhány döntés, amely még az első kódsor előtt megszületett, és mindegyik mérve."
 perf_how_items:
-  - { t: "Natív kód minden magon", d: "A Fotollection munkája Rustban fut, a processzorodra fordítva és minden magjára elosztva, a processzorok pixelekhez kínált vektorutasításaival (SIMD).", v: "23,5/s", l: "exportált fotó 16 MP-nél", fn: [fn_simd, fn_units, fn_rust] }
-  - { t: "Csak ami kell", d: "Egy mappa megnyitása minden fájlnak csak az EXIF-jét és a kis beágyazott bélyegképét olvassa be, sosem a teljes fotót. A bélyegképek egy lemezes gyorsítótárba kerülnek.", v: "0,12 s", l: "1000 fotó megnyitása", fn: [fn_exif] }
-  - { t: "Sosem több pixel, mint a képernyő", d: "Egy előnézet legfeljebb 1600 px, egy memóriában tartott 2048 px-es másolatból készül. A teljes fotót csak nagyításkor olvassa be, részenként.", v: "17 ms", l: "egy előnézet újrarajzolása" }
+  - { t: "Natív kód minden magon", d: "A Fotollection munkája Rustban fut, a processzorodra fordítva és minden magjára elosztva, a processzorok pixelekhez kínált vektorutasításaival (SIMD).", v: "24,0/s", l: "exportált fotó 16 MP-nél", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Csak ami kell", d: "Egy mappa megnyitása minden fájlnak csak az EXIF-jét és a kis beágyazott bélyegképét olvassa be, sosem a teljes fotót. A bélyegképek egy lemezes gyorsítótárba kerülnek.", v: "0,13 s", l: "1000 fotó megnyitása", fn: [fn_exif] }
+  - { t: "Sosem több pixel, mint a képernyő", d: "Egy előnézet legfeljebb 1600 px, egy memóriában tartott 2048 px-es másolatból készül. A teljes fotót csak nagyításkor olvassa be, részenként.", v: "7,6 ms", l: "egy előnézet újrarajzolása" }
   - { t: "Kész, mielőtt kattintasz", d: "Amint a bélyegképek elkészültek, minden fotó előnézete elkészül a háttérben és a lemezre kerül, a memória negyede pedig a képernyőn lévő fotó körüli fotókat tartja.", v: "27 ms", l: "bármelyik fotó megnyitása" }
   - { t: "Semmi sem készül kétszer", d: "Egy színcsúszka csak a színt változtatja, a méretet sosem. Minden színcsúszka egyetlen 33 × 33 × 33 színből álló táblába olvad össze, így tíz csúszka annyiba kerül, mint egy.", v: "2 ms", l: "tíz színcsúszka egy előnézeten" }
-  - { t: "Memória a kereten belül", d: "A Fotollection egyszerre csak annyi teljes méretű fotón dolgozik, amennyit a memóriakerete megenged; ezt az exportálás legnagyobb fotója határozza meg.", v: "1,45 GB", l: "memóriacsúcs 5035 fotóval" }
+  - { t: "Memória a kereten belül", d: "A Fotollection egyszerre csak annyi teljes méretű fotón dolgozik, amennyit a memóriakerete megenged; ezt az exportálás legnagyobb fotója határozza meg.", v: "0,92 GB", l: "rezidens memória csúcsa 5088 fotóval" }
   - { t: "Méréssel hangolt kódolók", d: "A nyomtatási fájlok kihagynak egy táblaoptimalizálást, amely 1 %-nál kevesebbel tette kisebbé őket, és a kódolási idő harmadába került.", v: "−33 %", l: "kódolási idő a nyomtatási fájloknál" }
-  - { t: "Szerkesztés közben a videokártya", d: "Amíg egy színcsúszka mozog, a videokártya a mag által felépített táblából rajzol. Az exportálás a processzoron marad, így egy nyomat minden gépen ugyanaz.", v: "1–2 ms", l: "csúszkalépésenként, 26 ms helyett" }
-perf_gpu_title: "Szerkesztéskor a videokártya, exportáláskor minden mag"
-perf_gpu_text: "Amíg egy színcsúszkát húzol, a videokártya ugyanabból a táblából rajzolja a lookot, amelyet a Fotollection magja épít, és amikor elengeded, a pontos renderelés veszi át a helyét. Az exportálás a processzoron marad, így egy nyomat minden gépen ugyanúgy jön ki."
-gpu_stats:
-  - { v: "1–2 ms", l: "egy csúszkalépés a videokártyán, kb. 26 ms helyett" }
-  - { v: "0,13", l: "ΔE2000 a kártya lookja és a pontos renderelés között" }
-  - { v: "10,8", l: "exportált 26 MP-es fotó másodpercenként, hat egyszerre" }
+  - { t: "Szerkesztés közben a videokártya", d: "Amíg egy színcsúszka mozog, a videokártya a mag által felépített táblából rajzol. Az exportálás a processzoron marad, így egy nyomat minden gépen ugyanaz.", v: "4 ms", l: "csúszkalépésenként a videokártyán" }
 chart_gpu: "Egy színcsúszka egy lépése: a processzor a videokártyával szemben"
 chart_inflight: "Exportálási sebesség az egyszerre feldolgozott fotók szerint"
 chart_open: "Egy fotó megnyitása: a v0.9.0 és a v0.10.0 a v0.11.0-val szemben, egy út 422 fotóján"
@@ -515,43 +525,25 @@ open_stats:
   - { v: "20×", l: "gyorsabban nyílik meg egy RAW fotó, mint a v0.9.0-ban (531 → 27 ms)" }
   - { v: "10×", l: "gyorsabban nyílik meg egy JPEG, mint a v0.9.0-ban (274 → 27 ms)" }
   - { v: "27 ms", l: "bármelyik fotó megnyitása, közeli vagy távoli (keret: 100 ms)" }
-perf_speed_title: "Sebesség: ezer fotó egy szempillantás alatt"
-perf_speed_text: "Egy mappa megnyitása minden fotónak csak az EXIF-jét és a kis beágyazott bélyegképét olvassa be, nem a teljes képet, egy módosított beállítás pedig csak az előnézetet rajzolja újra. A natív Rust egy ugyanezt végző webböngészőt is megelőz: ugyanaz az exportálási sebesség, gyorsabb előnézet és negyedével kevesebb memória."
-speed_stats:
-  - { v: "0,12 s", l: "egy 1000 fotós mappa beolvasása, nyolcszor a kereten belül" }
-  - { v: "17 ms", l: "az előnézet újrarajzolása egy módosítás után" }
-  - { v: "23,5", l: "exportált 16 MP-es fotó másodpercenként" }
-perf_memory_title: "Memória: 5035 fotó, és egyenletes marad"
-perf_memory_text: "A Fotollection fotónként csak néhány bájtot tart a memóriában, a bélyegképeket lemezes gyorsítótárba írja, és egyszerre csak annyi teljes méretű képen dolgozik, amennyi a memóriakeretébe belefér. Így a memória egyenletes marad, ahogy egy út több ezer fotóra nő."
-memory_stats:
-  - { v: "1,45 GB", l: "memóriacsúcs 5035 fotónál" }
-  - { v: "1,35 GB", l: "memóriacsúcs 95 fotónál" }
-  - { v: "53×", l: "több fotó 0,1 GB-tal több memóriáért" }
-perf_print_title: "Nyomtatási minőség: a nyomat olyan, mint a fotó"
-perf_print_text: "A webes szerkesztővel készült nyomatok gyakran fakónak tűnnek: a szerkesztő elhagyja a színprofilt, 2000 px-re kicsinyíti a fotót, és 80-as minőséggel, felezett színnel menti. A Fotollection megtartja a profilt, és teljes felbontásban, 4:4:4-ben exportál."
+perf_print_title: "Nyomatok és megosztott fotók: továbbra is a fotó"
+perf_print_text: "A webes szerkesztővel készült nyomatok gyakran fakónak tűnnek: a szerkesztő elhagyja a színprofilt, 2000 px-re kicsinyíti a fotót, és 80-as minőséggel, felezett színnel menti. A Fotollection megtartja a profilt, és teljes felbontásban, 4:4:4-ben exportál. A Facebook minden fotót 2048 px-re kicsinyít, újratömöríti, és figyelmen kívül hagyja a színprofilokat. A Share exportálás ezt a munkát előbb rendesen elvégzi, így a Facebook után a fotó közelebb marad önmagához, mint a szokásos módon."
 print_stats:
   - { v: "0,19", l: "színhiba; a szem 1-nél kezdi észrevenni" }
   - { v: "4:4:4", l: "teljes színfelbontás; egy webes szerkesztő megfelezi" }
-  - { v: "87 %", l: "a finom részletekből, amelyeket egy webes szerkesztő 2000 px-e elveszít" }
-perf_share_title: "Fotók Facebookra és Instagramra: könnyűek, és mégis a fotó"
-perf_share_text: "A Facebook minden fotót 2048 px-re kicsinyít, újratömöríti, és figyelmen kívül hagyja a színprofilokat. A Share exportálás ezt a munkát előbb rendesen elvégzi, így a Facebook után a fotó közelebb marad önmagához, mint a szokásos módon."
-share_stats:
   - { v: "99,6 %", l: "egy Display P3 fotó színeiből megmarad a Facebook után, 86 % helyett" }
-  - { v: "2048 px", l: "a méret, amelyhez a Facebook nem nyúl" }
-  - { v: "½", l: "akkora fájl, mint az Original size, minden pixel megtartva" }
 chart_raw: "Fényképezőgépes RAW: a fájltól a képernyőig, gépenként és az Adobe DNG Converterrel szemben"
 perf_raw_title: "Fényképezőgépes RAW: nyisd meg úgy, ahogy van"
 perf_raw_text: "A Fotollection kilenc elterjedt fényképezőgép RAW fájljait nyitja meg úgy, ahogy vannak, konvertálás nélkül, Windowson és Linuxon pedig telepítés nélkül is. A v0.10.0 óta a teljes kép a saját kidolgozása minden Bayer-érzékelős gépnél, a gép saját adataiból készítve, ahogy egy RAW-szerkesztőben, míg az Adobe DNG Converter csak egyik RAW fájlt alakítja át egy másikká."
 raw_stats:
   - { v: "9–32 ms", l: "egy RAW bélyegképe, a fájlba ágyazott előnézetből" }
-  - { v: "0,3–0,7 s", l: "a teljes fotó a Fotollection saját kidolgozásával" }
-  - { v: "1,2–1,8 s", l: "az Adobe DNG Converter fájlonként, csak a konvertálásra" }
+  - { v: "0,3–0,7 s", l: "a teljes fotó a Fotollection saját kidolgozásával" }
+  - { v: "1,2–1,8 s", l: "az Adobe DNG Converter fájlonként, csak a konvertálásra" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
 perf_best_title: "A legjobb kép ajánlásai: egy ember választásához mérve"
 perf_best_text: "95 valódi fotót kézzel 22 pillanatba soroltunk, és ahol volt egyértelmű legjobb, kiválasztottuk. Ezután a Fotollection csoportjait és ajánlásait ehhez a választáshoz mértük."
 best_stats:
-  - { v: "6-ból 6", l: "egyértelmű legjobbal bíró pillanat: elfogadható ajánlás" }
-  - { v: "22-ből 15", l: "megtalált pillanat, kettőt sosem keverve össze" }
+  - { v: "6-ból 6", l: "egyértelmű legjobbal bíró pillanat: elfogadható ajánlás" }
+  - { v: "22-ből 15", l: "megtalált pillanat, kettőt sosem keverve össze" }
   - { v: "17 ms", l: "egy fotó elemzése, arcokkal 28 ms" }
 perf_toc: "Ezen az oldalon"
 diagram_layers: "Hol történik a munka: a Fotollection a gépeden, egy tipikus webes szerkesztővel szemben"
@@ -585,7 +577,6 @@ perf_faq:
 perf_repro_title: "Futtasd le magad a méréseket"
 perf_repro_text: "Minden megismételhető a saját fotóidon. A szkriptek sosem töltenek fel és nem másolnak fotót; csak számok maradnak meg. A teljes táblázatok, minden futással, a RESULT.md fájlban vannak."
 perf_repro_link: "A RESULT.md a GitHubon"
-perf_back: "Vissza a kezdőlapra"
 linux_soon: "Ha hiányoznak a letöltési linkek, a kiadási oldalon minden fájl megvan."
 og_card_performance:
   kicker: "Teljesítmény"
@@ -676,12 +667,12 @@ og_card_features:
 perf_sense_title: "Egy teljes fotótár rendezése: terheléses teszt 9639 fotóval"
 perf_sense_text: "A RollSense minden fotót egyszer olvas be a rendezéshez: mit mutat, és melyik másolat. Egy 2500 fotós utazás körülbelül 18 percig tart egy 2020-as windowsos laptopon, és a Fotollection 9639 fotón át stabil maradt, a memóriája 70 percig nem nőtt."
 sense_stats:
-  - v: "≈ 18 perc"
-    l: "egy 2500 fotós utazás egy i7-10610U laptopon"
+  - v: "17,9 perc"
+    l: "15 000 fotó rendezése az M3-on"
+  - v: "108 perc"
+    l: "ugyanaz a 15 000 fotó az i7-es laptopon"
   - v: "844 MB"
     l: "az olvasás legnagyobb memóriája 9639 fotón, növekedés nélkül"
-  - v: "1,3 ms"
-    l: "fotónként, a gyorsítótárból újraolvasva"
 chart_ecg: "A RollSense terhelés alatt, másodpercről másodpercre: processzor, órajel, memória, hőmérséklet és videokártya"
 chart_sense: "A RollSense ideje fotónként a szálak száma szerint, és ebből a modell része"
 wiki_measures_title: "Mérések az idő során"
@@ -697,6 +688,9 @@ wiki_m_postcards: "Tíz képeslap újrarajzolása"
 wiki_m_bestshot: "A legjobb kép elemzése, fotónként"
 wiki_m_memory: "Memóriacsúcs"
 wiki_m_sort: "A RollSense első menete"
+wiki_m_preview_p50: "Előnézet módosítás után, p50"
+wiki_m_slider_gpu: "Egy színcsúszka-lépés a videokártyán"
+wiki_m_slider_cpu: "Egy színcsúszka-lépés a processzoron"
 wiki_b_rss: "rezidens memória"
 wiki_b_fp: "lábnyom, a Fotollection és RAW-segédje együtt"
 wiki_b_fp_before: "lábnyom, a RAW-segéd előtt"
