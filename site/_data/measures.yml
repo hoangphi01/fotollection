@@ -1,0 +1,33 @@
+# The Wiki's "Measured over time" table (site/_includes/wiki.html): every number the website or
+# the README has shown, with its date, version and machine, kept when a newer measurement takes
+# its place on those pages (owner, 2026-11-21: "các số liệu cũ ko xóa, chuyển vào wiki"). Oldest
+# first, shown newest first. A number is plain (quoted when it ends in a zero) and written in each language's notation by the
+# `num` filter; `kind` names the i18n key `wiki_m_<kind>`, `unit` `wiki_u_<unit>`, `basis` (memory
+# only) `wiki_b_<basis>`: resident memory (RSS) and footprint are different measures, never compared.
+# Sources: docs/OPTIMIZATION.md §5 and bench/results/, by the same date.
+- { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 5035, kind: open, value: 0.12, unit: s }
+- { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 95, kind: preview, value: 18, unit: ms }
+- { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 95, kind: export, value: "18.0", unit: ps }
+- { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 5035, kind: export, value: 15.4, unit: ps }
+- { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 95, kind: memory, value: 1.35, unit: gb, basis: rss }
+- { date: 2026-10-23, version: "0.1.0", machine: m3, photos: 5035, kind: memory, value: 1.45, unit: gb, basis: rss }
+- { date: 2026-10-24, version: "0.1.0", machine: m3, photos: 95, kind: bestshot, value: 17, unit: ms }
+- { date: 2026-11-03, version: "0.9.3", machine: m3, photos: 422, kind: export, value: 7.6, unit: ps }
+- { date: 2026-11-03, version: "0.9.3", machine: m3, photos: 422, kind: memory, value: 2.14, unit: gb, basis: rss }
+- { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 422, kind: open_all, value: 0.23, unit: s }
+- { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 422, kind: preview, value: 19, unit: ms }
+- { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 1, kind: develop, value: 0.35, unit: s }
+- { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 10, kind: postcards, value: 21, unit: ms }
+- { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 396, kind: export_jpeg, value: 10.1, unit: ps }
+- { date: 2026-11-04, version: "0.9.7", machine: m3, photos: 422, kind: memory, value: 1.31, unit: gb, basis: rss }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 5088, kind: open, value: 0.13, unit: s }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 5088, kind: export, value: 19.9, unit: ps }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 5088, kind: memory, value: 0.92, unit: gb, basis: rss }
+- { date: 2026-11-20, version: "0.14.3", machine: m3, photos: 15000, kind: sort, value: 17.9, unit: min }
+- { date: 2026-11-20, version: "0.14.3", machine: i7, photos: 15000, kind: sort, value: 108, unit: min }
+- { date: 2026-11-21, version: "0.14.3", machine: m3, photos: 422, kind: memory, value: 6.14, unit: gb, basis: fp_before }
+- { date: 2026-11-21, version: "0.14.4", machine: m3, photos: 422, kind: open_all, value: 0.21, unit: s }
+- { date: 2026-11-21, version: "0.14.4", machine: m3, photos: 422, kind: preview, value: 7.3, unit: ms }
+- { date: 2026-11-21, version: "0.14.4", machine: m3, photos: 422, kind: export, value: 8.7, unit: ps }
+- { date: 2026-11-21, version: "0.14.4", machine: m3, photos: 396, kind: export_jpeg, value: "10.0", unit: ps }
+- { date: 2026-11-21, version: "0.14.4", machine: m3, photos: 422, kind: memory, value: 3.46, unit: gb, basis: fp }

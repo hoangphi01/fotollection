@@ -254,14 +254,14 @@ fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thê
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Một chuyến đi thật: 422 tệp từ Praha"
-perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa trong v0.9.7: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB."
+perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa trong v0.9.7: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB. Đo lại ngày 21/11/2026, khi macOS dựng ảnh RAW trong một tiến trình phụ, Fotollection cùng tiến trình phụ dùng tối đa 3,46 GB footprint, trong ngân sách 3,5 GB dành cho RAW; các số trước đó nằm ở trang Wiki."
 trip_stats:
   - { v: "0,23 s", l: "để mở cả 422 tệp, gồm cả EXIF" }
   - { v: "19 ms", l: "dựng lại xem trước, p95 (mục tiêu 50 ms)" }
   - { v: "0,35 s", l: "để xử lý một ảnh RAW 20 MP (trung vị)" }
   - { v: "21 ms", l: "để vẽ lại mười tấm bưu thiếp (mục tiêu 100 ms)" }
   - { v: "10,1 / s", l: "ảnh JPEG được xuất (mục tiêu 8 / s)" }
-  - { v: "1,31 GB", l: "RAM dùng nhiều nhất, cả JPEG lẫn RAW (trần 2 GB)" }
+  - { v: "3,46 GB", l: "footprint RAM cao nhất, Fotollection cùng tiến trình phụ RAW (ngân sách 3,5 GB)" }
 fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh và measure_folder trên phần JPEG, trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 4/11/2026, với phần xuất ảnh của v0.9.7; hãy chạy trên thư mục ảnh của bạn để so sánh."
 fn_photo: "Ảnh tàu điện là của tác giả (© @hoangphi01, giữ mọi quyền), chụp bằng Lumix GX9 ở Praha tháng 11 năm 2026; mỗi look được render bằng chính engine của Fotollection, không chỉnh thêm ở đâu khác."
 fn_downloads: "Do GitHub đếm."
@@ -695,3 +695,24 @@ sense_stats:
     l: "mỗi tấm khi đọc lại từ cache"
 chart_ecg: "RollSense khi chạy nặng, từng giây: bộ xử lý, xung nhịp, bộ nhớ, nhiệt độ và card đồ hoạ"
 chart_sense: "Thời gian mỗi ảnh của RollSense theo số luồng, và phần của mô hình trong đó"
+wiki_measures_title: "Số đo qua từng thời điểm"
+wiki_measures_lead: "Mọi con số từng xuất hiện trên website và README, kèm ngày đo, phiên bản và máy, để số đo mới không bao giờ xóa số đo cũ."
+wiki_measures_cols: ["Ngày", "Phiên bản", "Máy", "Số ảnh", "Phép đo", "Kết quả"]
+wiki_m_open: "Mở thư mục, tính trên 1.000 ảnh"
+wiki_m_open_all: "Mở cả thư mục, gồm EXIF"
+wiki_m_preview: "Xem trước sau khi đổi cài đặt, p95"
+wiki_m_export: "Xuất ảnh"
+wiki_m_export_jpeg: "Xuất ảnh, chỉ JPEG"
+wiki_m_develop: "Dựng một ảnh RAW 20 MP"
+wiki_m_postcards: "Vẽ lại mười bưu thiếp"
+wiki_m_bestshot: "Phân tích ảnh đẹp nhất, mỗi ảnh"
+wiki_m_memory: "RAM dùng nhiều nhất"
+wiki_m_sort: "Lượt đọc đầu của RollSense"
+wiki_b_rss: "RAM thường trú"
+wiki_b_fp: "footprint, Fotollection cùng tiến trình phụ RAW"
+wiki_b_fp_before: "footprint, trước khi có tiến trình phụ RAW"
+wiki_u_s: "s"
+wiki_u_ms: "ms"
+wiki_u_gb: "GB"
+wiki_u_ps: "ảnh/s"
+wiki_u_min: "phút"

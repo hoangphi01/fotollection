@@ -182,7 +182,7 @@ sudo apt install ./Fotollection_*_amd64.deb
 |---|---|---|---|
 | **Hệ điều hành** | macOS 11 Big Sur, Windows 10 64-bit, hoặc Linux 64-bit có glibc 2.35 ([những distro nào](#linux)) | macOS 13 trở lên, Windows 11, hoặc Ubuntu 24.04 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10. Linux dùng WebKitGTK 4.1, có sẵn trong AppImage và được cài kèm bản `.deb` |
 | **Bộ xử lý** | CPU 64-bit bất kỳ trong khoảng 8 năm gần đây | Apple Silicon, hoặc x64 đời mới từ 4 nhân | Công việc được chia cho mọi nhân. Mọi số liệu trong [Hiệu năng](#hiệu-năng) đo trên Apple M3 |
-| **RAM** | 4 GB | Từ 8 GB | Khi xuất ảnh, Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Từ v0.11.0, bản xem trước giữ tối đa một phần tư bộ nhớ để ảnh mở ngay ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
+| **RAM** | 4 GB | Từ 8 GB | Khi xuất ảnh, Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 0,92 GB với 5.088 ảnh, ngày 20/11/2026; ảnh RAW do macOS dựng có ngân sách 3,5 GB tính cả tiến trình phụ, [ADR-0060](docs/adr/0060-imageio-raw-develop-in-a-child-process.md), [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Từ v0.11.0, bản xem trước giữ tối đa một phần tư bộ nhớ để ảnh mở ngay ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
 | **Ổ đĩa** | Trống 100 MB, cộng phần cache | Trống 1 GB | Bộ cài nặng 33–118 MB, trong ngân sách 300 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). Cache tốn khoảng 25 MB cho 1.000 ảnh (thumbnail khoảng 22 KB, phân tích ảnh đẹp nhất khoảng 4 KB mỗi ảnh) và xoá lúc nào cũng được. File export cần chỗ cho ảnh độ phân giải đầy đủ |
 | **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
 | **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |
@@ -207,17 +207,17 @@ So với cách xuất thường thấy của web editor (mô phỏng với thi�
 
 ### So với ngân sách
 
-![Mở thư mục: 0,12 giây cho 1.000 ảnh, ngân sách dưới 1 giây. Preview: 18 ms, ngân sách dưới 50 ms. Export: 18,0 ảnh/s, ngân sách tối thiểu 8. RAM đỉnh: 1,45 GB, ngân sách tối đa 2 GB.](docs/images/bench-budgets-vi.svg)
+![Mở thư mục: 0,13 giây cho 1.000 ảnh, ngân sách dưới 1 giây. Preview: 18 ms, ngân sách dưới 50 ms. Export: 18,0 ảnh/s, ngân sách tối thiểu 8. RAM đỉnh: 0,92 GB, ngân sách tối đa 2 GB.](docs/images/bench-budgets-vi.svg)
 
 | Việc | Ngân sách | Đo được | |
 |------|--------|----------|---|
-| Mở thư mục (import + EXIF + thumbnail đầu tiên) | < 1 giây cho 1.000 ảnh | **0,12 giây** cho 1.000 ảnh (5.035 ảnh trong 0,62 giây) | ✓ |
+| Mở thư mục (import + EXIF + thumbnail đầu tiên) | < 1 giây cho 1.000 ảnh | **0,13 giây** cho 1.000 ảnh (5.088 ảnh, ngày 20/11/2026) | ✓ |
 | Cập nhật preview khi đổi thiết lập | < 50 ms (p95) | **18 ms** p95, 17 ms p50 | ✓ |
 | Tốc độ export | ≥ 8 ảnh/s với ảnh 24 MP | **18,0 ảnh/s** với ảnh 16 MP | ✓ |
-| RAM đỉnh | ≤ 2 GB với batch bất kỳ | **1,45 GB** với 5.035 ảnh | ✓ |
+| RAM đỉnh | ≤ 2 GB với batch bất kỳ | **0,92 GB** với 5.088 ảnh (20/11/2026) | ✓ |
 | Phân tích ảnh đẹp nhất, mỗi ảnh (24/10/2026) | ≤ 20 ms, ≤ 40 ms khi có mặt người | **17 ms**, 28 ms khi có mặt người | ✓ |
 
-Với một chuyến đi thật (một thư mục ảnh 20 MP từ Lumix GX9, 422 tệp), ngày 03/11/2026 export chỉ đạt 7,6 ảnh/s với RAM đỉnh 2,14 GB. Bản sửa trong v0.9.7 export phần JPEG ở 10,1 ảnh/s, và cả lượt chạy dùng RAM tối đa 1,31 GB, nằm trong cả hai ngân sách ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
+Với một chuyến đi thật (một thư mục ảnh 20 MP từ Lumix GX9, 422 tệp), ngày 03/11/2026 export chỉ đạt 7,6 ảnh/s với RAM đỉnh 2,14 GB. Bản sửa trong v0.9.7 export phần JPEG ở 10,1 ảnh/s, và cả lượt chạy dùng RAM tối đa 1,31 GB, nằm trong cả hai ngân sách ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)). Đo lại ngày 21/11/2026, khi macOS dựng ảnh RAW trong một tiến trình phụ, Fotollection cùng tiến trình phụ dùng tối đa 3,46 GB footprint, trong ngân sách 3,5 GB dành cho RAW ([ADR-0060](docs/adr/0060-imageio-raw-develop-in-a-child-process.md)). Mọi số đo trước đó vẫn được giữ trên [Wiki](https://fotollection.org/wiki/#measures).
 
 ### Mở một tấm ảnh
 
@@ -229,12 +229,13 @@ Từ v0.11.0, bản xem trước của mọi ảnh được chuẩn bị sẵn �
 
 RAM không được tăng theo số ảnh. Batch lớn gấp 53 lần chỉ tốn thêm 0,1 GB ở mức đỉnh:
 
-![RAM đỉnh: 1,35 GB với 95 ảnh và 1,45 GB với 5.035 ảnh, so với trần 2 GB.](docs/images/bench-memory-vi.svg)
+![RAM đỉnh: 0,67 GB với 96 ảnh và 1,45 GB với 5.035 ảnh (23/10/2026), 0,92 GB với 5.088 ảnh (20/11/2026), so với trần 2 GB.](docs/images/bench-memory-vi.svg)
 
 | Số ảnh | RAM đỉnh | Export | Thư viện trong RAM |
 |-------:|------------:|-------:|------------------:|
 | 95 | 1,35 GB | 18,0 ảnh/s | — |
 | 5.035 | 1,45 GB | 15,4 ảnh/s | 13 MB |
+| 5.088 (20/11/2026) | 0,92 GB | 19,9 ảnh/s | — |
 
 Lần export 5.035 ảnh chạy hơn 5 phút, và M3 tự giảm xung khi tải nặng kéo dài, nên tốc độ thấp hơn.
 

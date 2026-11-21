@@ -404,14 +404,14 @@ nav_changelog: "Nowości"
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Prawdziwa podróż: 422 pliki z Pragi"
-perf_trip_text: "Zestawy testowe potrafią schlebiać, więc oto jeden folder dokładnie taki, jaki zszedł z aparatu Lumix GX9 po weekendzie w Pradze: 396 JPEG-ów 20 MP, każdy około 11 MB, i 26 plików RAW obok nich, łącznie 4,7 GB. Otwarcie go odczytuje EXIF każdego pliku w 0,23 sekundy. Podgląd renderuje się ponownie w 19 ms, RAW wywołuje się w 0,35 sekundy, a dziesięć pocztówek odświeża się w 21 ms. 2026-11-03 dwie liczby przekroczyły budżet na tych dużych plikach: eksport szedł w tempie 7,6 zdjęcia na sekundę, a szczytowe zużycie pamięci sięgnęło 2,14 GB. Przyczynę znaleziono i usunięto w v0.9.7: JPEG-i eksportują się teraz w tempie 10,1 na sekundę, a cały przebieg mieści się poniżej 1,31 GB."
+perf_trip_text: "Zestawy testowe potrafią schlebiać, więc oto jeden folder dokładnie taki, jaki zszedł z aparatu Lumix GX9 po weekendzie w Pradze: 396 JPEG-ów 20 MP, każdy około 11 MB, i 26 plików RAW obok nich, łącznie 4,7 GB. Otwarcie go odczytuje EXIF każdego pliku w 0,23 sekundy. Podgląd renderuje się ponownie w 19 ms, RAW wywołuje się w 0,35 sekundy, a dziesięć pocztówek odświeża się w 21 ms. 2026-11-03 dwie liczby przekroczyły budżet na tych dużych plikach: eksport szedł w tempie 7,6 zdjęcia na sekundę, a szczytowe zużycie pamięci sięgnęło 2,14 GB. Przyczynę znaleziono i usunięto w v0.9.7: JPEG-i eksportują się teraz w tempie 10,1 na sekundę, a cały przebieg mieści się poniżej 1,31 GB. W ponownym pomiarze 21.11.2026, gdy macOS wywołuje pliki RAW w procesie pomocniczym, Fotollection i pomocnik razem zajmują najwyżej 3,46 GB footprintu, w budżecie 3,5 GB dla RAW; wcześniejsze liczby są na Wiki."
 trip_stats:
   - { v: "0,23 s", l: "na otwarcie wszystkich 422 plików, razem z EXIF" }
   - { v: "19 ms", l: "ponowny render podglądu, p95 (budżet 50 ms)" }
   - { v: "0,35 s", l: "na wywołanie RAW-a 20 MP (mediana)" }
   - { v: "21 ms", l: "na odświeżenie dziesięciu pocztówek (budżet 100 ms)" }
   - { v: "10,1 / s", l: "eksportowanych JPEG-ów (budżet 8 / s)" }
-  - { v: "1,31 GB", l: "szczytowe zużycie pamięci, JPEG i RAW (pułap 2 GB)" }
+  - { v: "3,46 GB", l: "szczytowy footprint pamięci, Fotollection i pomocnik RAW (budżet 3,5 GB)" }
 fn_trip: "Praski folder należy do autora i nie jest publikowany (© @hoangphi01, wszelkie prawa zastrzeżone). Mediany z 3 przebiegów bench/trip.sh oraz measure_folder na jego JPEG-ach, na Apple M3 z 16 GB, przy otwartych innych aplikacjach, 2026-11-04, z eksportem z v0.9.7; uruchom je na własnym folderze, by porównać."
 fn_simd: "SIMD (single instruction, multiple data – jedna instrukcja, wiele danych) pozwala procesorowi pracować na wielu wartościach naraz: jedna instrukcja działa na kilku liczbach ułożonych obok siebie w szerokim rejestrze wektorowym, na przykład na czerwieni, zieleni i błękicie wielu pikseli. Procesory Intel i AMD zapewniają je jako SSE i AVX, a Apple silicon i inne procesory Arm jako NEON. Intel, AMD i Arm są znakami towarowymi ich właścicieli."
 fn_pct: "p50 i p95 to percentyle: p50, czyli mediana, to czas, w którym zmieściła się połowa przebiegów; p95 to czas, w którym zmieściło się 95 przebiegów na 100, więc pokazuje wolne przypadki, które ukrywa średnia."
@@ -684,3 +684,24 @@ sense_stats:
     l: "na zdjęcie przy ponownym odczycie z pamięci podręcznej"
 chart_ecg: "RollSense pod obciążeniem, sekunda po sekundzie: procesor, taktowanie, pamięć, temperatura i karta graficzna"
 chart_sense: "Czas RollSense na zdjęcie według liczby wątków i udział modelu w nim"
+wiki_measures_title: "Pomiary w czasie"
+wiki_measures_lead: "Każda liczba, którą pokazywały strona i README, z datą, wersją i komputerem, aby nowszy pomiar nigdy nie wymazywał starszego."
+wiki_measures_cols: ["Data", "Wersja", "Komputer", "Zdjęcia", "Pomiar", "Wynik"]
+wiki_m_open: "Otwarcie folderu, na 1000 zdjęć"
+wiki_m_open_all: "Otwarcie całego folderu z EXIF"
+wiki_m_preview: "Podgląd po zmianie, p95"
+wiki_m_export: "Eksport"
+wiki_m_export_jpeg: "Eksport, tylko JPEG"
+wiki_m_develop: "Wywołanie jednego RAW 20 MP"
+wiki_m_postcards: "Przerysowanie dziesięciu pocztówek"
+wiki_m_bestshot: "Analiza najlepszego ujęcia, na zdjęcie"
+wiki_m_memory: "Szczytowe zużycie pamięci"
+wiki_m_sort: "Pierwszy przebieg RollSense"
+wiki_b_rss: "pamięć rezydentna"
+wiki_b_fp: "footprint, Fotollection i jego pomocnik RAW razem"
+wiki_b_fp_before: "footprint, przed pomocnikiem RAW"
+wiki_u_s: "s"
+wiki_u_ms: "ms"
+wiki_u_gb: "GB"
+wiki_u_ps: "zdj./s"
+wiki_u_min: "min"

@@ -277,6 +277,19 @@ if not ok:
 sys.exit(0 if ok else 1)
 PY
 
+echo "• Every chart bench/chart.mjs draws matches bench/results (issue #4: results committed without their charts)"
+# chart.mjs writes in place, so its files are copied aside, drawn again, compared and put back.
+snap=$(mktemp -d)
+drawn="docs/images site/assets/img/charts site/_data/charts.json bench/results/summary.json"
+for p in $drawn; do mkdir -p "$snap/$(dirname "$p")"; cp -R "$p" "$snap/$p"; done
+node bench/chart.mjs >/dev/null
+stale=$(for p in $drawn; do diff -rq "$snap/$p" "$p" || true; done 2>&1 | sed -E 's/^Files .* and (.*) differ$/\1/' | tr '\n' ' ')
+for p in docs/images site/assets/img/charts; do cp -R "$snap/$p/." "$p/"; done
+cp "$snap/site/_data/charts.json" site/_data/charts.json
+cp "$snap/bench/results/summary.json" bench/results/summary.json
+rm -rf "$snap"
+[ -n "$stale" ] && fail "charts are stale, run node bench/chart.mjs: $stale"
+
 echo "• Code health: files and functions within their thresholds or on the watch list (docs/CODE_HEALTH.md)"
 node scripts/code-health.mjs || fail "code health: see the lines above (docs/CODE_HEALTH.md, scripts/code-health.json)"
 

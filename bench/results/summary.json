@@ -3,11 +3,11 @@
   "megapixels": 16,
   "date": "2026-11-20",
   "measured": {
-    "openPer1000S": 0.12287795431976166,
-    "openPhotos": 5035,
+    "openPer1000S": 0.13343062932389937,
+    "openPhotos": 5088,
     "previewP95Ms": 7.615583,
     "exportPerSecond": 23.986910396966923,
-    "peakGb": 1.452883968
+    "peakGb": 0.919732224
   },
   "rust": {
     "engine": "Fotollection core (Rust, release)",
@@ -74,23 +74,26 @@
   },
   "batch": {
     "engine": "Fotollection core (Rust, release)",
-    "exportPerSecond": 15.408207923508487,
-    "exportSeconds": 326.773887333,
-    "importMs": 382.5995,
-    "inputBytes": 15183285611,
-    "photos": 5035,
-    "previewColdMs": 132.11320800000001,
-    "previewDrawMs": 9.742667,
-    "previewEncodeMs": 16.967042000000003,
-    "previewStampMs": 0.5053329999999985,
-    "previewWarmP50Ms": 27.960333000000002,
-    "previewWarmP95Ms": 50.673500000000004,
-    "rssAfterExportMb": 1330.0625,
-    "rssAfterImportMb": 12.5625,
-    "rssAfterT1Mb": 803.453125,
-    "t0Ms": 236.091,
-    "t1PerSecond": 46.443950569054984,
+    "exportPerSecond": 19.89195814685482,
+    "exportSeconds": 255.78175675,
+    "importMs": 494.360125,
+    "inputBytes": 15852242283,
+    "peakExportRssMb": 877.109375,
+    "photos": 5088,
+    "previewColdMs": 105.814458,
+    "previewDrawMs": 9.706417,
+    "previewEncodeMs": 6.965041,
+    "previewEncodePrintMs": 11.659125,
+    "previewStampMs": 0.28237500000000004,
+    "previewWarmP50Ms": 7.302166,
+    "previewWarmP95Ms": 7.55175,
+    "rssAfterExportMb": 876.546875,
+    "rssAfterImportMb": 21.84375,
+    "rssAfterT1Mb": 203.296875,
+    "rssBeforeExportMb": 250.421875,
+    "t0Ms": 184.53491699999998,
+    "t1PerSecond": 20.86652685037637,
     "threads": 6,
-    "peakRssBytes": 1452883968
+    "peakRssBytes": 919732224
   }
 }

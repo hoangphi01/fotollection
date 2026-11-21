@@ -404,14 +404,14 @@ nav_changelog: "Was ist neu"
 perf_speed_fn: ["fn_webview"]
 perf_trip_fn: ["fn_trip", "fn_pct"]
 perf_trip_title: "Eine echte Reise: 422 Dateien aus Prag"
-perf_trip_text: "Testsätze können schmeicheln, darum hier ein Ordner genau so, wie er nach einem Wochenende in Prag von einer Lumix GX9 kam: 396 JPEGs mit 20 MP, je etwa 11 MB, und 26 RAW-Dateien daneben, insgesamt 4,7 GB. Beim Öffnen werden die EXIF-Daten jeder Datei in 0,23 Sekunden gelesen. Die Vorschau wird in 19 ms neu berechnet, ein RAW in 0,35 Sekunden entwickelt, und zehn Postkarten werden in 21 ms neu gezeichnet. Am 2026-11-03 verfehlten zwei Werte bei diesen großen Dateien ihr Budget: Der Export schaffte 7,6 Fotos pro Sekunde, und der Speicher lag in der Spitze bei 2,14 GB. Die Ursache wurde gefunden und in v0.9.7 behoben: Die JPEGs werden jetzt mit 10,1 pro Sekunde exportiert, und der ganze Lauf bleibt unter 1,31 GB."
+perf_trip_text: "Testsätze können schmeicheln, darum hier ein Ordner genau so, wie er nach einem Wochenende in Prag von einer Lumix GX9 kam: 396 JPEGs mit 20 MP, je etwa 11 MB, und 26 RAW-Dateien daneben, insgesamt 4,7 GB. Beim Öffnen werden die EXIF-Daten jeder Datei in 0,23 Sekunden gelesen. Die Vorschau wird in 19 ms neu berechnet, ein RAW in 0,35 Sekunden entwickelt, und zehn Postkarten werden in 21 ms neu gezeichnet. Am 2026-11-03 verfehlten zwei Werte bei diesen großen Dateien ihr Budget: Der Export schaffte 7,6 Fotos pro Sekunde, und der Speicher lag in der Spitze bei 2,14 GB. Die Ursache wurde gefunden und in v0.9.7 behoben: Die JPEGs werden jetzt mit 10,1 pro Sekunde exportiert, und der ganze Lauf bleibt unter 1,31 GB. Am 21.11.2026 erneut gemessen, während macOS die RAW-Dateien in einem Hilfsprozess entwickelt, kommen Fotollection und der Helfer zusammen auf höchstens 3,46 GB Footprint, im Budget von 3,5 GB für RAW; frühere Zahlen stehen im Wiki."
 trip_stats:
   - { v: "0,23 s", l: "um alle 422 Dateien zu öffnen, samt EXIF" }
   - { v: "19 ms", l: "Neuberechnung der Vorschau, p95 (Budget 50 ms)" }
   - { v: "0,35 s", l: "um ein 20-MP-RAW zu entwickeln (Median)" }
   - { v: "21 ms", l: "um zehn Postkarten neu zu zeichnen (Budget 100 ms)" }
   - { v: "10,1 / s", l: "exportierte JPEGs (Budget 8 / s)" }
-  - { v: "1,31 GB", l: "Spitzenspeicher, JPEG und RAW (Obergrenze 2 GB)" }
+  - { v: "3,46 GB", l: "Spitzen-Footprint, Fotollection und RAW-Helfer (Budget 3,5 GB)" }
 fn_trip: "Der Prager Ordner gehört dem Autor und ist nicht veröffentlicht (© @hoangphi01, alle Rechte vorbehalten). Mediane aus 3 Läufen von bench/trip.sh und von measure_folder auf seinen JPEGs, auf einem Apple M3 mit 16 GB, mit anderen geöffneten Apps, am 2026-11-04, mit dem Export von v0.9.7; führ sie zum Vergleich auf einem eigenen Ordner aus."
 fn_simd: "SIMD (single instruction, multiple data) lässt einen Prozessor an vielen Werten zugleich arbeiten: Ein Befehl wirkt auf mehrere Zahlen, die nebeneinander in einem breiten Vektorregister liegen, etwa das Rot, Grün und Blau vieler Pixel. Prozessoren von Intel und AMD bieten es als SSE und AVX; Apple Silicon und andere Arm-Prozessoren als NEON. Intel, AMD und Arm sind Marken ihrer Inhaber."
 fn_pct: "p50 und p95 sind Perzentile: p50, der Median, ist die Zeit, unter der die Hälfte der Läufe blieb; p95 ist die Zeit, unter der 95 von 100 Läufen blieben, so zeigt sie die langsamen Fälle, die ein Durchschnitt verdeckt."
@@ -684,3 +684,24 @@ sense_stats:
     l: "pro Foto, erneut aus dem Cache gelesen"
 chart_ecg: "RollSense unter Last, Sekunde für Sekunde: Prozessor, Takt, Speicher, Temperatur und Grafikkarte"
 chart_sense: "Die Zeit pro Foto von RollSense nach Threads und der Anteil des Modells daran"
+wiki_measures_title: "Messungen im Lauf der Zeit"
+wiki_measures_lead: "Jede Zahl, die die Website und das README gezeigt haben, mit Datum, Version und Rechner, damit eine neuere Messung keine ältere löscht."
+wiki_measures_cols: ["Datum", "Version", "Rechner", "Fotos", "Messung", "Ergebnis"]
+wiki_m_open: "Ordner öffnen, je 1.000 Fotos"
+wiki_m_open_all: "Ganzen Ordner öffnen, mit EXIF"
+wiki_m_preview: "Vorschau nach einer Änderung, p95"
+wiki_m_export: "Export"
+wiki_m_export_jpeg: "Export, nur JPEGs"
+wiki_m_develop: "Ein 20-MP-RAW entwickeln"
+wiki_m_postcards: "Zehn Postkarten neu zeichnen"
+wiki_m_bestshot: "Analyse der besten Aufnahme, je Foto"
+wiki_m_memory: "Spitzenspeicher"
+wiki_m_sort: "Erster Durchlauf von RollSense"
+wiki_b_rss: "residenter Speicher"
+wiki_b_fp: "Footprint, Fotollection und sein RAW-Helfer zusammen"
+wiki_b_fp_before: "Footprint, vor dem RAW-Helfer"
+wiki_u_s: "s"
+wiki_u_ms: "ms"
+wiki_u_gb: "GB"
+wiki_u_ps: "Fotos/s"
+wiki_u_min: "min"

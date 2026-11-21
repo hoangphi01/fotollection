@@ -261,14 +261,14 @@ fn_open: Free means no price, no ads and no in-app purchases; buying the author 
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "A real trip: 422 files from Prague"
-perf_trip_text: "Test sets can flatter, so here is one folder exactly as it came off a Lumix GX9 after a weekend in Prague: 396 JPEGs at 20 MP, about 11 MB each, and 26 RAW files beside them, 4.7 GB in all. Opening it reads every file's EXIF in 0.23 seconds. The preview re-renders in 19 ms, a RAW develops in 0.35 seconds and ten postcards redraw in 21 ms. On 2026-11-03 two numbers missed their budget on these large files: export ran at 7.6 photos a second and memory peaked at 2.14 GB. The cause was found and fixed in v0.9.7: the JPEGs now export at 10.1 a second, and the whole run stays under 1.31 GB."
+perf_trip_text: "Test sets can flatter, so here is one folder exactly as it came off a Lumix GX9 after a weekend in Prague: 396 JPEGs at 20 MP, about 11 MB each, and 26 RAW files beside them, 4.7 GB in all. Opening it reads every file's EXIF in 0.23 seconds. The preview re-renders in 19 ms, a RAW develops in 0.35 seconds and ten postcards redraw in 21 ms. On 2026-11-03 two numbers missed their budget on these large files: export ran at 7.6 photos a second and memory peaked at 2.14 GB. The cause was found and fixed in v0.9.7: the JPEGs now export at 10.1 a second, and the whole run stays under 1.31 GB. Measured again on 2026-11-21, with macOS developing the RAW files in a helper process, Fotollection and the helper peak at 3.46 GB of footprint together, within the 3.5 GB budget for RAW; earlier numbers are on the Wiki."
 trip_stats:
   - { v: "0.23 s", l: "to open all 422 files, EXIF included" }
   - { v: "19 ms", l: "preview re-render, p95 (budget 50 ms)" }
   - { v: "0.35 s", l: "to develop a 20 MP RAW (median)" }
   - { v: "21 ms", l: "to redraw ten postcards (budget 100 ms)" }
   - { v: "10.1 / s", l: "JPEGs exported (budget 8 / s)" }
-  - { v: "1.31 GB", l: "peak memory, JPEG and RAW (ceiling 2 GB)" }
+  - { v: "3.46 GB", l: "peak memory footprint, Fotollection and its RAW helper (budget 3.5 GB)" }
 fn_trip: "The Prague folder is the author's own and is not published (© @hoangphi01, all rights reserved). Medians of 3 runs of bench/trip.sh and of measure_folder on its JPEGs, on an Apple M3 with 16 GB, with other apps open, on 2026-11-04, with the export of v0.9.7; run them on a folder of your own to compare."
 fn_photo: "The tram photo is the author's own (© @hoangphi01, all rights reserved), taken with a Lumix GX9 in Prague in November 2026; each look is rendered by Fotollection's own engine and retouched nowhere else."
 fn_downloads: "Counted by GitHub."
@@ -717,3 +717,25 @@ sense_stats:
     l: "a photo read again from the cache"
 chart_ecg: "RollSense under load, second by second: processor, clock, memory, temperature and graphics card"
 chart_sense: "RollSense's time per photo by threads, and the model's share of it"
+# The Wiki's table of every number measured (site/_data/measures.yml).
+wiki_measures_title: "Measured over time"
+wiki_measures_lead: "Every number the website and the README have shown, with its date, the version and the machine, so a newer measurement never erases an older one."
+wiki_measures_cols: ["Date", "Version", "Machine", "Photos", "Measurement", "Result"]
+wiki_m_open: "Open a folder, per 1,000 photos"
+wiki_m_open_all: "Open the whole folder, EXIF included"
+wiki_m_preview: "Preview after a change, p95"
+wiki_m_export: "Export"
+wiki_m_export_jpeg: "Export, JPEGs only"
+wiki_m_develop: "Develop one 20 MP RAW"
+wiki_m_postcards: "Redraw ten postcards"
+wiki_m_bestshot: "Best-shot analysis, per photo"
+wiki_m_memory: "Peak memory"
+wiki_m_sort: "RollSense's first pass"
+wiki_b_rss: "resident memory"
+wiki_b_fp: "footprint, Fotollection and its RAW helper together"
+wiki_b_fp_before: "footprint, before the RAW helper"
+wiki_u_s: "s"
+wiki_u_ms: "ms"
+wiki_u_gb: "GB"
+wiki_u_ps: "photos/s"
+wiki_u_min: "min"

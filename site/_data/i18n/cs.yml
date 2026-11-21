@@ -404,14 +404,14 @@ nav_changelog: "Novinky"
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Skutečná cesta: 422 souborů z Prahy"
-perf_trip_text: "Testovací sady mohou výsledky přikrášlit, proto tady je jedna složka přesně tak, jak vyšla z fotoaparátu Lumix GX9 po víkendu v Praze: 396 JPEGů s 20 MP, každý asi 11 MB, a vedle nich 26 souborů RAW, celkem 4,7 GB. Při otevření se EXIF všech souborů přečte za 0,23 sekundy. Náhled se překreslí za 19 ms, RAW se vyvolá za 0,35 sekundy a deset pohlednic se překreslí za 21 ms. Dne 3. 11. 2026 dvě čísla na těchto velkých souborech překročila svůj limit: export běžel rychlostí 7,6 fotky za sekundu a špička paměti dosáhla 2,14 GB. Příčina byla nalezena a opravena ve verzi 0.9.7: JPEGy se teď exportují rychlostí 10,1 za sekundu a celý běh zůstane pod 1,31 GB."
+perf_trip_text: "Testovací sady mohou výsledky přikrášlit, proto tady je jedna složka přesně tak, jak vyšla z fotoaparátu Lumix GX9 po víkendu v Praze: 396 JPEGů s 20 MP, každý asi 11 MB, a vedle nich 26 souborů RAW, celkem 4,7 GB. Při otevření se EXIF všech souborů přečte za 0,23 sekundy. Náhled se překreslí za 19 ms, RAW se vyvolá za 0,35 sekundy a deset pohlednic se překreslí za 21 ms. Dne 3. 11. 2026 dvě čísla na těchto velkých souborech překročila svůj limit: export běžel rychlostí 7,6 fotky za sekundu a špička paměti dosáhla 2,14 GB. Příčina byla nalezena a opravena ve verzi 0.9.7: JPEGy se teď exportují rychlostí 10,1 za sekundu a celý běh zůstane pod 1,31 GB. Při novém měření 21. 11. 2026, kdy macOS vyvolává soubory RAW v pomocném procesu, mají Fotollection a pomocník dohromady nejvýše 3,46 GB paměťové stopy, v rámci limitu 3,5 GB pro RAW; starší čísla jsou na Wiki."
 trip_stats:
   - { v: "0,23 s", l: "na otevření všech 422 souborů včetně EXIF" }
   - { v: "19 ms", l: "překreslení náhledu, p95 (limit 50 ms)" }
   - { v: "0,35 s", l: "na vyvolání RAW s 20 MP (medián)" }
   - { v: "21 ms", l: "na překreslení deseti pohlednic (limit 100 ms)" }
   - { v: "10,1 / s", l: "exportovaných JPEGů (limit 8 / s)" }
-  - { v: "1,31 GB", l: "špička paměti, JPEG i RAW (strop 2 GB)" }
+  - { v: "3,46 GB", l: "nejvyšší paměťová stopa, Fotollection a pomocník pro RAW (limit 3,5 GB)" }
 fn_trip: "Pražská složka je autorova vlastní a není zveřejněná (© @hoangphi01, všechna práva vyhrazena). Mediány ze 3 běhů bench/trip.sh a measure_folder na jejích JPEGech, na Apple M3 s 16 GB, s otevřenými dalšími aplikacemi, dne 4. 11. 2026, s exportem z verze 0.9.7; pro srovnání je spusťte na vlastní složce."
 fn_simd: "SIMD (single instruction, multiple data) umožňuje procesoru pracovat s mnoha hodnotami najednou: jedna instrukce působí na několik čísel uložených vedle sebe v širokém vektorovém registru, třeba na červenou, zelenou a modrou mnoha pixelů. Procesory Intel a AMD to nabízejí jako SSE a AVX; Apple silicon a další procesory Arm jako NEON. Intel, AMD a Arm jsou ochranné známky svých vlastníků."
 fn_pct: "p50 a p95 jsou percentily: p50, medián, je čas, pod kterým zůstala polovina běhů; p95 je čas, pod kterým zůstalo 95 běhů ze 100, takže ukazuje pomalé případy, které průměr skryje."
@@ -686,3 +686,24 @@ sense_stats:
     l: "na fotku při opětovném čtení z mezipaměti"
 chart_ecg: "RollSense pod zátěží, sekundu po sekundě: procesor, takt, paměť, teplota a grafická karta"
 chart_sense: "Čas RollSense na fotku podle počtu vláken a podíl modelu na něm"
+wiki_measures_title: "Měření v čase"
+wiki_measures_lead: "Každé číslo, které web a README kdy uváděly, s datem, verzí a strojem, aby novější měření nikdy nesmazalo starší."
+wiki_measures_cols: ["Datum", "Verze", "Stroj", "Fotky", "Měření", "Výsledek"]
+wiki_m_open: "Otevření složky, na 1 000 fotek"
+wiki_m_open_all: "Otevření celé složky včetně EXIF"
+wiki_m_preview: "Náhled po změně, p95"
+wiki_m_export: "Export"
+wiki_m_export_jpeg: "Export, jen JPEG"
+wiki_m_develop: "Vyvolání jednoho 20MP RAW"
+wiki_m_postcards: "Překreslení deseti pohlednic"
+wiki_m_bestshot: "Analýza nejlepšího snímku, na fotku"
+wiki_m_memory: "Špička paměti"
+wiki_m_sort: "První průchod RollSense"
+wiki_b_rss: "rezidentní paměť"
+wiki_b_fp: "paměťová stopa, Fotollection a jeho pomocník pro RAW dohromady"
+wiki_b_fp_before: "paměťová stopa, před pomocníkem pro RAW"
+wiki_u_s: "s"
+wiki_u_ms: "ms"
+wiki_u_gb: "GB"
+wiki_u_ps: "fotek/s"
+wiki_u_min: "min"

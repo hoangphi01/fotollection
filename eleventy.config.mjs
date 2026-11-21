@@ -85,6 +85,12 @@ export default function (eleventyConfig) {
     return /^https?:/.test(v) ? v : `https://fotollection.org${v.startsWith('/') ? '' : '/'}${v}`
   })
   eleventyConfig.addFilter('jsonify', (value) => JSON.stringify(value))
+  // `{{ 1.45 | num: lang }}`: a measured number in the language's own notation (1.45, 1,45, 5 035),
+  // with the decimals it was written with ("10.0" keeps its zero).
+  eleventyConfig.addFilter('num', (value, code) => {
+    const decimals = `${value}`.split('.')[1]?.length ?? 0
+    return new Intl.NumberFormat(code, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(Number(value))
+  })
   // `{{ l.name | tr: lang }}`: a text kept per language in a data file (looks.yml, timeline.yml),
   // English when that language lacks it; marked as borrowed in the check build (see siteData).
   eleventyConfig.addFilter('tr', (value, code) => {

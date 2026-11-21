@@ -1,7 +1,8 @@
-{%- comment %} The Wiki (site/README.md): Fotollection's timeline, one milestone per MINOR version, newest first down to its first screen (owner, 2026-11-09, as Apple lists its releases), each with what changed and the app as it shipped (site/_data/timeline.yml, pictures from the git history by scripts/timeline-shot.sh). Laid out like the Performance page, left-aligned (only the story is centred, owner 2026-11-10): its header, then the timeline; the round button opens the list of versions. {% endcomment -%}
+{%- comment %} The Wiki (site/README.md): Fotollection's timeline, one milestone per MINOR version, newest first down to its first screen (owner, 2026-11-09, as Apple lists its releases), each with what changed and the app as it shipped (site/_data/timeline.yml, pictures from the git history by scripts/timeline-shot.sh). Laid out like the Performance page, left-aligned (only the story is centred, owner 2026-11-10): its header, the before and after, the table of every number measured (site/_data/measures.yml), then the timeline; the round button opens the list of versions. {% endcomment -%}
 {%- assign t = site.data.i18n[pg.lang] -%}
 {%- assign lang = pg.lang -%}
 {%- capture toc -%}
+- [{{ t.wiki_measures_title }}](#measures)
 {%- for m in site.data.timeline reversed %}
 - [v{{ m.version }} · {{ m.title | tr: lang }}](#v{{ m.version | replace: '.', '-' }})
 {%- endfor %}
@@ -17,6 +18,33 @@
 </section>
 
 {% include makeover.html %}
+
+{%- comment %} Every number the site or the README has shown, newest first (site/_data/measures.yml). {% endcomment %}
+<section class="section" id="measures">
+  <div class="wrap">
+    <h2>{{ t.wiki_measures_title }}</h2>
+    <p class="lead narrow">{{ t.wiki_measures_lead }}</p>
+    <div class="table-scroll card">
+      <table class="table measures-table">
+        <thead><tr>{% for c in t.wiki_measures_cols %}<th scope="col">{{ c }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          {%- for r in site.data.measures reversed %}
+          {%- assign kind = 'wiki_m_' | append: r.kind %}
+          {%- assign unit = 'wiki_u_' | append: r.unit %}
+          <tr>
+            <td><time datetime="{{ r.date | date: "%Y-%m-%d" }}">{{ r.date | date: pg.date_format }}</time></td>
+            <td>v{{ r.version }}</td>
+            <td>{{ site.data.machines[r.machine] }}</td>
+            <td class="num">{{ r.photos | num: lang }}</td>
+            <td>{{ t[kind] }}</td>
+            <td class="num">{{ r.value | num: lang }}&nbsp;{{ t[unit] }}{% if r.basis %}{% assign basis = 'wiki_b_' | append: r.basis %}<span class="small muted basis">{{ t[basis] }}</span>{% endif %}</td>
+          </tr>
+          {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
 <section class="section tint">
   <div class="wrap">
@@ -55,4 +83,4 @@
   </div>
 </section>
 
-{% include chapter-list.html toc=toc label=t.wiki_toc selector=".timeline-item[id]" %}
+{% include chapter-list.html toc=toc label=t.wiki_toc selector="#measures, .timeline-item[id]" %}

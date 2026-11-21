@@ -260,14 +260,14 @@ fn_open: "Gratuit veut dire sans prix, sans publicité et sans achat intégré�
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Un vrai voyage : 422 fichiers de Prague"
-perf_trip_text: "Les jeux de test peuvent flatter, alors voici un dossier tel qu’il est sorti d’un Lumix GX9 après un week-end à Prague : 396 JPEG de 20 MP, environ 11 Mo chacun, et 26 fichiers RAW à côté, 4,7 Go en tout. L’ouvrir lit l’EXIF de chaque fichier en 0,23 seconde. L’aperçu se redessine en 19 ms, un RAW se développe en 0,35 seconde et dix cartes postales se redessinent en 21 ms. Le 2026-11-03, deux chiffres ont manqué leur budget sur ces gros fichiers : l’export tournait à 7,6 photos par seconde et la mémoire culminait à 2,14 Go. La cause a été trouvée et corrigée dans la v0.9.7 : les JPEG s’exportent désormais à 10,1 par seconde, et tout le passage reste sous 1,31 Go."
+perf_trip_text: "Les jeux de test peuvent flatter, alors voici un dossier tel qu’il est sorti d’un Lumix GX9 après un week-end à Prague : 396 JPEG de 20 MP, environ 11 Mo chacun, et 26 fichiers RAW à côté, 4,7 Go en tout. L’ouvrir lit l’EXIF de chaque fichier en 0,23 seconde. L’aperçu se redessine en 19 ms, un RAW se développe en 0,35 seconde et dix cartes postales se redessinent en 21 ms. Le 2026-11-03, deux chiffres ont manqué leur budget sur ces gros fichiers : l’export tournait à 7,6 photos par seconde et la mémoire culminait à 2,14 Go. La cause a été trouvée et corrigée dans la v0.9.7 : les JPEG s’exportent désormais à 10,1 par seconde, et tout le passage reste sous 1,31 Go. Mesuré à nouveau le 21/11/2026, macOS développant les RAW dans un processus d’assistance, Fotollection et l’assistant atteignent au plus 3,46 Go d’empreinte ensemble, dans le budget de 3,5 Go pour les RAW ; les chiffres antérieurs sont sur le Wiki."
 trip_stats:
   - { v: "0,23 s", l: "pour ouvrir les 422 fichiers, EXIF compris" }
   - { v: "19 ms", l: "pour redessiner l’aperçu, p95 (budget 50 ms)" }
   - { v: "0,35 s", l: "pour développer un RAW de 20 MP (médiane)" }
   - { v: "21 ms", l: "pour redessiner dix cartes postales (budget 100 ms)" }
   - { v: "10,1 / s", l: "JPEG exportés (budget 8 / s)" }
-  - { v: "1,31 Go", l: "pic de mémoire, JPEG et RAW (plafond 2 Go)" }
+  - { v: "3,46 Go", l: "empreinte mémoire maximale, Fotollection et son assistant RAW (budget 3,5 Go)" }
 fn_trip: "Le dossier de Prague appartient à l’auteur et n’est pas publié (© @hoangphi01, tous droits réservés). Médianes de 3 passages de bench/trip.sh et de measure_folder sur ses JPEG, sur un Apple M3 avec 16 Go, avec d’autres applications ouvertes, le 2026-11-04, avec l’export de la v0.9.7 ; lancez-les sur un dossier à vous pour comparer."
 fn_photo: "La photo du tramway appartient à l’auteur (© @hoangphi01, tous droits réservés), prise avec un Lumix GX9 à Prague en novembre 2026 ; chaque look est rendu par le moteur de Fotollection et retouché nulle part ailleurs."
 fn_downloads: "Compté par GitHub."
@@ -715,3 +715,24 @@ sense_stats:
     l: "par photo relue depuis le cache"
 chart_ecg: "RollSense en charge, seconde par seconde : processeur, fréquence, mémoire, température et carte graphique"
 chart_sense: "Le temps par photo de RollSense selon les threads, et la part du modèle"
+wiki_measures_title: "Mesures au fil du temps"
+wiki_measures_lead: "Chaque chiffre affiché par le site et le README, avec sa date, la version et la machine, afin qu’une mesure plus récente n’efface jamais une plus ancienne."
+wiki_measures_cols: ["Date", "Version", "Machine", "Photos", "Mesure", "Résultat"]
+wiki_m_open: "Ouvrir un dossier, pour 1 000 photos"
+wiki_m_open_all: "Ouvrir tout le dossier, EXIF compris"
+wiki_m_preview: "Aperçu après un réglage, p95"
+wiki_m_export: "Export"
+wiki_m_export_jpeg: "Export, JPEG seulement"
+wiki_m_develop: "Développer un RAW de 20 Mpx"
+wiki_m_postcards: "Redessiner dix cartes postales"
+wiki_m_bestshot: "Analyse de la meilleure photo, par photo"
+wiki_m_memory: "Pic de mémoire"
+wiki_m_sort: "Premier passage de RollSense"
+wiki_b_rss: "mémoire résidente"
+wiki_b_fp: "empreinte, Fotollection et son assistant RAW ensemble"
+wiki_b_fp_before: "empreinte, avant l’assistant RAW"
+wiki_u_s: "s"
+wiki_u_ms: "ms"
+wiki_u_gb: "Go"
+wiki_u_ps: "photos/s"
+wiki_u_min: "min"

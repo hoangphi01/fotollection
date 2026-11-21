@@ -404,14 +404,14 @@ nav_changelog: "Újdonságok"
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Egy valódi út: 422 fájl Prágából"
-perf_trip_text: "A tesztkészletek szépíthetnek, ezért íme egy mappa pontosan úgy, ahogy egy prágai hétvége után lekerült egy Lumix GX9-ről: 396 darab 20 MP-es JPEG, egyenként kb. 11 MB, mellettük 26 RAW fájl, összesen 4,7 GB. Megnyitáskor 0,23 másodperc alatt beolvasódik minden fájl EXIF-je. Az előnézet 19 ms alatt rajzolódik újra, egy RAW 0,35 másodperc alatt dolgozódik ki, tíz képeslap pedig 21 ms alatt rajzolódik újra. 2026. november 3-án ezeken a nagy fájlokon két szám nem fért bele a keretébe: az exportálás másodpercenként 7,6 fotót készített, a memóriacsúcs pedig 2,14 GB volt. Az ok kiderült, és a v0.9.7 javította: a JPEG-ek exportálása most másodpercenként 10,1, és a teljes futás 1,31 GB alatt marad."
+perf_trip_text: "A tesztkészletek szépíthetnek, ezért íme egy mappa pontosan úgy, ahogy egy prágai hétvége után lekerült egy Lumix GX9-ről: 396 darab 20 MP-es JPEG, egyenként kb. 11 MB, mellettük 26 RAW fájl, összesen 4,7 GB. Megnyitáskor 0,23 másodperc alatt beolvasódik minden fájl EXIF-je. Az előnézet 19 ms alatt rajzolódik újra, egy RAW 0,35 másodperc alatt dolgozódik ki, tíz képeslap pedig 21 ms alatt rajzolódik újra. 2026. november 3-án ezeken a nagy fájlokon két szám nem fért bele a keretébe: az exportálás másodpercenként 7,6 fotót készített, a memóriacsúcs pedig 2,14 GB volt. Az ok kiderült, és a v0.9.7 javította: a JPEG-ek exportálása most másodpercenként 10,1, és a teljes futás 1,31 GB alatt marad. 2026. 11. 21-én újramérve, amikor a macOS egy segédfolyamatban hívja elő a RAW-fájlokat, a Fotollection és a segéd együtt legfeljebb 3,46 GB lábnyomot használ, a RAW-ra szabott 3,5 GB-os kereten belül; a korábbi számok a Wikin találhatók."
 trip_stats:
   - { v: "0,23 s", l: "mind a 422 fájl megnyitása, EXIF-fel együtt" }
   - { v: "19 ms", l: "az előnézet újrarajzolása, p95 (keret: 50 ms)" }
   - { v: "0,35 s", l: "egy 20 MP-es RAW kidolgozása (medián)" }
   - { v: "21 ms", l: "tíz képeslap újrarajzolása (keret: 100 ms)" }
   - { v: "10,1 / s", l: "exportált JPEG (keret: 8 / s)" }
-  - { v: "1,31 GB", l: "memóriacsúcs, JPEG és RAW (felső határ: 2 GB)" }
+  - { v: "3,46 GB", l: "legnagyobb memórialábnyom, a Fotollection és RAW-segédje (keret: 3,5 GB)" }
 fn_trip: "A prágai mappa a szerző sajátja, és nincs közzétéve (© @hoangphi01, minden jog fenntartva). A bench/trip.sh és a JPEG-jein futtatott measure_folder 3-3 futásának mediánjai, Apple M3-on 16 GB-tal, más nyitott alkalmazások mellett, 2026. november 4-én, a v0.9.7 exportálásával; az összevetéshez futtasd őket egy saját mappán."
 fn_simd: "A SIMD (single instruction, multiple data) lehetővé teszi, hogy a processzor sok értéken dolgozzon egyszerre: egyetlen utasítás több, egy széles vektorregiszterben egymás mellett tárolt számra hat, például sok pixel vörös, zöld és kék összetevőjére. Az Intel és az AMD processzoraiban SSE és AVX néven, az Apple siliconban és más Arm processzorokban NEON néven érhető el. Az Intel, az AMD és az Arm tulajdonosaik védjegyei."
 fn_pct: "A p50 és a p95 percentilisek: a p50, a medián, az az idő, amely alatt a futások fele maradt; a p95 az az idő, amely alatt 100 futásból 95 maradt, így azokat a lassú eseteket mutatja, amelyeket egy átlag elrejt."
@@ -684,3 +684,24 @@ sense_stats:
     l: "fotónként, a gyorsítótárból újraolvasva"
 chart_ecg: "A RollSense terhelés alatt, másodpercről másodpercre: processzor, órajel, memória, hőmérséklet és videokártya"
 chart_sense: "A RollSense ideje fotónként a szálak száma szerint, és ebből a modell része"
+wiki_measures_title: "Mérések az idő során"
+wiki_measures_lead: "Minden szám, amelyet a weboldal és a README valaha mutatott, dátummal, verzióval és géppel, hogy egy újabb mérés soha ne törölje a régebbit."
+wiki_measures_cols: ["Dátum", "Verzió", "Gép", "Fotók", "Mérés", "Eredmény"]
+wiki_m_open: "Mappa megnyitása, 1000 fotónként"
+wiki_m_open_all: "A teljes mappa megnyitása EXIF-fel"
+wiki_m_preview: "Előnézet módosítás után, p95"
+wiki_m_export: "Exportálás"
+wiki_m_export_jpeg: "Exportálás, csak JPEG"
+wiki_m_develop: "Egy 20 MP-es RAW előhívása"
+wiki_m_postcards: "Tíz képeslap újrarajzolása"
+wiki_m_bestshot: "A legjobb kép elemzése, fotónként"
+wiki_m_memory: "Memóriacsúcs"
+wiki_m_sort: "A RollSense első menete"
+wiki_b_rss: "rezidens memória"
+wiki_b_fp: "lábnyom, a Fotollection és RAW-segédje együtt"
+wiki_b_fp_before: "lábnyom, a RAW-segéd előtt"
+wiki_u_s: "s"
+wiki_u_ms: "ms"
+wiki_u_gb: "GB"
+wiki_u_ps: "fotó/s"
+wiki_u_min: "perc"

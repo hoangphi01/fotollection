@@ -1,0 +1,5 @@
+# The machines the site's numbers were measured on (docs/OPTIMIZATION.md, Reference machines:
+# REF-MAC is a MacBook Air M3; the Windows laptop a ThinkPad X1 Carbon Gen 8), by the short names
+# site/_data/measures.yml uses; kept short for the Wiki's table, the same in every language.
+m3: "M3, 16 GB"
+i7: "i7-10610U, Windows"

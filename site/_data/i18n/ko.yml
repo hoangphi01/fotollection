@@ -409,14 +409,14 @@ nav_changelog: "새로운 기능"
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "실제 여행: 프라하의 파일 422개"
-perf_trip_text: "테스트용 세트는 실제보다 좋게 보일 수 있습니다. 그래서 프라하에서 주말을 보낸 뒤 Lumix GX9에서 옮긴 그대로의 폴더를 썼습니다. 한 장에 약 11 MB인 20 MP JPEG 396장과 RAW 파일 26개, 모두 4.7 GB입니다. 열면 0.23초에 모든 파일의 EXIF를 읽습니다. 미리 보기는 19 ms에 다시 그리고, RAW는 0.35초에 현상하며, 엽서 10장은 21 ms에 다시 그립니다. 2026년 11월 3일, 이 큰 파일들에서 두 수치가 예산을 넘었습니다. 내보내기는 초당 7.6장, 메모리 최대치는 2.14 GB였습니다. 원인을 찾아 v0.9.7에서 고쳤고, 이제 JPEG는 초당 10.1장씩 내보내며 전체 실행이 1.31 GB 이하로 유지됩니다."
+perf_trip_text: "테스트용 세트는 실제보다 좋게 보일 수 있습니다. 그래서 프라하에서 주말을 보낸 뒤 Lumix GX9에서 옮긴 그대로의 폴더를 썼습니다. 한 장에 약 11 MB인 20 MP JPEG 396장과 RAW 파일 26개, 모두 4.7 GB입니다. 열면 0.23초에 모든 파일의 EXIF를 읽습니다. 미리 보기는 19 ms에 다시 그리고, RAW는 0.35초에 현상하며, 엽서 10장은 21 ms에 다시 그립니다. 2026년 11월 3일, 이 큰 파일들에서 두 수치가 예산을 넘었습니다. 내보내기는 초당 7.6장, 메모리 최대치는 2.14 GB였습니다. 원인을 찾아 v0.9.7에서 고쳤고, 이제 JPEG는 초당 10.1장씩 내보내며 전체 실행이 1.31 GB 이하로 유지됩니다. 2026년 11월 21일에 다시 측정했을 때, macOS가 RAW 파일을 보조 프로세스에서 현상하며 Fotollection과 보조 프로세스의 풋프린트는 합쳐서 최대 3.46 GB로 RAW 예산 3.5 GB 안이었습니다. 이전 수치는 Wiki에 있습니다."
 trip_stats:
   - { v: "0.23초", l: "파일 422개를 EXIF까지 모두 열기" }
   - { v: "19 ms", l: "미리 보기 다시 그리기, p95(예산 50 ms)" }
   - { v: "0.35초", l: "20 MP RAW 한 장 현상(중앙값)" }
   - { v: "21 ms", l: "엽서 10장 다시 그리기(예산 100 ms)" }
   - { v: "10.1 / 초", l: "JPEG 내보내기(예산 8 / 초)" }
-  - { v: "1.31 GB", l: "메모리 최대치, JPEG와 RAW(상한 2 GB)" }
+  - { v: "3.46 GB", l: "메모리 풋프린트 최대치, Fotollection과 RAW 도우미(예산 3.5 GB)" }
 fn_trip: "프라하 폴더는 만든 사람의 것으로 공개하지 않습니다(© @hoangphi01, 무단 전재 금지). bench/trip.sh와 그 JPEG에 대한 measure_folder를 각각 3회 실행한 중앙값으로, Apple M3·16 GB에서 다른 앱을 연 상태로, 2026년 11월 4일, v0.9.7의 내보내기로 측정했습니다. 비교하려면 내 폴더로 실행해 보세요."
 fn_simd: "SIMD(single instruction, multiple data)는 프로세서가 많은 값을 한 번에 처리하는 방식입니다. 명령어 하나가 넓은 벡터 레지스터에 나란히 놓인 여러 수, 예를 들어 많은 픽셀의 빨강·초록·파랑에 동시에 작용합니다. Intel과 AMD 프로세서에서는 SSE와 AVX로, Apple 실리콘 등 Arm 프로세서에서는 NEON으로 제공됩니다. Intel, AMD, Arm은 각 소유자의 상표입니다."
 fn_pct: "p50과 p95는 백분위수입니다. p50(중앙값)은 실행의 절반이 그 안에 끝난 시간이고, p95는 100번 중 95번이 그 안에 끝난 시간으로, 평균이 가리는 느린 경우를 보여 줍니다."
@@ -691,3 +691,24 @@ sense_stats:
     l: "캐시에서 다시 읽을 때 사진 한 장당"
 chart_ecg: "부하 상태의 RollSense를 1초마다: 프로세서, 클럭, 메모리, 온도, 그래픽 카드"
 chart_sense: "스레드 수별 RollSense의 사진 한 장당 시간과 그중 모델의 몫"
+wiki_measures_title: "시간에 따른 측정"
+wiki_measures_lead: "웹사이트와 README에 실렸던 모든 수치를 측정 날짜, 버전, 기기와 함께 남겨, 새 측정이 이전 측정을 지우지 않게 합니다."
+wiki_measures_cols: ["날짜", "버전", "기기", "사진", "측정", "결과"]
+wiki_m_open: "폴더 열기, 사진 1,000장당"
+wiki_m_open_all: "폴더 전체 열기, EXIF 포함"
+wiki_m_preview: "설정 변경 후 미리 보기, p95"
+wiki_m_export: "내보내기"
+wiki_m_export_jpeg: "내보내기, JPEG만"
+wiki_m_develop: "20 MP RAW 한 장 현상"
+wiki_m_postcards: "엽서 10장 다시 그리기"
+wiki_m_bestshot: "베스트 샷 분석, 사진당"
+wiki_m_memory: "메모리 최대치"
+wiki_m_sort: "RollSense 첫 분석"
+wiki_b_rss: "상주 메모리"
+wiki_b_fp: "풋프린트, Fotollection과 RAW 도우미 합계"
+wiki_b_fp_before: "풋프린트, RAW 도우미 이전"
+wiki_u_s: "초"
+wiki_u_ms: "ms"
+wiki_u_gb: "GB"
+wiki_u_ps: "장/초"
+wiki_u_min: "분"
