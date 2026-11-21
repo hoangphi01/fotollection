@@ -1493,6 +1493,15 @@ Measured first: the owner's labelling page gains *delete: soft*, *upscaled*, *me
 - **Reading a QR from a pasted screenshot** (offline, in Rust) comes after the text code, the link and the card, once the round trip has been tried on real posts' screenshots; the image is read within the import limits and never kept.
 - Done when a recipe card exported on one machine, posted, screenshot on a phone and pasted into Fotollection on another machine gives the same look, and the phone's camera opens `/look` showing the same recipe.
 
+### FR-148 — The desktop conventions a user expects
+
+**P1 (v0.14.5, the release's focus after v0.14.4; owner, 2026-11-21: "after this release we focus on UX: I cannot Cmd+A in the gallery to select everything, there is no right-click menu, etc.").** Fotollection behaves as a desktop photo app does (Finder, Lightroom, Photos), so a user's habits work without reading the manual:
+
+- **Cmd/Ctrl+A** in the gallery, RollSense's grid and the filmstrip selects every photo shown without first pressing *Select* (select mode opens with them ticked); **Esc** clears it; Shift+click and Cmd/Ctrl+click extend a selection as in Finder.
+- **A right-click menu** on photos (one or the selection) and folders, then the filmstrip, collage slots and export presets: the rest of [FR-117](#fr-117--right-click-menus-in-more-places), each list chosen with the owner, each holding only actions found elsewhere too.
+- **An audit first:** the common shortcuts and gestures of macOS and Windows (select, delete, rename, copy, drag, zoom, the arrow keys, Space to preview, the menu bar's items) checked against Fotollection, each gap a row in this FR's list, fixed by the owner's priority; the USER_GUIDE shortcut table and the website's manual follow.
+- Done when the owner's list is closed and each item has its UI case in [UI_TESTS.md](UI_TESTS.md).
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
