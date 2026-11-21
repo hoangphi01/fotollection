@@ -139,12 +139,12 @@
   :root {
     --bg: #1c1712;
     --surface: #262019;
-    --tint: #2a231b;
+    --tint: #211b15;
     --ink: #f3ead6;
     --ink-2: #d8cab0;
     --muted: #a8977c;
     --line: #3b3127;
-    --brand: #5cc0b4;
+    --brand: #c98a52; /* wood, as the app's dark theme (owner, 2026-11-21: teal dropped) */
     --brand-ink: #1c1712;
     --teal: #5cc0b4;
     --wood: #c98a52;
