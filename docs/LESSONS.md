@@ -80,6 +80,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A new crate passes `cargo deny check advisories` before its first commit; one that calls the OS is read for its Windows path, and a crate with its data bundled, the same on every system, is preferred. Kept by: the pre-push hook (advisories when a manifest changes).
 - What only CI, the bundler or a release runs is proved before the release: installers workflow, dry run, a green push. Kept by: the `installers` workflow.
 - Never write "supports" before it is tried on every system; `cfg(windows)` code is grepped, since this Mac cannot compile it. Kept by: CI's `build (windows-latest)`.
+- Code split by `cfg(target_os)` gives each system a whole statement of its own, never a placeholder value the other branch fills (`let child = None` then `child.unwrap_or_else`): clippy on the systems this Mac cannot lint reads the placeholder as dead code. Kept by: CI's clippy on Linux and Windows.
 - A page and its stylesheet and scripts ship as one: every `/assets/css` and `/assets/js` link carries its content's hash (`| bust`), so no visitor sees a new page on old CSS. Kept by: `check-docs.sh` (no such link through `relative_url`).
 
 ### resources-tooling
@@ -146,6 +147,16 @@ Read this table in full before any task; then read in full every entry whose Are
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - A layout with a chosen board copies the board's measured numbers and has a test per part against them. Kept by: `fr_130_the_upright_card_matches_board_a` and its siblings.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
+
+## 2026-11-21
+
+### CI red on Linux and Windows for a `cfg` placeholder the Mac never linted (release-ci)
+
+- **Area:** release-ci
+- **Seen:** after pushing ADR-0060, clippy failed on Linux and Windows: "used `unwrap_or_else()` on `None` value" at `raw.rs:349`; the pre-push hook passed, since it lints macOS only.
+- **Why:** `#[cfg(not(macos))] let child = None;` then a shared `child.unwrap_or_else(...)`: on the other systems the value is a constant `None`. Clippy for another target needs that target's C toolchain here (`tract-linalg`), so it cannot run on this Mac.
+- **Fix:** each system its own statement (`let image = raw_child::decode(..).unwrap_or_else(in_process)` on macOS, `let image = in_process()` elsewhere).
+- **Rule:** see the Rules table (release-ci): a whole statement per system, and `gh run list` after the push.
 
 ## 2026-11-20
 

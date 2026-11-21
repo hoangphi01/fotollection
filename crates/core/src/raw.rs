@@ -342,13 +342,12 @@ impl RawDecoder for Os {
         intact(bytes, kind)?;
         // In a child where the app set one up: ImageIO keeps memory no develop gives back
         // (ADR-0060, NFR-004).
+        let in_process =
+            || fotollection_oscodec::decode(bytes, fotollection_oscodec::Format::Raw(kind), LIMITS);
         #[cfg(target_os = "macos")]
-        let child = crate::raw_child::decode(bytes, kind);
+        let image = crate::raw_child::decode(bytes, kind).unwrap_or_else(in_process);
         #[cfg(not(target_os = "macos"))]
-        let child = None;
-        let image = child.unwrap_or_else(|| {
-            fotollection_oscodec::decode(bytes, fotollection_oscodec::Format::Raw(kind), LIMITS)
-        });
+        let image = in_process();
         let developed = decoded(image.map_err(error)?)?;
         let table: Vec<f32> = (0..=255u8)
             .map(|v| srgb_to_linear(f32::from(v) / 255.0))
