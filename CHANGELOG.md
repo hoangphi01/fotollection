@@ -55,6 +55,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Release builds compile without a warning again: a check that only the demo recording uses is left out of them ([#3](https://github.com/hoangphi01/fotollection/issues/3)).
 - On macOS, Panasonic and Olympus RAW files are developed by the system in a short-lived helper process, so memory no longer grows with each photo: the Prague trip's export peaks at 3.5 GB of memory footprint (the app and its helper together) instead of 6.1 GB, RAW files about 8 % slower, with the same pixels; a damaged file that stops the system's develop no longer risks the app.
 - The gallery's first row of photos sits as far from the toolbar as from the column's sides (16 px).
 - The search field of the place and home-time pickers sits as far from the list's bottom edge as from its top and sides.

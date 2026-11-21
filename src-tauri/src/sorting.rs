@@ -71,7 +71,8 @@ pub struct SortingState {
 }
 
 impl SortingState {
-    /// Nothing runs and nothing waits (the demo waits for this).
+    /// Nothing runs and nothing waits (the demo waits for this; the demo is debug only).
+    #[cfg(debug_assertions)]
     pub fn is_idle(&self) -> bool {
         self.queue.running().is_none() && self.queue.waiting().next().is_none() && !self.worker
     }
