@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 252" width="752" height="252" role="img" aria-labelledby="t d">
 <title id="t">Exporttempo nach Zahl der gleichzeitig bearbeiteten Fotos</title>
-<desc id="d">2: 4,9 photos/s, 485 MB. 4: 9,4 photos/s, 829 MB. 6: 11,5 photos/s, 940 MB. 8: 12,5 photos/s, 1214 MB</desc>
+<desc id="d">2: 4,9 Fotos/s, 485 MB. 4: 9,4 Fotos/s, 829 MB. 6: 11,5 Fotos/s, 940 MB. 8: 12,5 Fotos/s, 1214 MB</desc>
 <style>
   .bg{fill:#fffaee} .t1{fill:#2b2219;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
   .t2{fill:#514435;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
-  .t3{fill:#7a6a55;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t3{fill:#6e5e4a;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
   .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#e2d4b3;stroke-width:1}
   .ref{stroke:#514435;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#b5652a;stroke-width:1.5;stroke-dasharray:4 3}
-  .s1{fill:#008a74} .old{fill-opacity:.45} .s2{fill:#b5652a} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fffaee;stroke-width:2}
+  .s1{fill:#008a74} .old{fill-opacity:.45} .s2{fill:#b5652a} .s3{fill:#1baf7a} .s4{fill:#b07600} .s5{fill:#c4507e} .gap{stroke:#fffaee;stroke-width:2}
   .in{fill:#fff} .ln{fill:none;stroke:#008a74;stroke-width:2;stroke-linejoin:round} .band{fill:#e2d4b3;fill-opacity:.35}
   @media (prefers-color-scheme: dark){
     .bg{fill:#262019} .t1{fill:#f3ead6} .t2{fill:#d8cab0} .t3{fill:#a8977c} .axis{stroke:#3b3127}

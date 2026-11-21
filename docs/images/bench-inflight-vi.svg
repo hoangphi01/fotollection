@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 252" width="752" height="252" role="img" aria-labelledby="t d">
 <title id="t">Tốc độ xuất theo số ảnh xử lý cùng lúc</title>
-<desc id="d">2: 4,9 photos/s, 485 MB. 4: 9,4 photos/s, 829 MB. 6: 11,5 photos/s, 940 MB. 8: 12,5 photos/s, 1214 MB</desc>
+<desc id="d">2: 4,9 ảnh/s, 485 MB. 4: 9,4 ảnh/s, 829 MB. 6: 11,5 ảnh/s, 940 MB. 8: 12,5 ảnh/s, 1214 MB</desc>
 <style>
   .bg{fill:#fcfcfb} .t1{fill:#1f1f1e;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
   .t2{fill:#52514c;font:13px system-ui,-apple-system,Segoe UI,sans-serif}

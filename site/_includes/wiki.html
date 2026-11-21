@@ -22,9 +22,9 @@
 {%- comment %} Every number the site or the README has shown, newest first (site/_data/measures.yml). {% endcomment %}
 <section class="section" id="measures">
   <div class="wrap">
-    <h2>{{ t.wiki_measures_title }}</h2>
+    <h2 id="measures-title">{{ t.wiki_measures_title }}</h2>
     <p class="lead narrow">{{ t.wiki_measures_lead }}</p>
-    <div class="table-scroll card">
+    <div class="table-scroll card" tabindex="0" role="region" aria-labelledby="measures-title">
       <table class="table measures-table">
         <thead><tr>{% for c in t.wiki_measures_cols %}<th scope="col">{{ c }}</th>{% endfor %}</tr></thead>
         <tbody>
@@ -34,7 +34,8 @@
           <tr>
             <td><time datetime="{{ r.date | date: "%Y-%m-%d" }}">{{ r.date | date: pg.date_format }}</time></td>
             <td>v{{ r.version }}</td>
-            <td>{{ site.data.machines[r.machine] }}</td>
+            {%- assign mc = site.data.machines[r.machine] %}
+            <td>{{ mc.name }}{% if mc.gb %}, {{ mc.gb }}&nbsp;{{ t.wiki_u_gb }}{% endif %}</td>
             <td class="num">{{ r.photos | num: lang }}</td>
             <td>{{ t[kind] }}</td>
             <td class="num">{{ r.value | num: lang }}&nbsp;{{ t[unit] }}{% if r.basis %}{% assign basis = 'wiki_b_' | append: r.basis %}<span class="small muted basis">{{ t[basis] }}</span>{% endif %}</td>

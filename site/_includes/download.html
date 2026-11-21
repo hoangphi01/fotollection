@@ -18,14 +18,15 @@
     {%- assign d = site.data.downloads %}
     {%- if d %}
     {%- assign dl_n = d[pg.lang] | default: d.en %}
-    {%- comment %} Written at build time by scripts/download-stats.mjs; absent without it. {% endcomment %}
-    <p class="small muted">{{ t.dl_count | replace: "[n]", dl_n | replace: "[mac]", d.mac | replace: "[win]", d.win | replace: "[linux]", d.linux }}{% if d.latest %} {{ t.dl_count_split | replace: "[tag]", d.latest.tag | replace: "[site]", d.latest.site | replace: "[updates]", d.latest.updates }}{% endif %}{% include fn.html keys="fn_downloads" %}</p>
+    {%- comment %} Written at build time by scripts/download-stats.mjs; absent without it. The split by source shows only once the website has counted a download (the five experts' review, 2026-11-20: "0 from this website" read as a fault). {% endcomment %}
+    <p class="small muted">{{ t.dl_count | replace: "[n]", dl_n | replace: "[mac]", d.mac | replace: "[win]", d.win | replace: "[linux]", d.linux }}{% if d.latest and d.latest.site > 0 %} {{ t.dl_count_split | replace: "[tag]", d.latest.tag | replace: "[site]", d.latest.site | replace: "[updates]", d.latest.updates }}{% endif %}{% include fn.html keys="fn_downloads" %}</p>
     {%- endif %}
   </div>
 </section>
 
 <section class="section" id="install">
   <div class="wrap">
+    <h2 class="sr-only">{{ t.install_title }}</h2>
     <div class="install">
       {%- comment %} The visitor's system's card first (data-os, as the buttons). {% endcomment %}
       <div class="card" data-os="mac">

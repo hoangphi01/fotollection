@@ -102,14 +102,7 @@
   </div>
 </section>
 
-<section class="section final" id="get">
-  <div class="wrap final-wrap">
-    <h2>{{ t.final_title }}</h2>
-    <p class="lead">{{ t.final_lead }}</p>
-    {% include download-buttons.html id="get-download" listed=true %}
-    <p><a class="more" href="{{ 'manual' | url_for: pg.lang | relative_url }}">{{ t.final_manual }} {% include icons/arrow-right.svg %}</a></p>
-  </div>
-</section>
+{% include final-download.html more="manual" %}
 
 <section class="section tint" id="support">
   <div class="wrap">

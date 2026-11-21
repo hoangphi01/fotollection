@@ -85,6 +85,15 @@ export default function (eleventyConfig) {
     return /^https?:/.test(v) ? v : `https://fotollection.org${v.startsWith('/') ? '' : '/'}${v}`
   })
   eleventyConfig.addFilter('jsonify', (value) => JSON.stringify(value))
+  // `{{ 'bench-raw-en.svg' | svg_desc }}`: a chart's own description (its <desc>, written by
+  // bench/chart.mjs with every number it draws), linked to the picture by aria-describedby; empty when the file is missing.
+  eleventyConfig.addFilter('svg_desc', (file) => {
+    const where = path.join(SITE, 'assets/img/charts', file)
+    if (!existsSync(where)) return ''
+    const svg = readFileSync(where, 'utf8')
+    const desc = /<desc[^>]*>([^<]*)<\/desc>/.exec(svg)?.[1] ?? ''
+    return desc.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&')
+  })
   // `{{ 1.45 | num: lang }}`: a measured number in the language's own notation (1.45, 1,45, 5 035),
   // with the decimals it was written with ("10.0" keeps its zero).
   eleventyConfig.addFilter('num', (value, code) => {

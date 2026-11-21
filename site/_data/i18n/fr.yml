@@ -3,7 +3,7 @@
 # the pages this language has are listed in site/_data/languages.yml. Keys are the same as English's.
 # French says "vous"; a narrow no-break space (U+202F) goes before ; : ! ? % and inside « ».
 title: "Fotollection – des photos prêtes à imprimer, entièrement hors ligne"
-description: "Application de bureau gratuite et open source qui prépare vos photos pour le tirage sur votre propre ordinateur. Des looks en un clic (vos presets Lightroom et vos LUT aussi), une date incrustée rétro, un cadre d’infos de l’appareil, des suggestions de meilleure photo, des recadrages au format d’impression et un export en qualité d’origine, sans compte et sans envoi en ligne."
+description: "Logiciel gratuit et open source qui prépare vos photos pour le tirage sur votre ordinateur : looks, date incrustée, meilleures photos, sans envoi."
 nav_features: "Fonctions"
 nav_quality: "Qualité"
 nav_download: "Télécharger"
@@ -13,7 +13,7 @@ nav_manual: "Manuel"
 to_top: "Haut de page"
 copy_label: "Copier"
 dl_title: "Télécharger"
-dl_description: "Fotollection pour macOS, Windows et Linux : les installateurs, les étapes du premier lancement, les commandes et le dépôt Linux, et les nouveautés de chaque version."
+dl_description: "Fotollection pour macOS, Windows et Linux : les installateurs, le premier lancement, les commandes Linux et les nouveautés de chaque version."
 dl_kicker: "Télécharger"
 copied_label: "Copié"
 star: "Donnez-lui une étoile sur GitHub"
@@ -136,7 +136,7 @@ f_raw_title: "Le RAW de l’appareil, sans conversion"
 f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF et DNG s’ouvrent tels quels, avec leur date et leur exposition. Les vignettes viennent de l’aperçu contenu dans chaque fichier, donc le RAW se parcourt aussi vite que le JPEG."
 f_open_title: "Ouvrez des photos de n’importe où"
 f_speed_title: "Rapide sur tout ordinateur"
-f_speed_text: "Mille photos s’ouvrent en 0,12 s, un nouveau réglage redessine l’aperçu en 17 ms, et dès le deuxième lancement l’application démarre en 0,4 s environ. Une photo de 32 MP s’affiche aussi vite qu’une petite."
+f_speed_text: "Mille photos s’ouvrent en 0,12 s, un nouveau réglage redessine l’aperçu en 17 ms, et dès le deuxième lancement l’application démarre en 0,4 s environ. Une photo de 32 MP s’affiche aussi vite qu’une petite."
 f_open_text: "Faites un clic droit sur une photo dans le Finder, l’Explorateur ou votre gestionnaire de fichiers Linux, et choisissez Fotollection. Elle s’ouvre aussitôt, et son dossier devient un onglet."
 pf_title: "Selon le système"
 pf_lead: "La même application sous macOS, Windows et Linux, avec ces différences."
@@ -169,9 +169,9 @@ faq_groups:
   - label: "Vitesse et poids"
     items:
       - q: "Est-il lourd ? Fonctionnera-t-il sur mon vieux portable ?"
-        a: "Il est petit : l’installateur Windows pèse environ 18 Mo, car la fenêtre utilise la vue web que le système a déjà au lieu d’embarquer tout un navigateur. Le cœur est écrit en Rust et tourne directement sur votre ordinateur. Un aperçu ne dépasse jamais 1 600 px, donc même une photo de 32 MP s’ouvre aussi vite qu’une petite, et l’image en taille réelle n’est chargée que quand vous zoomez. Même en exportant 5 035 photos, la mémoire culmine à environ 1,45 Go."
+        a: "Il est petit : l’installateur Windows pèse environ 18 Mo, car la fenêtre utilise la vue web que le système a déjà au lieu d’embarquer tout un navigateur. Le cœur est écrit en Rust et tourne directement sur votre ordinateur. Un aperçu ne dépasse jamais 1 600 px, donc même une photo de 32 MP s’ouvre aussi vite qu’une petite, et l’image en taille réelle n’est chargée que quand vous zoomez. Même en exportant 5 035 photos, la mémoire culmine à environ 1,45 Go."
       - q: "Est-il rapide avec des milliers de photos ?"
-        a: "Ouvrir 1 000 photos prend environ 0,12 s, car Fotollection lit d’abord la petite vignette intégrée à chaque fichier. Changer un réglage redessine l’aperçu en 17 ms, l’export tourne à 18 photos en taille réelle par seconde, et après le premier lancement l’application s’ouvre en 0,4 s environ. Chaque chiffre a été mesuré sur un portable ordinaire, et la page Performances explique comment les mesurer vous-même."
+        a: "Ouvrir 1 000 photos prend environ 0,12 s, car Fotollection lit d’abord la petite vignette intégrée à chaque fichier. Changer un réglage redessine l’aperçu en 17 ms, l’export tourne à 18 photos en taille réelle par seconde, et après le premier lancement l’application s’ouvre en 0,4 s environ. Chaque chiffre a été mesuré sur un portable ordinaire, et la page Performances explique comment les mesurer vous-même."
   - label: "Plateformes et prix"
     items:
       - q: "Fonctionne-t-il sur Mac, Windows et Linux, et est-il vraiment gratuit ?"
@@ -197,11 +197,11 @@ mode_pro_s2: "Recadrage, redressement, date incrustée et cadre d’infos."
 mode_pro_s3: "Exportez pour la borne, ou plus léger pour partager en ligne."
 modes_manual: "Le manuel complet"
 postcard_title: "Une carte postale de votre propre photo"
-postcard_text: "En mode Collage, un seul interrupteur fait de chaque tirage une carte postale : votre photo sur une moitié, et sur l’autre un cadre de timbre en pointillés et des lignes pour un message ou une adresse. Tapez le texte, composé dans une police machine à écrire, ou écrivez-le à la main avec un feutre permanent fin. Un tirage 10 × 15 entre dans les formats de carte postale de La Poste (de 90 × 140 à 162 × 235 mm)."
+postcard_text: "En mode Collage, un seul interrupteur fait de chaque tirage une carte postale : votre photo sur une moitié, et sur l’autre un cadre de timbre en pointillés et des lignes pour un message ou une adresse. Tapez le texte, composé dans une police machine à écrire, ou écrivez-le à la main avec un feutre permanent fin. Un tirage 10 × 15 entre dans les formats de carte postale de La Poste (de 90 × 140 à 162 × 235 mm)."
 pc_type_title: "Tapé, ou écrit à la main"
 pc_type_text: "Le message et l’adresse ont chacun leurs lignes, avec gras, italique et souligné, dans une police machine à écrire ou une police à vous. Chaque lettre des langues européennes écrites en alphabet latin est là, donc une adresse à Praha ou à Kraków s’imprime telle que tapée. Choisissez l’encre, noire, bleue, sépia ou rouge, et ajoutez une petite ligne de crédit en pied. La moitié photo fonctionne comme en mode Collage : une bordure blanche autour, ou la photo jusqu’au bord."
 collage_title: "Deux photos sur un tirage"
-collage_text: "Inspiré des appareils argentiques demi-format : un tirage 10 × 15 contient deux photos 10 × 7,5, donc une série coûte moitié moins. Les photos vont par deux dans l’ordre, un glisser les échange, et l’application suggère une taille avec du blanc autour, 6 × 9 cm pour une photo 2:3. Une fine ligne de coupe sépare le tirage en deux, ou laissez-la de côté pour une bande demi-format."
+collage_text: "Inspiré des appareils argentiques demi-format : un tirage 10 × 15 contient deux photos 10 × 7,5, donc une série coûte moitié moins. Les photos vont par deux dans l’ordre, un glisser les échange, et l’application suggère une taille avec du blanc autour, 6 × 9 cm pour une photo 2:3. Une fine ligne de coupe sépare le tirage en deux, ou laissez-la de côté pour une bande demi-format."
 show_collage: "Le mode Collage : les feuilles telles qu’elles seront imprimées, avec le rapport de la photo, la taille suggérée et la ligne de coupe"
 collage_preview_title: "Voir le tirage avant qu’il soit imprimé"
 collage_preview_text: "Ouvrez une feuille comme vous ouvrez une photo : le tirage en grand, exactement comme la borne le fera, deux photos côte à côte avec la date incrustée et la bordure. Choisissez l’une ou l’autre photo avec 1 ou 2 pour la recadrer ou la tourner, et feuilletez les autres feuilles avec les flèches."
@@ -260,15 +260,15 @@ fn_open: "Gratuit veut dire sans prix, sans publicité et sans achat intégré�
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Un vrai voyage : 422 fichiers de Prague"
-perf_trip_text: "Les jeux de test peuvent flatter, alors voici un dossier tel qu’il est sorti d’un Lumix GX9 après un week-end à Prague : 396 JPEG de 20 MP, environ 11 Mo chacun, et 26 fichiers RAW à côté, 4,7 Go en tout. L’ouvrir lit l’EXIF de chaque fichier en 0,23 seconde. L’aperçu se redessine en 19 ms, un RAW se développe en 0,35 seconde et dix cartes postales se redessinent en 21 ms. Le 2026-11-03, deux chiffres ont manqué leur budget sur ces gros fichiers : l’export tournait à 7,6 photos par seconde et la mémoire culminait à 2,14 Go. La cause a été trouvée et corrigée dans la v0.9.7 : les JPEG s’exportent désormais à 10,1 par seconde, et tout le passage reste sous 1,31 Go. Mesuré à nouveau le 21/11/2026, macOS développant les RAW dans un processus d’assistance, Fotollection et l’assistant atteignent au plus 3,46 Go d’empreinte ensemble, dans le budget de 3,5 Go pour les RAW ; les chiffres antérieurs sont sur le Wiki."
+perf_trip_text: "Les jeux de test peuvent flatter, alors voici un dossier tel qu’il est sorti d’un Lumix GX9 après un week-end à Prague : 396 JPEG de 20 MP, environ 11 Mo chacun, et 26 fichiers RAW à côté, 4,7 Go en tout. L’ouvrir lit l’EXIF de chaque fichier en 0,23 seconde. L’aperçu se redessine en 19 ms, un RAW se développe en 0,35 seconde et dix cartes postales se redessinent en 21 ms. Le 2026-11-03, deux chiffres ont manqué leur budget sur ces gros fichiers : l’export tournait à 7,6 photos par seconde et la mémoire culminait à 2,14 Go. La cause a été trouvée et corrigée dans la v0.9.7 : les JPEG s’exportent désormais à 10,1 par seconde, et tout le passage reste sous 1,31 Go. Mesuré à nouveau le 21/11/2026, macOS développant les RAW dans un processus d’assistance, Fotollection et l’assistant atteignent au plus 3,46 Go d’empreinte ensemble, dans le budget de 3,5 Go pour les RAW ; les chiffres antérieurs sont sur le Wiki."
 trip_stats:
   - { v: "0,23 s", l: "pour ouvrir les 422 fichiers, EXIF compris" }
-  - { v: "19 ms", l: "pour redessiner l’aperçu, p95 (budget 50 ms)" }
-  - { v: "0,35 s", l: "pour développer un RAW de 20 MP (médiane)" }
-  - { v: "21 ms", l: "pour redessiner dix cartes postales (budget 100 ms)" }
-  - { v: "10,1 / s", l: "JPEG exportés (budget 8 / s)" }
-  - { v: "3,46 Go", l: "empreinte mémoire maximale, Fotollection et son assistant RAW (budget 3,5 Go)" }
-fn_trip: "Le dossier de Prague appartient à l’auteur et n’est pas publié (© @hoangphi01, tous droits réservés). Médianes de 3 passages de bench/trip.sh et de measure_folder sur ses JPEG, sur un Apple M3 avec 16 Go, avec d’autres applications ouvertes, le 2026-11-04, avec l’export de la v0.9.7 ; lancez-les sur un dossier à vous pour comparer."
+  - { v: "19 ms", l: "pour redessiner l’aperçu, p95 (budget 50 ms)" }
+  - { v: "0,35 s", l: "pour développer un RAW de 20 MP (médiane)" }
+  - { v: "21 ms", l: "pour redessiner dix cartes postales (budget 100 ms)" }
+  - { v: "10,1/s", l: "JPEG exportés (budget 8/s)" }
+  - { v: "3,46 Go", l: "empreinte mémoire maximale, Fotollection et son assistant RAW (budget 3,5 Go)" }
+fn_trip: "Le dossier de Prague appartient à l’auteur et n’est pas publié (© @hoangphi01, tous droits réservés). Médianes de 3 passages de bench/trip.sh et de measure_folder sur ses JPEG, sur un Apple M3 avec 16 Go, avec d’autres applications ouvertes, le 2026-11-04, avec l’export de la v0.9.7 ; lancez-les sur un dossier à vous pour comparer."
 fn_photo: "La photo du tramway appartient à l’auteur (© @hoangphi01, tous droits réservés), prise avec un Lumix GX9 à Prague en novembre 2026 ; chaque look est rendu par le moteur de Fotollection et retouché nulle part ailleurs."
 fn_downloads: "Compté par GitHub."
 fn_payment: "VietQR et NAPAS 247 et leurs logos sont des marques de la National Payment Corporation of Vietnam (NAPAS) ; Techcombank de la Vietnam Technological and Commercial Joint Stock Bank. Montrés comme les marques du paiement qu’utilise le code ; Fotollection n’a aucun lien avec eux."
@@ -285,7 +285,7 @@ fn_addassist: "AddAssist fonctionne dans les pays dont Fotollection embarque les
 fn_privacy_site: "Ceci concerne l’application. Le site compte les visites de façon anonyme avec Google Analytics, par pays et par page, sans jamais les lier à une personne."
 fn_simd: "Le SIMD (single instruction, multiple data) permet à un processeur de traiter plusieurs valeurs à la fois : une instruction agit sur plusieurs nombres placés côte à côte dans un large registre vectoriel, comme le rouge, le vert et le bleu de nombreux pixels. Les processeurs Intel et AMD le proposent sous le nom de SSE et AVX ; Apple silicon et les autres processeurs Arm sous celui de NEON. Intel, AMD et Arm sont des marques de leurs propriétaires."
 fn_exif: "L’EXIF (Exchangeable Image File Format) est la norme, tenue par la JEITA et la CIPA japonaises, des informations qu’un appareil écrit dans chaque photo : l’appareil et l’objectif, la date et l’heure, l’exposition, souvent la position GPS, et une petite vignette intégrée."
-fn_units: "Unités : px est un pixel, un point d’une image ; MP (mégapixel) est un million de pixels, donc une photo de 20 MP fait environ 5 472 × 3 648 px ; ms est une milliseconde, un millième de seconde ; Mo et Go sont des mégaoctets et des gigaoctets ; la RAM (mémoire vive) est la mémoire de travail de l’ordinateur."
+fn_units: "Unités : px est un pixel, un point d’une image ; MP (mégapixel) est un million de pixels, donc une photo de 20 MP fait environ 5 472 × 3 648 px ; ms est une milliseconde, un millième de seconde ; Mo et Go sont des mégaoctets et des gigaoctets ; la RAM (mémoire vive) est la mémoire de travail de l’ordinateur."
 fn_raw: "Un fichier RAW contient ce que le capteur de l’appareil a enregistré avant que l’appareil n’en fasse une image, donc la couleur, la luminosité et le détail peuvent encore être décidés plus tard, un peu comme on développe un négatif. Chaque fabricant a son format (CR3 pour Canon, NEF pour Nikon, ARW pour Sony, RW2 pour Panasonic et d’autres) ; le DNG (Digital Negative) est le format RAW ouvert publié par Adobe."
 fn_heic: "Le HEIF (High Efficiency Image File Format) est le format d’image de la norme ISO/IEC 23008-12 ; le HEIC en est la variante compressée en HEVC (H.265), dans laquelle les iPhone enregistrent leurs photos par défaut. Une photo HEIC fait environ la moitié d’un JPEG de qualité semblable."
 fn_png: "Le PNG (Portable Network Graphics) est un format d’image sans perte, publié comme ISO/IEC 15948 : chaque pixel est conservé exactement, ce qui convient aux graphiques et aux captures d’écran, alors qu’une photo y est plusieurs fois plus lourde qu’en JPEG."
@@ -306,7 +306,7 @@ fn_jpeg: "Le JPEG est le format d’image du Joint Photographic Experts Group, n
 fn_srgb: "Le sRGB a été créé par HP et Microsoft en 1996 et normalisé comme CEI 61966-2-1."
 fn_p3: "Display P3 est un espace colorimétrique défini par Apple Inc., fondé sur l’espace DCI-P3 de l’industrie du cinéma (SMPTE)."
 fn_adobe: "Adobe RGB (1998) est un espace colorimétrique spécifié par Adobe Inc. ; Adobe est une marque déposée d’Adobe Inc."
-fn_charts: "Pour chaque graphique : les chiffres sont donnés à titre indicatif, mesurés sur un portable ordinaire (Apple M3, 16 Go) ; les vôtres dépendent de l’ordinateur que vous utilisez."
+fn_charts: "Pour chaque graphique : les chiffres sont donnés à titre indicatif, mesurés sur un portable ordinaire (Apple M3, 16 Go) ; les vôtres dépendent de l’ordinateur que vous utilisez."
 fn_dng: "Adobe DNG Converter n’a pas été lancé pour cette page. Le chiffre est une estimation d’un tiers (1 000 fichiers CR3 en 20 à 30 minutes sur du matériel récent, machine non précisée), tirée de l’article de blog de convertintomp4.com sur la conversion RAW vers DNG par lots. Adobe est une marque déposée d’Adobe Inc."
 fn_pf_raw: "Sous macOS, les formats RAW autres que le DNG sont développés par le système, avec ses corrections d’objectif. Linux et Windows utilisent le lecteur intégré à Fotollection, sans elles ; sous Windows, la Raw Image Extension de Microsoft, si elle est installée, n’est qu’un dernier recours."
 fn_pf_heic_win: "Avec les extensions gratuites HEIF Image Extensions et HEVC Video Extensions de Microsoft, depuis le Microsoft Store."
@@ -322,10 +322,10 @@ fn_cewe: "Les services photo de dm et Rossmann sont assurés par CEWE, une marqu
 fn_seven: "7-Eleven et le logo 7-Eleven sont des marques de 7-Eleven, Inc."
 fn_lawson: "LAWSON et le logo LAWSON sont des marques de Lawson, Inc."
 fn_familymart: "FamilyMart et le logo FamilyMart sont des marques de FamilyMart Co., Ltd."
-fn_konbini: "Les tirages photo des supérettes japonaises sont en L (89 × 127 mm), 2L (127 × 178 mm) et carré (89 × 89 mm), d’après les pages des enseignes en novembre 2026 ; les 9 × 13, 13 × 18 et 10 × 10 de Fotollection gardent leur forme dans la marge que rogne la borne. Les enseignes peuvent changer leurs formats."
+fn_konbini: "Les tirages photo des supérettes japonaises sont en L (89 × 127 mm), 2L (127 × 178 mm) et carré (89 × 89 mm), d’après les pages des enseignes en novembre 2026 ; les 9 × 13, 13 × 18 et 10 × 10 de Fotollection gardent leur forme dans la marge que rogne la borne. Les enseignes peuvent changer leurs formats."
 fn_cu: "CU et le logo CU sont des marques de BGF Retail Co., Ltd."
 fn_gs25: "GS25 et le logo GS25 sont des marques de GS Retail Co., Ltd."
-fn_printingbox: "Dans les supérettes coréennes, les photos se tirent aux bornes Printing Box (printingbox.kr, environ 1 300, chez CU, GS25 et emart24), en 4 × 6 pouces, soit 10 × 15 cm, un format intégré à Fotollection ; vérifié en novembre 2026, les bornes peuvent le changer."
+fn_printingbox: "Dans les supérettes coréennes, les photos se tirent aux bornes Printing Box (printingbox.kr, environ 1 300, chez CU, GS25 et emart24), en 4 × 6 pouces, soit 10 × 15 cm, un format intégré à Fotollection ; vérifié en novembre 2026, les bornes peuvent le changer."
 fn_leclerc: "E.Leclerc et le logo E.Leclerc sont des marques de l’Association des Centres Distributeurs E.Leclerc."
 fn_intermarche: "Intermarché et le logo Intermarché sont des marques d’ITM Entreprises (Groupement Les Mousquetaires)."
 fn_fnac: "Fnac et le logo Fnac sont des marques de Fnac Darty SA."
@@ -364,13 +364,13 @@ chart_memory: "Pic de mémoire à mesure que le lot grandit jusqu’à 5 035 p
 chart_browser: "La même tâche dans Fotollection et dans un navigateur web"
 story_title: "L’histoire"
 story_kicker: "Un journal"
-story_description: "L’histoire derrière Fotollection : vingt ans de photos jamais revues, un hiver à regarder en arrière, et les premiers kilomètres d’un marathon pour refaire des souvenirs des tirages."
+story_description: "L’histoire derrière Fotollection : vingt ans de photos jamais revues, et un hiver passé à transformer des souvenirs en tirages."
 story_lead: "Pourquoi Fotollection existe, et comment il a trouvé sa propre voie : un journal des premiers kilomètres, raconté à partir des notes du projet et de l’historique de son code."
 story_wiki: "Voir l’application à chaque version, dans le Wiki"
 footer_story: "L’histoire"
 wiki_title: "Wiki"
 wiki_kicker: "Depuis le premier écran"
-wiki_description: "Comment Fotollection a grandi depuis son premier écran, version après version : ce que chacune a apporté, avec Fotollection tel qu’il a été publié."
+wiki_description: "Comment Fotollection a grandi depuis son premier écran, version après version : ce que chacune a apporté, avec son interface à chaque sortie."
 wiki_lead: "Chaque version, d’aujourd’hui jusqu’à la première fenêtre vide : ce qu’elle a apporté, et Fotollection tel qu’il a été publié, tiré de l’historique du projet."
 wiki_first: "Aller au premier écran"
 wiki_toc: "Versions"
@@ -380,7 +380,7 @@ man_short_note: "Ceci est le guide abrégé. Le manuel complet, avec chaque dét
 man_short_link: "Lire le manuel complet"
 man_title: "Manuel"
 man_kicker: "Aide"
-man_description: "Comment utiliser Fotollection, étape par étape, avec une capture d’écran de chaque étape : choisir les photos à imprimer, looks et couleur, zoom, RAW, horloges des appareils, dates et lieux, prise de vue avec un appareil branché, et chaque raccourci."
+man_description: "Utiliser Fotollection pas à pas, avec une capture par étape : choisir les photos, looks et couleur, RAW, dates et lieux, et chaque raccourci."
 man_lead: "Chaque étape, telle que l’application la montre. Le manuel suit l’application : quand une version change quelque chose de visible, cette page change avec elle."
 man_toc: "Chapitres"
 man_source: "Ce manuel sur GitHub"
@@ -423,26 +423,26 @@ cs_parts:
         text: "Supprimez-le depuis les Paramètres de Windows, ou supprimez l’application sous macOS. Le programme de désinstallation Windows retire aussi les entrées Ouvrir avec. Sous Linux, lancez sudo apt remove fotollection, ou supprimez l’AppImage, ou lancez le script d’installation avec --uninstall, qui retire aussi le dépôt APT et sa clé. Les réglages et les projets restent dans votre dossier personnel."
 footer_signing: "Politique de signature du code"
 perf_title: "Performances"
-perf_description: "Chaque mesure derrière Fotollection, expliquée en mots simples : vitesse, mémoire, qualité de tirage, photos pour les réseaux sociaux et suggestions de meilleure photo, avec ce que veulent dire ΔE, SSIM, JPEG et profils de couleur."
+perf_description: "Chaque mesure derrière Fotollection, en mots simples : vitesse, mémoire, qualité de tirage, meilleures photos, et le sens de ΔE, SSIM et profils."
 perf_kicker: "Mesuré, pas promis"
-perf_lead: "Chaque chiffre de cette page vient de vraies photos sur un portable ordinaire (Apple M3, 16 Go), et les scripts qui les ont produits sont dans le dépôt, donc chacun peut les relancer. Sous chaque graphique, ce que cela veut dire pour vos tirages, et à la fin, les mots derrière les chiffres."
+perf_lead: "Chaque chiffre de cette page vient de vraies photos sur un portable ordinaire (Apple M3, 16 Go), et les scripts qui les ont produits sont dans le dépôt, donc chacun peut les relancer. Sous chaque graphique, ce que cela veut dire pour vos tirages, et à la fin, les mots derrière les chiffres."
 perf_how_title: "Pourquoi Fotollection est rapide"
 perf_how_lead: "Pas de magie. Quelques décisions prises avant la première ligne de code, chacune mesurée."
 perf_how_items:
-  - { t: "Du code natif sur chaque cœur", d: "Le travail de Fotollection tourne en Rust, compilé pour votre processeur et réparti sur tous ses cœurs, avec les instructions vectorielles (SIMD) que les processeurs offrent pour les pixels.", v: "23,5 / s", l: "photos de 16 MP exportées", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Du code natif sur chaque cœur", d: "Le travail de Fotollection tourne en Rust, compilé pour votre processeur et réparti sur tous ses cœurs, avec les instructions vectorielles (SIMD) que les processeurs offrent pour les pixels.", v: "23,5/s", l: "photos de 16 MP exportées", fn: [fn_simd, fn_units, fn_rust] }
   - { t: "Seulement le nécessaire", d: "Ouvrir un dossier lit l’EXIF de chaque fichier et sa petite vignette intégrée, jamais la photo entière. Les vignettes sont gardées dans un cache sur disque.", v: "0,12 s", l: "pour ouvrir 1 000 photos", fn: [fn_exif] }
-  - { t: "Jamais plus de pixels que l’écran", d: "Un aperçu fait au plus 1 600 px, tiré d’une copie de 2 048 px gardée en mémoire. La photo entière n’est lue que quand vous zoomez, une partie à la fois.", v: "17 ms", l: "pour redessiner un aperçu" }
-  - { t: "Prêt avant que vous cliquiez", d: "Une fois les vignettes faites, un aperçu de chaque photo est préparé en arrière-plan et gardé sur disque, pendant qu’un quart de la mémoire garde les photos autour de celle à l’écran.", v: "27 ms", l: "pour ouvrir n’importe quelle photo" }
-  - { t: "Rien de fait deux fois", d: "Un curseur de couleur ne change que la couleur, jamais la taille. Tous les curseurs de couleur sont réunis dans une seule table de 33 × 33 × 33 couleurs, donc dix curseurs coûtent autant qu’un seul.", v: "2 ms", l: "pour dix curseurs de couleur sur un aperçu" }
-  - { t: "La mémoire dans le budget", d: "Fotollection ne travaille que sur autant de photos en taille réelle à la fois que son budget mémoire le permet, fixé par la plus grande photo de l’export.", v: "1,45 Go", l: "pic de mémoire avec 5 035 photos" }
+  - { t: "Jamais plus de pixels que l’écran", d: "Un aperçu fait au plus 1 600 px, tiré d’une copie de 2 048 px gardée en mémoire. La photo entière n’est lue que quand vous zoomez, une partie à la fois.", v: "17 ms", l: "pour redessiner un aperçu" }
+  - { t: "Prêt avant que vous cliquiez", d: "Une fois les vignettes faites, un aperçu de chaque photo est préparé en arrière-plan et gardé sur disque, pendant qu’un quart de la mémoire garde les photos autour de celle à l’écran.", v: "27 ms", l: "pour ouvrir n’importe quelle photo" }
+  - { t: "Rien de fait deux fois", d: "Un curseur de couleur ne change que la couleur, jamais la taille. Tous les curseurs de couleur sont réunis dans une seule table de 33 × 33 × 33 couleurs, donc dix curseurs coûtent autant qu’un seul.", v: "2 ms", l: "pour dix curseurs de couleur sur un aperçu" }
+  - { t: "La mémoire dans le budget", d: "Fotollection ne travaille que sur autant de photos en taille réelle à la fois que son budget mémoire le permet, fixé par la plus grande photo de l’export.", v: "1,45 Go", l: "pic de mémoire avec 5 035 photos" }
   - { t: "Des encodeurs réglés par la mesure", d: "Les fichiers pour le tirage sautent une optimisation de table qui les rendait moins de 1 % plus petits et coûtait un tiers du temps d’encodage.", v: "−33 %", l: "de temps d’encodage pour les fichiers de tirage" }
-  - { t: "La carte graphique pendant la retouche", d: "Pendant qu’un curseur de couleur bouge, la carte graphique dessine à partir de la table que construit le cœur. Les exports restent sur le processeur, donc un tirage est identique sur chaque ordinateur.", v: "1–2 ms", l: "par pas de curseur, contre 26 ms avant" }
+  - { t: "La carte graphique pendant la retouche", d: "Pendant qu’un curseur de couleur bouge, la carte graphique dessine à partir de la table que construit le cœur. Les exports restent sur le processeur, donc un tirage est identique sur chaque ordinateur.", v: "1–2 ms", l: "par pas de curseur, contre 26 ms avant" }
 perf_gpu_title: "La carte graphique pendant la retouche, chaque cœur pour les exports"
 perf_gpu_text: "Pendant que vous faites glisser un curseur de couleur, la carte graphique dessine le look à partir de la même table que construit le cœur de Fotollection, et le rendu exact prend le relais quand vous relâchez. Les exports restent sur le processeur, donc un tirage sort identique sur chaque ordinateur."
 gpu_stats:
-  - { v: "1–2 ms", l: "un pas de curseur sur la carte graphique, contre environ 26 ms" }
+  - { v: "1–2 ms", l: "un pas de curseur sur la carte graphique, contre environ 26 ms" }
   - { v: "0,13", l: "ΔE2000 entre le look de la carte et le rendu exact" }
-  - { v: "10,8", l: "photos de 26 MP exportées par seconde, six à la fois" }
+  - { v: "10,8", l: "photos de 26 MP exportées par seconde, six à la fois" }
 chart_gpu: "Un pas d’un curseur de couleur : le processeur face à la carte graphique"
 chart_inflight: "Vitesse d’export selon le nombre de photos traitées à la fois"
 dl_warn_title: "Passez à la v0.14.0 ou plus récente."
@@ -452,38 +452,38 @@ perf_open_title: "Jusqu’à 20× plus rapide. Une nouvelle façon d’utiliser 
 perf_open_text: "La v0.11.0 repense la façon dont Fotollection garde vos photos. L’aperçu de chaque photo est préparé en arrière-plan dès que sa vignette est faite et gardé sur disque, un quart de la mémoire de votre ordinateur garde les photos autour de celle que vous voyez, et la photo à l’écran passe toujours en premier. Résultat : n’importe quelle photo, proche ou lointaine, JPEG ou RAW, s’ouvre en 27 millisecondes. Ouvrir un RAW est jusqu’à 20 fois plus rapide qu’avec la v0.9.0, un JPEG 10 fois plus, mesuré sur les mêmes 422 photos d’un voyage."
 perf_open_fn: [fn_raw, fn_jpeg]
 open_stats:
-  - { v: "20×", l: "plus rapide pour ouvrir une photo RAW qu’avec la v0.9.0 (531 → 27 ms)" }
-  - { v: "10×", l: "plus rapide pour ouvrir un JPEG qu’avec la v0.9.0 (274 → 27 ms)" }
-  - { v: "27 ms", l: "pour ouvrir n’importe quelle photo, proche ou lointaine (budget 100 ms)" }
+  - { v: "20×", l: "plus rapide pour ouvrir une photo RAW qu’avec la v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "plus rapide pour ouvrir un JPEG qu’avec la v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "pour ouvrir n’importe quelle photo, proche ou lointaine (budget 100 ms)" }
 perf_speed_title: "Vitesse : mille photos en un clin d’œil"
 perf_speed_text: "Ouvrir un dossier lit l’EXIF de chaque photo et sa petite vignette intégrée, pas l’image entière, et un réglage modifié ne redessine que l’aperçu. Le Rust natif bat aussi un navigateur web qui fait la même tâche : la même vitesse d’export, un aperçu plus rapide et un quart de mémoire en moins."
 speed_stats:
   - { v: "0,12 s", l: "pour lire un dossier de 1 000 photos, huit fois sous le budget" }
-  - { v: "17 ms", l: "pour redessiner l’aperçu après un changement" }
-  - { v: "23,5", l: "photos de 16 MP exportées par seconde" }
+  - { v: "17 ms", l: "pour redessiner l’aperçu après un changement" }
+  - { v: "23,5", l: "photos de 16 MP exportées par seconde" }
 perf_memory_title: "Mémoire : 5 035 photos, et elle reste stable"
 perf_memory_text: "Fotollection ne garde que quelques octets par photo en mémoire, écrit les vignettes dans un cache sur disque et ne travaille que sur autant d’images en taille réelle à la fois que son budget mémoire le permet. La mémoire reste donc stable quand un voyage grandit jusqu’à des milliers de photos."
 memory_stats:
-  - { v: "1,45 Go", l: "pic de mémoire pour 5 035 photos" }
-  - { v: "1,35 Go", l: "pic de mémoire pour 95 photos" }
-  - { v: "53×", l: "plus de photos pour 0,1 Go de plus" }
+  - { v: "1,45 Go", l: "pic de mémoire pour 5 035 photos" }
+  - { v: "1,35 Go", l: "pic de mémoire pour 95 photos" }
+  - { v: "53×", l: "plus de photos pour 0,1 Go de plus" }
 perf_print_title: "Qualité de tirage : le tirage ressemble à la photo"
-perf_print_text: "Les tirages faits via un éditeur web semblent souvent ternes : il jette le profil de couleur, réduit la photo à 2 000 px et l’enregistre en qualité 80 avec la couleur divisée par deux. Fotollection garde le profil et exporte en pleine résolution en 4:4:4."
+perf_print_text: "Les tirages faits via un éditeur web semblent souvent ternes : il jette le profil de couleur, réduit la photo à 2 000 px et l’enregistre en qualité 80 avec la couleur divisée par deux. Fotollection garde le profil et exporte en pleine résolution en 4:4:4."
 print_stats:
   - { v: "0,19", l: "d’erreur de couleur ; un œil commence à la voir à 1" }
   - { v: "4:4:4", l: "pleine résolution des couleurs ; un éditeur web la divise par deux" }
-  - { v: "87 %", l: "du détail fin que perdent les 2 000 px d’un éditeur web" }
+  - { v: "87 %", l: "du détail fin que perdent les 2 000 px d’un éditeur web" }
 perf_share_title: "Photos pour Facebook et Instagram : légères, et toujours la photo"
-perf_share_text: "Facebook réduit chaque photo à 2 048 px, la recompresse et ignore les profils de couleur. L’export Partage fait d’abord ce travail correctement, donc après Facebook la photo reste plus fidèle à elle-même que par la méthode habituelle."
+perf_share_text: "Facebook réduit chaque photo à 2 048 px, la recompresse et ignore les profils de couleur. L’export Partage fait d’abord ce travail correctement, donc après Facebook la photo reste plus fidèle à elle-même que par la méthode habituelle."
 share_stats:
   - { v: "99,6 %", l: "de la couleur d’une photo Display P3 gardée après Facebook, contre 86 %" }
-  - { v: "2 048 px", l: "la taille que Facebook laisse telle quelle" }
+  - { v: "2 048 px", l: "la taille que Facebook laisse telle quelle" }
   - { v: "½", l: "du fichier en taille d’origine, chaque pixel gardé" }
 chart_raw: "RAW de l’appareil : du fichier à l’écran, par appareil et face à Adobe DNG Converter"
 perf_raw_title: "RAW de l’appareil : ouvrez-le tel quel"
 perf_raw_text: "Fotollection ouvre tels quels les fichiers RAW de neuf appareils courants, sans rien convertir et, sous Windows et Linux, sans rien installer. Depuis la v0.10.0, l’image complète est son propre développement pour chaque appareil à capteur Bayer, fait sur les données de l’appareil comme dans un éditeur RAW, alors qu’Adobe DNG Converter ne fait que transformer un fichier RAW en un autre."
 raw_stats:
-  - { v: "9–32 ms", l: "la vignette d’un RAW, depuis l’aperçu contenu dans le fichier" }
+  - { v: "9–32 ms", l: "la vignette d’un RAW, depuis l’aperçu contenu dans le fichier" }
   - { v: "0,3–0,7 s", l: "le développement de la photo complète par Fotollection" }
   - { v: "1,2–1,8 s", l: "Adobe DNG Converter par fichier, seulement pour le convertir" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
@@ -492,7 +492,7 @@ perf_best_text: "Nous avons trié à la main 95 vraies photos en 22 moments et c
 best_stats:
   - { v: "6 sur 6", l: "moments avec une meilleure évidente : une suggestion acceptable" }
   - { v: "15 sur 22", l: "moments trouvés, jamais deux confondus" }
-  - { v: "17 ms", l: "pour analyser une photo, 28 ms avec les visages" }
+  - { v: "17 ms", l: "pour analyser une photo, 28 ms avec les visages" }
 perf_toc: "Sur cette page"
 diagram_layers: "Où se fait le travail : Fotollection sur votre ordinateur, face à un éditeur web courant"
 diagram_gpu_cpu: "La retouche sur la carte graphique, l’export sur chaque cœur du processeur"
@@ -519,9 +519,9 @@ perf_faq:
     fn: [fn_srgb, fn_p3, fn_adobe]
     a: "Un profil de couleur dit au logiciel ce que signifient les nombres d’un fichier. Le sRGB est la gamme de couleurs classique du web. Le Display P3, utilisé par les iPhone et les appareils récents, atteint environ 25 % de couleurs en plus, surtout dans les rouges et les verts. Si une photo P3 perd son profil, ses nombres sont lus comme du sRGB et elle paraît délavée : c’est la perte de saturation de 13 % que nous avons mesurée. L’Adobe RGB, que certains appareils proposent pour le tirage, est aussi plus large que le sRGB, surtout dans les verts et les cyans. Fotollection garde le profil qu’a une photo pour les tirages et convertit correctement en sRGB pour les réseaux sociaux."
   - q: "Quel DPI faut-il pour un tirage ?"
-    a: "Le DPI, c’est le nombre de pixels qui tombent sur chaque pouce de papier. À 300 DPI, un tirage paraît net même de près ; de 150 à 200 DPI suffit à bout de bras. Un tirage 10 × 15 cm à 300 DPI demande 1 800 × 1 200 pixels, donc n’importe quelle photo de téléphone ou d’appareil suffit ; le conseil de taille dans l’application vous dit jusqu’où chaque photo peut aller."
+    a: "Le DPI, c’est le nombre de pixels qui tombent sur chaque pouce de papier. À 300 DPI, un tirage paraît net même de près ; de 150 à 200 DPI suffit à bout de bras. Un tirage 10 × 15 cm à 300 DPI demande 1 800 × 1 200 pixels, donc n’importe quelle photo de téléphone ou d’appareil suffit ; le conseil de taille dans l’application vous dit jusqu’où chaque photo peut aller."
   - q: "Pourquoi les photos paraissent-elles moins belles sur Facebook ?"
-    a: "Facebook redimensionne chaque photo à 2 048 px au plus, la recompresse en qualité inférieure avec la résolution des couleurs divisée par deux, et jette les profils de couleur. Une photo qui arrive trop grande est redimensionnée deux fois, une fois par vous et une fois par Facebook. L’envoyer déjà en 2 048 px, en sRGB et légèrement accentuée, signifie que Facebook ne la recompresse qu’une fois, et les couleurs sont déjà justes."
+    a: "Facebook redimensionne chaque photo à 2 048 px au plus, la recompresse en qualité inférieure avec la résolution des couleurs divisée par deux, et jette les profils de couleur. Une photo qui arrive trop grande est redimensionnée deux fois, une fois par vous et une fois par Facebook. L’envoyer déjà en 2 048 px, en sRGB et légèrement accentuée, signifie que Facebook ne la recompresse qu’une fois, et les couleurs sont déjà justes."
 perf_repro_title: "Lancez les mesures vous-même"
 perf_repro_text: "Tout est reproductible sur vos propres photos. Les scripts n’envoient ni ne copient jamais une photo ; seuls les chiffres sont gardés. Les tableaux complets, avec chaque passage, sont dans RESULT.md."
 perf_repro_link: "Lire RESULT.md sur GitHub"
@@ -673,7 +673,7 @@ kn_play: "Lire la vidéo"
 
 # The short landing page's results and the Features page (FR-135, 2026-11-15).
 feat_page_title: "Fonctions"
-feat_page_description: "Tout ce que fait Fotollection, de la meilleure photo au tirage fini : modes, cartes postales, formats d’impression, presets et LUT, RAW, vitesse et confidentialité."
+feat_page_description: "Tout ce que fait Fotollection, de la meilleure photo au tirage : modes, cartes postales, formats, presets et LUT, RAW, vitesse, confidentialité."
 feat_page_lead: "Cette page présente chaque outil de Fotollection, du premier regard sur le voyage au tirage en main."
 fnav_modes: "Modes"
 fnav_print: "Impression"
@@ -709,9 +709,9 @@ perf_sense_text: "RollSense lit chaque photo une fois pour la trier : ce qu'elle
 sense_stats:
   - v: "≈ 18 min"
     l: "un voyage de 2 500 photos sur un portable i7-10610U"
-  - v: "844 Mo"
+  - v: "844 Mo"
     l: "la mémoire la plus haute de la passe sur 9 639 photos, sans hausse"
-  - v: "1,3 ms"
+  - v: "1,3 ms"
     l: "par photo relue depuis le cache"
 chart_ecg: "RollSense en charge, seconde par seconde : processeur, fréquence, mémoire, température et carte graphique"
 chart_sense: "Le temps par photo de RollSense selon les threads, et la part du modèle"
@@ -723,7 +723,7 @@ wiki_m_open_all: "Ouvrir tout le dossier, EXIF compris"
 wiki_m_preview: "Aperçu après un réglage, p95"
 wiki_m_export: "Export"
 wiki_m_export_jpeg: "Export, JPEG seulement"
-wiki_m_develop: "Développer un RAW de 20 Mpx"
+wiki_m_develop: "Développer un RAW de 20 Mpx"
 wiki_m_postcards: "Redessiner dix cartes postales"
 wiki_m_bestshot: "Analyse de la meilleure photo, par photo"
 wiki_m_memory: "Pic de mémoire"
@@ -736,3 +736,6 @@ wiki_u_ms: "ms"
 wiki_u_gb: "Go"
 wiki_u_ps: "photos/s"
 wiki_u_min: "min"
+skip_to_content: "Aller au contenu"
+final_story: "Lire comment Fotollection est né"
+nav_menu: "Menu"

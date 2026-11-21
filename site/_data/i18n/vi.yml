@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # The website's words in Vietnamese (site/README.md). English (en.yml) is the source and the fallback:
 # a key missing here shows in English. Keys are the same in every language.
-title: Fotollection - ảnh sẵn sàng để in, không cần internet
-description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Look một chạm (cả preset Lightroom và LUT của bạn), dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, cắt đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
+title: Fotollection – ảnh sẵn sàng để in, không cần internet
+description: "Ứng dụng miễn phí, mã nguồn mở, giúp chuẩn bị ảnh để in ngay trên máy tính: look một chạm, dấu ngày, ảnh đẹp nhất, đúng khổ in, không tải ảnh lên."
 nav_features: Tính năng
 nav_quality: Chất lượng
 nav_download: Tải về
@@ -20,7 +20,7 @@ badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
 hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi
 hero_accent: ngồi trên máy bay
 hero_title_2: "?"
-hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection - tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và không cần internet.
+hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection – tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và không cần internet.
 vnlf_badge: "Có trên VNLF App Explorer"
 alternativeto_badge: "Fotollection trên AlternativeTo"
 unikorn_badge: "Fotollection trên Unikorn.vn"
@@ -131,7 +131,7 @@ f_raw_title: Ảnh RAW, không cần chuyển đổi
 f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG."
 f_open_title: Mở ảnh từ bất cứ đâu
 f_speed_title: Nhanh trên mọi máy
-f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
+f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
 f_open_text: Bấm chuột phải vào một ảnh trong Finder, Explorer hay trình quản lý file trên Linux và chọn Fotollection. Ảnh mở ngay, và thư mục của ảnh thành một tab.
 pf_title: "Theo hệ điều hành"
 pf_lead: "Cùng một ứng dụng trên macOS, Windows và Linux, chỉ khác nhau ở những điểm sau."
@@ -164,9 +164,9 @@ faq_groups:
   - label: "Tốc độ và độ nhẹ"
     items:
       - q: "Ứng dụng có nặng không? Máy cũ có chạy được không?"
-        a: "Rất nhẹ: bộ cài cho Windows chỉ khoảng 18 MB, vì cửa sổ dùng trình hiển thị web có sẵn của hệ điều hành thay vì mang theo cả một trình duyệt. Phần lõi viết bằng Rust và chạy trực tiếp trên máy. Ảnh xem trước không bao giờ lớn hơn 1600 px, nên ảnh 32 MP mở nhanh như ảnh nhỏ, và ảnh gốc chỉ được tải khi bạn phóng to. Ngay cả khi xuất 5.035 ảnh, RAM dùng nhiều nhất chỉ khoảng 1,45 GB."
+        a: "Rất nhẹ: bộ cài cho Windows chỉ khoảng 18 MB, vì cửa sổ dùng trình hiển thị web có sẵn của hệ điều hành thay vì mang theo cả một trình duyệt. Phần lõi viết bằng Rust và chạy trực tiếp trên máy. Ảnh xem trước không bao giờ lớn hơn 1600 px, nên ảnh 32 MP mở nhanh như ảnh nhỏ, và ảnh gốc chỉ được tải khi bạn phóng to. Ngay cả khi xuất 5.035 ảnh, RAM dùng nhiều nhất chỉ khoảng 1,45 GB."
       - q: "Với hàng nghìn ảnh thì nhanh đến đâu?"
-        a: "Mở 1.000 ảnh mất khoảng 0,12 giây, vì Fotollection đọc ảnh thu nhỏ có sẵn trong mỗi tệp trước. Đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, xuất ảnh đạt 18 ảnh cỡ đầy đủ mỗi giây, và từ lần thứ hai trở đi ứng dụng mở trong khoảng 0,4 giây. Mọi con số đều đo trên một chiếc máy tính xách tay bình thường, và trang Hiệu năng hướng dẫn bạn tự đo lại."
+        a: "Mở 1.000 ảnh mất khoảng 0,12 giây, vì Fotollection đọc ảnh thu nhỏ có sẵn trong mỗi tệp trước. Đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, xuất ảnh đạt 18 ảnh cỡ đầy đủ mỗi giây, và từ lần thứ hai trở đi ứng dụng mở trong khoảng 0,4 giây. Mọi con số đều đo trên một chiếc máy tính xách tay bình thường, và trang Hiệu năng hướng dẫn bạn tự đo lại."
   - label: "Nền tảng và chi phí"
     items:
       - q: "Có chạy trên Mac, Windows và Linux không, có thật sự miễn phí không?"
@@ -196,7 +196,7 @@ postcard_text: "Trong chế độ Ghép ảnh, một công tắc biến mỗi t�
 pc_type_title: "Gõ chữ, hoặc viết tay"
 pc_type_text: "Lời nhắn và địa chỉ có dòng riêng, chỉnh được đậm, nghiêng, gạch chân, bằng font máy đánh chữ hoặc font của bạn. Font có đủ chữ cái của các tiếng châu Âu viết bằng chữ Latin, nên một địa chỉ ở Praha hay Kraków in ra đúng như khi gõ. Chọn màu mực đen, xanh, nâu sepia hoặc đỏ, và thêm một dòng ghi công nhỏ ở chân tấm. Nửa ảnh chỉnh như trong chế độ Ghép ảnh: có viền trắng bao quanh, hoặc ảnh phủ kín tới mép."
 collage_title: "Hai ảnh trên một tấm in"
-collage_text: "Lấy cảm hứng từ máy ảnh film half-frame: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa. Ảnh được ghép theo thứ tự, kéo-thả để đổi chỗ, và app gợi ý cỡ ảnh có chừa viền trắng, 6 × 9 cm cho ảnh 2:3. Một đường cắt mảnh chia tấm làm đôi, hoặc tắt đi để giữ dải half-frame liền nhau."
+collage_text: "Lấy cảm hứng từ máy ảnh film half-frame: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa. Ảnh được ghép theo thứ tự, kéo-thả để đổi chỗ, và app gợi ý cỡ ảnh có chừa viền trắng, 6 × 9 cm cho ảnh 2:3. Một đường cắt mảnh chia tấm làm đôi, hoặc tắt đi để giữ dải half-frame liền nhau."
 show_collage: "Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt"
 collage_preview_title: "Xem tấm in trước khi in"
 collage_preview_text: "Mở một tấm như mở một ảnh: tấm in hiện lớn, đúng như máy in ở kiosk sẽ làm ra, hai ảnh cạnh nhau cùng dấu ngày và viền. Chọn ảnh nào bằng phím 1 hoặc 2 để cắt hoặc xoay, và dùng phím mũi tên để xem các tấm khác."
@@ -254,15 +254,15 @@ fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thê
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Một chuyến đi thật: 422 tệp từ Praha"
-perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa trong v0.9.7: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB. Đo lại ngày 21/11/2026, khi macOS dựng ảnh RAW trong một tiến trình phụ, Fotollection cùng tiến trình phụ dùng tối đa 3,46 GB footprint, trong ngân sách 3,5 GB dành cho RAW; các số trước đó nằm ở trang Wiki."
+perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa trong v0.9.7: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB. Đo lại ngày 21/11/2026, khi macOS dựng ảnh RAW trong một tiến trình phụ, Fotollection cùng tiến trình phụ dùng tối đa 3,46 GB bộ nhớ, trong ngân sách 3,5 GB dành cho RAW; các số trước đó nằm ở trang Wiki."
 trip_stats:
   - { v: "0,23 s", l: "để mở cả 422 tệp, gồm cả EXIF" }
-  - { v: "19 ms", l: "dựng lại xem trước, p95 (mục tiêu 50 ms)" }
-  - { v: "0,35 s", l: "để xử lý một ảnh RAW 20 MP (trung vị)" }
-  - { v: "21 ms", l: "để vẽ lại mười tấm bưu thiếp (mục tiêu 100 ms)" }
-  - { v: "10,1 / s", l: "ảnh JPEG được xuất (mục tiêu 8 / s)" }
-  - { v: "3,46 GB", l: "footprint RAM cao nhất, Fotollection cùng tiến trình phụ RAW (ngân sách 3,5 GB)" }
-fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh và measure_folder trên phần JPEG, trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 4/11/2026, với phần xuất ảnh của v0.9.7; hãy chạy trên thư mục ảnh của bạn để so sánh."
+  - { v: "19 ms", l: "dựng lại xem trước, p95 (mục tiêu 50 ms)" }
+  - { v: "0,35 s", l: "để xử lý một ảnh RAW 20 MP (trung vị)" }
+  - { v: "21 ms", l: "để vẽ lại mười tấm bưu thiếp (mục tiêu 100 ms)" }
+  - { v: "10,1/s", l: "ảnh JPEG được xuất (mục tiêu 8/s)" }
+  - { v: "3,46 GB", l: "bộ nhớ chiếm dụng cao nhất, Fotollection cùng tiến trình phụ RAW (ngân sách 3,5 GB)" }
+fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh và measure_folder trên phần JPEG, trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 4/11/2026, với phần xuất ảnh của v0.9.7; hãy chạy trên thư mục ảnh của bạn để so sánh."
 fn_photo: "Ảnh tàu điện là của tác giả (© @hoangphi01, giữ mọi quyền), chụp bằng Lumix GX9 ở Praha tháng 11 năm 2026; mỗi look được render bằng chính engine của Fotollection, không chỉnh thêm ở đâu khác."
 fn_downloads: "Do GitHub đếm."
 fn_payment: "VietQR, NAPAS 247 và logo của chúng là nhãn hiệu của Công ty Cổ phần Thanh toán Quốc gia Việt Nam (NAPAS); Techcombank là của Ngân hàng TMCP Kỹ thương Việt Nam. Hiển thị để cho biết hình thức thanh toán mà mã sử dụng; Fotollection không liên quan tới các đơn vị này."
@@ -279,7 +279,7 @@ fn_addassist: "AddAssist hoạt động ở những nước Fotollection có d�
 fn_privacy_site: "Câu này nói về ứng dụng. Website đếm lượt xem ẩn danh bằng Google Analytics, theo quốc gia và trang, không bao giờ gắn với một người."
 fn_simd: "SIMD (single instruction, multiple data, tức một lệnh, nhiều dữ liệu) cho phép bộ xử lý làm việc trên nhiều giá trị cùng lúc: một lệnh duy nhất tác động lên nhiều con số đặt cạnh nhau trong một thanh ghi vector rộng, chẳng hạn các kênh đỏ, xanh lá và xanh dương của nhiều điểm ảnh. Bộ xử lý Intel và AMD cung cấp tập lệnh này dưới tên SSE và AVX; Apple silicon và các bộ xử lý Arm khác dưới tên NEON. Intel, AMD và Arm là nhãn hiệu của các chủ sở hữu tương ứng."
 fn_exif: "EXIF (Exchangeable Image File Format) là tiêu chuẩn do JEITA và CIPA của Nhật Bản duy trì, quy định những thông tin máy ảnh ghi vào mỗi tấm ảnh: máy và ống kính, ngày giờ chụp, thông số phơi sáng, thường cả vị trí GPS, cùng một ảnh thu nhỏ đi kèm."
-fn_units: "Đơn vị: px (pixel) là một điểm ảnh; MP (megapixel) là một triệu điểm ảnh, nên ảnh 20 MP có khoảng 5.472 × 3.648 px; ms là mili giây, một phần nghìn giây; MB và GB là megabyte và gigabyte; RAM (random-access memory) là bộ nhớ làm việc của máy tính."
+fn_units: "Đơn vị: px (pixel) là một điểm ảnh; MP (megapixel) là một triệu điểm ảnh, nên ảnh 20 MP có khoảng 5.472 × 3.648 px; ms là mili giây, một phần nghìn giây; MB và GB là megabyte và gigabyte; RAM (random-access memory) là bộ nhớ làm việc của máy tính."
 fn_raw: "Tệp RAW chứa những gì cảm biến của máy ảnh ghi lại trước khi máy biến chúng thành một tấm ảnh, nên màu sắc, độ sáng và chi tiết vẫn có thể được quyết định về sau, giống như tráng một tấm phim âm bản. Mỗi hãng có định dạng riêng (CR3 của Canon, NEF của Nikon, ARW của Sony, RW2 của Panasonic và nhiều định dạng khác); DNG (Digital Negative) là định dạng RAW mở do Adobe công bố."
 fn_heic: "HEIF (High Efficiency Image File Format) là định dạng ảnh theo tiêu chuẩn ISO/IEC 23008-12; HEIC là biến thể nén bằng HEVC (H.265), định dạng iPhone dùng để lưu ảnh theo mặc định. Một ảnh HEIC chỉ nặng khoảng một nửa ảnh JPEG có chất lượng tương đương."
 fn_png: "PNG (Portable Network Graphics) là định dạng ảnh không mất dữ liệu, theo tiêu chuẩn ISO/IEC 15948: mọi điểm ảnh được giữ nguyên vẹn, phù hợp với đồ hoạ và ảnh chụp màn hình, nhưng một tấm ảnh chụp lưu dưới dạng PNG sẽ lớn hơn JPEG nhiều lần."
@@ -300,7 +300,7 @@ fn_jpeg: "JPEG là định dạng ảnh của nhóm Joint Photographic Experts G
 fn_srgb: "sRGB do HP và Microsoft tạo ra năm 1996, được chuẩn hoá thành IEC 61966-2-1."
 fn_p3: "Display P3 là không gian màu do Apple Inc. định nghĩa, dựa trên không gian màu DCI-P3 của ngành điện ảnh (SMPTE)."
 fn_adobe: "Adobe RGB (1998) là không gian màu do Adobe Inc. đặc tả; Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
-fn_charts: "Mọi biểu đồ: số liệu mang tính tham khảo, đo trên một máy tính xách tay bình thường (Apple M3, 16 GB), và phụ thuộc vào cấu hình máy tính bạn sử dụng."
+fn_charts: "Mọi biểu đồ: số liệu mang tính tham khảo, đo trên một máy tính xách tay bình thường (Apple M3, 16 GB), và phụ thuộc vào cấu hình máy tính bạn sử dụng."
 fn_dng: "Chúng tôi không chạy Adobe DNG Converter cho trang này. Con số là ước tính của bên thứ ba (1.000 tệp CR3 trong 20–30 phút trên máy hiện đại, không nói rõ máy), theo bài viết về chuyển hàng loạt RAW sang DNG trên blog của convertintomp4.com. Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
 fn_pf_raw: "Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính. Linux và Windows dùng bộ đọc RAW có sẵn trong Fotollection, không có phần hiệu chỉnh đó; trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng."
 fn_pf_heic_win: "Cần cài HEIF Image Extensions và HEVC Video Extensions miễn phí của Microsoft, từ Microsoft Store."
@@ -323,7 +323,7 @@ fn_brand: "Tên và logo Fotollection dùng để nhận biết ứng dụng ch�
 fn_notify: "Bạn muốn phân phối, bán lại hay phát triển tiếp từ Fotollection? Xin hãy báo cho tác giả trước bằng một mục góp ý (issue) trên GitHub (github.com/hoangphi01/fotollection/issues). Ứng dụng miễn phí và được làm trong thời gian rảnh; một lời báo ngắn là cách công bằng để cảm ơn."
 fn_cite: Khi trích dẫn, viết bài, giới thiệu ứng dụng hay dùng ảnh chụp màn hình này, xin ghi nguồn Fotollection và dẫn link về fotollection.org.
 fn_independent: Fotollection là dự án mã nguồn mở độc lập, không liên kết, không được tài trợ hay bảo trợ bởi bất kỳ công ty nào kể trên; mọi thương hiệu khác thuộc về chủ sở hữu của chúng.
-shield: Riêng tư - ảnh không bao giờ rời khỏi máy của bạn
+shield: Riêng tư – ảnh không bao giờ rời khỏi máy của bạn
 privacy_title: Ảnh của bạn là của bạn
 privacy_lead: Fotollection được làm để chạy hoàn toàn không cần internet. Không tải lên, không theo dõi, và bạn có thể tự kiểm tra từng dòng mã nguồn.
 p1_title: Không tải lên, không lưu trữ đám mây
@@ -347,7 +347,7 @@ chart_memory: "RAM dùng nhiều nhất khi số ảnh tăng lên 5.035 tấm"
 chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
 story_title: Câu chuyện
 story_kicker: Nhật ký
-story_description: "Câu chuyện phía sau Fotollection: hai mươi năm ảnh chưa xem lại, một mùa đông nhìn về những năm cũ, và những cây số đầu của một cuộc marathon để kỷ niệm trở lại thành ảnh in."
+story_description: "Câu chuyện phía sau Fotollection: hai mươi năm ảnh chưa xem lại, và một mùa đông biến kỷ niệm trở lại thành ảnh in."
 story_lead: "Vì sao có Fotollection, và nó đã tìm ra con đường riêng thế nào: nhật ký của những cây số đầu tiên, kể lại từ những ghi chép và lịch sử mã nguồn của dự án."
 story_wiki: "Xem app qua từng phiên bản, trong Wiki"
 footer_story: Câu chuyện
@@ -361,7 +361,7 @@ wiki_foot: "Mỗi ảnh là giao diện của Fotollection đúng lúc phiên b�
 footer_wiki: Wiki
 man_title: Hướng dẫn
 man_kicker: Trợ giúp
-man_description: "Cách dùng Fotollection từng bước, mỗi bước kèm ảnh chụp màn hình: chọn ảnh để in, look và màu, phóng to, ảnh RAW, đồng hồ máy ảnh, ngày và nơi chụp, chụp với máy ảnh cắm vào máy tính, và mọi phím tắt."
+man_description: "Cách dùng Fotollection từng bước, kèm ảnh màn hình: chọn ảnh để in, look và màu, ảnh RAW, ngày và nơi chụp, và mọi phím tắt."
 man_lead: "Từng bước, đúng như app hiển thị. Hướng dẫn đi theo app: khi một phiên bản đổi điều bạn nhìn thấy, trang này đổi theo."
 man_toc: Các chương
 man_source: Bản hướng dẫn này trên GitHub
@@ -404,26 +404,26 @@ cs_parts:
         text: "Gỡ trong Cài đặt Windows, hoặc xoá ứng dụng trên macOS. Trình gỡ của Windows cũng xoá các mục Mở bằng. Trên Linux, chạy sudo apt remove fotollection, hoặc xoá tệp AppImage, hoặc chạy lệnh cài với --uninstall, lệnh này xoá luôn kho APT và khoá của nó. Thiết lập và dự án vẫn nằm trong thư mục cá nhân của bạn."
 footer_signing: Chính sách ký mã
 perf_title: "Hiệu năng"
-perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, RAM, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."
+perf_description: "Mọi số đo phía sau Fotollection, giải thích dễ hiểu: tốc độ, RAM, chất lượng in, ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM và hồ sơ màu."
 perf_kicker: "Đo thật, không hứa suông"
-perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB). Chương trình đo nằm ngay trong kho mã nguồn, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
+perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB). Chương trình đo nằm ngay trong kho mã nguồn, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
 perf_how_title: "Vì sao Fotollection nhanh"
 perf_how_lead: "Không có phép màu. Chỉ là một vài quyết định được đưa ra trước dòng mã đầu tiên, và mỗi quyết định đều được đo đạc."
 perf_how_items:
-  - { t: "Mã gốc trên mọi nhân xử lý", d: "Toàn bộ công việc của Fotollection chạy bằng Rust, được biên dịch cho đúng bộ xử lý của bạn và chia đều cho mọi nhân, tận dụng các lệnh vector (SIMD) dành riêng cho điểm ảnh.", v: "23,5 / s", l: "ảnh 16 MP được xuất", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Mã gốc trên mọi nhân xử lý", d: "Toàn bộ công việc của Fotollection chạy bằng Rust, được biên dịch cho đúng bộ xử lý của bạn và chia đều cho mọi nhân, tận dụng các lệnh vector (SIMD) dành riêng cho điểm ảnh.", v: "23,5/s", l: "ảnh 16 MP được xuất", fn: [fn_simd, fn_units, fn_rust] }
   - { t: "Chỉ đọc những gì cần thiết", d: "Khi mở một thư mục, Fotollection chỉ đọc EXIF và ảnh thu nhỏ có sẵn trong mỗi tệp, không bao giờ đọc toàn bộ ảnh. Ảnh thu nhỏ được lưu trong bộ nhớ đệm trên ổ đĩa.", v: "0,12 s", l: "để mở 1.000 ảnh", fn: [fn_exif] }
-  - { t: "Không nhiều điểm ảnh hơn màn hình", d: "Bản xem trước tối đa 1.600 px, được dựng từ một bản 2.048 px lưu trong bộ nhớ. Ảnh gốc chỉ được đọc khi bạn phóng to, từng phần một.", v: "17 ms", l: "để dựng lại bản xem trước" }
-  - { t: "Sẵn sàng trước khi bạn chọn", d: "Ngay khi ảnh thu nhỏ hoàn tất, bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và lưu trên ổ đĩa, đồng thời một phần tư bộ nhớ giữ sẵn các ảnh quanh ảnh đang xem.", v: "27 ms", l: "để mở bất kỳ ảnh nào" }
-  - { t: "Không làm một việc hai lần", d: "Thanh chỉnh màu chỉ thay đổi màu sắc, không dựng lại kích thước ảnh. Mọi thanh chỉnh màu được gộp vào một bảng 33 × 33 × 33 màu, nên mười thanh cũng chỉ tốn như một.", v: "2 ms", l: "cho mười thanh chỉnh màu trên bản xem trước" }
-  - { t: "Bộ nhớ luôn trong hạn mức", d: "Fotollection chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức bộ nhớ, được tính theo ảnh lớn nhất trong lượt xuất.", v: "1,45 GB", l: "bộ nhớ tối đa với 5.035 ảnh" }
-  - { t: "Bộ mã hoá tinh chỉnh theo số đo", d: "Tệp in bỏ qua một bước tối ưu bảng mã vốn chỉ giảm dung lượng chưa tới 1 % nhưng tốn một phần ba thời gian mã hoá.", v: "−33 %", l: "thời gian mã hoá tệp in" }
-  - { t: "Card đồ hoạ khi chỉnh ảnh", d: "Khi bạn kéo thanh chỉnh màu, card đồ hoạ vẽ từ bảng màu do phần lõi dựng. Việc xuất ảnh vẫn chạy trên bộ xử lý, để bản in giống hệt nhau trên mọi máy tính.", v: "1–2 ms", l: "mỗi nhịp kéo, thay vì 26 ms" }
+  - { t: "Không nhiều điểm ảnh hơn màn hình", d: "Bản xem trước tối đa 1.600 px, được dựng từ một bản 2.048 px lưu trong bộ nhớ. Ảnh gốc chỉ được đọc khi bạn phóng to, từng phần một.", v: "17 ms", l: "để dựng lại bản xem trước" }
+  - { t: "Sẵn sàng trước khi bạn chọn", d: "Ngay khi ảnh thu nhỏ hoàn tất, bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và lưu trên ổ đĩa, đồng thời một phần tư bộ nhớ giữ sẵn các ảnh quanh ảnh đang xem.", v: "27 ms", l: "để mở bất kỳ ảnh nào" }
+  - { t: "Không làm một việc hai lần", d: "Thanh chỉnh màu chỉ thay đổi màu sắc, không dựng lại kích thước ảnh. Mọi thanh chỉnh màu được gộp vào một bảng 33 × 33 × 33 màu, nên mười thanh cũng chỉ tốn như một.", v: "2 ms", l: "cho mười thanh chỉnh màu trên bản xem trước" }
+  - { t: "Bộ nhớ luôn trong hạn mức", d: "Fotollection chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức bộ nhớ, được tính theo ảnh lớn nhất trong lượt xuất.", v: "1,45 GB", l: "bộ nhớ tối đa với 5.035 ảnh" }
+  - { t: "Bộ mã hoá tinh chỉnh theo số đo", d: "Tệp in bỏ qua một bước tối ưu bảng mã vốn chỉ giảm dung lượng chưa tới 1 % nhưng tốn một phần ba thời gian mã hoá.", v: "−33 %", l: "thời gian mã hoá tệp in" }
+  - { t: "Card đồ hoạ khi chỉnh ảnh", d: "Khi bạn kéo thanh chỉnh màu, card đồ hoạ vẽ từ bảng màu do phần lõi dựng. Việc xuất ảnh vẫn chạy trên bộ xử lý, để bản in giống hệt nhau trên mọi máy tính.", v: "1–2 ms", l: "mỗi nhịp kéo, thay vì 26 ms" }
 perf_gpu_title: "Card đồ hoạ khi chỉnh, mọi nhân khi xuất"
 perf_gpu_text: "Khi bạn kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu mà phần lõi của Fotollection dựng, rồi bản dựng chính xác thay vào khi bạn thả tay. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy."
 gpu_stats:
-  - { v: "1–2 ms", l: "mỗi nhịp kéo trên card đồ hoạ, thay vì khoảng 26 ms" }
+  - { v: "1–2 ms", l: "mỗi nhịp kéo trên card đồ hoạ, thay vì khoảng 26 ms" }
   - { v: "0,13", l: "ΔE2000 giữa look vẽ trên card và bản dựng chính xác" }
-  - { v: "10,8", l: "ảnh 26 MP xuất mỗi giây, sáu ảnh cùng lúc" }
+  - { v: "10,8", l: "ảnh 26 MP xuất mỗi giây, sáu ảnh cùng lúc" }
 chart_gpu: "Một nhịp kéo thanh màu: bộ xử lý so với card đồ hoạ"
 chart_inflight: "Tốc độ xuất theo số ảnh xử lý cùng lúc"
 dl_warn_title: "Hãy cập nhật lên v0.14.0 trở lên."
@@ -433,38 +433,38 @@ perf_open_title: "Nhanh hơn tới 20 lần. Một cách dùng bộ nhớ hoàn 
 perf_open_text: "Bản v0.11.0 nghĩ lại từ đầu cách Fotollection giữ ảnh của bạn. Làm xong ảnh nhỏ là bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và giữ trên đĩa, một phần tư bộ nhớ máy giữ những ảnh quanh ảnh bạn đang xem, và ảnh trên màn hình luôn được làm trước. Kết quả: mở ảnh nào, gần hay xa, JPEG hay RAW, cũng chỉ 27 mili giây. Mở một ảnh RAW nhanh gấp tới 20 lần so với v0.9.0, ảnh JPEG gấp 10 lần, đo trên cùng 422 ảnh của một chuyến đi."
 perf_open_fn: [fn_raw, fn_jpeg]
 open_stats:
-  - { v: "20×", l: "nhanh hơn khi mở ảnh RAW so với v0.9.0 (531 → 27 ms)" }
-  - { v: "10×", l: "nhanh hơn khi mở ảnh JPEG so với v0.9.0 (274 → 27 ms)" }
-  - { v: "27 ms", l: "để mở bất kỳ ảnh nào, gần hay xa (ngân sách 100 ms)" }
+  - { v: "20×", l: "nhanh hơn khi mở ảnh RAW so với v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "nhanh hơn khi mở ảnh JPEG so với v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "để mở bất kỳ ảnh nào, gần hay xa (ngân sách 100 ms)" }
 perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
 perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh, và đổi một thiết lập thì chỉ vẽ lại bản xem trước. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM."
 speed_stats:
   - { v: "0,12 giây", l: "đọc một thư mục 1.000 ảnh, nhanh gấp tám lần mức ngân sách" }
-  - { v: "17 ms", l: "vẽ lại bản xem trước sau khi đổi thiết lập" }
-  - { v: "23,5", l: "ảnh 16 MP xuất mỗi giây" }
+  - { v: "17 ms", l: "vẽ lại bản xem trước sau khi đổi thiết lập" }
+  - { v: "23,5", l: "ảnh 16 MP xuất mỗi giây" }
 perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
 perf_memory_text: "Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức RAM. Nhờ vậy RAM gần như không tăng khi chuyến đi lên tới hàng nghìn ảnh."
 memory_stats:
-  - { v: "1,45 GB", l: "RAM nhiều nhất với 5.035 ảnh" }
-  - { v: "1,35 GB", l: "RAM nhiều nhất với 95 ảnh" }
-  - { v: "53×", l: "số ảnh, mà chỉ thêm 0,1 GB" }
+  - { v: "1,45 GB", l: "RAM nhiều nhất với 5.035 ảnh" }
+  - { v: "1,35 GB", l: "RAM nhiều nhất với 95 ảnh" }
+  - { v: "53×", l: "số ảnh, mà chỉ thêm 0,1 GB" }
 perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
-perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu: nó bỏ mất hồ sơ màu, thu ảnh xuống 2.000 px và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu và xuất ở độ phân giải đầy đủ, 4:4:4."
+perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu: nó bỏ mất hồ sơ màu, thu ảnh xuống 2.000 px và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu và xuất ở độ phân giải đầy đủ, 4:4:4."
 print_stats:
   - { v: "0,19", l: "sai lệch màu; mắt người bắt đầu nhận ra ở mức 1" }
   - { v: "4:4:4", l: "độ phân giải màu đầy đủ; trình sửa ảnh web giảm một nửa" }
-  - { v: "87 %", l: "chi tiết nhỏ mất đi khi trình sửa ảnh web thu về 2.000 px" }
+  - { v: "87 %", l: "chi tiết nhỏ mất đi khi trình sửa ảnh web thu về 2.000 px" }
 perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"
-perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng, nên sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường."
+perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng, nên sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường."
 share_stats:
-  - { v: "99,6 %", l: "màu của ảnh Display P3 còn giữ sau Facebook, thay vì 86 %" }
-  - { v: "2.048 px", l: "cỡ ảnh Facebook không thu nhỏ thêm" }
+  - { v: "99,6 %", l: "màu của ảnh Display P3 còn giữ sau Facebook, thay vì 86 %" }
+  - { v: "2.048 px", l: "cỡ ảnh Facebook không thu nhỏ thêm" }
   - { v: "½", l: "dung lượng tệp với Giữ cỡ gốc, đủ từng điểm ảnh" }
 chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"
 perf_raw_title: "Ảnh RAW: mở thẳng, không cần chuyển đổi"
 perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến đúng như tệp gốc, không cần chuyển đổi, và trên Windows và Linux không cần cài thêm gì. Từ v0.10.0, ảnh đầy đủ là bộ xử lý của riêng Fotollection cho mọi máy ảnh có cảm biến Bayer, làm trên chính dữ liệu của máy ảnh như một trình sửa RAW, còn Adobe DNG Converter chỉ đổi từ RAW này sang RAW khác."
 raw_stats:
-  - { v: "9–32 ms", l: "ảnh thu nhỏ của tệp RAW, lấy từ bản xem trước trong tệp" }
+  - { v: "9–32 ms", l: "ảnh thu nhỏ của tệp RAW, lấy từ bản xem trước trong tệp" }
   - { v: "0,3–0,7 giây", l: "bộ xử lý của Fotollection dựng cả tấm ảnh" }
   - { v: "1,2–1,8 giây", l: "Adobe DNG Converter mỗi tệp, chỉ để chuyển đổi" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
@@ -473,7 +473,7 @@ perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh kh
 best_stats:
   - { v: "6 / 6", l: "khoảnh khắc có ảnh đẹp rõ ràng: gợi ý đều chấp nhận được" }
   - { v: "15 / 22", l: "khoảnh khắc được tìm ra, không bao giờ gộp nhầm" }
-  - { v: "17 ms", l: "phân tích một ảnh, 28 ms nếu có khuôn mặt" }
+  - { v: "17 ms", l: "phân tích một ảnh, 28 ms nếu có khuôn mặt" }
 perf_toc: "Trên trang này"
 diagram_layers: "Công việc diễn ra ở đâu: Fotollection ngay trên máy của bạn, so với một trình sửa ảnh web thông thường"
 diagram_gpu_cpu: "Chỉnh trên card đồ hoạ, xuất ảnh trên mọi nhân bộ xử lý"
@@ -498,11 +498,11 @@ perf_faq:
     a: "Mắt ta nhìn chi tiết chủ yếu qua độ sáng, ít qua màu, nên JPEG có thể lưu màu ở độ phân giải thấp hơn. 4:4:4 giữ đủ độ phân giải màu; 4:2:0 chỉ giữ một phần tư, tệp nhẹ hơn nhưng các viền có màu bị mềm đi, như chữ đỏ hay bầu trời xanh sau tán lá. Ảnh in nên dùng 4:4:4; còn mạng xã hội thì đằng nào cũng nén mọi ảnh về 4:2:0."
   - q: "sRGB, Display P3, Adobe RGB và hồ sơ màu (colour profile)"
     fn: [fn_srgb, fn_p3, fn_adobe]
-    a: "Hồ sơ màu (colour profile) cho phần mềm biết các con số trong tệp nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất hồ sơ màu, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Adobe RGB, có trên một số máy ảnh dành cho in ấn, cũng rộng hơn sRGB, chủ yếu ở màu xanh lá và xanh lơ. Fotollection giữ nguyên hồ sơ màu của ảnh khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
+    a: "Hồ sơ màu (colour profile) cho phần mềm biết các con số trong tệp nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất hồ sơ màu, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Adobe RGB, có trên một số máy ảnh dành cho in ấn, cũng rộng hơn sRGB, chủ yếu ở màu xanh lá và xanh lơ. Fotollection giữ nguyên hồ sơ màu của ảnh khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
   - q: "Ảnh in cần bao nhiêu DPI?"
-    a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong ứng dụng cho biết mỗi ảnh in được to tới đâu."
+    a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong ứng dụng cho biết mỗi ảnh in được to tới đâu."
   - q: "Vì sao ảnh đăng Facebook trông xấu đi?"
-    a: "Facebook thu mọi ảnh về tối đa 2.048 px, nén lại ở chất lượng thấp hơn với độ phân giải màu giảm một nửa, và bỏ hồ sơ màu. Ảnh gửi lên quá to sẽ bị thu nhỏ hai lần, một lần bởi bạn và một lần bởi Facebook. Gửi sẵn ảnh 2.048 px, sRGB và đã làm nét nhẹ thì Facebook chỉ nén lại một lần, và màu đã đúng từ trước."
+    a: "Facebook thu mọi ảnh về tối đa 2.048 px, nén lại ở chất lượng thấp hơn với độ phân giải màu giảm một nửa, và bỏ hồ sơ màu. Ảnh gửi lên quá to sẽ bị thu nhỏ hai lần, một lần bởi bạn và một lần bởi Facebook. Gửi sẵn ảnh 2.048 px, sRGB và đã làm nét nhẹ thì Facebook chỉ nén lại một lần, và màu đã đúng từ trước."
 perf_repro_title: "Tự chạy lại các phép đo"
 perf_repro_text: "Mọi phép đo đều chạy lại được trên ảnh của chính bạn. Các chương trình đo không bao giờ tải ảnh lên hay sao chép ảnh; chỉ giữ lại các con số. Bảng đầy đủ, kèm từng lần chạy, nằm trong RESULT.md."
 perf_repro_link: "Đọc RESULT.md trên GitHub"
@@ -689,9 +689,9 @@ perf_sense_text: "RollSense đọc mỗi tấm ảnh một lần để phân lo�
 sense_stats:
   - v: "≈ 18 phút"
     l: "một chuyến đi 2.500 tấm trên laptop i7-10610U"
-  - v: "844 MB"
+  - v: "844 MB"
     l: "bộ nhớ cao nhất của lượt đọc qua 9.639 tấm, không tăng dần"
-  - v: "1,3 ms"
+  - v: "1,3 ms"
     l: "mỗi tấm khi đọc lại từ cache"
 chart_ecg: "RollSense khi chạy nặng, từng giây: bộ xử lý, xung nhịp, bộ nhớ, nhiệt độ và card đồ hoạ"
 chart_sense: "Thời gian mỗi ảnh của RollSense theo số luồng, và phần của mô hình trong đó"
@@ -703,16 +703,19 @@ wiki_m_open_all: "Mở cả thư mục, gồm EXIF"
 wiki_m_preview: "Xem trước sau khi đổi cài đặt, p95"
 wiki_m_export: "Xuất ảnh"
 wiki_m_export_jpeg: "Xuất ảnh, chỉ JPEG"
-wiki_m_develop: "Dựng một ảnh RAW 20 MP"
+wiki_m_develop: "Dựng một ảnh RAW 20 MP"
 wiki_m_postcards: "Vẽ lại mười bưu thiếp"
 wiki_m_bestshot: "Phân tích ảnh đẹp nhất, mỗi ảnh"
 wiki_m_memory: "RAM dùng nhiều nhất"
 wiki_m_sort: "Lượt đọc đầu của RollSense"
 wiki_b_rss: "RAM thường trú"
-wiki_b_fp: "footprint, Fotollection cùng tiến trình phụ RAW"
-wiki_b_fp_before: "footprint, trước khi có tiến trình phụ RAW"
+wiki_b_fp: "bộ nhớ chiếm dụng, Fotollection cùng tiến trình phụ RAW"
+wiki_b_fp_before: "bộ nhớ chiếm dụng, trước khi có tiến trình phụ RAW"
 wiki_u_s: "s"
 wiki_u_ms: "ms"
 wiki_u_gb: "GB"
 wiki_u_ps: "ảnh/s"
 wiki_u_min: "phút"
+skip_to_content: "Chuyển đến nội dung chính"
+final_story: "Đọc câu chuyện Fotollection ra đời"
+nav_menu: "Menu"

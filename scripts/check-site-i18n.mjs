@@ -200,6 +200,24 @@ const asIn = (code, text) => {
   const m = marks(text).split(' ').filter(Boolean)
   return m.some((x) => STORES.eu.includes(x)) ? [...m.filter((x) => !STORES.eu.includes(x)), ...own].sort().join(' ') : m.join(' ')
 }
+// 3a. A number and its unit never break apart: a no-break space between them (1.45\u00a0GB, 27\u00a0ms),
+// and a rate written 23.5/s (the five experts' review, 2026-11-20).
+for (const code of files) {
+  readFileSync(path.join(wordsDir, `${code}.yml`), 'utf8').split('\n').forEach((line, i) => {
+    if (/\d (GB|MB|KB|ms|MP|Mpx|px|mm|cm|Go|Mo|%)(?![A-Za-z])/.test(line)) problems.push(`${code}.yml:${i + 1} a plain space between a number and its unit: use a no-break space`)
+    if (/\d \/ (s\b|秒|초)/.test(line)) problems.push(`${code}.yml:${i + 1} "N / s": write N/s`)
+  })
+}
+// 3b. A page's search description is at most 150 characters wide in every language (the five
+// experts' review, 2026-11-20: search engines cut what is longer); a Chinese, Japanese or Korean
+// character is as wide as two Latin ones (UI audit, 2026-11-21).
+for (const code of files) {
+  for (const [key, text] of read(code)) {
+    if (key !== 'description' && !key.endsWith('_description')) continue
+    const n = [...text.replace(/^"|"$/g, '')].reduce((w, ch) => w + (/[\u1100-\u11ff\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef\u3000-\u303f]/.test(ch) ? 2 : 1), 0)
+    if (n > 150) problems.push(`${code}.yml: ${key} is ${n} characters wide, at most 150`)
+  }
+}
 if (files.includes('en')) {
   const en = read('en')
   for (const c of published.filter((x) => x !== 'en' && files.includes(x))) {

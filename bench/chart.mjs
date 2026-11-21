@@ -231,7 +231,7 @@ const T = {
     shDiff: 'Rozdíl od originálu, 1 − SSIM (JPEGy z fotoaparátu)',
     shSize: 'Velikost souboru na fotku (JPEGy z fotoaparátu)',
     shSource: 'Soubor z fotoaparátu',
-    shOriginal: 'Original size',
+    shOriginal: 'Původní velikost',
     shFacebook: 'Facebook, 2048 px',
     shMb: 'MB · méně je lehčí',
     shFooter: (n, m) =>
@@ -419,7 +419,7 @@ const T = {
     shDiff: 'Eltérés az eredetitől, 1 − SSIM (gépes JPEG-ek)',
     shSize: 'Fájlméret fotónként (gépes JPEG-ek)',
     shSource: 'Gépes fájl',
-    shOriginal: 'Original size',
+    shOriginal: 'Eredeti méret',
     shFacebook: 'Facebook, 2048 px',
     shMb: 'MB · a kisebb a könnyebb',
     shFooter: (n, m) =>
@@ -701,7 +701,7 @@ const T = {
     shDiff: '元の写真との差、1 − SSIM（カメラの JPEG）',
     shSize: '1 枚あたりのファイルサイズ（カメラの JPEG）',
     shSource: 'カメラのファイル',
-    shOriginal: 'Original size',
+    shOriginal: '元のサイズ',
     shFacebook: 'Facebook、2048 px',
     shMb: 'MB · 小さいほど軽い',
     shFooter: (n, m) =>
@@ -795,7 +795,7 @@ const T = {
     shDiff: '원본 사진과의 차이, 1 − SSIM(카메라 JPEG)',
     shSize: '한 장당 파일 크기(카메라 JPEG)',
     shSource: '카메라 파일',
-    shOriginal: 'Original size',
+    shOriginal: '원본 크기',
     shFacebook: 'Facebook, 2048 px',
     shMb: 'MB · 작을수록 가벼움',
     shFooter: (n, m) =>
@@ -951,7 +951,7 @@ const THEMES = {
     dark: { bg: '#1a1a19', t1: '#f0efec', t2: '#c3c2b7', t3: '#9d9c93', axis: '#45443f', s1: '#3987e5', s2: '#d95926', s3: '#199e70', s4: '#c98500', s5: '#d55181' },
   },
   site: {
-    light: { bg: '#fffaee', t1: '#2b2219', t2: '#514435', t3: '#7a6a55', axis: '#e2d4b3', s1: '#008a74', s2: '#b5652a', s3: '#1baf7a', s4: '#eda100', s5: '#e87ba4' },
+    light: { bg: '#fffaee', t1: '#2b2219', t2: '#514435', t3: '#6e5e4a', axis: '#e2d4b3', s1: '#008a74', s2: '#b5652a', s3: '#1baf7a', s4: '#b07600', s5: '#c4507e' },
     dark: { bg: '#262019', t1: '#f3ead6', t2: '#d8cab0', t3: '#a8977c', axis: '#3b3127', s1: '#21a593', s2: '#cc7f3e', s3: '#199e70', s4: '#c98500', s5: '#d55181' },
   },
 }
@@ -1391,7 +1391,7 @@ function charts(lang) {
     const h = yEnd + 48
     body += `<text class="t3" x="0" y="${h - 22}">${esc(t.inflightWhy)}</text>`
     body += `<text class="t3" x="0" y="${h - 4}">${esc(t.inflightFooter(f))}</text>`
-    out['bench-inflight'] = doc(t.inflightTitle, set.runs.map((r) => `${r.inflight}: ${f(r.photosPerSecond, 1)} photos/s, ${r.exportRssMb} MB`).join('. '), h, body)
+    out['bench-inflight'] = doc(t.inflightTitle, set.runs.map((r) => `${r.inflight}: ${f(r.photosPerSecond, 1)} ${t.units['photos/s']}, ${r.exportRssMb} MB`).join('. '), h, body)
   }
 
   // 11. Opening a photo across versions (FR-091): one hue, the older versions muted, the

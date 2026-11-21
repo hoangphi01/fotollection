@@ -2,7 +2,7 @@
 # The website's words in Polish (site/README.md). English (en.yml) is the source and the fallback;
 # this language has the home and Download pages (site/_data/languages.yml). Keys are the same as English's.
 title: "Fotollection – przygotowanie zdjęć do druku, w pełni offline"
-description: "Darmowa aplikacja open source do wywoływania zdjęć: looki, presety Lightroom i LUT-y, data na zdjęciu, ramka EXIF, kadry do druku. Bez konta i wysyłania."
+description: "Darmowa aplikacja open source do przygotowania zdjęć do druku: looki, presety Lightroom i LUT-y, data na zdjęciu, kadry do druku. Bez wysyłania."
 nav_features: "Funkcje"
 nav_quality: "Jakość"
 nav_download: "Pobierz"
@@ -12,7 +12,7 @@ nav_manual: "Instrukcja"
 to_top: "Do góry"
 copy_label: "Kopiuj"
 dl_title: "Pobierz – drukowanie zdjęć offline"
-dl_description: "Fotollection na macOS, Windows i Linuksa – przygotowanie zdjęć do druku: instalatory, pierwsze uruchomienie, polecenia i repozytorium dla Linuksa, nowości wersji."
+dl_description: "Fotollection na macOS, Windows i Linuksa: instalatory, pierwsze uruchomienie, polecenia i repozytorium dla Linuksa oraz nowości wersji."
 dl_kicker: "Pobierz"
 copied_label: "Skopiowano"
 star: "Daj gwiazdkę na GitHubie"
@@ -132,7 +132,7 @@ f_raw_title: "RAW z aparatu, bez konwersji"
 f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF i DNG otwierają się takie, jakie są, z datą i ekspozycją. Miniatury pochodzą z podglądu w każdym pliku, więc RAW-y przeglądasz tak szybko jak JPEG-i."
 f_open_title: "Otwieraj zdjęcia skądkolwiek"
 f_speed_title: "Szybko na każdym komputerze"
-f_speed_text: "Tysiąc zdjęć otwiera się w 0,12 s, nowe ustawienie odświeża podgląd w 17 ms, a od drugiego uruchomienia aplikacja startuje w około 0,4 s. Zdjęcie 32 MP ma podgląd tak szybko jak małe."
+f_speed_text: "Tysiąc zdjęć otwiera się w 0,12 s, nowe ustawienie odświeża podgląd w 17 ms, a od drugiego uruchomienia aplikacja startuje w około 0,4 s. Zdjęcie 32 MP ma podgląd tak szybko jak małe."
 f_open_text: "Kliknij zdjęcie prawym przyciskiem w Finder, Explorer albo menedżerze plików Linuksa i wybierz Fotollection. Otwiera się od razu, a jego folder staje się kartą."
 pf_title: "Według systemu"
 pf_lead: "Ta sama aplikacja na macOS, Windows i Linuksie, z tymi różnicami."
@@ -164,9 +164,9 @@ faq_groups:
   - label: "Szybkość i rozmiar"
     items:
       - q: "Czy jest ciężka? Pójdzie na moim starszym laptopie?"
-        a: "Jest mała: instalator na Windows ma około 18 MB, bo okno korzysta z widoku WWW, który system już ma, zamiast dołączać całą przeglądarkę. Rdzeń jest napisany w Ruście i działa bezpośrednio na twoim komputerze. Podgląd nigdy nie przekracza 1600 px, więc nawet zdjęcie 32 MP otwiera się tak szybko jak małe, a obraz w pełnym rozmiarze wczytuje się dopiero przy powiększeniu. Nawet przy eksporcie 5035 zdjęć zużycie pamięci dochodzi najwyżej do około 1,45 GB."
+        a: "Jest mała: instalator na Windows ma około 18 MB, bo okno korzysta z widoku WWW, który system już ma, zamiast dołączać całą przeglądarkę. Rdzeń jest napisany w Ruście i działa bezpośrednio na twoim komputerze. Podgląd nigdy nie przekracza 1600 px, więc nawet zdjęcie 32 MP otwiera się tak szybko jak małe, a obraz w pełnym rozmiarze wczytuje się dopiero przy powiększeniu. Nawet przy eksporcie 5035 zdjęć zużycie pamięci dochodzi najwyżej do około 1,45 GB."
       - q: "Jak szybko działa z tysiącami zdjęć?"
-        a: "Otwarcie 1000 zdjęć zajmuje około 0,12 s, bo Fotollection najpierw czyta małą miniaturę wbudowaną w każdy plik. Zmiana ustawienia odświeża podgląd w 17 ms, eksport idzie w tempie 18 pełnowymiarowych zdjęć na sekundę, a po pierwszym uruchomieniu aplikacja otwiera się w około 0,4 s. Każdą liczbę zmierzono na zwykłym laptopie, a strona Wydajność wyjaśnia, jak zmierzyć je samemu."
+        a: "Otwarcie 1000 zdjęć zajmuje około 0,12 s, bo Fotollection najpierw czyta małą miniaturę wbudowaną w każdy plik. Zmiana ustawienia odświeża podgląd w 17 ms, eksport idzie w tempie 18 pełnowymiarowych zdjęć na sekundę, a po pierwszym uruchomieniu aplikacja otwiera się w około 0,4 s. Każdą liczbę zmierzono na zwykłym laptopie, a strona Wydajność wyjaśnia, jak zmierzyć je samemu."
   - label: "Systemy i cena"
     items:
       - q: "Czy działa na Macu, Windows i Linuksie i czy naprawdę jest za darmo?"
@@ -196,7 +196,7 @@ postcard_text: "W trybie Collage jeden przełącznik zmienia każdą odbitkę w 
 pc_type_title: "Wpisane albo pisane ręcznie"
 pc_type_text: "Wiadomość i adres mają własne linie, z pogrubieniem, kursywą i podkreśleniem, czcionką maszynową albo twoją własną. Jest każda litera języków europejskich zapisywanych alfabetem łacińskim, więc adres w Pradze czy Krakowie wydrukuje się tak, jak go wpiszesz. Wybierz atrament – czarny, niebieski, sepię lub czerwony – i dodaj u dołu małą linijkę z podpisem. Połowa ze zdjęciem działa jak w trybie Collage: biała ramka wokół albo zdjęcie aż do krawędzi."
 collage_title: "Dwa zdjęcia na jednej odbitce"
-collage_text: "Inspirowane aparatami half-frame na kliszę: odbitka 10 × 15 mieści dwa zdjęcia 10 × 7,5, więc komplet kosztuje o połowę mniej. Zdjęcia łączą się w pary po kolei, przeciągnięcie je zamienia, a aplikacja podpowiada rozmiar z białym marginesem, 6 × 9 cm dla zdjęcia 2:3. Cienka linia cięcia dzieli odbitkę na pół – albo wyłącz ją, by mieć pasek half-frame."
+collage_text: "Inspirowane aparatami half-frame na kliszę: odbitka 10 × 15 mieści dwa zdjęcia 10 × 7,5, więc komplet kosztuje o połowę mniej. Zdjęcia łączą się w pary po kolei, przeciągnięcie je zamienia, a aplikacja podpowiada rozmiar z białym marginesem, 6 × 9 cm dla zdjęcia 2:3. Cienka linia cięcia dzieli odbitkę na pół – albo wyłącz ją, by mieć pasek half-frame."
 show_collage: "Tryb Kolażu: arkusze tak, jak się wydrukują, z proporcjami zdjęcia, podpowiadanym rozmiarem i linią cięcia"
 collage_preview_title: "Zobacz odbitkę, zanim powstanie"
 collage_preview_text: "Otwórz arkusz tak jak zdjęcie: duża odbitka, dokładnie taka, jaką zrobi kiosk, dwa zdjęcia obok siebie z datą i ramką. Wybierz zdjęcie klawiszem 1 lub 2, by je przyciąć lub obrócić, a strzałkami przeglądaj kolejne arkusze."
@@ -253,7 +253,7 @@ fn_compare: "Creative Cloud jest znakiem towarowym Adobe Inc.; darktable i RawTh
 fn_addassist: "AddAssist działa w krajach, których dane pocztowe zawiera Fotollection, obecnie w Japonii i Korei: tam adres wypełnia się sam na podstawie kodu pocztowego; w innych krajach adres wpisuje się jak zwykle."
 fn_privacy_site: "Dotyczy to aplikacji. Strona liczy odwiedziny anonimowo przez Google Analytics, według kraju i strony, nigdy nie łącząc ich z osobą."
 fn_exif: "EXIF (Exchangeable Image File Format) to standard, prowadzony przez japońskie JEITA i CIPA, dla informacji, które aparat zapisuje w każdym zdjęciu: aparat i obiektyw, data i godzina, ekspozycja, często pozycja GPS i mała osadzona miniatura."
-fn_units: "Jednostki: px to piksel, jeden punkt obrazu; MP (megapiksel) to milion pikseli, więc zdjęcie 20 MP ma około 5472 × 3648 px; ms to milisekunda, tysięczna część sekundy; MB i GB to megabajty i gigabajty; RAM (pamięć o dostępie swobodnym) to pamięć robocza komputera."
+fn_units: "Jednostki: px to piksel, jeden punkt obrazu; MP (megapiksel) to milion pikseli, więc zdjęcie 20 MP ma około 5472 × 3648 px; ms to milisekunda, tysięczna część sekundy; MB i GB to megabajty i gigabajty; RAM (pamięć o dostępie swobodnym) to pamięć robocza komputera."
 fn_raw: "Plik RAW zawiera to, co zarejestrowała matryca, zanim aparat zamienił to w obraz, więc o kolorze, jasności i szczegółach można zdecydować później, podobnie jak przy wywoływaniu negatywu. Każdy producent ma własny format (CR3 Canona, NEF Nikona, ARW Sony, RW2 Panasonica i inne); DNG (Digital Negative) to otwarty format RAW opublikowany przez Adobe."
 fn_heic: "HEIF (High Efficiency Image File Format) to format obrazu normy ISO/IEC 23008-12; HEIC to jego wariant kompresowany HEVC (H.265), w którym iPhone'y domyślnie zapisują zdjęcia. Zdjęcie HEIC jest mniej więcej o połowę mniejsze od JPEG-a o podobnej jakości."
 fn_png: "PNG (Portable Network Graphics) to bezstratny format obrazu, opublikowany jako ISO/IEC 15948: każdy piksel zostaje zachowany dokładnie, co pasuje do grafik i zrzutów ekranu, za to zdjęcie wychodzi kilka razy większe niż w JPEG-u."
@@ -404,15 +404,15 @@ nav_changelog: "Nowości"
 perf_speed_fn: [fn_webview]
 perf_trip_fn: [fn_trip, fn_pct]
 perf_trip_title: "Prawdziwa podróż: 422 pliki z Pragi"
-perf_trip_text: "Zestawy testowe potrafią schlebiać, więc oto jeden folder dokładnie taki, jaki zszedł z aparatu Lumix GX9 po weekendzie w Pradze: 396 JPEG-ów 20 MP, każdy około 11 MB, i 26 plików RAW obok nich, łącznie 4,7 GB. Otwarcie go odczytuje EXIF każdego pliku w 0,23 sekundy. Podgląd renderuje się ponownie w 19 ms, RAW wywołuje się w 0,35 sekundy, a dziesięć pocztówek odświeża się w 21 ms. 2026-11-03 dwie liczby przekroczyły budżet na tych dużych plikach: eksport szedł w tempie 7,6 zdjęcia na sekundę, a szczytowe zużycie pamięci sięgnęło 2,14 GB. Przyczynę znaleziono i usunięto w v0.9.7: JPEG-i eksportują się teraz w tempie 10,1 na sekundę, a cały przebieg mieści się poniżej 1,31 GB. W ponownym pomiarze 21.11.2026, gdy macOS wywołuje pliki RAW w procesie pomocniczym, Fotollection i pomocnik razem zajmują najwyżej 3,46 GB footprintu, w budżecie 3,5 GB dla RAW; wcześniejsze liczby są na Wiki."
+perf_trip_text: "Zestawy testowe potrafią schlebiać, więc oto jeden folder dokładnie taki, jaki zszedł z aparatu Lumix GX9 po weekendzie w Pradze: 396 JPEG-ów 20 MP, każdy około 11 MB, i 26 plików RAW obok nich, łącznie 4,7 GB. Otwarcie go odczytuje EXIF każdego pliku w 0,23 sekundy. Podgląd renderuje się ponownie w 19 ms, RAW wywołuje się w 0,35 sekundy, a dziesięć pocztówek odświeża się w 21 ms. 2026-11-03 dwie liczby przekroczyły budżet na tych dużych plikach: eksport szedł w tempie 7,6 zdjęcia na sekundę, a szczytowe zużycie pamięci sięgnęło 2,14 GB. Przyczynę znaleziono i usunięto w v0.9.7: JPEG-i eksportują się teraz w tempie 10,1 na sekundę, a cały przebieg mieści się poniżej 1,31 GB. W ponownym pomiarze 21.11.2026, gdy macOS wywołuje pliki RAW w procesie pomocniczym, Fotollection i pomocnik razem zajmują najwyżej 3,46 GB zajętości pamięci, w budżecie 3,5 GB dla RAW; wcześniejsze liczby są na Wiki."
 trip_stats:
   - { v: "0,23 s", l: "na otwarcie wszystkich 422 plików, razem z EXIF" }
-  - { v: "19 ms", l: "ponowny render podglądu, p95 (budżet 50 ms)" }
-  - { v: "0,35 s", l: "na wywołanie RAW-a 20 MP (mediana)" }
-  - { v: "21 ms", l: "na odświeżenie dziesięciu pocztówek (budżet 100 ms)" }
-  - { v: "10,1 / s", l: "eksportowanych JPEG-ów (budżet 8 / s)" }
-  - { v: "3,46 GB", l: "szczytowy footprint pamięci, Fotollection i pomocnik RAW (budżet 3,5 GB)" }
-fn_trip: "Praski folder należy do autora i nie jest publikowany (© @hoangphi01, wszelkie prawa zastrzeżone). Mediany z 3 przebiegów bench/trip.sh oraz measure_folder na jego JPEG-ach, na Apple M3 z 16 GB, przy otwartych innych aplikacjach, 2026-11-04, z eksportem z v0.9.7; uruchom je na własnym folderze, by porównać."
+  - { v: "19 ms", l: "ponowny render podglądu, p95 (budżet 50 ms)" }
+  - { v: "0,35 s", l: "na wywołanie RAW-a 20 MP (mediana)" }
+  - { v: "21 ms", l: "na odświeżenie dziesięciu pocztówek (budżet 100 ms)" }
+  - { v: "10,1/s", l: "eksportowanych JPEG-ów (budżet 8/s)" }
+  - { v: "3,46 GB", l: "szczytowa zajętość pamięci, Fotollection i pomocnik RAW (budżet 3,5 GB)" }
+fn_trip: "Praski folder należy do autora i nie jest publikowany (© @hoangphi01, wszelkie prawa zastrzeżone). Mediany z 3 przebiegów bench/trip.sh oraz measure_folder na jego JPEG-ach, na Apple M3 z 16 GB, przy otwartych innych aplikacjach, 2026-11-04, z eksportem z v0.9.7; uruchom je na własnym folderze, by porównać."
 fn_simd: "SIMD (single instruction, multiple data – jedna instrukcja, wiele danych) pozwala procesorowi pracować na wielu wartościach naraz: jedna instrukcja działa na kilku liczbach ułożonych obok siebie w szerokim rejestrze wektorowym, na przykład na czerwieni, zieleni i błękicie wielu pikseli. Procesory Intel i AMD zapewniają je jako SSE i AVX, a Apple silicon i inne procesory Arm jako NEON. Intel, AMD i Arm są znakami towarowymi ich właścicieli."
 fn_pct: "p50 i p95 to percentyle: p50, czyli mediana, to czas, w którym zmieściła się połowa przebiegów; p95 to czas, w którym zmieściło się 95 przebiegów na 100, więc pokazuje wolne przypadki, które ukrywa średnia."
 fn_psnr: "PSNR (szczytowy stosunek sygnału do szumu, peak signal-to-noise ratio) porównuje dwa obrazy piksel po pikselu i podaje ich różnicę w decybelach: im wyżej, tym bliżej. Powyżej około 40 dB różnicę trudno zobaczyć."
@@ -426,7 +426,7 @@ fn_ssim: "SSIM wprowadzili Zhou Wang, Alan C. Bovik, Hamid R. Sheikh i Eero P. S
 fn_srgb: "sRGB stworzyły HP i Microsoft w 1996 roku, a ustandaryzowano je jako IEC 61966-2-1."
 fn_p3: "Display P3 to przestrzeń barw zdefiniowana przez Apple Inc., oparta na przestrzeni DCI-P3 branży kinowej (SMPTE)."
 fn_adobe: "Adobe RGB (1998) to przestrzeń barw określona przez Adobe Inc.; Adobe jest zarejestrowanym znakiem towarowym Adobe Inc."
-fn_charts: "Każdy wykres: liczby są orientacyjne, zmierzone na zwykłym laptopie (Apple M3, 16 GB); twoje zależą od komputera, którego używasz."
+fn_charts: "Każdy wykres: liczby są orientacyjne, zmierzone na zwykłym laptopie (Apple M3, 16 GB); twoje zależą od komputera, którego używasz."
 fn_dng: "Adobe DNG Converter nie był uruchamiany na potrzeby tej strony. Ta liczba to szacunek z zewnętrznego źródła (1000 plików CR3 w 20–30 minut na nowoczesnym sprzęcie, bez podania maszyny), z wpisu na blogu convertintomp4.com o wsadowej konwersji RAW do DNG. Adobe jest zarejestrowanym znakiem towarowym Adobe Inc."
 chart_budgets: "Szybkość i pamięć wobec budżetów ustalonych przed napisaniem kodu"
 chart_quality: "Co eksport zachowuje z oryginału, wobec typowego edytora internetowego"
@@ -443,7 +443,7 @@ wiki_toc: "Wersje"
 wiki_foot: "Każdy obraz to Fotollection takie, jakie wydała ta wersja, wzięte z historii projektu; najwcześniejsze są tylko po angielsku. Każda nowa wersja dodaje tu własny."
 man_title: "Instrukcja"
 man_kicker: "Pomoc"
-man_description: "Jak używać Fotollection, krok po kroku, ze zrzutem ekranu do każdego kroku: wybór zdjęć do druku, looki i kolor, zoom, RAW, zegary aparatów, daty i miejsca, fotografowanie z podłączonym aparatem i każdy skrót."
+man_description: "Jak używać Fotollection krok po kroku, ze zrzutami ekranu: wybór zdjęć, looki i kolor, RAW, daty i miejsca oraz wszystkie skróty."
 man_lead: "Każdy krok tak, jak pokazuje go aplikacja. Instrukcja podąża za aplikacją: gdy nowa wersja zmienia coś, co widać, ta strona zmienia się razem z nią."
 man_toc: "Rozdziały"
 man_source: "Ta instrukcja na GitHubie"
@@ -485,26 +485,26 @@ cs_parts:
       - title: "Odinstalowanie"
         text: "Usuń ją w Ustawieniach systemu Windows albo skasuj aplikację na macOS. Deinstalator na Windows usuwa też wpisy Otwórz za pomocą. Na Linuksie uruchom sudo apt remove fotollection, usuń AppImage albo uruchom skrypt instalacyjny z --uninstall, który usuwa też repozytorium APT i jego klucz. Ustawienia i projekty zostają w twoim folderze domowym."
 perf_title: "Wydajność"
-perf_description: "Każdy pomiar stojący za Fotollection, wyjaśniony prostymi słowami: szybkość, pamięć, jakość druku, zdjęcia do mediów społecznościowych i podpowiedzi najlepszych ujęć, wraz z tym, co znaczą ΔE, SSIM, JPEG i profile kolorów."
+perf_description: "Każdy pomiar za Fotollection prostymi słowami: szybkość, pamięć, jakość druku, najlepsze ujęcia oraz co znaczą ΔE, SSIM i profile kolorów."
 perf_kicker: "Zmierzone, nie obiecane"
-perf_lead: "Każda liczba na tej stronie pochodzi z prawdziwych zdjęć na zwykłym laptopie (Apple M3, 16 GB), a skrypty, które ją dały, są w repozytorium, więc każdy może uruchomić je ponownie. Pod każdym wykresem jest wyjaśnienie, co oznacza on dla twoich odbitek, a na końcu – słowa stojące za liczbami."
+perf_lead: "Każda liczba na tej stronie pochodzi z prawdziwych zdjęć na zwykłym laptopie (Apple M3, 16 GB), a skrypty, które ją dały, są w repozytorium, więc każdy może uruchomić je ponownie. Pod każdym wykresem jest wyjaśnienie, co oznacza on dla twoich odbitek, a na końcu – słowa stojące za liczbami."
 perf_how_title: "Dlaczego Fotollection jest szybkie"
 perf_how_lead: "Żadnej magii. Kilka decyzji podjętych przed pierwszą linijką kodu, każda zmierzona."
 perf_how_items:
-  - { t: "Kod natywny na każdym rdzeniu", d: "Praca Fotollection odbywa się w Ruście, skompilowanym dla twojego procesora i rozłożonym na wszystkie jego rdzenie, z instrukcjami wektorowymi (SIMD), które procesory oferują do pikseli.", v: "23,5 / s", l: "eksportowanych zdjęć 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Kod natywny na każdym rdzeniu", d: "Praca Fotollection odbywa się w Ruście, skompilowanym dla twojego procesora i rozłożonym na wszystkie jego rdzenie, z instrukcjami wektorowymi (SIMD), które procesory oferują do pikseli.", v: "23,5/s", l: "eksportowanych zdjęć 16 MP", fn: [fn_simd, fn_units, fn_rust] }
   - { t: "Tylko to, co potrzebne", d: "Otwarcie folderu odczytuje EXIF każdego pliku i jego małą wbudowaną miniaturę, nigdy całe zdjęcie. Miniatury są trzymane w pamięci podręcznej na dysku.", v: "0,12 s", l: "na otwarcie 1000 zdjęć", fn: [fn_exif] }
-  - { t: "Nigdy więcej pikseli niż ekran", d: "Podgląd ma najwyżej 1600 px i powstaje z kopii 2048 px trzymanej w pamięci. Pełne zdjęcie jest wczytywane dopiero przy powiększeniu, fragment po fragmencie.", v: "17 ms", l: "na odświeżenie podglądu" }
-  - { t: "Gotowe, zanim klikniesz", d: "Gdy miniatury są gotowe, podgląd każdego zdjęcia jest przygotowywany w tle i trzymany na dysku, a jedna czwarta pamięci przechowuje zdjęcia wokół tego na ekranie.", v: "27 ms", l: "na otwarcie dowolnego zdjęcia" }
-  - { t: "Nic nie jest robione dwa razy", d: "Suwak koloru zmienia tylko kolor, nigdy rozmiar. Wszystkie suwaki koloru są składane w jedną tablicę 33 × 33 × 33 kolorów, więc dziesięć suwaków kosztuje tyle co jeden.", v: "2 ms", l: "dla dziesięciu suwaków koloru na podglądzie" }
-  - { t: "Pamięć w budżecie", d: "Fotollection pracuje naraz tylko na tylu pełnowymiarowych zdjęciach, na ile pozwala jego budżet pamięci, ustalany według największego zdjęcia w eksporcie.", v: "1,45 GB", l: "szczytowe zużycie pamięci przy 5035 zdjęciach" }
-  - { t: "Kodery dostrojone pomiarami", d: "Pliki do druku pomijają optymalizację tablic, która zmniejszała je o mniej niż 1 %, a kosztowała jedną trzecią czasu kodowania.", v: "−33 %", l: "czasu kodowania plików do druku" }
-  - { t: "Karta graficzna podczas edycji", d: "Gdy suwak koloru się przesuwa, karta graficzna rysuje z tablicy, którą buduje rdzeń. Eksporty zostają na procesorze, więc odbitka jest identyczna na każdym komputerze.", v: "1–2 ms", l: "na krok suwaka, zamiast 26 ms" }
+  - { t: "Nigdy więcej pikseli niż ekran", d: "Podgląd ma najwyżej 1600 px i powstaje z kopii 2048 px trzymanej w pamięci. Pełne zdjęcie jest wczytywane dopiero przy powiększeniu, fragment po fragmencie.", v: "17 ms", l: "na odświeżenie podglądu" }
+  - { t: "Gotowe, zanim klikniesz", d: "Gdy miniatury są gotowe, podgląd każdego zdjęcia jest przygotowywany w tle i trzymany na dysku, a jedna czwarta pamięci przechowuje zdjęcia wokół tego na ekranie.", v: "27 ms", l: "na otwarcie dowolnego zdjęcia" }
+  - { t: "Nic nie jest robione dwa razy", d: "Suwak koloru zmienia tylko kolor, nigdy rozmiar. Wszystkie suwaki koloru są składane w jedną tablicę 33 × 33 × 33 kolorów, więc dziesięć suwaków kosztuje tyle co jeden.", v: "2 ms", l: "dla dziesięciu suwaków koloru na podglądzie" }
+  - { t: "Pamięć w budżecie", d: "Fotollection pracuje naraz tylko na tylu pełnowymiarowych zdjęciach, na ile pozwala jego budżet pamięci, ustalany według największego zdjęcia w eksporcie.", v: "1,45 GB", l: "szczytowe zużycie pamięci przy 5035 zdjęciach" }
+  - { t: "Kodery dostrojone pomiarami", d: "Pliki do druku pomijają optymalizację tablic, która zmniejszała je o mniej niż 1 %, a kosztowała jedną trzecią czasu kodowania.", v: "−33 %", l: "czasu kodowania plików do druku" }
+  - { t: "Karta graficzna podczas edycji", d: "Gdy suwak koloru się przesuwa, karta graficzna rysuje z tablicy, którą buduje rdzeń. Eksporty zostają na procesorze, więc odbitka jest identyczna na każdym komputerze.", v: "1–2 ms", l: "na krok suwaka, zamiast 26 ms" }
 perf_gpu_title: "Karta graficzna przy edycji, każdy rdzeń przy eksporcie"
 perf_gpu_text: "Gdy przeciągasz suwak koloru, karta graficzna rysuje look z tej samej tablicy, którą buduje rdzeń Fotollection, a gdy go puścisz, przejmuje dokładny render. Eksporty zostają na procesorze, więc odbitka wychodzi taka sama na każdym komputerze."
 gpu_stats:
-  - { v: "1–2 ms", l: "krok suwaka na karcie graficznej, wobec około 26 ms" }
+  - { v: "1–2 ms", l: "krok suwaka na karcie graficznej, wobec około 26 ms" }
   - { v: "0,13", l: "ΔE2000 między lookiem z karty a dokładnym renderem" }
-  - { v: "10,8", l: "zdjęcia 26 MP eksportowane na sekundę, sześć naraz" }
+  - { v: "10,8", l: "zdjęcia 26 MP eksportowane na sekundę, sześć naraz" }
 chart_gpu: "Jeden krok suwaka koloru: procesor wobec karty graficznej"
 chart_inflight: "Szybkość eksportu a liczba zdjęć przetwarzanych naraz"
 chart_open: "Otwieranie zdjęcia: v0.9.0 i v0.10.0 wobec v0.11.0, na 422 zdjęciach z jednej podróży"
@@ -512,38 +512,38 @@ perf_open_title: "Do 20× szybciej. Nowy sposób korzystania z pamięci."
 perf_open_text: "v0.11.0 od nowa układa sposób, w jaki Fotollection przechowuje twoje zdjęcia. Podgląd każdego zdjęcia jest przygotowywany w tle, gdy tylko gotowa jest jego miniatura, i trzymany na dysku, jedna czwarta pamięci komputera przechowuje zdjęcia wokół tego, które widzisz, a zdjęcie na ekranie zawsze ma pierwszeństwo. Efekt: każde zdjęcie, bliskie czy dalekie, JPEG czy RAW, otwiera się w 27 milisekund. Otwarcie RAW-a jest do 20 razy szybsze niż w v0.9.0, a JPEG-a 10 razy szybsze, zmierzone na tych samych 422 zdjęciach z jednej podróży."
 perf_open_fn: [fn_raw, fn_jpeg]
 open_stats:
-  - { v: "20×", l: "szybsze otwarcie zdjęcia RAW niż w v0.9.0 (531 → 27 ms)" }
-  - { v: "10×", l: "szybsze otwarcie JPEG-a niż w v0.9.0 (274 → 27 ms)" }
-  - { v: "27 ms", l: "na otwarcie dowolnego zdjęcia, bliskiego czy dalekiego (budżet 100 ms)" }
+  - { v: "20×", l: "szybsze otwarcie zdjęcia RAW niż w v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "szybsze otwarcie JPEG-a niż w v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "na otwarcie dowolnego zdjęcia, bliskiego czy dalekiego (budżet 100 ms)" }
 perf_speed_title: "Szybkość: tysiąc zdjęć w mgnieniu oka"
 perf_speed_text: "Otwarcie folderu odczytuje EXIF każdego zdjęcia i jego małą wbudowaną miniaturę, a nie cały obraz, a zmiana ustawienia odświeża tylko podgląd. Natywny Rust wygrywa też z przeglądarką internetową wykonującą to samo zadanie: ta sama szybkość eksportu, szybszy podgląd i o jedną czwartą mniej pamięci."
 speed_stats:
   - { v: "0,12 s", l: "na odczyt folderu z 1000 zdjęć, osiem razy poniżej budżetu" }
-  - { v: "17 ms", l: "na odświeżenie podglądu po zmianie" }
-  - { v: "23,5", l: "zdjęcia 16 MP eksportowane na sekundę" }
+  - { v: "17 ms", l: "na odświeżenie podglądu po zmianie" }
+  - { v: "23,5", l: "zdjęcia 16 MP eksportowane na sekundę" }
 perf_memory_title: "Pamięć: 5035 zdjęć, a zużycie stoi w miejscu"
 perf_memory_text: "Fotollection trzyma w pamięci tylko kilka bajtów na zdjęcie, zapisuje miniatury w pamięci podręcznej na dysku i pracuje naraz tylko na tylu pełnowymiarowych obrazach, ile mieści się w jego budżecie pamięci. Dlatego zużycie pamięci stoi w miejscu, nawet gdy podróż rośnie do tysięcy zdjęć."
 memory_stats:
-  - { v: "1,45 GB", l: "szczytowe zużycie pamięci przy 5035 zdjęciach" }
-  - { v: "1,35 GB", l: "szczytowe zużycie pamięci przy 95 zdjęciach" }
-  - { v: "53×", l: "więcej zdjęć za 0,1 GB więcej" }
+  - { v: "1,45 GB", l: "szczytowe zużycie pamięci przy 5035 zdjęciach" }
+  - { v: "1,35 GB", l: "szczytowe zużycie pamięci przy 95 zdjęciach" }
+  - { v: "53×", l: "więcej zdjęć za 0,1 GB więcej" }
 perf_print_title: "Jakość druku: odbitka wygląda jak zdjęcie"
-perf_print_text: "Odbitki zrobione przez edytor internetowy często wyglądają płasko: usuwa on profil kolorów, zmniejsza zdjęcie do 2000 px i zapisuje je w jakości 80 z kolorem w połowie rozdzielczości. Fotollection zachowuje profil i eksportuje w pełnej rozdzielczości w 4:4:4."
+perf_print_text: "Odbitki zrobione przez edytor internetowy często wyglądają płasko: usuwa on profil kolorów, zmniejsza zdjęcie do 2000 px i zapisuje je w jakości 80 z kolorem w połowie rozdzielczości. Fotollection zachowuje profil i eksportuje w pełnej rozdzielczości w 4:4:4."
 print_stats:
   - { v: "0,19", l: "błąd koloru; oko zaczyna go zauważać przy 1" }
   - { v: "4:4:4", l: "pełna rozdzielczość koloru; edytor internetowy ją połowi" }
-  - { v: "87 %", l: "drobnych szczegółów, które edytor internetowy traci przy 2000 px" }
+  - { v: "87 %", l: "drobnych szczegółów, które edytor internetowy traci przy 2000 px" }
 perf_share_title: "Zdjęcia na Facebooka i Instagrama: lekkie, a wciąż to samo zdjęcie"
-perf_share_text: "Facebook zmniejsza każde zdjęcie do 2048 px, ponownie je kompresuje i ignoruje profile kolorów. Eksport do udostępniania najpierw porządnie wykonuje tę pracę, więc po Facebooku zdjęcie pozostaje bliższe sobie niż przy zwykłym sposobie."
+perf_share_text: "Facebook zmniejsza każde zdjęcie do 2048 px, ponownie je kompresuje i ignoruje profile kolorów. Eksport do udostępniania najpierw porządnie wykonuje tę pracę, więc po Facebooku zdjęcie pozostaje bliższe sobie niż przy zwykłym sposobie."
 share_stats:
-  - { v: "99,6 %", l: "koloru zdjęcia Display P3 zachowane po Facebooku, wobec 86 %" }
-  - { v: "2048 px", l: "rozmiar, którego Facebook nie rusza" }
+  - { v: "99,6 %", l: "koloru zdjęcia Display P3 zachowane po Facebooku, wobec 86 %" }
+  - { v: "2048 px", l: "rozmiar, którego Facebook nie rusza" }
   - { v: "½", l: "pliku w Oryginalnym rozmiarze, każdy piksel zachowany" }
 chart_raw: "RAW z aparatu: od pliku do ekranu, dla każdego aparatu i wobec Adobe DNG Converter"
 perf_raw_title: "RAW z aparatu: otwórz go takim, jaki jest"
 perf_raw_text: "Fotollection otwiera pliki RAW z dziewięciu popularnych aparatów takie, jakie są, bez konwersji, a na Windows i Linuksie bez instalowania czegokolwiek. Od v0.10.0 pełny obraz to własne wywołanie Fotollection dla każdego aparatu z matrycą Bayera, wykonane na danych samego aparatu, jak w edytorze RAW, podczas gdy Adobe DNG Converter tylko zamienia jeden plik RAW w inny."
 raw_stats:
-  - { v: "9–32 ms", l: "miniatura RAW-a, z podglądu wewnątrz pliku" }
+  - { v: "9–32 ms", l: "miniatura RAW-a, z podglądu wewnątrz pliku" }
   - { v: "0,3–0,7 s", l: "własne wywołanie pełnego zdjęcia w Fotollection" }
   - { v: "1,2–1,8 s", l: "Adobe DNG Converter na plik, tylko do konwersji" }
 perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
@@ -552,7 +552,7 @@ perf_best_text: "Posortowaliśmy ręcznie 95 prawdziwych zdjęć w 22 chwile i w
 best_stats:
   - { v: "6 z 6", l: "chwil z wyraźnie najlepszym: akceptowalna podpowiedź" }
   - { v: "15 z 22", l: "chwil znalezionych, nigdy dwie pomylone" }
-  - { v: "17 ms", l: "na analizę zdjęcia, 28 ms z twarzami" }
+  - { v: "17 ms", l: "na analizę zdjęcia, 28 ms z twarzami" }
 perf_toc: "Na tej stronie"
 diagram_layers: "Gdzie odbywa się praca: Fotollection na twoim komputerze wobec typowego edytora internetowego"
 diagram_gpu_cpu: "Edycja na karcie graficznej, eksport na każdym rdzeniu procesora"
@@ -577,11 +577,11 @@ perf_faq:
     a: "Nasze oczy widzą szczegóły głównie w jasności, mniej w kolorze, więc JPEG może zapisać kolor w niższej rozdzielczości. 4:4:4 zachowuje pełną rozdzielczość koloru; 4:2:0 jej jedną czwartą, co zmniejsza pliki, ale zmiękcza kolorowe krawędzie, takie jak czerwony tekst albo niebieskie niebo za liśćmi. Odbitki zasługują na 4:4:4; media społecznościowe i tak kompresują wszystko ponownie do 4:2:0."
   - q: "sRGB, Display P3, Adobe RGB i profile kolorów"
     fn: [fn_srgb, fn_p3, fn_adobe]
-    a: "Profil kolorów mówi programowi, co znaczą liczby w pliku. sRGB to klasyczny zakres kolorów używany w internecie. Display P3, używany przez iPhone'y i nowsze aparaty, obejmuje około 25 % więcej kolorów, zwłaszcza czerwieni i zieleni. Jeśli zdjęcie P3 straci profil, jego liczby są czytane jako sRGB i wygląda ono na wyblakłe: to właśnie zmierzona przez nas utrata 13 % nasycenia. Adobe RGB, które niektóre aparaty oferują do pracy pod druk, też jest szersze niż sRGB, głównie w zieleniach i cyjanach. Fotollection zachowuje przy odbitkach profil, jaki ma zdjęcie, i poprawnie konwertuje do sRGB dla mediów społecznościowych."
+    a: "Profil kolorów mówi programowi, co znaczą liczby w pliku. sRGB to klasyczny zakres kolorów używany w internecie. Display P3, używany przez iPhone'y i nowsze aparaty, obejmuje około 25 % więcej kolorów, zwłaszcza czerwieni i zieleni. Jeśli zdjęcie P3 straci profil, jego liczby są czytane jako sRGB i wygląda ono na wyblakłe: to właśnie zmierzona przez nas utrata 13 % nasycenia. Adobe RGB, które niektóre aparaty oferują do pracy pod druk, też jest szersze niż sRGB, głównie w zieleniach i cyjanach. Fotollection zachowuje przy odbitkach profil, jaki ma zdjęcie, i poprawnie konwertuje do sRGB dla mediów społecznościowych."
   - q: "Ile DPI potrzebuje odbitka?"
-    a: "DPI to liczba pikseli przypadających na każdy cal papieru. Przy 300 DPI odbitka wygląda ostro nawet z bliska; od 150 do 200 DPI wystarcza z odległości wyciągniętej ręki. Odbitka 10 × 15 cm przy 300 DPI potrzebuje 1800 × 1200 pikseli, więc wystarczy każde zdjęcie z telefonu czy aparatu; podpowiedź rozmiaru w aplikacji mówi, jak duże może być każde zdjęcie."
+    a: "DPI to liczba pikseli przypadających na każdy cal papieru. Przy 300 DPI odbitka wygląda ostro nawet z bliska; od 150 do 200 DPI wystarcza z odległości wyciągniętej ręki. Odbitka 10 × 15 cm przy 300 DPI potrzebuje 1800 × 1200 pikseli, więc wystarczy każde zdjęcie z telefonu czy aparatu; podpowiedź rozmiaru w aplikacji mówi, jak duże może być każde zdjęcie."
   - q: "Dlaczego zdjęcia wyglądają gorzej na Facebooku?"
-    a: "Facebook zmniejsza każde zdjęcie do najwyżej 2048 px, kompresuje je ponownie w niższej jakości z kolorem w połowie rozdzielczości i usuwa profile kolorów. Zdjęcie, które przychodzi za duże, jest zmniejszane dwa razy: raz przez ciebie, raz przez Facebooka. Gdy wyślesz je już w 2048 px, w sRGB i lekko wyostrzone, Facebook kompresuje je tylko raz, a kolory są już właściwe."
+    a: "Facebook zmniejsza każde zdjęcie do najwyżej 2048 px, kompresuje je ponownie w niższej jakości z kolorem w połowie rozdzielczości i usuwa profile kolorów. Zdjęcie, które przychodzi za duże, jest zmniejszane dwa razy: raz przez ciebie, raz przez Facebooka. Gdy wyślesz je już w 2048 px, w sRGB i lekko wyostrzone, Facebook kompresuje je tylko raz, a kolory są już właściwe."
 perf_repro_title: "Zmierz to sam"
 perf_repro_text: "Wszystko da się odtworzyć na twoich własnych zdjęciach. Skrypty nigdy nie wysyłają ani nie kopiują żadnego zdjęcia; zachowywane są tylko liczby. Pełne tabele, z każdym przebiegiem, są w RESULT.md."
 perf_repro_link: "Przeczytaj RESULT.md na GitHubie"
@@ -642,7 +642,7 @@ kn_play: "Odtwórz wideo"
 
 # The short landing page's results and the Features page (FR-135, 2026-11-15).
 feat_page_title: "Funkcje"
-feat_page_description: "Wszystko, co robi Fotollection, od najlepszego ujęcia po gotową odbitkę: tryby, pocztówki, formaty wydruku, presety i LUT-y, RAW, szybkość i prywatność."
+feat_page_description: "Wszystko, co robi Fotollection, od najlepszego ujęcia po odbitkę: tryby, pocztówki, formaty wydruku, presety i LUT-y, RAW, szybkość, prywatność."
 feat_page_lead: "Ta strona pokazuje każde narzędzie Fotollection, od pierwszego przeglądu wyjazdu po odbitkę w dłoni."
 fnav_modes: "Tryby"
 fnav_print: "Druk"
@@ -678,9 +678,9 @@ perf_sense_text: "RollSense czyta każde zdjęcie raz, aby je posortować: co pr
 sense_stats:
   - v: "≈ 18 min"
     l: "wycieczka z 2500 zdjęciami na laptopie z i7-10610U"
-  - v: "844 MB"
+  - v: "844 MB"
     l: "najwięcej pamięci, ile użył przebieg przez 9639 zdjęć, bez wzrostu"
-  - v: "1,3 ms"
+  - v: "1,3 ms"
     l: "na zdjęcie przy ponownym odczycie z pamięci podręcznej"
 chart_ecg: "RollSense pod obciążeniem, sekunda po sekundzie: procesor, taktowanie, pamięć, temperatura i karta graficzna"
 chart_sense: "Czas RollSense na zdjęcie według liczby wątków i udział modelu w nim"
@@ -692,16 +692,19 @@ wiki_m_open_all: "Otwarcie całego folderu z EXIF"
 wiki_m_preview: "Podgląd po zmianie, p95"
 wiki_m_export: "Eksport"
 wiki_m_export_jpeg: "Eksport, tylko JPEG"
-wiki_m_develop: "Wywołanie jednego RAW 20 MP"
+wiki_m_develop: "Wywołanie jednego RAW 20 MP"
 wiki_m_postcards: "Przerysowanie dziesięciu pocztówek"
 wiki_m_bestshot: "Analiza najlepszego ujęcia, na zdjęcie"
 wiki_m_memory: "Szczytowe zużycie pamięci"
 wiki_m_sort: "Pierwszy przebieg RollSense"
 wiki_b_rss: "pamięć rezydentna"
-wiki_b_fp: "footprint, Fotollection i jego pomocnik RAW razem"
-wiki_b_fp_before: "footprint, przed pomocnikiem RAW"
+wiki_b_fp: "zajętość pamięci, Fotollection i jego pomocnik RAW razem"
+wiki_b_fp_before: "zajętość pamięci, przed pomocnikiem RAW"
 wiki_u_s: "s"
 wiki_u_ms: "ms"
 wiki_u_gb: "GB"
 wiki_u_ps: "zdj./s"
 wiki_u_min: "min"
+skip_to_content: "Przejdź do treści"
+final_story: "Przeczytaj, jak powstało Fotollection"
+nav_menu: "Menu"

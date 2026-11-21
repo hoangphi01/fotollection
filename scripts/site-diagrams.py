@@ -32,14 +32,14 @@ LANGS = ("en", "vi") + tuple(sorted(p.stem for p in (SRC / "labels").glob("*.jso
 # Light token -> dark token (site.css `:root` and its dark media query).
 DARK = {
     "#fffaee": "#262019",  # surface
-    "#efe5cc": "#211b15",  # tint
+    "#efe5cc": "#2a231b",  # tint
     "#2b2219": "#f3ead6",  # ink
     "#514435": "#d8cab0",  # ink-2
-    "#7a6a55": "#a8977c",  # muted
+    "#6e5e4a": "#a8977c",  # muted
     "#e2d4b3": "#3b3127",  # line
-    "#2c836d": "#c98a52",  # brand
-    "#dcebe3": "#3a2c1f",  # brand, soft
-    "#b5652a": "#e3a067",  # accent
+    "#246b59": "#5cc0b4",  # brand (teal in both themes since 2026-11-21)
+    "#dcebe3": "#1d3a35",  # brand, soft
+    "#9a5220": "#e3a067",  # accent
     "#f4dfcc": "#3a2a1c",  # accent, soft
 }
 

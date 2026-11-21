@@ -1,0 +1,7 @@
+{%- comment %} Below 960 px the top bar's links are in a round button bottom left, the chapter list's
+style, opposite back to top (owner, 2026-11-20); a page with a chapter list carries them in it
+instead (chapter-list.html), and this button hides there (site.css). {% endcomment -%}
+<button class="pill pill-primary toc-button nav-menu-button" type="button" popovertarget="nav-menu" aria-label="{{ t.nav_menu }}">{% include icons/menu.svg %}</button>
+<nav class="card manual-toc nav-menu" id="nav-menu" popover aria-label="{{ t.nav_menu }}">
+  {% include nav-links.html %}
+</nav>

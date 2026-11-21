@@ -53,8 +53,9 @@
       {%- if c == 'bench' %}{% assign file = 'bench' %}{% assign cap = t.chart_browser %}{% else %}{% capture file %}bench-{{ c }}{% endcapture %}{% capture cap_key %}chart_{{ c }}{% endcapture %}{% assign cap = t[cap_key] %}{% endif %}
       <figure class="card chart">
         {%- assign size = site.data.charts[file] %}
-        <img src="{{ chart_base }}{{ file }}-{{ pg.lang }}.svg" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ cap }}" loading="lazy" decoding="async" />
+        <img src="{{ chart_base }}{{ file }}-{{ pg.lang }}.svg" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ cap }}"{% capture svg %}{{ file }}-{{ pg.lang }}.svg{% endcapture %}{% assign desc = svg | svg_desc %}{% if desc != '' %} aria-describedby="desc-{{ file }}"{% endif %} loading="lazy" decoding="async" />
         <figcaption>{{ cap }}{% include fn.html keys="fn_charts" %}</figcaption>
+        {%- if desc != '' %}<p class="sr-only" id="desc-{{ file }}">{{ desc | escape }}</p>{% endif %}
       </figure>
       {%- endfor -%}
     </div>
@@ -68,7 +69,7 @@
     {%- if key == 'raw' %}{% include perf-diagram.html name="raw-develop" %}{% endif %}
     {%- if key == 'raw' %}{% include perf-diagram.html name="develop-gate" %}{% endif %}
     <div class="manual">
-      {{ deep | markdownify | replace: '<table>', '<div class="table-scroll"><table>' | replace: '</table>', '</table></div>' }}
+      {{ deep | markdownify | replace: '<table>', '<div class="table-scroll" tabindex="0" role="region" aria-label="{{ t[title_key] | escape }}"><table>' | replace: '</table>', '</table></div>' }}
     </div>
   </div>
 </section>
@@ -109,4 +110,6 @@ uv run bench/quality/share_audit.py ~/Pictures/some-folder /tmp/share</code></pr
 {% endfor %}- [{{ t.perf_explain_title }}](#explained)
 - [{{ t.perf_repro_title }}](#reproduce)
 {% endcapture %}
-{% include chapter-list.html toc=toc label=t.perf_toc selector="main section[id]" %}
+{% include final-download.html more="story" %}
+
+{% include chapter-list.html toc=toc label=t.perf_toc selector="main section[id]:not(#get)" %}

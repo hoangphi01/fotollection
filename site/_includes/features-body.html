@@ -52,7 +52,7 @@
   <div class="wrap">
     <h2>{{ t.features_title }}</h2>
     <p class="lead narrow">{{ t.features_lead }}</p>
-    <div class="cards">
+    <div class="cards features-cards">
       <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
       <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}{% include fn.html keys="fn_charts" %}</p></article>
       <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}{% include fn.html keys="fn_pf_raw" %}</p></article>
@@ -177,3 +177,5 @@
     </div>
   </div>
 </section>
+
+{% include final-download.html more="story" tint=true %}

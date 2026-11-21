@@ -96,17 +96,18 @@
   --tint: #efe5cc;
   --ink: #2b2219;
   --ink-2: #514435;
-  --muted: #7a6a55;
+  --muted: #6e5e4a;
   --line: #e2d4b3;
-  --brand: #2c836d;
+  --brand: #246b59;
   --brand-ink: #fffaee;
   --teal: #4aada4;
   --wood: #9a5a2c;
-  --accent: #b5652a;
+  --accent: #9a5220;
   --danger: #c62828;
   --sponsor: #bf3989;
   --leaf: #3f7d1a;
   --leaf-soft: #e1efc9;
+  --leaf-ink: #33691a; /* a badge's words on --leaf-soft, 5.5:1 */
   --flower: #8e4fb3;
   --flower-soft: #efe2f6;
   --shadow: 0 1px 2px rgb(74 52 30 / 8%), 0 14px 34px rgb(74 52 30 / 12%);
@@ -138,12 +139,12 @@
   :root {
     --bg: #1c1712;
     --surface: #262019;
-    --tint: #211b15;
+    --tint: #2a231b;
     --ink: #f3ead6;
     --ink-2: #d8cab0;
     --muted: #a8977c;
     --line: #3b3127;
-    --brand: #c98a52;
+    --brand: #5cc0b4;
     --brand-ink: #1c1712;
     --teal: #5cc0b4;
     --wood: #c98a52;
@@ -152,6 +153,7 @@
     --sponsor: #db61a2;
     --leaf: #a9d86e;
     --leaf-soft: #27331b;
+    --leaf-ink: #a9d86e;
     --flower: #d3a6ef;
     --flower-soft: #33253d;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 16px 40px rgb(0 0 0 / 45%);
@@ -250,6 +252,12 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .lang .lang-flag { display: none; margin: 0; }
 .lang { border: 0; background: none; font: inherit; font-size: 0.9rem; cursor: pointer; }
 .lang:hover { background: var(--tint); color: var(--ink); }
+.lang { min-height: 36px; }
+.lang:focus-visible, .skip-link:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* Skip to the content, shown only when the keyboard reaches it. */
+.skip-link { position: absolute; left: 16px; top: -48px; z-index: 100; padding: 8px 14px; border-radius: 999px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); text-decoration: none; font-weight: 600; }
+.skip-link:focus { top: 12px; }
+main:focus { outline: none; }
 /* The language menu, under the top bar at the right (lang-menu.html). */
 .card.lang-menu { position: fixed; inset: 64px 16px auto auto; margin: 0; padding: 8px; min-width: 180px; color: var(--ink); box-shadow: var(--shadow); }
 .lang-menu::backdrop { background: transparent; }
@@ -292,7 +300,7 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .badge.shield { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
 .badge.shield .icon { width: 1.1em; height: 1.1em; }
 .badge.shield:hover { filter: brightness(1.08); }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--leaf) 25%, transparent); background: var(--leaf-soft); color: var(--leaf); font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--leaf) 25%, transparent); background: var(--leaf-soft); color: var(--leaf-ink); font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
 .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 28px 0 12px; }
 .cta-count { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
 /* Under the stacked buttons of a phone it centres on its own line; beside them on a wide screen. */
@@ -353,8 +361,8 @@ html[data-os='mobile'] .cta-phone { display: flex; order: -1; }
 
 .stats { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 36px 0 22px; }
 .stat { display: flex; flex-direction: column; gap: 6px; padding: 24px; border-radius: 14px; background: var(--brand); color: var(--brand-ink); }
-.stat strong { font-family: 'Bitter', Georgia, serif; font-size: clamp(2.2rem, 6vw, 3rem); line-height: 1; letter-spacing: -0.01em; }
-.stat span { opacity: 0.88; font-size: 0.97rem; }
+.stat strong { font-family: 'Bitter', Georgia, serif; font-size: clamp(2.2rem, 6vw, 3rem); line-height: 1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 0.97rem; }
 .more { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--brand); text-decoration: none; }
 .more:hover { text-decoration: underline; }
 
@@ -365,7 +373,7 @@ html[data-os='mobile'] .cta-phone { display: flex; order: -1; }
 /* Print basket: the two keys on the preview screenshot, like swipe gestures. */
 .shot.keys { position: relative; }
 .key-chips { position: absolute; right: 14px; bottom: 14px; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-.key-chips span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: var(--shadow); font-weight: 650; font-size: 0.92rem; }
+.key-chips span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: var(--shadow); font-weight: 600; font-size: 0.92rem; }
 .key-chips.inline { position: static; justify-content: flex-start; margin-top: 14px; }
 .key-chips kbd { font: 700 1rem/1 ui-monospace, monospace; color: var(--brand); }
 /* Performance page: a heading, then one section per measurement and the explanations. */
@@ -403,6 +411,7 @@ html[data-os='mobile'] .cta-phone { display: flex; order: -1; }
 .section.perf-head { padding-bottom: 24px; } /* also on wide screens, where .section gets 96px */
 /* The page's glow (body::before) fades out over the first section; a tinted one right under the
    head would cut it with a hard edge, so its tint fades in as the glow fades out (owner, 2026-11-06). */
+.perf-head + .section { padding-top: 48px; } /* the first section under a page's head, the same on every width */
 .perf-head + .section.tint { background: linear-gradient(transparent, var(--tint) 360px); }
 .perf-part { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .perf-part .charts { margin: 12px 0 0; }
@@ -410,14 +419,14 @@ html[data-os='mobile'] .cta-phone { display: flex; order: -1; }
 .qa-label { margin: 36px 0 0; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .qa-label:first-child { margin-top: 0; }
 .qa details { border-bottom: 1px solid var(--line); }
-.qa summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 22px 0; font-size: 1.15rem; font-weight: 650; }
+.qa summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 22px 0; font-size: 1.15rem; font-weight: 600; }
 .qa summary::-webkit-details-marker { display: none; }
 .qa summary::after { content: '+'; flex: none; font-size: 1.6rem; font-weight: 300; line-height: 1; color: var(--brand); transition: transform var(--motion-base) var(--ease-move); }
 .qa details[open] summary::after { transform: rotate(45deg); }
 .qa details p { margin: 0; padding: 0 40px 24px 0; color: var(--ink-2); line-height: 1.65; }
 .faq { display: grid; gap: 10px; margin-top: 28px; max-width: 820px; }
 .faq details { padding: 0; }
-.faq summary { cursor: pointer; list-style: none; padding: 16px 20px; font-weight: 650; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary { cursor: pointer; list-style: none; padding: 16px 20px; font-weight: 600; display: flex; justify-content: space-between; gap: 12px; }
 .faq summary::-webkit-details-marker { display: none; }
 .faq summary::after { content: '+'; color: var(--brand); font-weight: 700; }
 .faq details[open] summary::after { content: '−'; }
@@ -566,8 +575,8 @@ h3.with-logo .logo-os { height: 0.95em; }
    photo, a row of looks to pick (raised while off, the chosen one pressed in, as the app's
    choices), a sentence for the one picked. On a phone the looks scroll sideways under it. */
 .looks-title { font-size: clamp(2.4rem, 7vw, 4.4rem); letter-spacing: -0.02em; }
-.looks-sub { margin: 6px 0 0; font-size: clamp(1.4rem, 3.6vw, 2.2rem); font-weight: 650; color: var(--ink-2); letter-spacing: -0.01em; }
-.looks-lead strong { color: var(--ink); font-weight: 650; }
+.looks-sub { margin: 6px 0 0; font-size: clamp(1.4rem, 3.6vw, 2.2rem); font-weight: 600; color: var(--ink-2); letter-spacing: -0.01em; }
+.looks-lead strong { color: var(--ink); font-weight: 600; }
 .looks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 40px; align-items: start; }
 .looks > * { min-width: 0; }
 .looks-photo { margin: 0; }
@@ -674,6 +683,8 @@ h3.with-logo .logo-os { height: 0.95em; }
 }
 @media (min-width: 720px) {
   .story p { text-align: justify; hyphens: auto; }
+  /* Vietnamese has no hyphenation, so justified lines stretched its spaces. */
+  :lang(vi) .story p { text-align: start; hyphens: manual; }
 }
 .manual ul, .manual ol { padding-left: 1.3em; }
 .manual li + li, .manual li > ul { margin-top: 6px; }
@@ -714,7 +725,7 @@ h3.with-logo .logo-os { height: 0.95em; }
 .measures-table td:nth-child(5) { min-width: 12rem; }
 .measures-table td:last-child { min-width: 14rem; }
 .measures-table .basis { display: block; max-width: 16rem; margin-left: auto; white-space: normal; }
-.table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
 .table th, .table td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
 .table tbody tr:last-child > * { border-bottom: 0; }
 .table thead th { color: var(--muted); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -745,7 +756,7 @@ html[data-os='mac'] .install [data-os='mac'], html[data-os='win'] .install [data
 .linux-ways { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 14px; }
 .linux-ways p { color: var(--ink-2); font-size: 0.97rem; }
 .linux-ways .code + p { margin-top: 10px; }
-.linux-ways .way { color: var(--ink); font-weight: 650; }
+.linux-ways .way { color: var(--ink); font-weight: 600; }
 .linux-files { display: flex; flex-wrap: wrap; gap: 8px; }
 .linux .sizes-label { margin-top: 22px; }
 .linux .more { margin-top: 16px; }
@@ -764,16 +775,19 @@ html[data-os='mac'] .install [data-os='mac'], html[data-os='win'] .install [data
 .footnotes li, .footnotes p { margin: 0 0 12px; }
 .footnotes .fn-num { font-variant-numeric: tabular-nums; }
 .footnotes a { color: inherit; }
-.footnotes .fn-back { display: inline-flex; vertical-align: -0.15em; margin-left: 4px; text-decoration: none; }
+.footnotes .fn-back { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; min-height: 28px; vertical-align: -0.45em; margin-left: 2px; text-decoration: none; }
 .footnotes .fn-back .icon { width: 1.1em; height: 1.1em; }
 .footnotes .fn-back:hover { color: var(--ink); }
 .footnotes li:target { color: var(--ink); }
 .fn-ref { font-size: 0.65em; vertical-align: super; line-height: 0; margin-left: 2px; font-weight: 600; }
 h2 .fn-ref { font-size: 0.4em; }
-.fn-ref a { color: var(--muted); text-decoration: none; }
+.fn-ref a { position: relative; color: var(--muted); text-decoration: none; }
+/* A 24 px target round each small note number, without moving the line (WCAG 2.5.8). */
+.fn-ref a::after { content: ''; position: absolute; left: 50%; top: 50%; width: 24px; height: 24px; transform: translate(-50%, -50%); }
+.table-scroll:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .badge .fn-ref { font-size: 0.7em; }
 .fn-ref a:hover { color: var(--ink); }
-.footer { border-top: 1px solid var(--line); padding: 32px 0 28px; }
+.footer { border-top: 1px solid var(--line); padding: 32px 0 88px; }
 .footer-row { display: flex; flex-direction: column; gap: 22px; }
 .footer-row p { margin-top: 8px; }
 .footer-made { max-width: 46ch; font-size: 0.9rem; }
@@ -811,18 +825,18 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
   .systems-table th:first-child { white-space: nowrap; }
   .systems-table td, .systems-table thead th:not(:first-child) { padding-left: 12px; padding-right: 12px; white-space: nowrap; }
   .systems-table thead th { letter-spacing: 0.06em; font-size: 0.8rem; }
-  .systems .table-scroll { padding: 6px 18px; }
+  .systems .table-scroll, #measures .table-scroll { padding: 6px 18px; }
   .lang .lang-flag { display: inline-block; }
   .footer-base { flex-direction: row; justify-content: space-between; }
 }
 
 @media (min-width: 960px) {
   :root { --gutter: 32px; }
-  .nav-links { display: flex; }
-  .pill-label { display: inline; }
   .hero { padding: 80px 0 32px; }
   .section { padding: 96px 0; }
   .cards { grid-template-columns: repeat(3, 1fr); }
+  /* Four cards: two rows of two, never three and one left alone (the five experts' review). */
+  .features-cards { grid-template-columns: repeat(2, 1fr); }
   .privacy-grid { grid-template-columns: 5fr 7fr; gap: 56px; align-items: start; }
   .kiosk-grid { grid-template-columns: 7fr 5fr; gap: 56px; align-items: start; }
   .perf-part { grid-template-columns: 5fr 7fr; gap: 48px; align-items: start; }
@@ -935,7 +949,7 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 
 /* How it compares (owner, 2026-11-07): Fotollection's column marked in the brand's colour. */
 .compare { margin-top: 32px; }
-.compare-table td.ours, .compare-table thead th:nth-child(2) { color: var(--brand); font-weight: 650; }
+.compare-table td.ours, .compare-table thead th:nth-child(2) { color: var(--brand); font-weight: 600; }
 .compare-table td, .compare-table th[scope="row"] { min-width: 150px; vertical-align: top; }
 #compare .small { margin-top: 14px; }
 @media (min-width: 640px) { .uses-cards { grid-template-columns: repeat(2, 1fr); } }
@@ -971,3 +985,20 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 /* The footer's trademarks and credits, folded (FR-135). */
 .fn-legal { margin-top: 12px; }
 .fn-legal summary { cursor: pointer; color: var(--ink-2); }
+/* The Performance page's long explanations read about 68 characters a line (37rem, measured); tables keep the width. */
+.perf-deep .manual > :is(p, ul, ol, h3, h4) { max-width: 37rem; } /* about 68 characters in Be Vietnam Pro */
+/* The phone's menu (default.html, nav-links.html): the top bar's links below 960 px, in the chapter
+   list's round button, or inside the chapter list where a page has one, never two buttons. */
+.nav-menu-links { list-style: none; margin: 0; padding: 0; }
+.toc-nav { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+body:has(#manual-toc) .nav-menu-button { display: none; }
+/* The top bar's links and the pills' words need about 1,190 px in Hungarian and Japanese (UI audit,
+   2026-11-21: the page scrolled sideways from 960 px); below that the menu holds them. */
+@media (min-width: 1200px) {
+  .nav-links { display: flex; }
+  .pill-label { display: inline; }
+  .nav-menu-button, .toc-nav { display: none; }
+}
+.js .nav-menu-button { opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity var(--motion-base) var(--ease-move), transform var(--motion-base) var(--ease-move); }
+.js .nav-menu-button.shown { opacity: 1; transform: none; pointer-events: auto; }
+.manual-toc .nav-menu-links { margin: 0; }

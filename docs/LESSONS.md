@@ -533,7 +533,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - **Area:** ui-blocks, checks
 - **Seen:** the support card's *Buy me a coffee on Ko-fi* showed a dark cup on a dark button in the dark theme (owner).
 - **Why:** the rule that turns the macOS button back to plain once the visitor's system is known was written as `html[data-os] .cta .button.primary`; the support card's buttons sit in a `.cta` too, so Ko-fi, a primary button, lost its brand face while its cup kept the brand-ink colour.
-- **Fix:** the rule names only the download buttons, `:where(.button.primary[data-os])`, at a weight the leading button's rule still beats; Ko-fi is brown again in dark, green in light.
+- **Fix:** the rule names only the download buttons, `:where(.button.primary[data-os])`, at a weight the leading button's rule still beats; Ko-fi is brown again in dark, green in light. (Since 2026-11-21 the site's brand is teal in both themes, so Ko-fi is teal in dark too.)
 - **Rule:** a rule for one block names that block's own mark, never a shared class (`.cta`, `.button`); after it, every page that uses the shared class is looked at.
 
 ### The Vietnamese WebKit pass stopped on lazy pictures, with the Prague photos in the demo (UI check)

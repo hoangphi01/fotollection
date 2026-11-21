@@ -1,6 +1,7 @@
 {%- comment %} The chapter list of a long page (the manual, the story): a round button bottom left, the mirror of "back to top", opens it as a popover; picking a chapter closes it, and the chapter being read is marked. Takes `toc` (the list as Markdown), `label` and, optionally, `source` and `source_label` for a link under it, and `selector`, the elements that are the chapters (the `.manual h2[id]` titles by default; the Performance page's sections). {% endcomment -%}
 <button class="pill pill-primary toc-button" type="button" popovertarget="manual-toc" aria-label="{{ include.label }}">{% include icons/list.svg %}</button>
 <nav class="card manual-toc" id="manual-toc" popover aria-label="{{ include.label }}">
+  <div class="toc-nav">{% include nav-links.html %}</div>
   <h2>{{ include.label }}</h2>
   {{ include.toc | markdownify }}
   {%- if include.source %}
