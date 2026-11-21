@@ -51,6 +51,10 @@ jobs:
       - name: Requirement & index consistency
         run: bash scripts/check-docs.sh
 
+      # Out of the way of the lint and the link check, which would read its Markdown.
+      - name: Remove the chart check's package
+        run: rm -rf node_modules
+
       - name: Markdown lint
         uses: DavidAnson/markdownlint-cli2-action@v19
         with:
